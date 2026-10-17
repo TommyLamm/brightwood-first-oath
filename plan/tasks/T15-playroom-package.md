@@ -13,13 +13,13 @@
 - [x] T15-05 playroom-port.ts實作07 CloudPort，透傳ready／load／save、null、saved及Error.code/machineCode，不catch成空存檔；無自製postMessage、無帳號憑證。
 - [x] T15-06 建正式Manifest schema2，候選ID/名稱/作者用06、devices只有desktop、cloudSave readable[1]/write1；不宣告leaderboard，不加$schema／未知欄位。
 - [x] T15-07 instructions寫實際按鍵與玩法、description不誇稱官方／完整世界，entry index.html、cover cover.png、tags≤8；本機候選版號與未發布狀態清楚。
-- [ ] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖；本包不另開共用瀏覽器干擾主Agent，可請其提供一次真實截圖。
+- [ ] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖；本包不另開共用瀏覽器干擾主Agent，可請其提供一次真實截圖。T14-c 已於 f0bcc6c 提交，但截圖仍阻塞：Playwright wrapper 因 Git Bash/MSYS `NtCreateDirectoryObject(...): 0xC0000022` 失敗，唯一 `npx` 備援因 registry DNS `ENOTFOUND` 失敗；未產生來源截圖或封面。
 - [x] T15-09 tools/playroom提供明確本地pack/validate入口，指向固定工具解壓CLI；dist來源、artifacts/game.zip輸出，工具／zip均在dist外。
 - [x] T15-10 複製當時最新workflow到release.yml，GAME_DIR=dist，在版本檢查前加npm ci/build，Node24與checksum/metadata全驗證；不添加略過失敗設定。
 - [ ] T15-11 已對重新執行 `npm run build` 生成的真實 `dist/` 嘗試官方pack；因缺少 `dist/cover.png` 得到 `VALIDATION_ERROR` 而停止，未產生ZIP，故validate及ZIP層級檢查未執行。補上實際封面後完成官方pack、完整validate及檔案／大小檢查，保留實際輸出。
 - [x] T15-12 report列工具版本／SHA／SDK／Manifest／產物路徑、實際命令、未驗證事項與需要主Agent提供的整合；清楚區分本機ZIP與未發布。
 
-> T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T15-08、11 仍待 T14-c 的實際畫面與候選成品。
+> T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T14-c 已提交；T15-08、11 仍待可用的實際遊戲截圖、封面及候選成品。
 
 ## 發布邊界
 
