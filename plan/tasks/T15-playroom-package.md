@@ -7,7 +7,7 @@
 ## 步驟
 
 - [x] T15-01 記完整規格讀取時間、URL與版本軸，確認跟目前Manifest／工具相容；讀失敗報URL及原因，不猜欄位。
-- [ ] T15-02 在成品外隔離平台checkout，固定依賴，按標準跑sdk:build/game:schema/game:tools；不執行無關遠端命令或把發布token交給工具。
+- [x] T15-02 在成品外隔離平台checkout，固定依賴，按標準跑sdk:build/game:schema/game:tools；不執行無關遠端命令或把發布token交給工具。
 - [ ] T15-03 將生成工具ZIP放.playroom/tools及SHA256 lock放.playroom/game-tools.lock.json，記版本／來源／metadata／逐檔雜湊。不假設遠端工具Release已存在。
 - [x] T15-04 SDK JS（及需要的d.ts）複製public/vendor，使用相對匯入；只保留一份正式SDK。
 - [x] T15-05 playroom-port.ts實作07 CloudPort，透傳ready／load／save、null、saved及Error.code/machineCode，不catch成空存檔；無自製postMessage、無帳號憑證。
@@ -19,7 +19,7 @@
 - [ ] T15-11 主Agent交候選dist後執行官方pack及完整validate，另查機密／.env／原稿／無關檔案及64/256MiB／10000entries限制；保留實際輸出。
 - [x] T15-12 report列工具版本／SHA／SDK／Manifest／產物路徑、實際命令、未驗證事項與需要主Agent提供的整合；清楚區分本機ZIP與未發布。
 
-> T15-a 尚待官方平台 checkout 生成並提交固定工具 ZIP／lock（T15-02、03）；在其可用前，pack/validate 入口會安全停止。T15-08、11 仍待 T14-c 的實際畫面與候選成品。
+> T15-02 已由官方平台 main checkout 生成並驗證工具 ZIP／lock；T15-03 待將兩者複製至遊戲 repository。T15-08、11 仍待 T14-c 的實際畫面與候選成品。
 
 ## 發布邊界
 
