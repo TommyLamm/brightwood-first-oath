@@ -421,8 +421,77 @@
       "displayHeight": 48,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "vfx:sweep",
+      "url": "assets/interface/vfx-sweep-v2.png",
+      "columns": 6,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "vfx:hit",
+      "url": "assets/interface/vfx-hit-v2.png",
+      "columns": 6,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "vfx:levelup",
+      "url": "assets/interface/vfx-levelup-v2.png",
+      "columns": 6,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "vfx:guard",
+      "url": "assets/interface/vfx-guard-v2.png",
+      "columns": 6,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
-  "animations": [],
+  "animations": [
+    {
+      "key": "animation:vfx:sweep",
+      "imageKey": "vfx:sweep",
+      "frames": [0, 1, 2, 3, 4, 5],
+      "frameMs": [60, 60, 60, 60, 60, 60],
+      "loop": false
+    },
+    {
+      "key": "animation:vfx:hit",
+      "imageKey": "vfx:hit",
+      "frames": [0, 1, 2, 3, 4, 5],
+      "frameMs": [60, 60, 60, 60, 60, 60],
+      "loop": false
+    },
+    {
+      "key": "animation:vfx:levelup",
+      "imageKey": "vfx:levelup",
+      "frames": [0, 1, 2, 3, 4, 5],
+      "frameMs": [60, 60, 60, 60, 60, 60],
+      "loop": false
+    },
+    {
+      "key": "animation:vfx:guard",
+      "imageKey": "vfx:guard",
+      "frames": [0, 1, 2, 3, 4, 5],
+      "frameMs": [60, 60, 60, 60, 60, 60],
+      "loop": false
+    }
+  ],
   "audio": []
 }

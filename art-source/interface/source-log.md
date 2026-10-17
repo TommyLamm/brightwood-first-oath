@@ -12,8 +12,11 @@ All originals remain under `art-source/interface/`; only extracted, alpha-preser
 | UI skin targeted repair | same nine pieces, same order | `interface-skins-sheet-v2-repair1.png` | 1254×1254; accepted for slicing, every piece fully contained |
 | VFX | heavy-strike, sweep, hit, levelup, guard (six frames per row) | `interface-vfx-sheet-v1.png` | 1536×1024; rejected: opaque row tints |
 | VFX targeted repair | same five rows | `interface-vfx-sheet-v2-repair1.png` | 1536×1024; rejected: opaque row tints remain |
+| VFX isolated strips | sweep, hit, levelup | per-key attempts documented below | 2172×724 RGBA each; accepted after direct alpha and visual review |
+| VFX guard | six-frame ring, one targeted center cleanup | per-key attempt and repair documented below | 2172×724 RGBA each; repair accepted after alpha and visual review |
+| VFX heavy-strike | six-frame slash | ImageGen saved path recovered from tool record; documented below | 2172×724 RGBA; candidate pending runtime inspection |
 
-The item, material, skill, marker, and repaired UI sheets were cropped into independent assets with unchanged RGBA content and downsampled only. The initial UI sheet is retained as source evidence; its panel frame crossed a cell edge, so the one targeted repair was used and the repaired sheet supplies all nine runtime pieces. The VFX images are retained as source evidence but excluded from the runtime manifest because alpha samples within the tinted background rows remain near-opaque after the one allowed repair. Their complete missing-key list is in `plan/reports/T12.md`.
+The item, material, skill, marker, and repaired UI sheets were cropped into independent assets with unchanged RGBA content and downsampled only. The initial UI sheet is retained as source evidence; its panel frame crossed a cell edge, so the one targeted repair was used and the repaired sheet supplies all nine runtime pieces. The original five-row VFX sheet and its repair remain rejected because tinted background rows stayed near-opaque; they are not used by the new runtime strips. Separate per-effect one-row candidates and their current status are documented below.
 
 ## Core items — prompt
 
@@ -174,4 +177,106 @@ Composition/framing: keep every component fully inside its own equal square cell
 Style/medium: preserve the existing handcrafted pixel-art UI style, warm dark walnut and brass framing, cool slate interior and teal selected-slot glow. Keep hover visibly brighter and pressed visibly inset.
 Scene/backdrop: transparent alpha around all nine pieces and inside the panel frame, slot interiors and bar frames as in the source.
 Constraints: preserve the nine key designs and order; only correct the scale and containment within cells. No new pieces, no labels, text, numbers, glyphs, grid lines, background fills, watermark, or mock screen.
+```
+
+## VFX — isolated six-frame strips (current candidates)
+
+The prompt blocks below are copied verbatim from the built-in ImageGen tool records' `revisedPrompt` fields. Reference paths and the recorded output path are noted per request. ImageGen's PNG output metadata is empty, so the standalone source files preserve the originals. The prior multi-row VFX generation and rejected alpha repair above remain as historical evidence; these are separate one-row generations using a changed prompt/composition strategy. Only the four passing strips are in the runtime manifest. The heavy-strike saved path was recovered from the tool record after the original wrapper failed to surface it; it remains pending independent inspection.
+
+### heavy-strike — generated candidate, inspection pending
+
+References: `art-source/actors/hero-style-reference-v1.png`, `art-source/actors/equip-starter-sword-v1.png`, `public/assets/interface/skill-heavy-strike-v1.png`.
+
+Tool record: `exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048`; recorded output path: `D:\dev-data\codex-home\generated_images\01a14bf5-5184-74b2-8896-d592c289c679\exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048.png`. The initial wrapper did not expose a usable artifact; this saved path was recovered from the ImageGen record and must be separately inspected before runtime acceptance.
+
+```text
+Use case: stylized-concept
+Asset type: six-frame horizontal transparent VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 is the established hero style and warm color reference; Image 2 is the game's plain short sword silhouette and pixel finish; Image 3 is the heavy-strike skill icon motif reference.
+Primary request: create one clean left-to-right animation strip for vfx:heavy-strike: a fast diagonal sword-energy slash made only of crisp, compact pixel clusters. Show exactly six distinct chronological frames: (1) tiny amber contact spark, (2) narrow steel glint beginning diagonally, (3) a gold-white diagonal crescent starts forming, (4) the crescent reaches its brightest sweep, (5) the arc breaks into a few amber sparks, (6) only two tiny fading sparks. The slash runs upper-left to lower-right, with no sword or character. Keep every frame visually isolated and centered in its own cell.
+Composition/framing: exact 1536×256 transparent canvas, six equal 256×256 square cells in one horizontal row, no margins between cells; each frame stays entirely inside its cell with clear internal margin. Pixel clusters align consistently across adjacent frames and read smoothly at 60ms each. This separate 6×1 strip is not a multi-row sheet.
+Style/medium: crisp hand-painted pixel-art particles matching the supplied game's icon rendering, hard-edged pixels with small controlled highlights; no blur, no photorealism.
+Color palette: warm amber and gold with a small steel-white highlight.
+Constraints: genuine transparent alpha for every empty pixel; keep all negative space fully transparent. No colored haze, soft glow field, tinted band, gradient, floor, canvas fill, shadow, checkerboard, gridlines, cell borders, lettering, numbers, HUD, watermark, repeated static frames, extra objects, or overlapping frame cells.
+```
+
+### sweep — accepted source
+
+References: `art-source/actors/hero-style-reference-v1.png`, `art-source/actors/equip-starter-sword-v1.png`, `public/assets/interface/skill-sweep-v1.png`.
+
+Tool record/output: `exec-d77a90af-f472-4989-aa4a-a8bb3d3f7c5b`; preserved as `interface-vfx-sweep-v2-attempt1.png` (2172×724 RGBA). Accepted runtime strip: `public/assets/interface/vfx-sweep-v2.png`.
+
+```text
+Use case: stylized-concept
+Asset type: six-frame horizontal transparent VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 is the established hero style and warm color reference; Image 2 is the game's plain short sword silhouette and pixel finish; Image 3 is the game's broad sweep skill icon motif.
+Primary request: create one separate chronological animation strip for vfx:sweep: a wide cool blue-silver horizontal crescent sweep, made only of crisp compact pixel clusters. Show exactly six distinct frames left-to-right: (1) tiny pale-blue spark, (2) short curved blue glint starts, (3) a crescent grows into a broad left-to-right fan, (4) full sweeping arc at peak with bright silver-blue edge, (5) arc recedes into a few cool blue sparks, (6) one tiny fading glimmer. The crescent is the only subject; no character, no drawn sword. Keep each frame centered and isolated in its own cell.
+Composition/framing: exact 1536×256 transparent canvas; six equal 256×256 square cells across one row, no margins between cells; each frame safely inside its cell with clear internal margin. Consecutive frames change visibly and read smoothly at 60ms each. This is one horizontal strip, not a multi-row sheet.
+Style/medium: crisp hand-painted pixel-art particles consistent with the supplied game's icon finish; hard-edged pixel clusters, no blur or photorealism.
+Color palette: pale silver-blue core, bright cyan edge, sparse dark-blue accent pixels.
+Constraints: genuine transparent alpha for every empty pixel and all negative space. No color mist, soft halo/background band, gradient, floor, shadow, canvas fill, checkerboard, gridlines, cell borders, text, letters, numbers, HUD, watermark, repeated static frames, extra objects, or overlapping cells.
+```
+
+### hit — accepted source
+
+References: `art-source/actors/hero-style-reference-v1.png`, `public/assets/interface/skill-heavy-strike-v1.png`, `public/assets/interface/item-stone-chip-v1.png`.
+
+Tool record/output: `exec-75b5a4ee-4845-410f-8148-6ad9e8d162b9`; preserved as `interface-vfx-hit-v2-attempt1.png` (2172×724 RGBA). Accepted runtime strip: `public/assets/interface/vfx-hit-v2.png`.
+
+```text
+Use case: stylized-concept
+Asset type: six-frame horizontal transparent impact VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 sets the game's hero and overall pixel-art palette; Image 2 is the exact sword-impact visual style; Image 3 is a reference for small, sharp stone-like pixel fragments.
+Primary request: create one separate six-frame chronological strip for vfx:hit, a compact melee contact impact with no characters or weapon. Left-to-right: (1) a tiny pale contact spark, (2) a small amber-red four-point burst begins, (3) the center brightens and three short angular streaks radiate out, (4) strongest compact starburst, (5) it breaks into a few small orange and red pixel fragments, (6) one tiny fading ember. Keep the impact localized, with a clear non-looping beginning, peak, and ending.
+Composition/framing: one horizontal row of exactly six equal frame cells, intended as a six-frame sprite strip. Keep a centered compact effect with ample transparent space in every cell. All frames are separated by equal spacing, none touch or cross cell boundaries; clear chronology at 60ms per frame.
+Style/medium: crisp hand-painted pixel-art VFX matching the supplied small game icons, hard pixel clusters and controlled highlights; no blur or photorealism.
+Color palette: amber, warm gold, and restrained orange-red with small cream-white center.
+Constraints: real transparent alpha throughout all empty areas. Avoid any full-canvas color, row or column tint, atmosphere, background gradient, ground, shadow, checkerboard, gridline, border, text, letters, numbers, HUD, watermark, extra characters, extra objects, repeated frames, or oversized diffuse aura.
+```
+
+### levelup — accepted source
+
+References: `art-source/actors/hero-style-reference-v1.png`, `public/assets/interface/skill-vitality-v1.png`, `public/assets/interface/skill-heavy-strike-v1.png`.
+
+Tool record/output: `exec-17b72070-4597-4cb0-85ff-3ab66b500c0c`; preserved as `interface-vfx-levelup-v2-attempt1.png` (2172×724 RGBA). Accepted runtime strip: `public/assets/interface/vfx-levelup-v2.png`.
+
+```text
+Use case: stylized-concept
+Asset type: six-frame horizontal transparent level-up VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 is the established hero art style; Image 2 supplies the game's bright life-energy accent; Image 3 supplies the warm gold-and-steel effect palette.
+Primary request: create a distinct non-looping six-frame animation for vfx:levelup, a vertical golden flourish without a character, words, numerals, or symbols. Read left-to-right: (1) a tiny gold glint close to the bottom of the frame, (2) a thin golden beam rises upward, (3) a taller warm-gold column with two ascending star motes, (4) a brief bright crown-shaped flare at the top of the column, (5) the column dissolves into several falling leaf-like golden pixels, (6) one small fading amber glimmer. Keep the flourish elegant and readable, not a solid rectangle of light.
+Composition/framing: exactly six equal animation cells across a single row, each cell intended to be square and centered; leave generous transparent negative space around the effect and preserve a consistent center position. In the available panoramic strip, keep all visible effect pixels within a centered square region of each cell so the strip can be cropped to square frames without losing artwork. No element crosses a cell boundary. Six successive frames must read as a smooth progression at 60ms each.
+Style/medium: crisp hand-painted pixel-art VFX consistent with the supplied icons, distinct pixel clusters, controlled highlights; no blur or photorealism.
+Color palette: restrained amber, warm gold, pale cream highlights, a few leaf-green spark pixels.
+Constraints: request genuine transparent alpha; all empty pixels fully transparent. No colored haze, tinted bands, gradients, background, floor, shadow, gridlines, cell borders, checkerboard, lettering, numbers, HUD, watermark, duplicate still frames, extra characters or objects.
+```
+
+### guard — accepted after one targeted repair
+
+Generation references: `art-source/actors/hero-style-reference-v1.png`, `public/assets/interface/skill-iron-guard-v1.png`, `public/assets/interface/skill-heavy-strike-v1.png`. Repair references: `art-source/interface/interface-vfx-guard-v2-attempt1.png`, `art-source/actors/hero-style-reference-v1.png`, `public/assets/interface/skill-iron-guard-v1.png`.
+
+Generation tool record/output: `exec-56408955-07af-4a08-9e2b-1b2da72be992`; preserved as `interface-vfx-guard-v2-attempt1.png` (2172×724 RGBA). Repair record/output: `exec-c5882e01-06d1-4053-bf1c-2c19e60c7c61`; preserved as `interface-vfx-guard-v2-repair1.png` (2172×724 RGBA). Accepted runtime strip: `public/assets/interface/vfx-guard-v2.png`.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: six-frame horizontal transparent defensive VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 establishes the game's hero pixel-art scale; Image 2 is the exact iron-guard shield and teal-ring motif; Image 3 supplies the matching crisp luminous pixel-effect finish.
+Primary request: create a distinct non-looping six-frame animation for vfx:guard, a protective teal and pale-blue circular ring effect with no person, shield, or other subject. Read left-to-right: (1) two tiny teal arcs begin at opposite sides, (2) four curved segments grow toward a circle, (3) the full thin protective ring closes, (4) the complete ring brightens with two small side glints, (5) it subtly pulses and dims, (6) the ring breaks into a few tiny teal sparks and fades. Keep a perfectly empty transparent center large enough for a character sprite overlay in every frame; draw only the outer ring and sparse small glints, never fill the center.
+Composition/framing: six equal centered animation cells in a single horizontal row; each effect remains fully within its cell with generous transparent margin. Keep the ring round and centered, with consistent scale across frames. No pixels cross cell boundaries; visible changes form a smooth sequence at 60ms per frame.
+Style/medium: crisp, handcrafted pixel-art effect consistent with the supplied skill icon, distinct hard-edged pixel clusters, controlled highlights; no blur or photorealism.
+Color palette: turquoise teal, pale icy blue, small silver-white highlights, restrained darker teal outline.
+Constraints: genuine transparent alpha across all empty space, especially the full open ring center. No colored haze, tinted bands, filled center, background gradient, floor, shadows, canvas fill, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, character, shield, repeated still frames, or diffuse aura.
+```
+
+Repair prompt:
+
+```text
+Use case: background-extraction
+Asset type: targeted alpha cleanup of a six-frame defensive VFX strip for the same pixel-art RPG.
+Input images: Image 1 is the exact generated vfx:guard strip to repair; Image 2 is only the hero scale/style reference; Image 3 is the exact iron-guard icon reference.
+Primary request: make one precise repair to Image 1. In each of the six existing frames, remove only the few stray teal/cyan pixels and tiny glints that appear inside the circular ring opening. The entire interior hole of every ring must be genuinely transparent, completely empty so a player sprite face and body remain unobstructed. Keep the circular outer arcs, their color, the two small outside side glints, the frame order, positions, scale, style, and 6-frame chronology exactly as they are.
+Composition/framing: preserve the same single horizontal six-frame strip and the same cell layout. Do not recompose or redraw the rings.
+Constraints: change only pixels inside the ring openings to transparent alpha; preserve all effect pixels on or outside the ring. Maintain real transparent alpha everywhere empty. No background, glow field, filled center, checkerboard, text, labels, gridlines, borders, watermark, new pixels, or added objects.
 ```
