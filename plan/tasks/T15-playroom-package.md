@@ -21,6 +21,8 @@
 
 > T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T14-c 已提交；T15-08、11 仍待可用的實際遊戲截圖、封面及候選成品。
 
+> 2026-10-18 adapter/vendor scoped source commit：`b46ce34`，僅含 `src/platform/**` 與 `public/vendor/**`。本次提交不代表 T15-08/11 完成；詳見 T15 report。
+
 ## 發布邊界
 
 本輪目標公開上架不等於現在有推tag／Release／平台API授權。準備workflow及候選可以做；真發布需明確要求與指定公開repository，版本增版、tag一致、不覆寫既有Release。平台管理者匯入後逐版人工預覽確認，不能由腳本假確認。STATE_CONFLICT需刷新人工重確認，不自動補最新狀態重送。
