@@ -25,19 +25,20 @@
 - 古礦守衛一次局部修正後紅色高 alpha 外緣像素抽樣反增（alpha>32 樣本由29至65），未通過視覺透明邊緣檢查，列為 `UNFINISHED`。兩張原稿保留於 `art-source/actors/monsters/guardian/`，沒有 runtime PNG 或 manifest entry；其招式動畫時長尚未接線。
 - 森芽 NPC 雙格 idle 修正版以 1774×887 尺寸通過：正好 2×1 等方格、四角 alpha=0、兩姿勢有細微差異且足底基線一致。以 `actor:guide` / `npc:guide:idle` 入選，source/runtime SHA-256 一致，顯示 96×96，350ms 循環。
 - 岩嶺教官 NPC 雙格 idle 修正版以 1774×887 尺寸通過：2×1格、透明角、人物與姿勢可辨。以 `actor:mentor` / `npc:mentor:idle` 入選，source/runtime SHA-256 一致，顯示96×96、350ms循環。外緣紅像素抽樣總量由86降至66；alpha>32樣本為47，視覺沒有明顯色暈。
-- 木葉商人雙格 idle 首稿和一次修正版均為1774×887，可整除2×1，但修正版仍有清楚紅色外緣殘留，故列為 `UNFINISHED`。兩版原稿保留於 `art-source/actors/npcs/merchant/`，無runtime檔或manifest entry。
+- 木葉商人 `actor:merchant` / `npc:merchant:idle` 仍為 `UNFINISHED`。除原有 attempt-01/02 外，本輪另用不同的硬邊低色數提示生成 attempt-03，並以一次局部修正生成 attempt-04；兩張 1774×887，可整除2×1，四角 alpha 均為0，姿勢及足底基線可辨。但修正版仍見明顯紅色外緣像素，陰影也未達清晰硬邊像素風格，因此未複製 runtime、未加入 `public/assets/actors/creature-subset-manifest-v1.json` 的 images 或 animations。四張來源均保留於 `art-source/actors/npcs/merchant/`；依新一輪最多一次生成加一次修正規則停止重試。
 - 晨露治療師雙格 idle 一次修正版尺寸1774×887，2×1格、透明角、掛身藥瓶與兩種姿勢可辨，外緣沒有明顯色暈，正式入選。以 `actor:healer` / `npc:healer:idle` 接入，96×96顯示、每格350ms循環。
 - 礦道守望者雙格 idle 一次修正版尺寸1774×887，2×1格、透明角、拐杖/腰燈/兩姿勢可辨，外緣沒有明顯色暈，正式入選。以 `actor:keeper` / `npc:keeper:idle` 接入，96×96顯示、每格350ms循環；source/runtime SHA-256一致。
 
 ## 未完成與接線
 
-- 尚未交付：snail、mushroom、boar、golem、guardian、merchant。
+- 尚未交付：snail、mushroom、boar、golem、guardian、merchant。商人已再完成一次不同提示生成和一次局部修正，但仍 `UNFINISHED`，本輪不再重試。
 - T07/T14 可先透過本子集 manifest 載入史萊姆；T14 聚合時仍須將本子集 entries 合併至總 actors manifest。這個子包不修改 `public/assets/actors/manifest.json`。
 - Guardian 實際招式 `guardian-slam` 總時長 1800ms、`guardian-wave` 總時長 2100ms；待首領圖集完成時，單一 `guardian:attack` 的四格時間需採專案約定並向接線方說明兩招共用狀態的限制。
 
 ## 檢查
 
 - 已檢視所有正式素材原尺寸預覽；抽核六張 image 的實際尺寸與透明角，檢查正常怪/首領/NPC 的列格或雙格動作，對存在色邊疑慮的稿件採 alpha 抽樣後決定入選或 `UNFINISHED`。
+- 本輪只檢視商人 attempt-03/04：兩張均為1774×887、可整除2×1，四角 alpha=0；原尺寸預覽確認兩格身份與姿勢可辨，但 attempt-04 仍有清楚紅色外緣及柔化陰影，判定不通過。沒有建立 runtime 檔或 manifest entry；未做其他 NPC／怪物或整包驗證。
 - `package.json` 沒有專用 assets-check script。已以 PowerShell `ConvertFrom-Json` + `System.Drawing` 對本子集 manifest 執行局部完整性檢查：JSON 可解析、6 個 URL 存在、圖像尺寸可被 columns/rows 整除、image/animation keys 唯一、frame index 在格數範圍內、frameMs 數量相符且皆為正數。實際輸出：`PASS manifest JSON v1, 6 images, 14 animations; all URLs exist, grids divide image dimensions, keys are unique, and frames/timings are in range.`
 - 沒有執行 `typecheck`、`build`、完整測試套件或 `check:content`。`plan/tasks/T10-actor-assets.md` 的 T10-06/07/08 保持未完成勾選，並附上 partial/UNFINISHED 狀態。
 - scoped commit 未能由本工作環境建立：對本包擁有權路徑執行 `git add` 時，Git 回報 `fatal: Unable to create 'F:/Desktop/MapleStory/.git/index.lock': Permission denied`；沒有檔案進入 staging，也沒有建立 commit。需由具 `.git` 寫入權的整合端提交本報告列出的 T10-creatures 路徑。

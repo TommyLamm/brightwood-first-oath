@@ -13,7 +13,7 @@
 - [ ] T10-05 為每個hero有效frame填hand/head anchors，按10坐標，武器attack rotation逐格可用；不是全部frame盲填同一點。
 - [ ] T10-06 逐個生成snail/slime/mushroom/boar/golem/sentinel五狀態圖集（6×5），身形／色盤一致但輪廓可分辨；不加第七普通怪。（部分：slime、sentinel入選；snail、mushroom、boar、golem為UNFINISHED，詳T10-creatures報告。）
 - [ ] T10-07 生成guardian兩倍顯示尺寸五狀態圖集，具有可辨識蓄力／揮擊姿勢；phase2可用渲染染色，不額外增加AI招式。（UNFINISHED；詳T10-creatures報告。）
-- [ ] T10-08 生成五NPC兩格idle，與role外觀相符，名字文字不放圖片中。（部分：guide、mentor、healer、keeper入選；merchant為UNFINISHED，詳T10-creatures報告。）
+- [ ] T10-08 生成五NPC兩格idle，與role外觀相符，名字文字不放圖片中。（部分：guide、mentor、healer、keeper入選；merchant仍為UNFINISHED。第二輪新增 attempt-03 及一次修正 attempt-04 後仍有明顯紅色外緣像素；已達本輪重試上限，詳 T10-creatures 報告及 NPC source log。）
 - [ ] T10-09 建本包manifest及animation keys，URL指入遊戲檔，實際寬高可整除格數；不假設工具固定產出尺寸。
 - [ ] T10-10 檢視每個新圖的alpha、臉一致、foot／握點、格序；失敗僅重做該組。ImageGen修正local圖先查看再指定referenced_image_paths。
 - [ ] T10-11 檔案複製進workspace，原稿／prompt留art-source不入dist，正式包內部預算18MiB；多餘候選不指入manifest。

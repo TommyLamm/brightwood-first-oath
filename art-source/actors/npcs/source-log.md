@@ -42,7 +42,7 @@
 
 ## 木葉商人 (`actor:merchant`, `npc:merchant:idle`)
 
-狀態：`UNFINISHED`，不進 runtime/manifest。一次局部修正後仍見清楚紅色輪廓殘留，不再重試。
+狀態：`UNFINISHED`，不進 runtime/manifest。原兩版之外新增一次不同提示生成及一次針對性修正，仍見清楚紅色輪廓殘留，依上限停止。
 
 生成 prompt 全文：
 
@@ -57,6 +57,19 @@
 - 修正版：`D:\dev-data\codex-home\generated_images\01a14a6f-0f39-7a42-98c8-ee8fcec1968c\exec-b4e7108e-f1d0-45c6-8c01-b0158752d252.png`
 - 專案圖：`art-source/actors/npcs/merchant/merchant-idle-attempt-01.png`、`merchant-idle-attempt-02.png`
 - 尺寸為1774×887，可整除2×1。格子中人物身份、動作與足底位置可辨，但修正版預覽仍有清楚紅色外輪廓殘留，不入遊戲。
+
+第二輪生成 prompt 全文（使用 built-in ImageGen、`transparent_background: true`，並以 `F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png` 作唯一風格參考）：
+
+> Use case: illustration-story. Asset type: production NPC spritesheet for a side-view pixel-art game. Create the missing wooden merchant NPC idle atlas, named 木葉商人 in project data; do not render any name or writing. Use the explicit local short-haired swordsman image only to match pixel scale, warm palette, face proportions, and stepped contour language. Do not include or imitate the swordsman's outfit, weapons, pose sheet, or background. Subject: one friendly traveling forest merchant with shoulder-length dark auburn hair tied back, layered moss-green and tan merchant clothes, a broad leather belt with a few small coin pouches, and a compact rolled pack on the back. Full body, facing right in both cells. Style: crisp hand-crafted pixel art with a small deliberate pixel grid, visibly stepped contours, hard opaque color clusters, limited warm palette, dark natural brown outline pixels, flat sprite shading only; no painterly texture, airbrush, blur, glow, or soft edge antialiasing. Composition: exact 2 equal square columns × 1 row, no gutters or borders. Each cell contains the same single full-body merchant centered at matching scale with ample clear transparent margin. Cell 1 relaxed stance with both hands low. Cell 2 a small welcoming wave. Preserve same face, costume, pack, direction and foot baseline; only the arm/upper-body idle pose changes. Keep both silhouettes entirely within their own cell. Preserve real alpha outside each silhouette; body pixels fully opaque. Keep reddish hair confined to the hair silhouette. Use natural deep brown/green edges instead of any red or magenta matte. Deliver only the sprite sheet on transparency. Avoid red/green fringe, color spill, checkerboard, white/black fill background, semi-transparent edge halo, shadows, extra props, shop signs, goods, labels, text, watermark, extra people, duplicated characters, mixed poses or cross-cell contamination.
+
+第二輪局部修正 prompt 全文（以第二輪首稿及同一個本地主角風格參考作 `referenced_image_paths`，使用 built-in ImageGen、`transparent_background: true`）：
+
+> Use case: style-transfer. Asset type: production NPC idle spritesheet correction. Repair only the rendered pixel treatment and transparent edge quality of the merchant atlas. Keep the first attached image's exact character identity, face, costume, pack, proportions, facing direction, two poses, cell positions, canvas bounds, and 2 equal square columns × 1 row layout. Keep the local swordsman reference only as pixel-style guidance; do not add or copy that character. Convert soft painterly shading into crisp game-sprite pixel art with deliberate hard pixel clusters, stepped contours and limited opaque color blocks matching the reference's pixel scale. Preserve all natural brown hair, green cloth, tan cloth and dark outline pixels inside the character silhouettes. Keep the exact same canvas, two square cells, baseline and cell contents. Outside both character silhouettes must be genuinely transparent. Keep body pixels opaque; use natural dark brown or dark green edge pixels. This is a narrowly scoped correction, not a redesign. Remove every vivid red/magenta pixel outside each silhouette and eliminate soft antialiased halos. Preserve natural auburn hair inside the hair silhouette without recoloring it. Retain the two quiet idle poses and clear transparent margin. Avoid any red matte fringe, glow, blur, airbrush, gradient, semi-transparent halo, background fill, checkerboard, crop, resize, reposition, props, extra characters, text, labels or watermark.
+
+輸出及檢視：
+- 第二輪首稿：`D:\dev-data\codex-home\generated_images\01a14b69-4e59-7f90-8f97-3b6ab315d981\exec-3c61c377-0e6d-4984-953d-423277558627.png`
+- 第二輪修正版：`D:\dev-data\codex-home\generated_images\01a14b69-4e59-7f90-8f97-3b6ab315d981\exec-469fb1cf-d92e-4dfe-b869-70b93cd760a2.png`
+- 專案來源圖：`art-source/actors/npcs/merchant/merchant-idle-attempt-03.png`、`merchant-idle-attempt-04.png`；兩張均為1774×887，2×1格、四角 alpha 均為0。人物身份、姿勢及基線可辨，但修正版仍有明顯紅色外緣像素及柔化陰影，未達清晰硬邊像素風格；不複製至 runtime，也不新增 manifest entry。第二輪後依每項最多一次新生成及一次局部修正的限制停止。
 
 ## 晨露 (`actor:healer`, `npc:healer:idle`)
 
