@@ -199,9 +199,13 @@ export function stepGameplay(
   }
 
   gameplay = cloneGameplay(gameplay);
+  if (gameplay.saveData.player.hp <= 0) {
+    clearCombatForActors(gameplay, new Set([gameplay.playerEntityId]));
+  }
   if (gameplay.pendingTransition) return { gameplay, screen: 'loading' };
   let openPanel: PanelId | undefined;
   for (const command of commands) {
+    if (gameplay.saveData.player.hp <= 0 && command.type !== 'respawn') continue;
     const processed = processCommand(gameplay, command, input);
     gameplay = processed.gameplay;
     if (processed.screen) screen = processed.screen;
@@ -309,13 +313,11 @@ export function stepGameplay(
     if (dead) applyDeathEvent(gameplay, dead, catalog, input.nowMs, input.random, input.nextEntityId);
   }
 
-  const deadIds = new Set(gameplay.monsters.filter(({ mode }) => mode === 'dead').map(({ id }) => id));
-  gameplay.combat = {
-    attacks: gameplay.combat.attacks.filter(({ sourceId }) => !deadIds.has(sourceId)),
-    cooldowns: Object.fromEntries(Object.entries(gameplay.combat.cooldowns)
-      .filter(([actorId]) => !deadIds.has(actorId))
-      .map(([actorId, cooldowns]) => [actorId, { ...cooldowns }])),
-  };
+  const combatSourcesToClear = new Set(gameplay.monsters
+    .filter(({ mode }) => mode === 'dead')
+    .map(({ id }) => id));
+  if (gameplay.saveData.player.hp <= 0) combatSourcesToClear.add(gameplay.playerEntityId);
+  clearCombatForActors(gameplay, combatSourcesToClear);
 
   if (actorStep.respawnRequests.length > 0) {
     const replacements = actorStep.respawnRequests.map((oldId) => {
@@ -333,6 +335,16 @@ export function stepGameplay(
   if (gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
   if (gameplay.bossResult && screen === 'playing') screen = 'result';
   return { gameplay, screen, ...(openPanel ? { openPanel } : {}) };
+}
+
+function clearCombatForActors(gameplay: GameplayState, actorIds: ReadonlySet<EntityId>): void {
+  if (actorIds.size === 0) return;
+  gameplay.combat = {
+    attacks: gameplay.combat.attacks.filter(({ sourceId }) => !actorIds.has(sourceId)),
+    cooldowns: Object.fromEntries(Object.entries(gameplay.combat.cooldowns)
+      .filter(([actorId]) => !actorIds.has(actorId))
+      .map(([actorId, cooldowns]) => [actorId, { ...cooldowns }])),
+  };
 }
 
 export function makeWorldSnapshot(

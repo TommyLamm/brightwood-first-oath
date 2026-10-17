@@ -89,6 +89,22 @@ describe('app gameplay vertical slice', () => {
     const firstCommand: GameCommand = { seq: 1, type: 'attack', payload: { skillId: 'basic' } };
     const random = createSeededRandom(1234);
     let nowMs = 1000;
+    gameplay.combat = {
+      attacks: [...gameplay.combat.attacks, {
+        id: nextEntityId(),
+        sourceId: target.id,
+        skillId: 'enemy-melee',
+        startedAtMs: nowMs + 10_000,
+        facing: target.movement.facing,
+        origin: { x: -1000, y: 0 },
+        rank: 1,
+        hitIds: [],
+      }],
+      cooldowns: {
+        ...gameplay.combat.cooldowns,
+        [target.id]: { 'enemy-melee': nowMs + 12_000 },
+      },
+    };
     const firstStep = stepGameplay(gameplay, {
       catalog,
       commands: [firstCommand],
@@ -117,6 +133,8 @@ describe('app gameplay vertical slice', () => {
 
     expect(gameplay.movement.position.x).toBeGreaterThan(150);
     expect(gameplay.monsters.find(({ id }) => id === target.id)?.mode).toBe('dead');
+    expect(gameplay.combat.attacks.some(({ sourceId }) => sourceId === target.id)).toBe(false);
+    expect(gameplay.combat.cooldowns[target.id]).toBeUndefined();
     expect(gameplay.saveData.player.exp).toBe(20);
     expect(gameplay.saveData.quests.q01?.counters.snail).toBe(1);
     expect(gameplay.drops.some(({ coins }) => coins === 5)).toBe(true);
@@ -140,6 +158,100 @@ describe('app gameplay vertical slice', () => {
     const snapshot = makeWorldSnapshot(gameplay, catalog, nowMs);
     expect(snapshot.mapId).toBe('camp');
     expect(snapshot.monsters).toHaveLength(1);
+  });
+
+  it('clears player attack state immediately on lethal damage and resets remaining combat on respawn', () => {
+    const nextEntityId = createNextEntityId('player-death-combat-cleanup');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+
+    const gameplay = started.gameplay;
+    const enemy = gameplay.monsters[0];
+    if (!enemy) throw new Error('Expected the camp snail spawn.');
+    gameplay.saveData.player = { ...gameplay.saveData.player, hp: 1 };
+    gameplay.movement = { ...gameplay.movement, facing: 1 };
+    const playerPosition = { ...gameplay.movement.position };
+    const nowMs = 1370;
+    gameplay.monsters[0] = {
+      ...enemy,
+      mode: 'recovery',
+      pendingSkillId: 'enemy-melee',
+      lastAttackAtMs: 1000,
+      attackOrigin: { x: playerPosition.x - 30, y: playerPosition.y },
+      attackFacing: 1,
+      movement: {
+        ...enemy.movement,
+        position: { x: playerPosition.x - 30, y: playerPosition.y },
+        velocity: { x: 0, y: 0 },
+      },
+    };
+
+    gameplay.combat = {
+      attacks: [
+        {
+          id: nextEntityId(),
+          sourceId: gameplay.playerEntityId,
+          skillId: 'basic',
+          startedAtMs: nowMs + 1000,
+          facing: 1,
+          origin: playerPosition,
+          rank: 1,
+          hitIds: [],
+        },
+        {
+          id: nextEntityId(),
+          sourceId: enemy.id,
+          skillId: 'enemy-melee',
+          startedAtMs: 1000,
+          facing: 1,
+          origin: { x: playerPosition.x - 30, y: playerPosition.y },
+          rank: 1,
+          hitIds: [],
+        },
+      ],
+      cooldowns: {
+        [gameplay.playerEntityId]: { basic: nowMs + 1000 },
+        [enemy.id]: { 'enemy-melee': nowMs + 1000 },
+      },
+    };
+
+    const death = stepGameplay(gameplay, {
+      catalog,
+      commands: [],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0.04,
+      nowMs,
+      random: createSeededRandom(99),
+      nextEntityId,
+    });
+
+    expect(death.screen).toBe('dead');
+    expect(death.gameplay?.saveData.player.hp).toBe(0);
+    expect(death.gameplay?.combat.attacks.some(({ sourceId }) => sourceId === gameplay.playerEntityId)).toBe(false);
+    expect(death.gameplay?.combat.cooldowns[gameplay.playerEntityId]).toBeUndefined();
+    expect(death.gameplay?.combat.attacks.some(({ sourceId }) => sourceId === enemy.id)).toBe(true);
+    expect(death.gameplay?.combat.cooldowns[enemy.id]).toBeDefined();
+
+    const deadFollowUp = stepGameplay(death.gameplay!, {
+      catalog,
+      commands: [{ seq: 2, type: 'attack', payload: { skillId: 'basic' } }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs: nowMs + 1,
+      random: createSeededRandom(100),
+      nextEntityId,
+    });
+    expect(deadFollowUp.screen).toBe('dead');
+    expect(deadFollowUp.gameplay?.combat.attacks.some(({ sourceId }) => sourceId === gameplay.playerEntityId)).toBe(false);
+    expect(deadFollowUp.gameplay?.combat.cooldowns[gameplay.playerEntityId]).toBeUndefined();
+    expect(deadFollowUp.gameplay?.combat.attacks.some(({ sourceId }) => sourceId === enemy.id)).toBe(true);
+    expect(deadFollowUp.gameplay?.combat.cooldowns[enemy.id]).toBeDefined();
+
+    const deadGameplay = deadFollowUp.gameplay!;
+    deadGameplay.pendingTransition = { mapId: 'camp', spawnId: 'start', after: 'respawn' };
+    const respawned = completeMapTransition(deadGameplay, catalog, nextEntityId, nowMs + 1000);
+    expect(respawned.gameplay?.saveData.player.hp).toBeGreaterThan(0);
+    expect(respawned.gameplay?.combat).toEqual({ attacks: [], cooldowns: {} });
   });
 
   it('does not spend cooldown when an attack fails for insufficient MP', () => {
