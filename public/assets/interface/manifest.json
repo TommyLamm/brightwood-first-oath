@@ -1,0 +1,428 @@
+{
+  "version": 1,
+  "pack": "interface",
+  "images": [
+    {
+      "key": "item:starter-sword",
+      "url": "assets/interface/item-starter-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-sword",
+      "url": "assets/interface/item-iron-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:steel-sword",
+      "url": "assets/interface/item-steel-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:guardian-sword",
+      "url": "assets/interface/item-guardian-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:cloth-shirt",
+      "url": "assets/interface/item-cloth-shirt-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:leather-vest",
+      "url": "assets/interface/item-leather-vest-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-mail",
+      "url": "assets/interface/item-iron-mail-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:cloth-cap",
+      "url": "assets/interface/item-cloth-cap-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:leather-cap",
+      "url": "assets/interface/item-leather-cap-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-helm",
+      "url": "assets/interface/item-iron-helm-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:small-red",
+      "url": "assets/interface/item-small-red-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:large-red",
+      "url": "assets/interface/item-large-red-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:small-blue",
+      "url": "assets/interface/item-small-blue-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:large-blue",
+      "url": "assets/interface/item-large-blue-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:snail-shell",
+      "url": "assets/interface/item-snail-shell-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:slime-gel",
+      "url": "assets/interface/item-slime-gel-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:mushroom-cap",
+      "url": "assets/interface/item-mushroom-cap-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:boar-tusk",
+      "url": "assets/interface/item-boar-tusk-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:stone-chip",
+      "url": "assets/interface/item-stone-chip-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:metal-shard",
+      "url": "assets/interface/item-metal-shard-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:forest-seed",
+      "url": "assets/interface/item-forest-seed-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:spore-sample",
+      "url": "assets/interface/item-spore-sample-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:ridge-emblem",
+      "url": "assets/interface/item-ridge-emblem-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:guardian-core",
+      "url": "assets/interface/item-guardian-core-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:heavy-strike",
+      "url": "assets/interface/skill-heavy-strike-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:sweep",
+      "url": "assets/interface/skill-sweep-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:iron-guard",
+      "url": "assets/interface/skill-iron-guard-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:vitality",
+      "url": "assets/interface/skill-vitality-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rest-recovery",
+      "url": "assets/interface/skill-rest-recovery-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "marker:quest",
+      "url": "assets/interface/marker-quest-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "marker:portal",
+      "url": "assets/interface/marker-portal-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "marker:shop",
+      "url": "assets/interface/marker-shop-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "marker:player",
+      "url": "assets/interface/marker-player-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "panel:frame",
+      "url": "assets/interface/panel-frame-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 224,
+      "displayHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "button:normal",
+      "url": "assets/interface/button-normal-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "button:hover",
+      "url": "assets/interface/button-hover-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "button:pressed",
+      "url": "assets/interface/button-pressed-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "bar:hp",
+      "url": "assets/interface/bar-hp-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "bar:mp",
+      "url": "assets/interface/bar-mp-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "bar:exp",
+      "url": "assets/interface/bar-exp-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 60,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "slot:normal",
+      "url": "assets/interface/slot-normal-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 48,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "slot:selected",
+      "url": "assets/interface/slot-selected-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 48,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    }
+  ],
+  "animations": [],
+  "audio": []
+}
