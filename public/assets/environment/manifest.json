@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "pack": "environment",
+  "images": [
+    {
+      "key": "env:camp:sky",
+      "url": "assets/environment/env-camp-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:camp:far",
+      "url": "assets/environment/env-camp-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:camp:mid",
+      "url": "assets/environment/env-camp-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:sky",
+      "url": "assets/environment/env-town-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:far",
+      "url": "assets/environment/env-town-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:mid",
+      "url": "assets/environment/env-town-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:sky",
+      "url": "assets/environment/env-forest-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:far",
+      "url": "assets/environment/env-forest-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:mid",
+      "url": "assets/environment/env-forest-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:sky",
+      "url": "assets/environment/env-rock-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:far",
+      "url": "assets/environment/env-rock-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:mid",
+      "url": "assets/environment/env-rock-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ladder",
+      "url": "assets/environment/env-ladder-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "env:portal",
+      "url": "assets/environment/env-portal-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:town-sign",
+      "url": "assets/environment/env-town-sign-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:mine-door",
+      "url": "assets/environment/env-mine-door-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 160,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:altar",
+      "url": "assets/environment/env-altar-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 112,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    }
+  ],
+  "animations": [],
+  "audio": []
+}
