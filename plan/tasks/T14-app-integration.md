@@ -24,7 +24,7 @@
 - [x] T14-13 NPC近64px按Space互動，mentor/guide/keeper開任務對話，merchant開shop，healer直接免費restore滿並顯對話；portal與NPC同時近時優先NPC，否則portal。
 - [x] T14-14 接T05 accept／planClaim，clone上移除consume、給reward、補級及轉職，成功才commit nextQuests；q02先補10再轉職，只有一次SP，q08提交chapterComplete。
 - [x] T14-15 傳點按08gate檢查，loadMap先完成再交換state，清舊怪／攻擊／drops／buff? buff切圖保留剩餘game time，玩家死亡才清；成功套spawn、visited、reach與checkpoint。
-- [x] T14-16 returnTown無費、野外 playing 可由 snapshot 啟用；arena boss 未結束時 snapshot 禁用並顯示原因、app lifecycle 保留 domain 鎖；死亡screen提供respawn，回安全地點滿HP/MP、無懲罰，清攻擊／buff。retryBoss回arena/entry並重建boss，舊telegraph全部清。
+- [x] T14-16 returnTown無費、野外 playing 可由 snapshot 啟用；arena boss 未結束時 snapshot 禁用並顯示原因、app lifecycle 保留 domain 鎖；死亡時立即清玩家自有攻擊／cooldown，敵方攻擊保留至成功respawn；成功地圖轉換重置combat與drops，respawn回安全地點滿HP/MP、無懲罰並清buff。retryBoss回arena/entry並重建boss，舊telegraph全部清。
 - [x] T14-17 boss死亡顯戰鬥結算／再挑戰／回城，q08交keeper後顯章節結算；可繼續探索，不誤把bossDefeated當全任務完成。
 - [x] T14-18 休息恢復按08：三秒未攻擊未受傷才每兩秒regen，pause不前進；復活／切圖重置待恢復計時，無rank不恢復。
 

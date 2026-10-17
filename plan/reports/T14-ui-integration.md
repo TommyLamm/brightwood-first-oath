@@ -45,3 +45,9 @@ createUi(root: HTMLElement, dispatch: (command: CommandDraft) => void): UiContro
   ```
 
 No full test suite, production build, browser/rendering pass, route playthrough, asset/audio validation, Playroom package validation, release, or publication was run. T14-22 asset/audio completion and T14-25 full-route acceptance remain open as recorded in the main T14 report.
+
+## Death combat cleanup follow-up
+
+The death path now preserves the combat ownership boundary: when HP reaches zero, player-owned attacks and cooldowns are cleared in that same gameplay step while enemy-owned attacks and cooldowns remain in the dead state. While dead, only the `respawn` command is accepted, preventing a queued player action from recreating combat state. A successful respawn/map transition rebuilds combat state and clears old map-owned combat; respawn also clears the guard buff.
+
+The focused integration case covers lethal damage, an attempted attack on a later dead tick, enemy attack/cooldown retention, and cleanup after respawn. Before this follow-up, the supplied focused run was reported as 2 passed / 9 skipped and scoped strict TypeScript passed; these passing checks were not rerun. The supplied full `app-gameplay` run was 10 passed / 1 failed: `rest-recovery` expected 72 HP but received 70. The cause of that mismatch is unverified, so it is not characterized as pre-existing. No functional verification was run after this follow-up; only the scoped diff/whitespace check was planned. T14-22 asset/audio completion and T14-25 full-route acceptance remain open.
