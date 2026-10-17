@@ -43,6 +43,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     private rendererReady = false;
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
+    private loadedWorldRevision = 0;
     private statusText?: Phaser.GameObjects.Text;
 
     constructor() {
@@ -59,6 +60,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       }).setOrigin(0.5);
       const catalog = app.state.catalog;
       const manifests = app.state.assetManifests;
+      this.loadedWorldRevision = app.state.worldRevision;
       if (!catalog || !manifests) {
         app.reportRuntimeIssue('World Scene 缺少已驗證的 catalog、manifest 或 camp map。');
         this.statusText.setText('開發中：遊戲內容尚未完成');
@@ -80,6 +82,12 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       const state = app.state;
       const catalog = state.catalog;
       const gameplay = state.gameplay;
+      if (catalog && gameplay && this.worldRenderer && !gameplay.pendingTransition
+        && state.worldRevision !== this.loadedWorldRevision) {
+        this.loadedWorldRevision = state.worldRevision;
+        const map = catalog.world.maps[gameplay.saveData.location.mapId];
+        if (map) this.loadMapVisual(map, false, app, reportStatus);
+      }
       if (catalog && gameplay?.pendingTransition && this.worldRenderer && !this.transitionKey) {
         const pending = gameplay.pendingTransition;
         const map = catalog.world.maps[pending.mapId];

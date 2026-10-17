@@ -113,6 +113,72 @@ export function startNewGame(
   };
 }
 
+/** Rebuilds runtime-only world state from a validated save without restoring enemies or drops. */
+export function restoreGame(
+  source: SaveData,
+  catalog: ContentCatalog,
+  nextEntityId: () => EntityId,
+): { gameplay: GameplayState; repairedArenaLocation: boolean } {
+  const repairedArenaLocation = source.location.mapId === 'guardian-arena';
+  const requested = repairedArenaLocation
+    ? { mapId: 'mine-gate', spawnId: 'right' }
+    : source.location;
+  const targetMap = catalog.world.maps[requested.mapId] ?? catalog.world.maps.camp;
+  const targetSpawn = targetMap?.spawns.find(({ id }) => id === requested.spawnId)
+    ?? targetMap?.spawns.find(({ id }) => id === 'start')
+    ?? targetMap?.spawns[0];
+  if (!targetMap || !targetSpawn) throw new Error('找不到安全出生地圖或出生點。');
+
+  const saveData: SaveData = {
+    ...source,
+    location: { mapId: targetMap.id, spawnId: targetSpawn.id },
+    visitedMaps: source.visitedMaps.includes(targetMap.id)
+      ? [...source.visitedMaps]
+      : [...source.visitedMaps, targetMap.id],
+    quests: Object.fromEntries(Object.entries(source.quests).map(([id, quest]) => [id, {
+      ...quest,
+      counters: { ...quest.counters },
+    }])),
+    player: {
+      ...source.player,
+      bag: source.player.bag.map((stack) => ({ ...stack })),
+      equipment: { ...source.player.equipment },
+      skillRanks: { ...source.player.skillRanks },
+    },
+    flags: { ...source.flags },
+    settings: { ...source.settings, bindings: { ...source.settings.bindings } },
+  };
+  const playerEntityId = nextEntityId();
+  const dead = saveData.player.hp <= 0;
+  return {
+    repairedArenaLocation,
+    gameplay: {
+      saveData,
+      playerEntityId,
+      movement: {
+        ...createMovement({ x: targetSpawn.x, y: targetSpawn.y }),
+        ...(dead ? { mode: 'dead' as const } : {}),
+      },
+      monsters: targetMap.monsters.map((placement) => createMonster(nextEntityId(), placement, targetMap, catalog.rules)),
+      combat: createCombatState(),
+      drops: [],
+      telegraphs: [],
+      effects: [],
+      invulnerableUntilMs: 0,
+      attackOrDamageAtMs: 0,
+      nextRegenAtMs: 0,
+      guardUntilMs: 0,
+      potionReadyAtMs: 0,
+      nextPickupAtMs: 0,
+      bossResult: false,
+      deathAtMs: dead ? 0 : null,
+      toast: repairedArenaLocation ? '首領戰進度已安全返回礦道入口。' : null,
+      interaction: null,
+      pendingTransition: null,
+    },
+  };
+}
+
 /** Runs one authoritative gameplay tick in the project-defined order. */
 export function stepGameplay(
   current: GameplayState | null,

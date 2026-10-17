@@ -4,11 +4,35 @@ import { createNextEntityId, createSeededRandom } from '../../src/contracts/help
 import { rulesCatalog } from '../../src/content/rules/index.js';
 import { worldCatalog } from '../../src/content/world/index.js';
 import { acceptQuest } from '../../src/domain/quests/index.js';
-import { completeMapTransition, failMapTransition, makeWorldSnapshot, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
+import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
 describe('app gameplay vertical slice', () => {
+  it('rebuilds runtime actors from a save and moves arena saves to the safe mine entrance', () => {
+    const started = startNewGame('旅人', catalog, createNextEntityId('restore-source'));
+    if ('error' in started) throw new Error(started.error);
+    started.gameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
+    started.gameplay.saveData.flags.bossDefeated = true;
+    started.gameplay.guardUntilMs = 40_000;
+    started.gameplay.drops.push({
+      id: 'transient-drop', itemId: 'snail-shell', quantity: 1, coins: 0,
+      position: { x: 100, y: 100 }, expiresAtMs: 50_000,
+    });
+
+    const restored = restoreGame(started.gameplay.saveData, catalog, createNextEntityId('restore-target'));
+
+    expect(restored.repairedArenaLocation).toBe(true);
+    expect(restored.gameplay.saveData.location).toEqual({ mapId: 'mine-gate', spawnId: 'right' });
+    expect(restored.gameplay.saveData.visitedMaps).toContain('mine-gate');
+    expect(restored.gameplay.monsters.map(({ monsterId }) => monsterId))
+      .toEqual(catalog.world.maps['mine-gate']!.monsters.map(({ monsterId }) => monsterId));
+    expect(new Set(restored.gameplay.monsters.map(({ id }) => id)).size).toBe(restored.gameplay.monsters.length);
+    expect(restored.gameplay.drops).toEqual([]);
+    expect(restored.gameplay.combat.attacks).toEqual([]);
+    expect(restored.gameplay.guardUntilMs).toBe(0);
+  });
+
   it('moves, attacks, and records one death reward and quest event exactly once', () => {
     const nextEntityId = createNextEntityId('integration');
     const started = startNewGame('旅人', catalog, nextEntityId);

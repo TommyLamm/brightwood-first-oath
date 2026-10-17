@@ -23,20 +23,20 @@
 - [x] T14-12 所有AP／SP／消耗／買賣／裝備命令走T04，商店命令需當下merchant互動有效；物品索引來自最新state重新驗證。
 - [x] T14-13 NPC近64px按Space互動，mentor/guide/keeper開任務對話，merchant開shop，healer直接免費restore滿並顯對話；portal與NPC同時近時優先NPC，否則portal。
 - [x] T14-14 接T05 accept／planClaim，clone上移除consume、給reward、補級及轉職，成功才commit nextQuests；q02先補10再轉職，只有一次SP，q08提交chapterComplete。
-- [ ] T14-15 傳點按08gate檢查，loadMap先完成再交換state，清舊怪／攻擊／drops／buff? buff切圖保留剩餘game time，玩家死亡才清；成功套spawn、visited、reach與checkpoint。
+- [x] T14-15 傳點按08gate檢查，loadMap先完成再交換state，清舊怪／攻擊／drops／buff? buff切圖保留剩餘game time，玩家死亡才清；成功套spawn、visited、reach與checkpoint。
 - [x] T14-16 returnTown無費、arena交戰鎖；死亡screen提供respawn，回安全地點滿HP/MP、無懲罰，清攻擊／buff。retryBoss回arena/entry並重建boss，舊telegraph全部清。
 - [x] T14-17 boss死亡顯戰鬥結算／再挑戰／回城，q08交keeper後顯章節結算；可繼續探索，不誤把bossDefeated當全任務完成。
 - [x] T14-18 休息恢復按08：三秒未攻擊未受傷才每兩秒regen，pause不前進；復活／切圖重置待恢復計時，無rank不恢復。
 
 ## T14-c 儲存、正式畫面與主線
 
-- [ ] T14-19 T09 initialize與必要資產載入並行；有現存角色可continue，newGame先確認；cloud載入失敗只能retry或臨時遊玩，不能傳初始資料覆寫。
-- [ ] T14-20 levelup/equip/buy/quest/map/checkpoint事件排存檔，settings也保存；runtimebuff／敵人／掉落不存，arena續玩改mine-gate/right。
-- [ ] T14-21 useCloudVersion先invalidate後initialize並用回來data取代目前world，重建安全場景；playTemporary獨立memory不覆蓋local或cloud。舊async透過token丟棄。
+- [x] T14-19 T09 initialize與必要資產載入並行；有現存角色可continue，newGame先確認；cloud載入失敗只能retry或臨時遊玩，不能傳初始資料覆寫。
+- [x] T14-20 levelup/equip/buy/quest/map/checkpoint事件排存檔，settings也保存；runtimebuff／敵人／掉落不存，arena續玩改mine-gate/right。
+- [x] T14-21 useCloudVersion先invalidate後initialize並用回來data取代目前world，重建安全場景；playTemporary獨立memory不覆蓋local或cloud。舊async透過token丟棄。
 - [ ] T14-22 裝正式T10/T11/T12素材與T13音訊；首次手勢unlock，事件id音畫只播一次；沒有素材不能把灰盒標候選完成。
-- [ ] T14-23 完成UI每個命令的真實處理與錯誤toast，stats／quests／inventory／saveStatus由snapshot更新，無按鈕只跳console。
+- [x] T14-23 完成UI每個命令的真實處理與錯誤toast，stats／quests／inventory／saveStatus由snapshot更新，無按鈕只跳console。
 - [x] T14-24 做一條跨模組focused檢查：MP失敗不吃冷卻、滿袋claim不扣任務物、死亡只發一次、loadError不checkpoint。可寫小型integration test，不鏡像全部單元測試。
 - [ ] T14-25 一次完整路線試玩／節奏記錄，若有阻塞先修；時長偏離僅集中調08/T01經驗／目標量，通知相關包。不為補滿45分加入無聊等待。
-- [ ] T14-26 report列實際入口、完整／未完成系統、接線例與真實檢查，交T15封面／成品，交T16最終驗收。
+- [x] T14-26 report列實際入口、完整／未完成系統、接線例與真實檢查，交T15封面／成品，交T16最終驗收。
 
-完成：45–60分目標的完整劍士主線、開始結束／繼續重試、死亡恢復、正式視聽與存檔接合。只有程式啟動或一張打怪圖不算完成；外部平台未驗證須獨立列出。
+本包接線階段完成：開始／繼續／覆蓋確認、存檔重試與雲端衝突重載、暫時遊玩、UI 命令、地圖 checkpoint 均已接入；T14-22 正式素材與音訊整合受缺少完整資產包阻擋，T14-25 完整路線試玩未執行。未達完整主線候選完成條件，詳見 `plan/reports/T14.md`。

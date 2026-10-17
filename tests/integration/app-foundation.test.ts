@@ -118,7 +118,7 @@ describe('T14-a app foundation', () => {
     expect(result.status).toBe('incomplete');
     expect(result.issues).toHaveLength(4);
     expect(app.state.screen).toBe('error');
-    expect(app.state.catalog).toBeNull();
+    expect(app.state.catalog).not.toBeNull();
     expect(app.state.assetManifests).toBeNull();
     app.dispose();
   });

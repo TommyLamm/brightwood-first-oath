@@ -15,6 +15,7 @@ export type GameAppState = {
   panels: PanelId[];
   windowFocused: boolean;
   gameTimeMs: number;
+  worldRevision: number;
   startupStatus: StartupStatus;
   startupIssues: string[];
   catalog: ContentCatalog | null;
@@ -38,6 +39,7 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
     panels: [],
     windowFocused: true,
     gameTimeMs: 0,
+    worldRevision: 0,
     startupStatus: 'loading',
     startupIssues: [],
     catalog: null,

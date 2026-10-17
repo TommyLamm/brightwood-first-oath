@@ -25,5 +25,5 @@ export type { AppUiController, RootStatusView } from './root-ui.js';
 export { appCommand, createInitialAppState, worldIsFrozen } from './state.js';
 export { createUiSnapshot } from './state.js';
 export type { AppCommandResult, GameAppState, StartupStatus } from './state.js';
-export { completeMapTransition, failMapTransition, makeWorldSnapshot, startNewGame, stepGameplay } from './gameplay.js';
+export { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from './gameplay.js';
 export type { GameplayState, GameplayStepInput, GameplayStepResult } from './gameplay.js';

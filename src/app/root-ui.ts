@@ -67,6 +67,7 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
   nameInput.maxLength = 16;
   nameInput.placeholder = '角色名稱';
   nameInput.value = '旅人';
+  nameInput.setAttribute('aria-label', '角色名稱');
   for (const element of [hud, actions, details]) {
     Object.assign(element.style, {
       display: 'flex',
@@ -86,11 +87,26 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
   container.append(hud, actions, details);
   root.append(container);
   let currentView: UiSnapshot | null = null;
+  let lastRenderSignature = '';
 
   const dispatchPanel = (panel: PanelId): void => dispatch({ type: 'setPanel', payload: { panel } });
 
   const render = (view: UiSnapshot): void => {
     currentView = view;
+    const signature = JSON.stringify({
+      screen: view.screen,
+      error: view.error,
+      saveData: view.saveData,
+      stats: view.stats,
+      questViews: view.questViews,
+      saveStatus: view.saveStatus,
+      toast: view.toast,
+      panels: view.panels,
+      interaction: view.interaction,
+      canReturnTown: view.canReturnTown,
+    });
+    if (signature === lastRenderSignature) return;
+    lastRenderSignature = signature;
     hud.replaceChildren();
     actions.replaceChildren();
     details.replaceChildren();
@@ -105,16 +121,49 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
       hud.append(label);
     }
 
-    if (view.screen === 'title' || view.screen === 'create') {
-      actions.append(nameInput);
-      appendButton(actions, '開始新遊戲', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
-      appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }));
-      appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
+    if (view.screen === 'title') {
+      if (view.saveData) {
+        actions.append(nameInput);
+        appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }));
+        if (['ready', 'saved', 'localSaved', 'previewOnly'].includes(view.saveStatus)) {
+          appendButton(actions, '建立新角色', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+        }
+      } else if (view.saveStatus === 'loadError' || view.saveStatus === 'incompatible' || view.saveStatus === 'unavailable') {
+        appendButton(actions, '重試讀取存檔', () => dispatch({ type: 'retrySave', payload: {} }));
+        if (!view.error) appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
+      } else {
+        actions.append(nameInput);
+        appendButton(actions, '開始新遊戲', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+        appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
+        appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }), true);
+      }
     }
-    if (player) {
+    if (view.screen === 'create') {
+      actions.append(nameInput);
+      appendButton(actions, view.saveData ? '確認取代並建立' : '確認建立角色', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+      appendButton(actions, '取消', () => dispatch({ type: 'returnTitle', payload: {} }));
+    }
+    if (player && (view.screen === 'playing' || view.screen === 'paused' || view.screen === 'dead' || view.screen === 'result')) {
       for (const panel of ['inventory', 'equipment', 'skills', 'stats', 'quests', 'map', 'settings'] as const) {
         appendButton(actions, panelTitle(panel), () => dispatchPanel(panel));
       }
+      appendButton(actions, '普通攻擊', () => dispatch({ type: 'attack', payload: { skillId: 'basic' } }));
+      for (const skillId of ['heavy-strike', 'sweep', 'iron-guard'] as const) {
+        if ((player.skillRanks[skillId] ?? 0) > 0) {
+          const skill = view.catalog.rules.skills[skillId];
+          appendButton(actions, skill?.name ?? skillId, () => dispatch({ type: 'attack', payload: { skillId } }));
+        }
+      }
+      if (player.bag.some(({ itemId }) => itemId === 'small-red')) {
+        appendButton(actions, '紅水', () => dispatch({ type: 'useItem', payload: { itemId: 'small-red' } }));
+      }
+      if (player.bag.some(({ itemId }) => itemId === 'small-blue')) {
+        appendButton(actions, '藍水', () => dispatch({ type: 'useItem', payload: { itemId: 'small-blue' } }));
+      }
+      appendButton(actions, '拾取', () => dispatch({ type: 'pickup', payload: {} }));
+      appendButton(actions, '互動', () => dispatch({ type: 'interact', payload: {} }));
+      if (view.screen === 'playing') appendButton(actions, '暫停', () => dispatch({ type: 'togglePause', payload: {} }));
+      appendButton(actions, '返回標題', () => dispatch({ type: 'returnTitle', payload: {} }));
     }
     if (view.screen === 'paused') appendButton(actions, '繼續', () => dispatch({ type: 'togglePause', payload: {} }));
     if (view.screen === 'dead') appendButton(actions, '返回安全地點', () => dispatch({ type: 'respawn', payload: {} }));
@@ -124,8 +173,17 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
     }
 
     const status = document.createElement('span');
-    status.textContent = `存檔：${view.saveStatus}${view.toast ? `｜${view.toast}` : ''}`;
+    status.textContent = `存檔：${saveStatusLabel(view.saveStatus)}${view.toast ? `｜${view.toast}` : ''}`;
     details.append(status);
+    if (!view.error && (view.saveStatus === 'saveError' || view.saveStatus === 'loadError' || view.saveStatus === 'unavailable')) {
+      appendButton(details, '重試存檔', () => dispatch({ type: 'retrySave', payload: {} }));
+    }
+    if ((view.saveStatus === 'loadError' || view.saveStatus === 'unavailable') && !view.error) {
+      appendButton(details, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
+    }
+    if (view.saveStatus === 'conflict') {
+      appendButton(details, '載入雲端版本', () => dispatch({ type: 'useCloudVersion', payload: {} }));
+    }
     if (view.interaction) {
       const dialogue = document.createElement('p');
       dialogue.textContent = view.interaction.dialogue.join(' ');
@@ -150,6 +208,23 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
   };
 }
 
+function saveStatusLabel(status: UiSnapshot['saveStatus']): string {
+  return {
+    unavailable: '不可用',
+    loading: '載入中',
+    ready: '就緒',
+    saving: '保存中',
+    saved: '雲端已保存',
+    localSaved: '本機已保存',
+    previewOnly: '預覽暫存，未保存至正式帳號',
+    loadError: '讀取失敗',
+    saveError: '保存失敗',
+    conflict: '其他裝置已有更新',
+    authLost: '登入狀態失效',
+    incompatible: '存檔格式不相容',
+  }[status];
+}
+
 function renderPanel(
   details: HTMLElement,
   view: UiSnapshot,
@@ -163,13 +238,47 @@ function renderPanel(
   appendButton(details, '關閉', () => dispatch({ type: 'closePanel', payload: {} }));
   const content = document.createElement('p');
   if (panel === 'inventory' && view.saveData) {
-    content.textContent = view.saveData.player.bag.map(({ itemId, quantity }) => `${itemId} ×${quantity}`).join('、') || '背包是空的。';
+    const bag = view.saveData.player.bag;
+    if (bag.length === 0) content.textContent = '背包是空的。';
+    else {
+      content.textContent = '';
+      bag.forEach(({ itemId, quantity }, bagIndex) => {
+        const item = view.catalog.rules.items[itemId];
+        const line = document.createElement('span');
+        line.textContent = `${item?.name ?? itemId} ×${quantity}`;
+        details.append(line);
+        if (item?.kind === 'consumable') {
+          appendButton(details, '使用', () => dispatch({ type: 'useItem', payload: { itemId } }));
+        }
+        if (item?.slot) appendButton(details, '裝備', () => dispatch({ type: 'equip', payload: { bagIndex } }));
+        if (item?.kind !== 'quest') appendButton(details, '出售 1 個', () => dispatch({ type: 'sell', payload: { bagIndex, quantity: 1 } }));
+      });
+    }
   } else if (panel === 'equipment' && view.saveData) {
     const equipment = view.saveData.player.equipment;
     content.textContent = `武器：${equipment.weapon ?? '無'}｜身體：${equipment.body ?? '無'}｜帽子：${equipment.hat ?? '無'}`;
+    for (const slot of ['weapon', 'body', 'hat'] as const) {
+      if (equipment[slot]) appendButton(details, `卸下${slotLabel(slot)}`, () => dispatch({ type: 'unequip', payload: { slot } }));
+    }
   } else if (panel === 'stats' && view.stats && view.saveData) {
     const player = view.saveData.player;
     content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜楓幣 ${player.coins}`;
+    content.textContent += `｜可用 AP ${player.ap}｜SP ${player.sp}`;
+    if (player.ap > 0) {
+      appendButton(details, 'STR +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'str', amount: 1 } }));
+      appendButton(details, 'DEX +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'dex', amount: 1 } }));
+    }
+  } else if (panel === 'skills' && view.saveData) {
+    content.textContent = '';
+    for (const skill of Object.values(view.catalog.rules.skills).filter((entry) => entry.requiredJob !== 'enemy' && entry.id !== 'basic')) {
+      const rank = view.saveData.player.skillRanks[skill.id] ?? 0;
+      const line = document.createElement('span');
+      line.textContent = `${skill.name} Rank ${rank}/${skill.maxRank}｜需求 Lv.${skill.requiredLevel} ${skill.requiredJob}｜MP ${skill.mpCost}`;
+      details.append(line);
+      if (rank < skill.maxRank && view.saveData.player.sp > 0) {
+        appendButton(details, '學習', () => dispatch({ type: 'learnSkill', payload: { skillId: skill.id } }));
+      }
+    }
   } else if (panel === 'quests') {
     const questViews = view.questViews;
     if (questViews.length === 0) {
@@ -178,7 +287,8 @@ function renderPanel(
       content.textContent = '';
       for (const quest of questViews) {
         const line = document.createElement('span');
-        line.textContent = `${quest.title}：${quest.status}`;
+        const objectives = quest.objectives.map((objective) => `${objective.targetId} ${objective.current}/${objective.required}`).join('、');
+        line.textContent = `${quest.title}：${quest.status}${objectives ? `｜${objectives}` : ''}`;
         details.append(line);
         if (quest.status === 'available') {
           appendButton(details, '接取', () => dispatch({ type: 'acceptQuest', payload: { questId: quest.questId } }));
@@ -189,18 +299,49 @@ function renderPanel(
     }
   } else if (panel === 'map' && view.saveData) {
     content.textContent = `目前位置：${view.saveData.location.mapId}/${view.saveData.location.spawnId}`;
+    content.textContent += `｜已探索：${view.saveData.visitedMaps.map((mapId) => view.catalog.world.maps[mapId]?.name ?? mapId).join('、')}`;
+    appendButton(details, '返回城鎮', () => dispatch({ type: 'returnTown', payload: {} }));
+  } else if (panel === 'shop' && view.saveData) {
+    content.textContent = `${view.interaction?.dialogue.join(' ') ?? '選擇要購買的物品。'}｜楓幣 ${view.saveData.player.coins}`;
+    for (const item of Object.values(view.catalog.rules.items).filter((entry) => entry.buyPrice > 0 && entry.kind !== 'quest')) {
+      const line = document.createElement('span');
+      line.textContent = `${item.name}｜${item.buyPrice} 楓幣`;
+      details.append(line);
+      appendButton(details, '購買 1 個', () => dispatch({ type: 'buy', payload: { itemId: item.id, quantity: 1 } }));
+    }
   } else if (panel === 'settings' && view.saveData) {
     content.textContent = `音量 ${Math.round(view.saveData.settings.masterVolume * 100)}%｜${view.saveData.settings.muted ? '靜音' : '開啟音效'}`;
     appendButton(details, view.saveData.settings.muted ? '開啟音效' : '靜音', () => dispatch({
       type: 'setSettings',
       payload: { settings: { ...view.saveData!.settings, muted: !view.saveData!.settings.muted } },
     }));
+    for (const channel of ['masterVolume', 'musicVolume', 'sfxVolume'] as const) {
+      const label = document.createElement('label');
+      label.textContent = channel === 'masterVolume' ? '總音量' : channel === 'musicVolume' ? '音樂' : '音效';
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = '0';
+      slider.max = '1';
+      slider.step = '0.05';
+      slider.value = String(view.saveData.settings[channel]);
+      slider.setAttribute('aria-label', label.textContent);
+      slider.addEventListener('change', () => dispatch({
+        type: 'setSettings',
+        payload: { settings: { ...view.saveData!.settings, [channel]: Number(slider.value) } },
+      }));
+      label.append(slider);
+      details.append(label);
+    }
   } else if (panel === 'dialogue' && view.interaction) {
     content.textContent = view.interaction.dialogue.join(' ');
   } else {
     content.textContent = '目前沒有可顯示的內容。';
   }
   details.append(content);
+}
+
+function slotLabel(slot: 'weapon' | 'body' | 'hat'): string {
+  return { weapon: '武器', body: '身體', hat: '帽子' }[slot];
 }
 
 /** Minimal accessible development status surface until the T08 UI is connected. */
@@ -245,8 +386,8 @@ export function createRootStatusView(root: HTMLElement): RootStatusView {
         heading.textContent = '開發中：目前內容尚未完成';
         body.textContent = state.startupIssues.join('\n');
       } else {
-        heading.textContent = '內容目錄與資產清單已就緒';
-        body.textContent = '目前只核對 catalog 與 manifest；實際圖像／音訊載入、核心玩法與可玩流程尚未接線。';
+        panel.hidden = true;
+        return;
       }
       panel.hidden = false;
     },
