@@ -137,3 +137,53 @@
 - 一次修正版：`D:\dev-data\codex-home\generated_images\01a14a6f-0f39-7a42-98c8-ee8fcec1968c\exec-bf9e9813-3407-4d87-8151-709f216b3e23.png`
 - 專案原稿：`art-source/actors/monsters/guardian/guardian-atlas-attempt-01.png`、`art-source/actors/monsters/guardian/guardian-atlas-attempt-02.png`
 - 尺寸皆 1374×1145、格數可整除 6×5。抽樣鮮紅色像素 alpha>32 的數量由首稿29增至修正版65（每3像素抽一點），修正後仍有可見殘邊，故不入遊戲。
+
+## Recovery round 2026-10-18: snail, mushroom, boar
+
+All six outputs were generated with built-in ImageGen using `transparent_background: true` and the required local protagonist style reference. Their original output files are in `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509`; the project source copies listed below are unchanged copies of those outputs.
+
+Each new attempt and one targeted repair used built-in ImageGen, `transparent_background: true`, and the explicit local style reference `F:/Desktop/MapleStory/art-source/actors/hero-style-reference-v1.png`. Each source output is copied unchanged under its species directory. All candidates have the required 6×5 dimensions (1374×1145 RGBA); none passed alpha-edge review because visible red/yellow fringe persisted after repair. No runtime files or manifest entries were created.
+
+| Asset | Attempt output / project copy | Repair output / project copy | Sampled alpha 0 / partial / 255 (attempt → repair) | Red-dominant samples (attempt → repair) | Result |
+| --- | --- | --- | --- | --- | --- |
+| snail | `exec-3b41e6d9-11b3-4625-a623-ecfb1301c5aa.png` / `snail/snail-atlas-attempt-03.png` | `exec-307f8cfb-a2cb-476c-b1b4-7b31dc70489f.png` / `snail/snail-atlas-attempt-04.png` | 12,926 / 11,827 / 15 → 12,879 / 11,881 / 8 | 4,067 → 4,350 | UNFINISHED; visible bright edge contamination |
+| mushroom | `exec-66c89898-c63b-4c5c-90db-50a13eb4b8d9.png` / `mushroom/mushroom-atlas-attempt-03.png` | `exec-b3ee9fd7-78b1-4186-b66c-d63cc81ffcf4.png` / `mushroom/mushroom-atlas-attempt-04.png` | 13,926 / 10,821 / 21 → 13,981 / 10,744 / 43 | 5,505 → 5,678 | UNFINISHED; visible bright edge contamination |
+| boar | `exec-2c000264-82dd-4b21-84e2-f49e4571fa78.png` / `boar/boar-atlas-attempt-03.png` | `exec-1036391f-2d92-4e9e-9f2e-9608948e80aa.png` / `boar/boar-atlas-attempt-04.png` | 12,023 / 12,728 / 17 → 12,264 / 12,466 / 38 | 9,836 → 10,139 | UNFINISHED; visible bright edge contamination |
+
+Alpha categories and red-dominant pixels were sampled every 8 px (24,768 samples per image). Red-dominant means sampled R > 1.5×G and R > 1.5×B with A > 0; this is an indicator only, and the rejection is based on direct visual inspection as well. All three targeted repairs retained or increased sampled red fringe, so no more retries were made.
+
+### snail generation prompt
+
+```text
+Use case: stylized-concept. Asset type: production enemy sprite atlas for a 2D side-view pixel-art game. Input image 1 is a local style reference only: match its warm illustrated pixel-art palette, clean 2D character scale, and crisp rendering; do not include the human character. Primary request: one original small moss-shell snail creature, clearly readable side-on, round teal-green body, large gentle eye stalks, one warm brown spiral shell with pale cream rim and a few moss patches. Canvas exactly 1536x1280 px, strict uniform 6 columns x 5 rows of 256x256 px cells, transparent background, no outer margins/gaps/grid marks. One complete snail per cell, all cells same character design and scale, ground/foot baseline consistent at cell y=232. Row order top to bottom: idle, walk, attack, hurt, dead. Useful poses: idle 2, walk 6, attack 4, hurt 2, dead 4; unused cells repeat that row's final useful pose. Attacks show a clear short forward body lunge; hurt recoils; dead lies still. Keep entire creature inside each cell with no overlap. Crisp pixel-sprite illustration, hard clean alpha edges. Constraints: exact grid and canvas dimensions, transparent pixels outside character, no red/yellow fringe, no glow or soft alpha shadows, no background, floor, text, label, watermark, logo, props, border or extra creatures.
+```
+
+Snail repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent sprite atlas cleanup. Input image 1 is the exact six-column by five-row snail atlas. Change ONLY the visible bright red and yellow stray pixels/edge contamination around the shell, body, and ground line, removing the fringe cleanly with fully transparent outside pixels and crisp hard sprite edges. Keep the snail artwork, pose sequence, positions, all 30 cells, dimensions, grid, baseline, colors and details exactly unchanged. Preserve the transparent background and exact canvas size. Do not redraw, crop, scale, shift, add or remove creature details. No background, shadows, glow, labels, watermark, or props.
+```
+
+### mushroom generation prompt
+
+```text
+Use case: stylized-concept. Asset type: production enemy sprite atlas for a 2D side-view pixel-art game. Input image 1 is a local visual style reference only; do not copy or include the human. Create one original small forest mushroom creature: warm red-orange domed mushroom cap with a few cream spots, pale face and short moss-green root feet, friendly but lively. Exact transparent atlas 1536x1280 px, 6 columns x 5 rows of equal 256x256 cells, no margins, no gutters, no grid marks. Each cell contains one full mushroom, same design/scale and ground baseline at y=232. Row order: idle, walk, attack, hurt, dead. Useful frames per row 2,6,4,2,4; repeat final useful pose in unused cells. Walk steps visibly; attack is a short cap-first bump; hurt recoils; dead lies still. Crisp pixel-sprite illustration, consistent identity, clean hard silhouette. Empty transparent background, fully clear pixels outside sprites. No red/yellow fringe, halo, soft alpha, glow, floor, shadow, text, label, watermark, border, logo, props or extra creature. Exact 6x5 aligned grid and no cell overlap.
+```
+
+Mushroom repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent sprite atlas cleanup. Input image 1 is the exact 6-column x 5-row mushroom creature atlas. Edit only the visible red and yellow-green fringe pixels and detached colored specks around the character contours; remove that contamination, keeping transparent outside pixels and crisp hard edges. Preserve every mushroom pose, face, cap, body, palette, sequence, cell boundary, baseline and atlas dimension exactly. Do not repaint the creature or change any character details. Keep the exact 6x5 grid, same output size and transparent background. No crop, resize, shift, extra objects, background, labels or watermark.
+```
+
+### boar generation prompt
+
+```text
+Use case: stylized-concept. Asset type: production enemy sprite atlas for a 2D side-view pixel-art game. Input image 1 is a local style reference only, to match warm outlined illustrated pixel-art rendering; do not include the human. Create one original small red-backed forest boar: compact stocky dark russet body, pale cream snout, two small ivory tusks, dark hooves, a clear red-brown dorsal patch. Same character across all frames. Exact transparent canvas 1536x1280 px, strict 6 columns x 5 rows, equal 256x256 cells, no margins/gutters/grid lines. One full boar per cell, centered at same scale and ground baseline y=232, no overlap. Row order idle, walk, attack, hurt, dead. Useful poses per row 2,6,4,2,4; unused cells repeat last useful pose. Walk row clearly cycles leg positions; attack row lowers head and charges forward; hurt recoils; dead lies on side. Crisp hard pixel-art sprite edges, true transparent outside, coherent details. No fringe, detached colored pixels, red/yellow halo, soft transparency, glow, floor, cast shadow, background, text, watermark, labels, border, logo, props or other animals.
+```
+
+Boar repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent enemy sprite atlas edge cleanup. Input image 1 is the exact 6x5 red-backed boar atlas. Change only the visible red/colored fringe and stray edge pixels outside boar silhouettes, replacing those pixels with clean transparency or natural antialiased outline consistent with the existing sprite. Preserve every boar, pose, cell position, grid, frame order, baseline, colors and art details; keep exact image dimensions and transparent background. Do not redraw, crop, resize, shift, or add anything. No background, shadows, labels, watermark, props, or extra character.
+```

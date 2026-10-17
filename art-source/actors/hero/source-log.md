@@ -168,3 +168,55 @@ Constraints: preserve the current identity, clothing and action sequence. Elimin
 ```
 
 Both v3 candidates remain source-only. No runtime image, package manifest row, or anchors were created because neither image has an evenly divisible 8 x 8 grid or clean hard-alpha edges. The permitted one generation and one repair for this round are exhausted.
+
+## Recovery checkpoint: 2026-10-18 (T10 actor-assets round)
+
+All new generation calls used the built-in ImageGen tool, transparent background enabled, and the explicit local reference `F:/Desktop/MapleStory/art-source/actors/hero-style-reference-v1.png`. Candidate outputs were copied unchanged into this source folder; none passed visual alpha-edge review, so no runtime files, manifest rows, or anchors were created.
+
+### actor:hero-cloth — UNFINISHED (original recovered)
+
+The initial exec did not surface the image result, but the original file was recovered read-only from the current task's generated-images folder by its creation order: `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-1ed02053-77b8-4139-81e7-368b7454fedf.png`. It was copied unchanged to `hero/hero-cloth-v4-attempt-1.png`, viewed, and repaired once with the local atlas as edit target. The repair output is `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-55bf8fa4-ab6f-48fd-8877-f157b08fe467.png`, copied unchanged to `hero/hero-cloth-v4-repair-1.png`. Both are 1254×1254 RGBA, not divisible into 8×8. Sampled every 8 px (24,649 points each): alpha 0 / partial / 255 was 11,878 / 12,736 / 35 on attempt and 11,481 / 13,153 / 15 on repair. Red-dominant samples increased from 5,457 to 6,245; both images visibly retain red/yellow fringe. Rejected, no runtime asset or anchors. No further generation was made.
+
+Repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent production 2D hero sprite atlas cleanup. Input image 1 is the exact 8x8 hero-cloth atlas edit target. Image 2 is the required local hero identity/style reference; preserve the original short chestnut hair, friendly face, teal cloth clothing and cream scarf proportions already visible in image 1. Change ONLY the visible red/yellow edge contamination and alpha fringe around the sprites: remove the stray color outside the silhouette and make empty background pixels genuinely transparent, retaining crisp natural sprite outlines. Preserve the same character, all 8 rows and 8 columns, every pose and its order, cell boundaries, foot baseline, colors/details, and exact input canvas dimensions. Do not crop, scale, shift, redraw, or add/remove any character content. Keep transparent background; no shadows, glow, labels, watermark, or props.
+```
+
+Prompt used:
+
+```text
+Use case: stylized-concept. Asset type: production sprite atlas for a 2D side-view game. Input image: Image 1 is the local protagonist reference; use it only to match the warm pixel-art rendering, proportions, face, short brown hair, and visual scale. Primary request: create the cloth outfit atlas for that exact original short-haired traveler swordsman, preserving the same face and hair, wearing the original teal cloth tunic and trousers with simple travel scarf, but with EMPTY HANDS and NO carried weapons or sheath. Composition: one strict uniform 8-column by 8-row sprite atlas on a transparent background, canvas exactly 1536x1536 pixels divided into 64 equal 192x192 cells, no gaps or margins. Each cell contains exactly one complete character, centered horizontally, same ground baseline at y=176 in its cell, sized to fit within 160x176. Row order top to bottom: idle, walk, jump, climb, attack, hurt, dead, buff. Each row shows distinct progressive poses from left to right, with idle 4 useful poses, walk 6, jump 2, climb 4, attack 6, hurt 2, dead 4, buff 4; unused cells repeat that row's final useful pose. Pixel-art-like crisp illustrated sprites, coherent anatomy, same identity and clothing in every cell, no scene or floor. Transparent means fully clear pixels around the characters, with sharp clean edges and no fringe. Constraints: exact grid and canvas size; all 64 cell boundaries align perfectly; character remains entirely inside each cell; no overlap across cell boundaries; no background, floor, shadow, glow, outline halo, stray pixels, text, labels, borders, separators, watermark, logo, or extra weapon/prop. Keep hands clearly visible for per-frame weapon anchors. Avoid smooth gradients and soft airbrushed alpha; prefer clean hard-edged pixel sprite shading.
+```
+
+### actor:hero-leather — UNFINISHED
+
+Built-in ImageGen output: attempt `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-d7f5eac5-1358-4cac-9102-85d0c2e9f87c.png`; repair `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-3445f48f-bb3a-4800-95f5-64a4a0fc6351.png`. Project copies: `hero/hero-leather-v3-attempt-1.png` and `hero/hero-leather-v3-repair-1.png`. Both are 1254×1254 RGBA, not divisible into 8×8. Sampled every 8 px (24,649 samples/image): alpha 0 / partial / 255 was 12,266 / 12,344 / 39 for attempt and 10,503 / 14,136 / 10 for repair. Red-dominant samples rose from 6,316 to 7,976. Visual inspection found pronounced red/yellow-green fringe in both; rejected and not copied to runtime.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept. Asset type: production sprite atlas for a 2D side-view game. Input image 1 is the exact protagonist identity reference: keep the same face, short chestnut hair, scarf, body proportions and warm crisp pixel-art rendering, changing ONLY the outfit into a simple fitted brown leather vest with muted forest-green sleeves and reinforced leather trousers. This is the leather outfit atlas for the same hero; hands empty, no weapon, no sheath. Composition: one strict 8-column x 8-row atlas, transparent background, canvas exactly 2048 x 2048 px, 256 x 256 px cells, no margins, gutters, separators, frame labels or outer padding. Place one complete character in each cell, same scale, facing right in all action cells, same foot baseline at cell y=232, centered, cleanly inside each cell. Row order idle, walk, jump, climb, attack, hurt, dead, buff. Useful frames per row: 4,6,2,4,6,2,4,4; fill all unused row cells by repeating its last useful pose. Every pose is a distinct sequential animation pose, with stable face, hairstyle, clothing, body and foot position. Crisp hand-illustrated pixel sprite with hard clean edges, no soft gradient, no glow, no shadow. Transparent pixels must be fully clear around the character; no partial-alpha fringe or colored outline. Constraints: exact grid and canvas size; all 64 cell boundaries align perfectly; character remains entirely inside each cell; no overlap across cell boundaries; no background, floor, shadow, glow, outline halo, stray pixels, text, labels, borders, separators, watermark, logo, or extra weapon/prop. Keep hands and head unobstructed for per-frame anchors.
+```
+
+Repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent production sprite atlas cleanup. Input image 1 is the exact 8-by-8 hero-leather atlas to edit. Change only the colored edge contamination and alpha fringe: remove the visible red and yellow pixels outside the character silhouettes, make the transparent margins genuinely clear, and preserve the same pixel-art edges without adding soft anti-aliased outlines. Keep every character pose, clothing detail, face, hairstyle, cell position, frame sequence, canvas size, and all 8-by-8 cell boundaries exactly unchanged. Keep the same transparent background and exact atlas dimensions. Do not redraw, crop, rescale, shift, simplify, replace, or add any detail. No background, labels, borders, watermark, or props.
+```
+
+### actor:hero-iron — UNFINISHED
+
+Built-in ImageGen output: attempt `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-96a6b563-e85c-48f2-8957-a17752739404.png`; repair `D:\dev-data\codex-home\generated_images\01a14bf5-1bfc-7890-acf5-669bb893c509\exec-ac3b1e63-5bd2-46fe-97b4-0d8370a494dd.png`. Project copies: `hero/hero-iron-v3-attempt-1.png` and `hero/hero-iron-v3-repair-1.png`. Both are 1254×1254 RGBA, not divisible into 8×8. Sampled every 8 px: alpha 0 / partial / 255 was 12,499 / 12,097 / 53 for attempt and 10,380 / 14,259 / 10 for repair (24,649 samples each). Red-dominant samples rose from 5,744 to 6,844. Visual inspection found pronounced red/yellow-green fringe in both; rejected and not copied to runtime.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept. Asset type: production sprite atlas for a 2D side-view game. Input image 1 is the exact protagonist identity reference: keep the same face, short chestnut hair, scarf, body proportions and warm crisp pixel-art rendering. Change ONLY the outfit to an original light iron-mail armor set: simple silver-gray segmented tunic, charcoal undersuit, brown belt, iron bracers and boots; no helmet, no weapon, no sheath. Composition: a strict 8-column x 8-row transparent sprite atlas, canvas exactly 2048x2048 px with equal 256x256 cells, zero margins/gutters/separators. One full character in every cell, same scale, centered and same foot baseline at cell y=232, fully inside each cell. Row order: idle, walk, jump, climb, attack, hurt, dead, buff. Useful frames per row: 4,6,2,4,6,2,4,4, with unused cells repeating the final useful pose in that row. Sequential distinct animation poses, stable identity, same armor details across frames. Hands are empty and visible for weapon anchors. Hard crisp sprite edges, no soft shading halos. Fully transparent clear pixels outside the character. Constraints: exact square atlas, exact uniform 8x8 layout, no frame overlap, no stray colored pixels, no red/yellow outline fringe, no soft glows, no background/floor/shadow, no text/labels/watermark/logo, no props or extra characters.
+```
+
+Repair prompt:
+
+```text
+Use case: precise-object-edit. Asset type: transparent sprite atlas edge cleanup. Input image 1 is the exact 8x8 iron armor hero atlas. Perform only a targeted alpha/edge cleanup: remove every visible bright red and yellow-green fringe outside the sprite silhouettes; preserve the original pixel contour with crisp hard edges and make outside pixels fully transparent. Do not change character, poses, outfit, frame order, cell layout, canvas size, cell bounds, baseline, colors inside the sprites, or any details. Keep the exact existing 8-column by 8-row atlas at its current dimensions with each cell unchanged. Do not crop, scale, shift, redraw, simplify, add, or remove any character content. No background, floor, shadows, glow, labels, watermark, or props.
+```
