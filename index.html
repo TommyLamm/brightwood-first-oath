@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172027" />
+    <title>MapleStory Playroom</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, sans-serif;
+        background: #172027;
+        color: #f4eddd;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+      }
+
+      #game-shell {
+        position: relative;
+        width: min(100vw, calc(100vh * 16 / 9));
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: #21323a;
+      }
+
+      #game-root, #ui-root {
+        position: absolute;
+        inset: 0;
+      }
+
+      #game-root canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      #ui-root {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="game-shell" aria-label="MapleStory 遊戲畫面">
+      <div id="game-root"></div>
+      <div id="ui-root" aria-live="polite"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
