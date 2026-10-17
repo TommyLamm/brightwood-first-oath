@@ -33,7 +33,7 @@
 - [x] T14-19 T09 initialize與必要資產載入並行；有現存角色可continue，newGame先確認；cloud載入失敗只能retry或臨時遊玩，不能傳初始資料覆寫。
 - [x] T14-20 levelup/equip/buy/quest/map/checkpoint事件排存檔，settings也保存；runtimebuff／敵人／掉落不存，arena續玩改mine-gate/right。
 - [x] T14-21 useCloudVersion先invalidate後initialize並用回來data取代目前world，重建安全場景；playTemporary獨立memory不覆蓋local或cloud。舊async透過token丟棄。
-- [ ] T14-22 裝正式T10/T11/T12素材與T13音訊；首次手勢unlock，事件id音畫只播一次；沒有素材不能把灰盒標候選完成。**阻塞：** T10 尚無完整 `public/assets/actors/manifest.json`；T11 目前18/20，缺 `env:tile-platform`、`env:tile-slope`；T12有46張圖片／4個VFX動畫，但缺 `vfx:heavy-strike`。T13已有16個WAV與AudioController，但目前 `src/app`／`src/main.ts` 未接入，瀏覽器解鎖及播放也未驗證。
+- [ ] T14-22 裝正式T10/T11/T12素材與T13音訊；首次手勢unlock，事件id音畫只播一次；沒有素材不能把灰盒標候選完成。**部分完成／仍阻塞候選：** T10 尚無完整 `public/assets/actors/manifest.json`；T11 目前18/20，缺 `env:tile-platform`、`env:tile-slope`；T12有46張圖片／4個VFX動畫，但缺 `vfx:heavy-strike`。app wiring 現已使用T13既有 `AudioFactory`／`AudioController` 與16項manifest（3 music、13 SFX），由UI及可信任鍵盤／畫布手勢解鎖，地圖 `musicKey` 選曲，設定音量、暫停／失焦／settings、SFX事件ID去重及dispose均已接線；新增focused app audio integration test。尚未以瀏覽器驗證真實音訊解碼／播放；缺少的T10/T11/T12素材仍阻止完整啟動與候選驗收，因此此項不勾選。
 - [x] T14-23 完成UI每個命令的真實處理與錯誤toast，stats／quests／inventory／saveStatus由snapshot更新，無按鈕只跳console。
 - [ ] T14-24 做一條跨模組focused檢查：MP失敗不吃冷卻、滿袋claim不扣任務物、死亡只發一次、loadError不checkpoint。可寫小型integration test，不鏡像全部單元測試。此前focused runs曾通過，但 `0532f9f` 的死亡清理及新增測試未在提交後執行；現有 `app-gameplay` 記錄為10 passed／1 failed，`rest-recovery` 預期72 HP、實得70 HP，原因未查明，不稱為既有問題。需針對目前程式補做確認。
 - [ ] T14-25 一次完整路線試玩／節奏記錄，若有阻塞先修；時長偏離僅集中調08/T01經驗／目標量，通知相關包。不為補滿45分加入無聊等待。**未執行；依賴T14-22完整素材／音訊接線，尚無可接受候選。**
@@ -44,3 +44,5 @@
 2026-10-18 follow-up：T14-20 的新角色音量預設已對齊 10 規格（master/music/sfx = 0.8/0.35/0.65），恢復既有角色仍保留存檔中的 settings。地圖視覺載入失敗後會記錄 map ID 並抑制每幀自動重試；顯式 world revision 重載可重試該地圖，資源更新需重建 scene/page 才會重新載入。此補正不解除 T14-22 資產缺包或 T14-25 未試玩的狀態。
 
 2026-10-18 status sync：最新T11狀態為18/20（只缺platform、slope；較舊T14摘要所寫17張／缺三項已過時）；T12為46張image、4個VFX animation，缺heavy-strike；T10最新提交 `8524017` 仍記錄沒有完整actors manifest。T13的16個音訊檔及controller可供review，沒有T14 app接線或瀏覽器播放證據。死亡清理程式／測試提交 `0532f9f`；`f38c63c`記錄其後無功能驗證。既有 rest-recovery 的72對70差異原因未確認，不推定為舊問題或本次改動造成。
+
+2026-10-18 audio wiring follow-up：`src/app/app.ts`／`src/app/keyboard.ts`／`src/main.ts` 已接現有T13 controller；`tests/integration/app-audio.test.ts` 以合成有效manifest驗證 app lifecycle，不代表缺少的正式素材包已補齊，也不代表瀏覽器實際播放已通過。focused audio test 1/1 passed，限定入口 strict tsc passed；保留上述72 HP預期／70 HP實得的未解失敗，未重跑它。
