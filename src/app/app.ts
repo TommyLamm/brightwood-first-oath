@@ -136,7 +136,8 @@ export class GameApp {
     const lifecycleCommands = gameplayCommands.filter((command) =>
       (command.type === 'respawn' && this.stateValue.screen === 'dead')
       || (command.type === 'retryBoss' && this.stateValue.screen === 'result')
-      || (command.type === 'returnTown' && this.stateValue.screen === 'result'));
+      || (command.type === 'returnTown'
+        && (this.stateValue.screen === 'playing' || this.stateValue.screen === 'result')));
     if (this.stateValue.gameplay && this.stateValue.catalog && lifecycleCommands.length > 0) {
       const lifecycle = stepGameplay(this.stateValue.gameplay, {
         catalog: this.stateValue.catalog,

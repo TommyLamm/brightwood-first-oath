@@ -1,0 +1,47 @@
+# T14 UI integration follow-up
+
+## Status
+
+The T08 UI is connected to the app, and the `returnTown` UI/lifecycle gate now exposes ordinary outdoor return while keeping an active arena encounter disabled. T08's shared contracts are sufficient; no shared contract or UI package changes were needed.
+
+## Specifications read
+
+On 2026-10-18, used live web to fully read the current `templates/game-agent-template.md` and its seven listed references:
+
+- `docs/game-development.md`
+- `docs/command-contracts.md`
+- `templates/game.schema.json`
+- `templates/game-release.yml`
+- `examples/starter/playroom-sdk.js`
+- `docs/sdk-versioning.md`
+- `docs/save-compatibility.md`
+
+Also read `AGENTS.md`, `plan/09-parallel-dispatch.md`, `plan/tasks/README.md`, `plan/tasks/T14-app-integration.md`, `plan/01-game-design.md`, `plan/07-shared-contracts.md`, `plan/08-content-spec.md`, `plan/tasks/T08-ui.md`, `plan/reports/T08.md`, and `plan/reports/T14.md`.
+
+Applicable requirements for this app integration: pass `UiSnapshot` as the UI's authoritative view; pass unsequenced `CommandDraft` through the app, which owns command sequencing; keep DOM handlers away from domain writes and persistence; preserve scene-owned load-before-transition behavior. No Playroom SDK, save protocol, manifest, packaging, or release code was changed.
+
+## Changes
+
+- `src/main.ts` now imports `createUi` from `src/ui/index.ts` and uses it with `(command) => app.dispatch(command)`. The existing root status surface, single Phaser game, scene setup, keyboard attach, persistence adapter, and dispose lifecycle remain in place. The UI entry imports its own `styles.css`.
+- `src/app/state.ts` now sets `canReturnTown` for a live outdoor `playing` state and for an eligible `result` state. It is false in town, non-playing lifecycle screens, and a guardian arena whose result has not completed. T08 uses the same snapshot's map ID and boolean to display the arena disabled reason; `UiSnapshot` has no separate reason field, and this integration did not need one.
+- `src/app/app.ts` routes `returnTown` from `playing` and `result` through the existing zero-delta lifecycle path. The gameplay arena guard still rejects the command during the encounter; valid field returns create the existing pending map transition, which the scene loads before `completeMapTransition` swaps the saved location.
+- `plan/tasks/T14-app-integration.md` clarifies the T14-16 field and arena gate behavior.
+
+Public UI entry point remains:
+
+```ts
+createUi(root: HTMLElement, dispatch: (command: CommandDraft) => void): UiController
+```
+
+`UiSnapshot` and `CommandDraft` were checked against `src/contracts/ports.ts` and `src/contracts/commands.ts`; their signatures match T08's handoff. `GameApp.dispatch` remains the only command sequence source. Keyboard text-entry and UI-focus exclusion remains in the existing app `KeyboardControls`.
+
+## Focused checks
+
+- `npm.cmd test -- tests/integration/app-foundation.test.ts tests/integration/app-persistence.test.ts` — passed, 2 files and 12 tests. Added coverage verifies the outdoor snapshot gate, arena lock, post-result gate, actual field-to-town app lifecycle transition, and arena rejection.
+- Scoped strict TypeScript check — passed:
+
+  ```powershell
+  npm.cmd exec -- tsc --ignoreConfig --noEmit --strict --skipLibCheck --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --target ES2022 --module ESNext --moduleResolution bundler --types node,vite/client --allowImportingTsExtensions src/app/index.ts src/main.ts tests/integration/app-foundation.test.ts tests/integration/app-persistence.test.ts
+  ```
+
+No full test suite, production build, browser/rendering pass, route playthrough, asset/audio validation, Playroom package validation, release, or publication was run. T14-22 asset/audio completion and T14-25 full-route acceptance remain open as recorded in the main T14 report.

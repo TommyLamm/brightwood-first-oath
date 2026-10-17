@@ -81,6 +81,11 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     : [];
   const stats = saveData ? deriveStats(saveData.player, catalog.rules) : null;
   const playerId = gameplay?.playerEntityId;
+  const mapId = saveData?.location.mapId;
+  const canReturnTown = gameplay !== null
+    && mapId !== 'town'
+    && (state.screen === 'playing' || state.screen === 'result')
+    && (mapId !== 'guardian-arena' || gameplay.bossResult);
 
   return {
     screen: state.screen,
@@ -93,7 +98,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     toast: gameplay?.toast ?? state.saveMessage,
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
-    canReturnTown: state.screen === 'result' && gameplay !== null && gameplay.saveData.location.mapId !== 'town',
+    canReturnTown,
     nowMs: state.gameTimeMs,
     skillReadyAtMs: playerId && gameplay
       ? { ...(gameplay.combat.cooldowns[playerId] ?? {}) }

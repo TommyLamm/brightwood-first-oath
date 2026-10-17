@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { GameApp } from './app/app.js';
 import { createAppScenes } from './app/scenes.js';
-import { createAppUi, createRootStatusView } from './app/root-ui.js';
+import { createRootStatusView } from './app/root-ui.js';
 import { playroomCloudPort } from './platform/index.js';
 import type { StorageLike } from './contracts/ports.js';
+import { createUi } from './ui/index.js';
 
 const gameRoot = document.querySelector<HTMLDivElement>('#game-root');
 const uiRoot = document.querySelector<HTMLDivElement>('#ui-root');
@@ -14,7 +15,7 @@ if (!gameRoot || !uiRoot) {
 
 const statusView = createRootStatusView(uiRoot);
 let app: GameApp;
-const ui = createAppUi(uiRoot, (command) => app.dispatch(command));
+const ui = createUi(uiRoot, (command) => app.dispatch(command));
 const appStorage = browserStorage();
 app = new GameApp({
   baseUrl: import.meta.env.BASE_URL,

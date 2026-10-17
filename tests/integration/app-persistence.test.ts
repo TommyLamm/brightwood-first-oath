@@ -202,4 +202,36 @@ describe('T14-c persistence wiring', () => {
     expect(app.state.worldRevision).toBe(revision);
     app.dispose();
   });
+
+  it('returns to town from an outdoor field while keeping an active arena fight locked', async () => {
+    const app = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage: new MemoryStorage(), seed: 4 });
+    await app.initialize();
+
+    app.dispatch({ type: 'newGame', payload: { name: '回城測試' } });
+    app.update(0);
+    app.dispatch({ type: 'newGame', payload: { name: '回城測試' } });
+    app.update(0);
+    expect(app.state.screen).toBe('playing');
+    expect(app.uiSnapshot?.canReturnTown).toBe(true);
+
+    app.dispatch({ type: 'returnTown', payload: {} });
+    app.update(0);
+    expect(app.state.screen).toBe('loading');
+    expect(app.state.gameplay?.pendingTransition).toMatchObject({ mapId: 'town', spawnId: 'center', after: 'travel' });
+    app.completeMapTransition();
+    expect(app.state.gameplay?.saveData.location).toEqual({ mapId: 'town', spawnId: 'center' });
+    expect(app.uiSnapshot?.canReturnTown).toBe(false);
+
+    const gameplay = app.state.gameplay!;
+    gameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
+    gameplay.bossResult = false;
+    expect(app.uiSnapshot?.canReturnTown).toBe(false);
+    app.dispatch({ type: 'returnTown', payload: {} });
+    app.update(0);
+    expect(app.state.screen).toBe('playing');
+    expect(app.state.gameplay?.pendingTransition).toBeNull();
+    expect(app.state.gameplay?.toast).toContain('首領戰尚未結束');
+
+    app.dispose();
+  });
 });

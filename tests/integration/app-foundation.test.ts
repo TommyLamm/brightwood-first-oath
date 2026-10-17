@@ -141,5 +141,25 @@ describe('T14-a app foundation', () => {
     expect(snapshot?.questViews).toHaveLength(8);
     expect(snapshot?.stats?.maxHp).toBeGreaterThan(0);
     expect(snapshot?.panels).toEqual([]);
+    expect(snapshot?.canReturnTown).toBe(true);
+
+    const arenaGameplay = structuredClone(started.gameplay);
+    arenaGameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
+    const arenaSnapshot = createUiSnapshot({
+      ...createInitialAppState(2, 'ui-test'),
+      catalog: catalog.value,
+      gameplay: arenaGameplay,
+      screen: 'playing',
+    });
+    expect(arenaSnapshot?.canReturnTown).toBe(false);
+
+    arenaGameplay.bossResult = true;
+    const resultSnapshot = createUiSnapshot({
+      ...createInitialAppState(2, 'ui-test'),
+      catalog: catalog.value,
+      gameplay: arenaGameplay,
+      screen: 'result',
+    });
+    expect(resultSnapshot?.canReturnTown).toBe(true);
   });
 });
