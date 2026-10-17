@@ -419,7 +419,12 @@ describe('app gameplay vertical slice', () => {
     expect(withoutRank.saveData.player.mp).toBe(initial.saveData.player.mp);
 
     const trained = structuredClone(initial);
-    trained.saveData.player.skillRanks['rest-recovery'] = 1;
+    trained.saveData.player = {
+      ...trained.saveData.player,
+      job: 'swordsman',
+      level: 10,
+      skillRanks: { ...trained.saveData.player.skillRanks, 'rest-recovery': 1 },
+    };
     trained.movement.velocity.x = 100;
     trained.attackOrDamageAtMs = 1000;
     const beforeRest = run(trained, 3999);
