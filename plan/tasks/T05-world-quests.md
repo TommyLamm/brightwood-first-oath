@@ -9,7 +9,7 @@
 - [x] T05-01 建maps各檔，七張width／height、ground／platform／ladder／spawn／portal逐項照表。壁只有邊界，不將裝飾變障礙。
 - [x] T05-02 各怪出生點取穩定spawnId=`{mapId}:{monsterId}:{序號}`，y依地面600，roam不越地圖；camp只有一snail。
 - [x] T05-03 指定theme camp/town/forest/rock及music：camp/forest用theme-field、town用theme-town、arena用theme-boss、其餘field。UI地圖順序按08。
-- [x] T05-04 建五NPC固定位置／角色／actorKey，撰對話；每段30–100繁中字、2–4句，逐任務accept/progress/complete文字明講目標及回報位置。
+- [x] T05-04 建五NPC固定位置／角色／actorKey，撰對話；每段30–100繁中字、2–4句，逐任務accept/progress/complete文字明講目標及回報位置（q01 completeText 明列三隻苔殼蝸牛與晨光營地／森芽回報）。
 - [x] T05-05 建q01..q08表，前置q(n−1)，q02 minL3，其餘minL1，consume／reward／minLevel／job依08；不要把NPC對話顯示當領獎。
 - [x] T05-06 getQuestView計算locked/available/active/ready/claimed；kill讀active counters，collect讀現存物，equip讀當前槽，reach讀visitedMaps或active reach事件，所以先到town再接q02仍可完成。
 - [x] T05-07 accept驗前置／等級／未接，建立active counters；claimed不能重新接，重複active回安全錯誤，不重置計數。
