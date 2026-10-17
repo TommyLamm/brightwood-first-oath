@@ -21,4 +21,6 @@
 
 ## 本次交付狀態（2026-10-18）
 
-已完成 T11-01–05、07、09–11。T11-06 尚未完成：ground 已作正式素材並需 T07 每格重疊 16px；platform 與 slope 在一次針對性 ImageGen 修正後仍有亮色 alpha 邊緣，只保留於 art-source。T11-08 manifest 目前有 18/20 keys；不加入缺少的 platform、slope 占位項。整包維持 PARTIAL，不能標 DONE。
+已完成 T11-01–05、07、09–11。T11-06 尚未完成：ground 已作正式素材並需 T07 每格重疊 16px；platform 與 slope 經舊候選／修正及本次各一次新構圖生成與一次定向修正後，目標尺寸仍見亮色 alpha 邊緣與接縫，不採用、保留 source-only。T11-08 manifest 仍有 18/20 keys；不加入缺少的 platform、slope 占位項。整包維持 PARTIAL，不能標 DONE。
+
+本次 follow-up（2026-10-18）：平台 128×32 修正版左右邊界 28/32 行不匹配，RGBA edge delta sum 414、max 60；斜坡 128×128 修正版左右邊界 121/128 行不匹配，delta sum 27,615、max 546。兩者在目標尺寸均仍見亮邊；已停止重試，保留原稿／修正稿與預覽於 `art-source/environment/`，沒有像素修補或 runtime／manifest 變更。完整 prompt、來源路徑、尺寸、hash 與檢查在 `art-source/environment/source-log.md`。
