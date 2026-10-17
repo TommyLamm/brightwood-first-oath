@@ -21,4 +21,4 @@
 
 ## 本次交付狀態（2026-10-18）
 
-已完成 T11-01–05、07、09–11。T11-06 尚未完成：ladder 已交付，但 ground、platform、slope 候選未通過精確接縫檢查，均只保留於 art-source。T11-08 目前只有 17/20 keys 的 manifest 子集；缺少三種地形，未生成指向缺失檔案的完整 manifest。整包維持 PARTIAL，不能標 DONE。
+已完成 T11-01–05、07、09–11。T11-06 尚未完成：ground 已作正式素材並需 T07 每格重疊 16px；platform 與 slope 在一次針對性 ImageGen 修正後仍有亮色 alpha 邊緣，只保留於 art-source。T11-08 manifest 目前有 18/20 keys；不加入缺少的 platform、slope 占位項。整包維持 PARTIAL，不能標 DONE。

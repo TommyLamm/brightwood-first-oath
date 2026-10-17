@@ -123,6 +123,16 @@
       "pivotY": 0
     },
     {
+      "key": "env:tile-ground",
+      "url": "assets/environment/env-tile-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
       "key": "env:ladder",
       "url": "assets/environment/env-ladder-v1.png",
       "columns": 1,
