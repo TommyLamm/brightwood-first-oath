@@ -80,8 +80,8 @@ export function startNewGame(
     flags: { bossDefeated: false, chapterComplete: false },
     settings: {
       masterVolume: 0.8,
-      musicVolume: 0.7,
-      sfxVolume: 0.9,
+      musicVolume: 0.35,
+      sfxVolume: 0.65,
       muted: false,
       bindings: {},
     },

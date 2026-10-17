@@ -9,6 +9,31 @@ import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGam
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
 describe('app gameplay vertical slice', () => {
+  it('uses the audio defaults for new characters and preserves loaded settings', () => {
+    const started = startNewGame('旅人', catalog, createNextEntityId('audio-settings'));
+    if ('error' in started) throw new Error(started.error);
+
+    expect(started.gameplay.saveData.settings).toEqual({
+      masterVolume: 0.8,
+      musicVolume: 0.35,
+      sfxVolume: 0.65,
+      muted: false,
+      bindings: {},
+    });
+
+    const existingSettings = {
+      masterVolume: 0.2,
+      musicVolume: 0.4,
+      sfxVolume: 0.6,
+      muted: true,
+      bindings: { attack: 'KeyX' },
+    };
+    const saved = structuredClone(started.gameplay.saveData);
+    saved.settings = existingSettings;
+    const restored = restoreGame(saved, catalog, createNextEntityId('audio-settings-restore'));
+    expect(restored.gameplay.saveData.settings).toEqual(existingSettings);
+  });
+
   it('rebuilds runtime actors from a save and moves arena saves to the safe mine entrance', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('restore-source'));
     if ('error' in started) throw new Error(started.error);
