@@ -48,8 +48,14 @@ def repack(name: str, source_name: str, *, replace: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    replace = sys.argv[1:] == ["--replace"]
-    if len(sys.argv) > 1 and not replace:
-        raise SystemExit("usage: extract_vfx_strips.py [--replace]")
-    for key, filename in SOURCES.items():
+    arguments = sys.argv[1:]
+    replace = "--replace" in arguments
+    requested = [arg for arg in arguments if arg != "--replace"]
+    unknown = set(requested) - set(SOURCES)
+    if unknown:
+        choices = ", ".join(SOURCES)
+        raise SystemExit(f"unknown VFX key(s): {', '.join(sorted(unknown))}; choices: {choices}")
+    selected = requested or list(SOURCES)
+    for key in selected:
+        filename = SOURCES[key]
         repack(key, filename, replace=replace)

@@ -14,7 +14,7 @@ All originals remain under `art-source/interface/`; only extracted, alpha-preser
 | VFX targeted repair | same five rows | `interface-vfx-sheet-v2-repair1.png` | 1536×1024; rejected: opaque row tints remain |
 | VFX isolated strips | sweep, hit, levelup | per-key attempts documented below | 2172×724 RGBA each; accepted after direct alpha and visual review |
 | VFX guard | six-frame ring, one targeted center cleanup | per-key attempt and repair documented below | 2172×724 RGBA each; repair accepted after alpha and visual review |
-| VFX heavy-strike | six-frame slash | ImageGen saved path recovered from tool record; documented below | 2172×724 RGBA; candidate pending runtime inspection |
+| VFX heavy-strike | six-frame slash | `interface-vfx-heavy-strike-v2-attempt1.png`, `interface-vfx-heavy-strike-v2-repair1.png` | 2172×724 RGBA each; source-only after the one repair still touched frame edges |
 
 The item, material, skill, marker, and repaired UI sheets were cropped into independent assets with unchanged RGBA content and downsampled only. The initial UI sheet is retained as source evidence; its panel frame crossed a cell edge, so the one targeted repair was used and the repaired sheet supplies all nine runtime pieces. The original five-row VFX sheet and its repair remain rejected because tinted background rows stayed near-opaque; they are not used by the new runtime strips. Separate per-effect one-row candidates and their current status are documented below.
 
@@ -181,13 +181,13 @@ Constraints: preserve the nine key designs and order; only correct the scale and
 
 ## VFX — isolated six-frame strips (current candidates)
 
-The prompt blocks below are copied verbatim from the built-in ImageGen tool records' `revisedPrompt` fields. Reference paths and the recorded output path are noted per request. ImageGen's PNG output metadata is empty, so the standalone source files preserve the originals. The prior multi-row VFX generation and rejected alpha repair above remain as historical evidence; these are separate one-row generations using a changed prompt/composition strategy. Only the four passing strips are in the runtime manifest. The heavy-strike saved path was recovered from the tool record after the original wrapper failed to surface it; it remains pending independent inspection.
+The prompt blocks below are copied verbatim from the built-in ImageGen tool records' `revisedPrompt` fields. Reference paths and the recorded output path are noted per request. ImageGen's PNG output metadata is empty, so the standalone source files preserve the originals. The prior multi-row VFX generation and rejected alpha repair above remain as historical evidence; these are separate one-row generations using a changed prompt/composition strategy. Only the four passing strips are in the runtime manifest. The heavy-strike tool-record output was recovered after the original wrapper failed to surface it; its one targeted repair still touches frame edges, so both files remain source-only with no further retry.
 
-### heavy-strike — generated candidate, inspection pending
+### heavy-strike — source-only after one targeted repair
 
 References: `art-source/actors/hero-style-reference-v1.png`, `art-source/actors/equip-starter-sword-v1.png`, `public/assets/interface/skill-heavy-strike-v1.png`.
 
-Tool record: `exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048`; recorded output path: `D:\dev-data\codex-home\generated_images\01a14bf5-5184-74b2-8896-d592c289c679\exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048.png`. The initial wrapper did not expose a usable artifact; this saved path was recovered from the ImageGen record and must be separately inspected before runtime acceptance.
+Tool record: `exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048`; recorded output path: `D:\dev-data\codex-home\generated_images\01a14bf5-5184-74b2-8896-d592c289c679\exec-d3f4075a-d44c-43ed-8c4a-c9a3a3ac0048.png`; preserved as `interface-vfx-heavy-strike-v2-attempt1.png` (2172×724 RGBA). Visual review found the slash sequence, but numeric per-frame alpha bounds touch at least one horizontal frame edge in every frame, with clipped fragments visible. One targeted repair was made; its saved output is `D:\dev-data\codex-home\generated_images\01a14bf5-5184-74b2-8896-d592c289c679\exec-8e1b40b5-814e-44c8-881c-2f1bcdcb0e01.png`, preserved as `interface-vfx-heavy-strike-v2-repair1.png` (2172×724 RGBA). The repair still has alpha>16 touching a horizontal edge in every frame, so neither heavy-strike source is accepted for runtime. No second repair or generation was made.
 
 ```text
 Use case: stylized-concept
@@ -198,6 +198,21 @@ Composition/framing: exact 1536×256 transparent canvas, six equal 256×256 squa
 Style/medium: crisp hand-painted pixel-art particles matching the supplied game's icon rendering, hard-edged pixels with small controlled highlights; no blur, no photorealism.
 Color palette: warm amber and gold with a small steel-white highlight.
 Constraints: genuine transparent alpha for every empty pixel; keep all negative space fully transparent. No colored haze, soft glow field, tinted band, gradient, floor, canvas fill, shadow, checkerboard, gridlines, cell borders, lettering, numbers, HUD, watermark, repeated static frames, extra objects, or overlapping frame cells.
+```
+
+Targeted repair prompt (one attempt; failed containment review):
+
+References: `art-source/interface/interface-vfx-heavy-strike-v2-attempt1.png`, `art-source/actors/hero-style-reference-v1.png`, `art-source/actors/equip-starter-sword-v1.png`.
+
+```text
+Use case: precise-object-edit
+Asset type: one repaired six-frame horizontal transparent VFX sprite strip for an original pixel-art side-view fantasy RPG.
+Input images: Image 1 is the exact generated heavy-strike strip to repair; Image 2 is the established hero pixel-art style and color reference; Image 3 is the game's established short sword silhouette and finish.
+Primary request: make one targeted layout repair to Image 1 only. Preserve the same six-frame left-to-right heavy-strike sequence, diagonal amber/gold and steel-white slash effect, colors, crisp pixel-art rendering, and visible spark details. In every frame, scale and position the entire existing slash effect so every effect pixel and spark is fully inside that frame with clear transparent padding on every side; nothing may touch or cross a frame edge. Keep the first spark, narrow glint, growing crescent, peak arc, breaking sparks, and final fade visibly distinct and in the same order. Do not invent a different action or add objects.
+Composition/framing: exact one-row strip with six equal square cells. Keep each complete effect centered within its own cell and separated from neighboring cells by genuine transparency. Preserve consistent slash direction from upper-left toward lower-right and a smooth six-frame progression at 60ms per frame.
+Style/medium: crisp hand-painted pixel-art VFX matching the hero and sword references, hard-edged pixel clusters, restrained highlights; no blur or photorealism.
+Color palette: warm amber and gold with a small steel-white highlight.
+Constraints: genuine transparent alpha across every empty pixel. Repair only the per-frame scale and placement needed for safe cell containment; do not recolor, add, remove, or redraw effect elements except where required to fit. No colored haze, tinted band, gradient, floor, background fill, shadow, checkerboard, gridlines, cell borders, lettering, numbers, HUD, watermark, repeated static frames, or overlapping cells.
 ```
 
 ### sweep — accepted source
