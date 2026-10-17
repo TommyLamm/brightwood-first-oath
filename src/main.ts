@@ -4,6 +4,7 @@ import { createAppScenes } from './app/scenes.js';
 import { createRootStatusView } from './app/root-ui.js';
 import { playroomCloudPort } from './platform/index.js';
 import type { StorageLike } from './contracts/ports.js';
+import { createAudio } from './audio/index.js';
 import { createUi } from './ui/index.js';
 
 const gameRoot = document.querySelector<HTMLDivElement>('#game-root');
@@ -15,7 +16,7 @@ if (!gameRoot || !uiRoot) {
 
 const statusView = createRootStatusView(uiRoot);
 let app: GameApp;
-const ui = createUi(uiRoot, (command) => app.dispatch(command));
+const ui = createUi(uiRoot, (command) => app.dispatchUi(command));
 const appStorage = browserStorage();
 app = new GameApp({
   baseUrl: import.meta.env.BASE_URL,
@@ -23,6 +24,7 @@ app = new GameApp({
   gameId: 'maplewood-swordsman',
   storage: appStorage,
   cloud: playroomCloudPort,
+  audioFactory: createAudio,
   onStateChange: (state) => {
     statusView.update(state);
     const snapshot = app.uiSnapshot;

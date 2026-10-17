@@ -171,6 +171,7 @@ type KeyboardControlsOptions = {
   dispatch(command: CommandDraft): void;
   getPanels(): readonly PanelId[];
   onWindowFocusChange(focused: boolean): void;
+  onTrustedGesture?(): void;
 };
 
 function isTextEntryTarget(target: EventTarget | null): boolean {
@@ -189,6 +190,7 @@ export class KeyboardControls {
       if (this.inputHasHeldKeys()) this.input.releaseAll();
       return;
     }
+    if (event.isTrusted) this.options.onTrustedGesture?.();
     if ((event.ctrlKey || event.altKey) && !textInput) event.preventDefault();
     const result = this.input.keyDown(event.code, {
       focused,
@@ -213,7 +215,8 @@ export class KeyboardControls {
     if (this.options.uiRoot.ownerDocument.visibilityState === 'hidden') this.handleBlur();
     else if (this.options.uiRoot.ownerDocument.hasFocus()) this.handleFocus();
   };
-  private readonly handlePointerDown = (): void => {
+  private readonly handlePointerDown = (event: PointerEvent): void => {
+    if (event.isTrusted) this.options.onTrustedGesture?.();
     const canvas = this.options.gameRoot.querySelector('canvas');
     if (canvas) {
       canvas.tabIndex = 0;

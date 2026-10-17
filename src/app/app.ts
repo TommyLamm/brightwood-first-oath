@@ -1,8 +1,9 @@
 import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand } from '../contracts/commands.js';
 import type { ContentCatalog } from '../contracts/definitions.js';
-import type { EntityId, RandomSource, SaveData } from '../contracts/types.js';
-import type { CloudPort, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
+import type { EntityId, RandomSource, SaveData, Settings } from '../contracts/types.js';
+import type { AudioController, AudioFactory, CloudPort, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
+import { createAudio } from '../audio/index.js';
 import { FIXED_STEP_SECONDS, FixedStepClock } from './fixed-step.js';
 import { AssetManifestLoadError, loadRequiredAssetManifests, type ManifestFetcher } from './assets.js';
 import { composeContentCatalog } from './catalog.js';
@@ -34,12 +35,23 @@ export type AppOptions = {
   gameId?: string;
   storage?: StorageLike | null;
   cloud?: CloudPort | null;
+  audioFactory?: AudioFactory;
   seed?: number;
   sessionPrefix?: string;
   onStateChange?: (state: GameAppState) => void;
   onFixedStep?: (step: AppFixedStep) => void;
   onWorldSnapshot?: (snapshot: WorldSnapshot) => void;
 };
+
+const DEFAULT_AUDIO_SETTINGS: Settings = {
+  masterVolume: 0.8,
+  musicVolume: 0.35,
+  sfxVolume: 0.65,
+  muted: false,
+  bindings: {},
+};
+
+const MAX_REMEMBERED_AUDIO_EVENT_IDS = 512;
 
 /** Owns one app state, command sequence, game clock, RNG and EntityId sequence. */
 export class GameApp {
@@ -55,6 +67,15 @@ export class GameApp {
   private temporaryPlay = false;
   private saveFingerprint: string | null = null;
   private operationGeneration = 0;
+  private audioController: AudioController | null = null;
+  private audioUnlockInFlight: Promise<void> | null = null;
+  private readonly pendingAudioEvents: string[] = [];
+  private audioMusicKey: string | null = null;
+  private audioPaused: boolean | null = null;
+  private audioSettingsFingerprint: string | null = null;
+  private audioEventSequence = 0;
+  private readonly audioEventIds = new Set<string>();
+  private readonly audioEventOrder: string[] = [];
 
   constructor(options: AppOptions) {
     this.options = options;
@@ -83,6 +104,13 @@ export class GameApp {
     return this.commands.enqueue(command);
   }
 
+  dispatchUi(command: CommandDraft): GameCommand {
+    this.unlockAudioFromGesture();
+    const queued = this.dispatch(command);
+    this.playAudioOnce(`ui-click:${queued.seq}`, 'ui-click');
+    return queued;
+  }
+
   attachKeyboard(gameRoot: HTMLElement, uiRoot: HTMLElement, bindings: KeyBindings = {}): void {
     this.keyboard?.dispose();
     this.keyboard = new KeyboardControls({
@@ -91,6 +119,7 @@ export class GameApp {
       dispatch: (command) => this.dispatch(command),
       getPanels: () => this.stateValue.panels,
       onWindowFocusChange: (windowFocused) => this.setWindowFocused(windowFocused),
+      onTrustedGesture: () => { void this.unlockAudioFromGesture(); },
     }, { ...bindings, ...getSavedKeyBindings(this.stateValue.gameplay?.saveData.settings.bindings) });
   }
 
@@ -191,7 +220,14 @@ export class GameApp {
         random: this.stateValue.random,
         nextEntityId: this.stateValue.nextEntityId,
       });
+      const previousGameplay = this.stateValue.gameplay;
       this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen });
+      if (input.jumpPressed && previousGameplay && result.gameplay
+        && ['grounded', 'climbing'].includes(previousGameplay.movement.mode)
+        && result.gameplay.movement.mode === 'airborne'
+        && result.gameplay.movement.velocity.y < 0) {
+        this.playAudioOnce(`jump:${result.gameplay.playerEntityId}:${gameTimeMs}`, 'jump');
+      }
       this.checkpointIfChanged(result.gameplay?.saveData ?? null);
       if (result.openPanel) {
         const panel = appCommand(this.stateValue, { type: 'setPanel', payload: { panel: result.openPanel } });
@@ -242,6 +278,15 @@ export class GameApp {
     this.persistence = null;
     this.keyboard?.dispose();
     this.keyboard = null;
+    try { this.audioController?.dispose(); } catch { /* Audio cleanup must not interrupt app disposal. */ }
+    this.audioController = null;
+    this.audioUnlockInFlight = null;
+    this.pendingAudioEvents.length = 0;
+    this.audioMusicKey = null;
+    this.audioPaused = null;
+    this.audioSettingsFingerprint = null;
+    this.audioEventIds.clear();
+    this.audioEventOrder.length = 0;
     this.commands.drain();
     this.pendingGameplayCommands = [];
     this.clock.clearAccumulator();
@@ -297,6 +342,7 @@ export class GameApp {
       catalog,
       assetManifests: assetsResult.value,
     });
+    this.initializeAudio(assetsResult.value);
     return { ready: true, status: 'ready', issues: [] };
   }
 
@@ -524,7 +570,9 @@ export class GameApp {
   }
 
   private setState(state: GameAppState): void {
+    const previousState = this.stateValue;
     this.stateValue = state;
+    this.synchronizeAudio(previousState, state);
     const previousBindings = this.keyboardBindingsFingerprint;
     const nextBindings = JSON.stringify(state.gameplay?.saveData.settings.bindings ?? {});
     if (this.keyboard && previousBindings !== nextBindings) {
@@ -534,7 +582,168 @@ export class GameApp {
     this.options.onStateChange?.(state);
   }
 
+  private initializeAudio(manifests: readonly AssetManifest[]): void {
+    if (this.audioController) return;
+    const manifest = manifests.find(({ pack }) => pack === 'audio');
+    if (!manifest) return;
+    const settings = this.stateValue.gameplay?.saveData.settings ?? DEFAULT_AUDIO_SETTINGS;
+    try {
+      this.audioController = (this.options.audioFactory ?? createAudio)(manifest, settings);
+      this.audioSettingsFingerprint = audioSettingsFingerprint(settings);
+      this.audioPaused = null;
+      this.audioMusicKey = null;
+      this.synchronizeAudio(this.stateValue, this.stateValue);
+    } catch {
+      // Audio setup is optional at runtime; a browser audio error must not block play.
+      this.audioController = null;
+    }
+  }
+
+  private unlockAudioFromGesture(): Promise<void> | null {
+    const controller = this.audioController;
+    if (!controller) return null;
+    if (this.audioUnlockInFlight) return this.audioUnlockInFlight;
+    try {
+      const unlock = controller.unlock();
+      const inFlight = Promise.resolve(unlock).catch(() => undefined).then(() => {
+        if (this.audioUnlockInFlight === inFlight) this.audioUnlockInFlight = null;
+        this.flushPendingAudioEvents();
+      });
+      this.audioUnlockInFlight = inFlight;
+      return inFlight;
+    } catch {
+      this.audioUnlockInFlight = null;
+      return null;
+    }
+  }
+
+  private synchronizeAudio(previous: GameAppState, next: GameAppState): void {
+    const controller = this.audioController;
+    if (!controller) return;
+
+    const settings = next.gameplay?.saveData.settings;
+    if (settings) {
+      const fingerprint = audioSettingsFingerprint(settings);
+      if (fingerprint !== this.audioSettingsFingerprint) {
+        this.audioSettingsFingerprint = fingerprint;
+        try { controller.setSettings(settings); } catch { /* Volume changes are best-effort. */ }
+      }
+    }
+
+    const paused = !next.windowFocused || next.screen === 'paused' || next.panels.includes('settings');
+    if (paused !== this.audioPaused) {
+      this.audioPaused = paused;
+      try { controller.setPaused(paused); } catch { /* Pause audio best-effort; gameplay remains authoritative. */ }
+    }
+
+    const musicKey = selectedMusicKey(next);
+    if (musicKey && musicKey !== this.audioMusicKey) {
+      this.audioMusicKey = musicKey;
+      try { void controller.setMusic(musicKey).catch(() => undefined); } catch { /* Missing music remains silent. */ }
+    }
+
+    this.playStateTransitionAudio(previous, next);
+  }
+
+  private playStateTransitionAudio(previous: GameAppState, next: GameAppState): void {
+    const gameplay = next.gameplay;
+    if (!gameplay) return;
+    const before = previous.gameplay;
+
+    const previousAttackIds = new Set(before?.combat.attacks.map(({ id }) => id) ?? []);
+    for (const attack of gameplay.combat.attacks) {
+      if (attack.sourceId === gameplay.playerEntityId && !previousAttackIds.has(attack.id)) {
+        this.playAudioOnce(`attack:${attack.id}`, 'attack');
+      }
+    }
+
+    const previousEffectIds = new Set(before?.effects.map(({ id }) => id) ?? []);
+    for (const effect of gameplay.effects) {
+      if (previousEffectIds.has(effect.id)) continue;
+      const key = effect.kind === 'hit' ? 'hit'
+        : effect.kind === 'pickup' ? 'pickup'
+          : effect.kind === 'levelup' ? 'levelup'
+            : null;
+      if (key) this.playAudioOnce(`visual:${effect.id}`, key);
+    }
+
+    if (!before) return;
+    const previousPlayer = before.saveData.player;
+    const player = gameplay.saveData.player;
+    if (player.hp < previousPlayer.hp) {
+      this.playAudioOnce(`hurt:${gameplay.playerEntityId}:${next.gameTimeMs}:${player.hp}`, 'hurt');
+    }
+    if (previousPlayer.hp > 0 && player.hp <= 0) {
+      this.playAudioOnce(`death:${gameplay.playerEntityId}:${gameplay.deathAtMs ?? next.gameTimeMs}`, 'death');
+    }
+    if (player.level > previousPlayer.level
+      && !gameplay.effects.some(({ id, kind }) => kind === 'levelup' && !previousEffectIds.has(id))) {
+      this.playAudioOnce(`levelup:${gameplay.playerEntityId}:${next.gameTimeMs}:${player.level}`, 'levelup');
+    }
+    if (JSON.stringify(player.equipment) !== JSON.stringify(previousPlayer.equipment)) {
+      this.playAudioOnce(`equip:${gameplay.playerEntityId}:${next.gameTimeMs}:${++this.audioEventSequence}`, 'equip');
+    }
+    if (gameplay.potionReadyAtMs > before.potionReadyAtMs) {
+      this.playAudioOnce(`potion:${gameplay.playerEntityId}:${gameplay.potionReadyAtMs}`, 'potion');
+    }
+
+    const previousQuests = before.saveData.quests;
+    for (const [questId, quest] of Object.entries(gameplay.saveData.quests)) {
+      const oldStatus = previousQuests[questId]?.status;
+      if ((oldStatus === undefined && quest.status === 'active')
+        || (oldStatus === 'active' && quest.status === 'claimed')) {
+        this.playAudioOnce(`quest:${questId}:${quest.status}:${next.gameTimeMs}`, 'quest');
+      }
+    }
+
+    const fromMap = before.saveData.location.mapId;
+    const toMap = gameplay.saveData.location.mapId;
+    if (fromMap !== toMap && before.pendingTransition?.after === 'travel') {
+      this.playAudioOnce(`portal:${fromMap}:${toMap}:${next.gameTimeMs}`, 'portal');
+    }
+    if (!before.bossResult && gameplay.bossResult) {
+      this.playAudioOnce(`boss-win:${gameplay.playerEntityId}:${next.gameTimeMs}`, 'boss-win');
+    }
+  }
+
+  private playAudioOnce(eventId: string, key: string): void {
+    const controller = this.audioController;
+    if (!controller || this.audioEventIds.has(eventId)) return;
+    this.audioEventIds.add(eventId);
+    this.audioEventOrder.push(eventId);
+    if (this.audioEventOrder.length > MAX_REMEMBERED_AUDIO_EVENT_IDS) {
+      const expiredId = this.audioEventOrder.shift();
+      if (expiredId) this.audioEventIds.delete(expiredId);
+    }
+    if (this.audioUnlockInFlight) {
+      this.pendingAudioEvents.push(key);
+      return;
+    }
+    this.playAudioKey(key);
+  }
+
+  private flushPendingAudioEvents(): void {
+    if (!this.audioController || this.audioUnlockInFlight) return;
+    for (const key of this.pendingAudioEvents.splice(0)) this.playAudioKey(key);
+  }
+
+  private playAudioKey(key: string): void {
+    const controller = this.audioController;
+    if (!controller) return;
+    try { controller.playSfx(key); } catch { /* A dropped sound must never alter gameplay. */ }
+  }
+
   private keyboardBindingsFingerprint = '{}';
+}
+
+function audioSettingsFingerprint(settings: Settings): string {
+  return `${settings.masterVolume}:${settings.musicVolume}:${settings.sfxVolume}:${settings.muted}`;
+}
+
+function selectedMusicKey(state: GameAppState): string | null {
+  const gameplay = state.gameplay;
+  if (!gameplay || !state.catalog) return null;
+  return state.catalog.world.maps[gameplay.saveData.location.mapId]?.musicKey ?? null;
 }
 
 function getSavedKeyBindings(bindings: Record<string, string> | undefined): KeyBindings {
