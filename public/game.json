@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "id": "maplewood-swordsman",
+  "name": "楓境冒險：劍士篇",
+  "version": "1.0.0-beta.1",
+  "description": "桌面單機遊戲候選版：操作劍士探索地圖、戰鬥並推進任務。",
+  "author": "獨立製作",
+  "entry": "index.html",
+  "cover": "cover.png",
+  "tags": ["冒險", "動作", "角色扮演"],
+  "instructions": "方向鍵移動與爬梯，左 Alt 跳躍，左 Ctrl 攻擊，Z 撿拾，Space 互動，1–3 使用技能，Q/W 使用藥水；I/E/K/C/J/M 開啟資訊面板，Esc 關閉面板或暫停。",
+  "devices": ["desktop"],
+  "cloudSave": {
+    "readableFormats": [1],
+    "writeFormat": 1
+  }
+}

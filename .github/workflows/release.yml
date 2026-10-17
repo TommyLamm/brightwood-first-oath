@@ -1,0 +1,89 @@
+# Based on the current Playroom release workflow template.
+name: Release game
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+env:
+  GAME_DIR: dist
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM_DIR: ${{ runner.temp }}/playroom-platform-tools
+      GAME_ZIP: ${{ runner.temp }}/playroom-release/game.zip
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies and build game
+        run: |
+          npm ci
+          npm run build
+      - name: Check release version and resolve artifact directory
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const workspace = path.resolve(process.env.GITHUB_WORKSPACE);
+          const root = path.resolve(workspace, process.env.GAME_DIR);
+          if (!root.startsWith(workspace + path.sep)) throw Error('GAME_DIR must be a directory inside the game repository');
+          const manifest = JSON.parse(fs.readFileSync(path.join(root, 'game.json'), 'utf8'));
+          if ('v' + manifest.version !== process.env.RELEASE_TAG) throw Error('Tag and manifest version differ');
+          if (/[\r\n]/.test(root)) throw Error('Invalid GAME_DIR');
+          fs.appendFileSync(process.env.GITHUB_ENV, `GAME_PATH=${root}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `RELEASE_PRERELEASE=${manifest.version.includes('-')}\n`);
+          JS
+      - name: Verify pinned Playroom validation tools
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { createHash } from 'node:crypto';
+          const lock = JSON.parse(fs.readFileSync('.playroom/game-tools.lock.json', 'utf8'));
+          if (!/^\d+\.\d+\.\d+$/.test(lock.toolsVersion) || !/^[a-f0-9]{64}$/.test(lock.sha256)) throw Error('Invalid tool lock');
+          const expected = `.playroom/tools/playroom-game-tools-${lock.toolsVersion}.zip`;
+          if (lock.archive !== expected) throw Error('Invalid pinned archive path');
+          const actual = createHash('sha256').update(fs.readFileSync(expected)).digest('hex');
+          if (actual !== lock.sha256) throw Error('Tool archive checksum differs');
+          fs.appendFileSync(process.env.GITHUB_ENV, `TOOLS_ARCHIVE=${path.resolve(expected)}\nTOOLS_VERSION=${lock.toolsVersion}\nTOOLS_SHA256=${actual}\n`);
+          JS
+      - name: Extract and verify pinned tools
+        run: |
+          mkdir -p "$PLATFORM_DIR"
+          unzip -q "$TOOLS_ARCHIVE" -d "$PLATFORM_DIR"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { createHash } from 'node:crypto';
+          const root = process.env.PLATFORM_DIR;
+          const metadata = JSON.parse(fs.readFileSync(path.join(root, 'metadata.json'), 'utf8'));
+          if (metadata.toolsVersion !== process.env.TOOLS_VERSION) throw Error('Tool metadata version differs');
+          for (const [name, hash] of Object.entries(metadata.files)) {
+            if (!/^[a-zA-Z0-9.-]+$/.test(name) || name === '.' || name === '..') throw Error('Invalid metadata filename');
+            if (createHash('sha256').update(fs.readFileSync(path.join(root, name))).digest('hex') !== hash) throw Error('Tool file checksum differs');
+          }
+          console.log(`Playroom tools ${metadata.toolsVersion}, SHA-256 ${process.env.TOOLS_SHA256}`);
+          JS
+      - name: Pack and fully validate release ZIP
+        working-directory: ${{ env.PLATFORM_DIR }}
+        run: |
+          node pack-game.mjs "$GAME_PATH" "$GAME_ZIP"
+          node validate-game.mjs "$GAME_ZIP"
+          printf 'tools=%s\nsha256=%s\n' "$TOOLS_VERSION" "$TOOLS_SHA256" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_REPO: ${{ github.repository }}
+        run: gh release create "$RELEASE_TAG" "$GAME_ZIP" --repo "$RELEASE_REPO" --verify-tag --generate-notes --prerelease="$RELEASE_PRERELEASE"
