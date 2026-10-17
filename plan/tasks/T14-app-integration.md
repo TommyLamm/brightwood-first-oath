@@ -35,7 +35,7 @@
 - [x] T14-21 useCloudVersion先invalidate後initialize並用回來data取代目前world，重建安全場景；playTemporary獨立memory不覆蓋local或cloud。舊async透過token丟棄。
 - [ ] T14-22 裝正式T10/T11/T12素材與T13音訊；首次手勢unlock，事件id音畫只播一次；沒有素材不能把灰盒標候選完成。**部分完成／仍阻塞候選：** T10 尚無完整 `public/assets/actors/manifest.json`；T11 目前18/20，缺 `env:tile-platform`、`env:tile-slope`；T12有46張圖片／4個VFX動畫，但缺 `vfx:heavy-strike`。app wiring 現已使用T13既有 `AudioFactory`／`AudioController` 與16項manifest（3 music、13 SFX），由UI及可信任鍵盤／畫布手勢解鎖，地圖 `musicKey` 選曲，設定音量、暫停／失焦／settings、SFX事件ID去重及dispose均已接線；新增focused app audio integration test。尚未以瀏覽器驗證真實音訊解碼／播放；缺少的T10/T11/T12素材仍阻止完整啟動與候選驗收，因此此項不勾選。
 - [x] T14-23 完成UI每個命令的真實處理與錯誤toast，stats／quests／inventory／saveStatus由snapshot更新，無按鈕只跳console。
-- [ ] T14-24 做一條跨模組focused檢查：MP失敗不吃冷卻、滿袋claim不扣任務物、死亡只發一次、loadError不checkpoint。可寫小型integration test，不鏡像全部單元測試。此前focused runs曾通過，但 `0532f9f` 的死亡清理及新增測試未在提交後執行；現有 `app-gameplay` 記錄為10 passed／1 failed，`rest-recovery` 預期72 HP、實得70 HP，原因未查明，不稱為既有問題。需針對目前程式補做確認。
+- [ ] T14-24 做一條跨模組focused檢查：MP失敗不吃冷卻、滿袋claim不扣任務物、死亡只發一次、loadError不checkpoint。可寫小型integration test，不鏡像全部單元測試。`rest-recovery` 的72 HP／70 HP差異已確認是測試fixture將rank 1放在level 1 beginner上；08要求此技能為swordsman、level 10。fixture改為有效角色後，該測項focused test通過。此結果不驗證 `0532f9f` 的死亡清理；T14-24仍未完成。
 - [ ] T14-25 一次完整路線試玩／節奏記錄，若有阻塞先修；時長偏離僅集中調08/T01經驗／目標量，通知相關包。不為補滿45分加入無聊等待。**未執行；依賴T14-22完整素材／音訊接線，尚無可接受候選。**
 - [x] T14-26 report列實際入口、完整／未完成系統、接線例與真實檢查，交T15封面／成品，交T16最終驗收。
 
@@ -43,6 +43,8 @@
 
 2026-10-18 follow-up：T14-20 的新角色音量預設已對齊 10 規格（master/music/sfx = 0.8/0.35/0.65），恢復既有角色仍保留存檔中的 settings。地圖視覺載入失敗後會記錄 map ID 並抑制每幀自動重試；顯式 world revision 重載可重試該地圖，資源更新需重建 scene/page 才會重新載入。此補正不解除 T14-22 資產缺包或 T14-25 未試玩的狀態。
 
-2026-10-18 status sync：最新T11狀態為18/20（只缺platform、slope；較舊T14摘要所寫17張／缺三項已過時）；T12為46張image、4個VFX animation，缺heavy-strike；T10最新提交 `8524017` 仍記錄沒有完整actors manifest。T13的16個音訊檔及controller可供review，沒有T14 app接線或瀏覽器播放證據。死亡清理程式／測試提交 `0532f9f`；`f38c63c`記錄其後無功能驗證。既有 rest-recovery 的72對70差異原因未確認，不推定為舊問題或本次改動造成。
+2026-10-18 status sync：最新T11狀態為18/20（只缺platform、slope；較舊T14摘要所寫17張／缺三項已過時）；T12為46張image、4個VFX animation，缺heavy-strike；T10最新提交 `8524017` 仍記錄沒有完整actors manifest。T13的16個音訊檔及controller可供review，沒有T14 app接線或瀏覽器播放證據。死亡清理程式／測試提交 `0532f9f`；`f38c63c`記錄其後無功能驗證。當時 rest-recovery 的72對70差異尚未查明；後續釐清見下方。
 
-2026-10-18 audio wiring follow-up：`src/app/app.ts`／`src/app/keyboard.ts`／`src/main.ts` 已接現有T13 controller；`tests/integration/app-audio.test.ts` 以合成有效manifest驗證 app lifecycle，不代表缺少的正式素材包已補齊，也不代表瀏覽器實際播放已通過。focused audio test 1/1 passed，限定入口 strict tsc passed；保留上述72 HP預期／70 HP實得的未解失敗，未重跑它。
+2026-10-18 audio wiring follow-up：`src/app/app.ts`／`src/app/keyboard.ts`／`src/main.ts` 已接現有T13 controller；`tests/integration/app-audio.test.ts` 以合成有效manifest驗證 app lifecycle，不代表缺少的正式素材包已補齊，也不代表瀏覽器實際播放已通過。focused audio test 1/1 passed，限定入口 strict tsc passed；該次報告未重跑 rest-recovery，後續確認見下方。
+
+2026-10-18 rest-recovery follow-up：首次 filtered run 重現HP 72／70差異。fixture 直接替 level 1 beginner 填入 `rest-recovery: 1`；T04 的 `applyProgressAction` 會先驗證整個玩家資料，拒絕不符合 swordsman／level 10 解鎖條件的 rank，故恢復動作失敗但 timer 仍排到下一次。依 08 修正 fixture 為有效的 level 10 swordsman、rank 1；未改 `src/app/gameplay.ts`。`npm.cmd test -- tests/integration/app-gameplay.test.ts -t "rest-recovery rank"` 通過（1 passed、10 skipped）；限定 strict tsc 通過。此 filtered test 不含死亡清理驗證，該功能仍未驗證；T14-24保持未勾選。
