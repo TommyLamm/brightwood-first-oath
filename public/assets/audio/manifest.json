@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "pack": "audio",
+  "images": [],
+  "animations": [],
+  "audio": [
+    {
+      "key": "theme-town",
+      "url": "assets/audio/theme-town.wav",
+      "kind": "music",
+      "loop": true
+    },
+    {
+      "key": "theme-field",
+      "url": "assets/audio/theme-field.wav",
+      "kind": "music",
+      "loop": true
+    },
+    {
+      "key": "theme-boss",
+      "url": "assets/audio/theme-boss.wav",
+      "kind": "music",
+      "loop": true
+    },
+    {
+      "key": "ui-click",
+      "url": "assets/audio/ui-click.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "jump",
+      "url": "assets/audio/jump.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "attack",
+      "url": "assets/audio/attack.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "hit",
+      "url": "assets/audio/hit.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "hurt",
+      "url": "assets/audio/hurt.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "pickup",
+      "url": "assets/audio/pickup.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "potion",
+      "url": "assets/audio/potion.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "equip",
+      "url": "assets/audio/equip.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "quest",
+      "url": "assets/audio/quest.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "levelup",
+      "url": "assets/audio/levelup.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "portal",
+      "url": "assets/audio/portal.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "death",
+      "url": "assets/audio/death.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "boss-win",
+      "url": "assets/audio/boss-win.wav",
+      "kind": "sfx",
+      "loop": false
+    }
+  ]
+}
