@@ -16,6 +16,13 @@
 - `public/cover.png` 由實際遊戲PNG裁切 `(x=264,y=256,width=496,height=310)` 後以HighQualityBicubic縮放為800×500，排除臨時UI且未重繪；大小1,006,776 bytes，低於5MiB。
 - T15-11仍待integration final build及明確pack授權；之後只跑已記錄的官方固定pack／validate並檢查成品，不手動產生ZIP。
 
+## 2026-10-18 16:45 HKT 官方候選包驗證
+
+- integration在main HEAD `56ec0fe` 完成唯一一輪 `npm.cmd run typecheck`、`npm.cmd run build`、`npm.cmd run check:content`（均exit 0）；本包隨後僅使用其 `dist/` 執行固定工具1.1.0官方pack與validate，兩者均exit 0。
+- `F:\Desktop\MapleStory\artifacts\game.zip`：36,361,975 bytes，119 entries，解壓39,357,115 bytes，SHA-256 `13920DD169E1852DF200DFA8416A85D6268A179342ECB45C9C6CAEE3D68CE875`；根目錄包含 `game.json`、`index.html`、`cover.png`、`vendor/playroom-sdk.js`。封面1,006,776 bytes，SHA-256 `4E66F74FFFE578F3FE9A040DB5E0DAA9430DE0493BE18F478A66C4B5A888BE77`。
+- 限定掃描ZIP內12個runtime文字檔及全部路徑名稱，沒有機密樣式命中或可疑檔名；ZIP、解壓大小、entries和封面均低於Playroom限制。機器可讀證據：main `artifacts/T15-package-evidence.json`。
+- T15-11已完成。此為本機候選ZIP與官方驗證，未建立tag／GitHub Release，亦未呼叫平台發布API。
+
 先依根AGENTS完整讀當時main七文件，來源見05。本包不能實作或呼叫帳號／管理API，不用第三方同名Playroom套件代替本專案SDK。分段交付：T15-a先完成01..07與09..10供T14接正式adapter；T15-b在T14完成後做08封面及11..12候選驗證，不讓整包等待造成循環。
 
 ## 步驟
@@ -30,10 +37,10 @@
 - [x] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖。2026-10-18 16:26 HKT已使用真實Q01營地畫面完成；原始JPEG、全解析度PNG、crop/resize來源與SHA-256見 `art-source/cover/README.md` 及T15 report。
 - [x] T15-09 tools/playroom提供明確本地pack/validate入口，指向固定工具解壓CLI；dist來源、artifacts/game.zip輸出，工具／zip均在dist外。
 - [x] T15-10 複製當時最新workflow到release.yml，GAME_DIR=dist，在版本檢查前加npm ci/build，Node24與checksum/metadata全驗證；不添加略過失敗設定。
-- [ ] T15-11 已對重新執行 `npm run build` 生成的真實 `dist/` 嘗試官方pack；因缺少 `dist/cover.png` 得到 `VALIDATION_ERROR` 而停止，未產生ZIP，故validate及ZIP層級檢查未執行。補上實際封面後完成官方pack、完整validate及檔案／大小檢查，保留實際輸出。
+- [x] T15-11 歷史上的缺封面pack曾回報 `VALIDATION_ERROR`；2026-10-18 16:45 HKT已用main HEAD `56ec0fe` 的最終 `dist/` 執行固定工具官方pack及完整validate（均exit 0），並完成ZIP大小、entries、SHA-256、runtime文字秘密樣式與可疑檔名掃描；證據見 `artifacts/T15-package-evidence.json` 及T15 report。
 - [x] T15-12 report列工具版本／SHA／SDK／Manifest／產物路徑、實際命令、未驗證事項與需要主Agent提供的整合；清楚區分本機ZIP與未發布。
 
-> T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T15-08已完成；T15-11仍待最終dist、官方pack/validate及成品檢查。
+> T15-02/03、T15-08、T15-11已完成。候選ZIP位於本機 `artifacts/game.zip`，通過固定Playroom tools 1.1.0 pack/validate；未發布。
 
 > 2026-10-18 adapter/vendor scoped source commit：`b46ce34`，僅含 `src/platform/**` 與 `public/vendor/**`。本次提交不代表 T15-08/11 完成；詳見 T15 report。
 
