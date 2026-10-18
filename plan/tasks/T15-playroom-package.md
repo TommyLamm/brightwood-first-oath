@@ -2,6 +2,14 @@
 
 目的：交付平台能接收的靜態成品與正式SDK薄介面。所有權src/platform/**、public/vendor/**、public/game.json、public/cover.png、.playroom/**、tools/playroom/**、.github/workflows/release.yml。G0後可準備，正式封面／打包需T14成品；package scripts變更交主Agent，不自行改根設定。
 
+## 2026-10-18 15:40 HKT 最新交接
+
+- T10–T12正式素材已完整（actors 22 images／64 animations＋96 anchors、environment 20 images、interface 47 images／5 effects）；音訊沿用已交付的16個WAV。遊戲接合與完整路線仍由T14/T16驗收，素材完成不代表候選已可玩。
+- 已重新完整讀取根 `AGENTS.md`、Playroom `main` 範本及其七份線上規格，並讀本包依賴的 README/status、asset recovery report、05/07/10/11、T15 task/report。版本要求維持 SDK/tools 1.1.0、protocol 1、Manifest schema 2；候選固定 `brightwood-first-oath`／`1.0.0-beta.1`、desktop、cloudSave format 1。
+- 對 adapter、Manifest、固定工具入口及 Release workflow 做了最新規格差異檢視，未發現需要改動的包裝缺口；工具 ZIP SHA-256 與 lock 相符。此 audit 沒有改 source，亦未執行 build、瀏覽器、pack 或 validate。
+- T15-08等待T14提供真實遊玩畫面。請把實際執行中的遊戲截圖原始PNG放在 `art-source/cover/gameplay-source.png`；畫面須包含遊戲場景與玩家，不能以概念圖、素材圖集或空白載入／標題畫面代替。由原圖製作精確800×500的 `public/cover.png`，保留來源證據。
+- T15-11待整合方完成最終build並明確授權後，在main repository根目錄依序執行 `node tools/playroom/pack.mjs dist artifacts/game.zip` 及 `node tools/playroom/validate.mjs artifacts/game.zip`，然後另查ZIP內容無機密與無關檔案。不得手動ZIP或提前重跑 build/install；未經授權不建立tag、Release或呼叫平台API。
+
 先依根AGENTS完整讀當時main七文件，來源見05。本包不能實作或呼叫帳號／管理API，不用第三方同名Playroom套件代替本專案SDK。分段交付：T15-a先完成01..07與09..10供T14接正式adapter；T15-b在T14完成後做08封面及11..12候選驗證，不讓整包等待造成循環。
 
 ## 步驟
