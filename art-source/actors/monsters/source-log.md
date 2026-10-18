@@ -97,6 +97,58 @@
 - 專案原稿：`art-source/actors/monsters/golem/golem-atlas-attempt-01.png`、`art-source/actors/monsters/golem/golem-atlas-attempt-02.png`
 - 兩版為 1374×1145 且格數整除 6×5；姿勢可辨。修正版輪廓外仍有可見紅／黃殘色，未選入遊戲。
 
+### T10-06 reattempt — `actor:golem` (UNFINISHED, source-only)
+
+One new generation and its single targeted repair were made on 2026-10-18. Both originals are preserved; neither is copied into runtime or the creature subset manifest.
+
+References for generation: `public/assets/actors/monsters/slime-atlas-v1.png` (secondary pixel-cluster/style reference) and `public/assets/actors/monsters/sentinel-atlas-v1.png` (side-view framing and silhouette reference). Both local references were viewed before generation and were passed explicitly through `referenced_image_paths`. The golem itself was not copied from either reference.
+
+#### `golem-atlas-attempt-03.png` — new generation
+
+- Built-in `image_gen.imagegen`; `transparent_background: true`.
+- Original output: `D:\dev-data\codex-home\generated_images\01a14c79-c287-7051-aa92-331264232a6b\exec-6aaadfd7-806a-4799-b29e-af242020212b.png`.
+- Source copy: `art-source/actors/monsters/golem/golem-atlas-attempt-03.png`.
+- Dimensions/encoding: 1374×1145 PNG, RGBA / Format32bppArgb; exactly divides into 6×5 cells of 229×229.
+- SHA-256: `D536E2E847469FE9E3BD9D82BCA5663717D87E33E7EBE8FA238D34C37E2B3DF6`.
+- Alpha counts: transparent 685,585; partial (1–254) 886,983; opaque 662.
+- Full-size view: all five row poses and order are recognizable, but visible red/yellow/green fringe remains and edge pixels look softened. Per-cell scan found the last nontransparent row at local y=228 in all 30 cells (zero transparent bottom margin); thus the feet touch each cell's bottom edge. Rejected.
+
+Full generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: production 2D game enemy sprite atlas for an existing side-view pixel-art adventure
+Primary request: Create one original mineral golem animation atlas, based on the project style references while designing a new creature. Use Image 1 (the green slime atlas) as the reference for compact pixel clusters, simple readable shading, and the project's monster scale. Use Image 2 (the iron sentinel atlas) as a secondary reference for side-view full-body framing, crisp silhouette readability, and baseline discipline. Do not include, copy, or echo either reference character.
+Subject: One broad, heavy stone golem built from layered cool gray and muted gray-brown rock plates, with sparse moss-green patches and a few restrained cool blue-gray mineral veins. Small, subdued amber eyes sit inside its face only. Large blocky forearms, compact torso, and broad stone feet; a distinctive sturdy silhouette. Keep the same face, plate arrangement, proportions, and limited palette throughout all poses.
+Style/medium: Deliberate hard-edged pixel art with clear stepped contours and economical, clustered square pixels. Simple, solid value groups; no painterly rendering, no airbrush, no gradient, no soft antialiasing, no blur.
+Composition/framing: One exact 6-column by 5-row atlas, 1374 by 1145 pixels if supported, divided into 30 equal 229 by 229 square cells with no gutters, separators, or padding between cells. Every pose centered within its own cell, fully visible with at least 16 pixels of transparent safe margin on every side; silhouettes must never touch or cross cell boundaries. Keep the same foot baseline at the bottom of each row. Row order, top to bottom: idle, walk, attack, hurt, dead. Idle: two subtly different heavy breathing poses, then repeat pose 2 in cells 3–6. Walk: six distinct slow stomping poses with small foot and arm shifts. Attack: raise both arms, hold overhead, slam both fists down with body compression, recover; repeat the final recovery pose in cells 5–6. Hurt: two clear flinch/recoil poses, then repeat pose 2 in cells 3–6. Dead: four progressive crumbling/slumping poses ending as a low heap, then repeat pose 4 in cells 5–6. All frames must visibly communicate their assigned state.
+Scene/backdrop: True transparent canvas with no environment.
+Color palette: Restrained low-saturation cool stone gray, gray-brown, moss green, and a small amount of cool blue-gray in the mineral veins. Tiny contained amber eyes only. No bright red, orange, yellow, magenta, or green pixels outside the natural silhouette; no warm or colored edge halo.
+Materials/textures: Chunky stone plate facets and sparse mineral marks rendered as crisp pixel clusters, without speckled particles.
+Text (verbatim): None.
+Constraints: Preserve exact grid and row order; maintain one coherent golem design; keep all poses legible and contained within individual cells; true alpha around every sprite and full transparency in empty regions.
+Avoid: red/yellow/green fringe, matte, glow, rim light, outlines made of colored pixels, soft edge, antialiasing, bloom, cast shadows, ground plane, floor, background, checkerboard, cell borders, captions, labels, text, logos, watermarks, extra characters, weapons, particles, or decorative props.
+```
+
+#### `golem-atlas-attempt-04.png` — single targeted repair of attempt-03
+
+- Before editing, viewed attempt-03 at its local generated path. Passed only the attempt-03 PNG as the edit target in `referenced_image_paths`; retained `transparent_background: true`.
+- Original output: `D:\dev-data\codex-home\generated_images\01a14c79-c287-7051-aa92-331264232a6b\exec-1ea2a135-00ee-4a11-bed1-da273651f905.png`.
+- Source copy: `art-source/actors/monsters/golem/golem-atlas-attempt-04.png`.
+- Dimensions/encoding: 1373×1145 PNG, RGBA / Format32bppArgb. Width is not divisible by 6, so this output cannot be split into six equal columns and fails the required grid.
+- SHA-256: `B1DE080859A8D61221CC2AC9ABEB624DC96F60A83A0E7EEAA80515E734FD454C`.
+- Alpha counts over the full image: transparent 696,419; partial (1–254) 874,323; opaque 1,343; all four canvas corners have alpha 0. Since the width does not divide into six equal cells, no valid per-cell bounds/foot scan is possible. Full-size view still shows colored red/yellow/green edge fringe and softened/painterly edges; silhouettes remain close to the row bottoms. Rejected; no further repair is allowed for this candidate.
+
+Full targeted-repair prompt:
+
+```text
+Edit the first attached image, which is the target mineral-golem atlas. Make one narrowly scoped repair to its transparent pixel edges and per-cell containment. Preserve the same golem design, rock plates, low-saturation gray and moss palette, cool mineral details, amber eyes, all 30 poses, row order, and the exact 1374 by 1145 canvas with a strict 6-column by 5-row grid of 229 by 229 cells.
+
+Repair only these visible defects: remove every red, yellow, and bright-green fringe or matte pixel outside the natural stone silhouette; make the outside area fully transparent. Convert soft or antialiased edge pixels into crisp stepped pixel clusters with hard opaque-to-transparent edges, without painting a colored rim or outline. Move or scale each pose only as much as needed so every silhouette has at least 12 pixels of fully transparent safety margin on all four sides of its own cell. Keep feet on a consistent row baseline while leaving transparent pixels below the feet; no silhouette may touch the cell boundary. Do not change the pose, facial expression, rock pattern, colors inside the character, lighting, or animation sequence. Do not redraw the atlas, add or remove poses, shift the grid, or introduce props or effects.
+
+Keep the canvas transparent. No background, floor, shadows, grid lines, checkerboard, text, labels, watermark, glow, bloom, soft edge, antialiasing, or colored fringe.
+```
+
 ## 鏽甲哨兵 (`actor:sentinel`)
 
 狀態：正式入選。首次生成與一次外緣修正後完整檢視。正式原稿 `sentinel-atlas-v1.png`，runtime `public/assets/actors/monsters/sentinel-atlas-v1.png`。
