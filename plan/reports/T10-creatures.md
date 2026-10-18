@@ -22,7 +22,7 @@
 - 赤背野豬生成及一次修正後仍有肉眼可見紅色外緣瑕疵，故列為 `UNFINISHED`。兩張原稿保留於 `art-source/actors/monsters/boar/`，沒有 runtime PNG 或 manifest entry。依每組最多一次修正的規則不再重試。
 - 礦岩魔像 `actor:golem` 仍為 `UNFINISHED`。2026-10-18 新增 attempt-03 與其唯一一次修正版 attempt-04，兩張只保留於 `art-source/actors/monsters/golem/`，未建立 runtime PNG 或 subset manifest entry。attempt-03 是 1374×1145、6×5可整除，但 alpha 統計有 886,983 個 partial pixels，30格每格腳底皆到局部 y=228、底部無透明邊，且仍可見紅／黃／綠色暈。attempt-04 是 1373×1145、寬度不能被6整除；四角透明，但仍有 874,323 個 partial pixels、可見彩邊及柔邊，因此也不合格。SHA-256 分別為 `D536E2E847469FE9E3BD9D82BCA5663717D87E33E7EBE8FA238D34C37E2B3DF6` 與 `B1DE080859A8D61221CC2AC9ABEB624DC96F60A83A0E7EEAA80515E734FD454C`。完整 prompt、alpha 細節及輸出檢查在怪物 source log。
 - 鏽甲哨兵首稿有少量外緣紅點，局部修正後 alpha 抽樣最大值由 5 降至 2；視覺無可見色暈，故以 1374×1145、6×5 正式入選。原稿及 runtime SHA-256 相同，metadata 顯示 96×96 並含五種動畫。
-- 古礦守衛一次局部修正後紅色高 alpha 外緣像素抽樣反增（alpha>32 樣本由29至65），未通過視覺透明邊緣檢查，列為 `UNFINISHED`。兩張原稿保留於 `art-source/actors/monsters/guardian/`，沒有 runtime PNG 或 manifest entry；其招式動畫時長尚未接線。
+- 古礦守衛舊候選及新構圖 attempt-03/04 均未通過，列為 `UNFINISHED`。新圖與唯一一次針對修正都為 1373×1145，寬度不能整除6；修正版可見紅色柔邊且全圖紅色高 alpha 診斷像素增加。兩張保留於 `art-source/actors/monsters/guardian/`，沒有 runtime PNG 或 manifest entry；其招式動畫時長尚未接線。
 - 森芽 NPC 雙格 idle 修正版以 1774×887 尺寸通過：正好 2×1 等方格、四角 alpha=0、兩姿勢有細微差異且足底基線一致。以 `actor:guide` / `npc:guide:idle` 入選，source/runtime SHA-256 一致，顯示 96×96，350ms 循環。
 - 岩嶺教官 NPC 雙格 idle 修正版以 1774×887 尺寸通過：2×1格、透明角、人物與姿勢可辨。以 `actor:mentor` / `npc:mentor:idle` 入選，source/runtime SHA-256 一致，顯示96×96、350ms循環。外緣紅像素抽樣總量由86降至66；alpha>32樣本為47，視覺沒有明顯色暈。
 - 木葉商人 `actor:merchant` / `npc:merchant:idle` 仍為 `UNFINISHED`。先前兩輪 attempt-01..04 均只留 source。本輪只生成 attempt-05，並作一次 referenced-image 修正 attempt-06；兩張均1774×887、2×1方格、四角 alpha=0，兩個全身姿勢、方向及基線可辨。修正版完整預覽仍見紅色外緣與柔化／繪畫式輪廓；alpha histogram 為透明1,071,220、部分透明501,654、不透明664，未符合乾淨硬邊及無外緣色暈要求。attempt-05/06 與完整提示、檢查保留於 `art-source/actors/npcs/merchant/` 及 NPC source log；不複製 runtime，也不加入 `public/assets/actors/creature-subset-manifest-v1.json` 的 images 或 animations。已用完本輪一次生成與一次修正，不再重試。
@@ -56,3 +56,14 @@ One new composition and the one permitted targeted repair used built-in ImageGen
 | `mushroom-atlas-attempt-06.png` (repair) | 1374×1145 RGBA, exact 229×229 cells; alpha 0/partial/255 = 824,771/748,221/238; transparent corners | Red fringe is more vivid after repair. Every cell still has <16 px margin on at least one side, so containment fails. | `81B0A3037584B0C70E9B273D4E89244F46434421064FE15692615C9EF4472B89` |
 
 Visual review of both full sheets plus focused `System.Drawing.Bitmap` dimension/alpha/bounds checks were performed; each project copy's hash matches the corresponding generated output. The single repair is exhausted. Neither image was copied to `public/assets/actors/`, and the existing six-image/14-animation creature subset remains unchanged. No complete actors manifest or T10 completion is claimed. No build, tests, typecheck, browser, or project-level regression checks were run.
+
+## Guardian boss follow-up (2026-10-18)
+
+The fresh left-facing guardian composition and one targeted repair were generated with `transparent_background: true`, explicitly referencing the local hero style, accepted slime, and accepted sentinel images; the repair also referenced attempt-03. The original PNGs were copied unchanged to the source folder and their hashes match the ImageGen outputs.
+
+| Candidate | Dimensions / grid | Alpha zero / partial / opaque | Corners | Red-dominant count* | Result |
+| --- | --- | --- | --- | ---: | --- |
+| `guardian-atlas-attempt-03.png` | 1373×1145 RGBA; width not divisible by 6, so no valid 6×5 cells | 726,487 / 845,088 / 510 | all 0 | 79,676 | Source-only; visible red fringe and approximate cell bounds fail safe margins. |
+| `guardian-atlas-attempt-04.png` (repair) | 1373×1145 RGBA; width not divisible by 6, so no valid 6×5 cells | 746,771 / 824,122 / 1,192 | all 0 | 108,322 | Source-only; red fringe remains and the diagnostic count increased. |
+
+*Red-dominant diagnostic: `R > 1.5G`, `R > 1.5B`, and alpha > 32, counted across the whole image; it is not a cell-specific fringe segmentation. Because the sheet width is invalid, equal-width bin bounds are approximate diagnostics, not valid sprite cells. All 30 approximate bins had under 16 px of margin on at least one side. The visual review found the side-profile silhouette and five action rows recognizable, but numerous poses approach or touch bin edges and retain soft red contamination. Full prompts, generation times, raw output paths, reference paths, per-bin bounds, and SHA-256 values are recorded in the guardian section of the monster source log. The one repair is exhausted. No guardian runtime PNG or creature subset manifest entry was added; no build, typecheck, test suite, or browser check was run, and T10 is not complete.
