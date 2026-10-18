@@ -335,3 +335,70 @@ Constraints: use only subdued neutral greens and warm grays/browns. No red, yell
 - Target preview measurements: the first visible alpha row is y=0 in all 112 active columns and the top row covers 112/112 active columns. Left/right active-edge RGBA differs on 11/32 rows (summed per-row RGBA delta 359; maximum 227). The alpha mask has one 8-connected component (3,080 pixels) and no components of area ≤2. Color heuristic counts (visible alpha>0): 14 yellowish preview pixels (`R≥140,G≥120,B≤100`), 0 red preview pixels (`R≥140,G≤100,B≤100,R>1.2G`), and 1 bright-saturated preview pixel (`max(R,G,B)≥180`, channel range ≥45). Raw full-size image counts under the same thresholds are 3,043 yellowish, 29 red, and 959 bright-saturated pixels. Visual inspection of the raw output also shows small yellow flecks along the top edge; the preview is quiet overall but does not clear the color and seam gate.
 - Decision: rejected, source-only / UNFINISHED. The raw dimensions do not match 128×32, source gutters cannot be verified, 11 target-preview rows fail exact edge equality, and visible yellow pixels contradict the restricted palette. No runtime PNG or manifest row was added; environment manifest remains at 18/20 keys. No pixel repair or second ImageGen call was made.
 - Unverified: renderer placement at 112px pitch, runtime alpha gutters/seam, and in-game map visuals. No build, typecheck, test suite, browser, or full-pack verification was run; checks were limited to image metadata/hash, alpha/edge/color metrics, and source/preview visual inspection.
+
+## `env:tile-platform` — fresh composition and one targeted correction (2026-10-18), source-only / REJECTED
+
+- Generation prompt (full):
+
+```text
+Use case: stylized-concept.
+Asset type: production terrain sprite for an original 2D side-scrolling pixel-art game, env:tile-platform.
+Primary request: make one straight horizontal grass-topped platform material tile for display at 128x32.
+Input images: Image 1 is the forest style and pixel-cluster reference only; Image 2 is the accepted ground material and palette reference only; Image 3 is a muted overall palette reference only. Do not copy any scene or character.
+Scene/backdrop: isolated terrain sprite on true transparent alpha.
+Subject and exact geometry: one compact floating platform, with a perfectly flat, unbroken sage-grass walking surface across its top. The platform has a compact muted ochre-earth underside. Its artwork occupies only the middle 87.5 percent of the canvas width, centered; the outermost 6.25 percent on both left and right are completely transparent, full height. The two vertical tile boundaries at the inner edges of those transparent margins have identical RGBA pixel rows so copies tiled with 16px overlap join cleanly. Top edge is level, no pixels above it. Keep underside solid and simple, with just a few quiet broad pixel clusters well away from the join boundaries.
+Style/medium: crisp pixel-cluster art matching the warm forest materials, clear at small gameplay scale, no painterly softness.
+Color palette: subdued sage grass, warm brown and ochre soil, restrained deep-teal stone accents.
+Constraints: genuine transparent alpha with zero-alpha full-height side gutters and no RGB matte or bleed; clean quiet repeat edges; no fringe or halo; no jagged top, no dangling grass, detached pixels, spikes, shadows, supports, posts, rails, ropes, scenery, people, creatures, text, symbols, logos, or watermark. Preserve one narrow 4:1 platform shape; no extra frame or background.
+```
+- Tool: built-in ImageGen, `transparent_background=true`. References in order: `art-source/environment/forest-style-reference-v1.png`, `public/assets/environment/env-tile-ground-v1.png`, and `art-source/actors/hero-style-reference-v1.png`. All three local references were inspected before generation.
+- Generated original: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-d6a5dca8-c77f-445f-b286-d198b5f7a726.png`, generated 2026-10-18 04:51:19 UTC. Unmodified source copy: `art-source/environment/env-tile-platform-t11-06-fresh-candidate-20261018-v2.png`; 2172×724 RGBA, 771,826 bytes, SHA-256 `F8F29C1916CB472192B78EFABA156C0214AEFC9E903E4319CBC88714E6FCE20B`. Alpha bounds `(0,0,2157,699)`, all four corner samples transparent. On the candidate, the nominal 6.25% side gutters contained 1,187 nontransparent pixels; the active top row covered 3/1,900 columns; the inner active edge comparison at columns 136 and 2035 mismatched on 68/724 rows (RGBA delta sum 4,148). Visual inspection shows a non-flat top and chromatic fringe.
+- Targeted correction prompt (full):
+
+```text
+Use case: precise-object-edit.
+Asset type: final correction for the shared env:tile-platform terrain tile, displayed at 128x32.
+Input images: Image 1 is the exact edit target; preserve its grass-over-earth materials and pixel-art style. Image 2 is only a forest pixel-cluster technique reference. Image 3 is only an accepted material-palette reference.
+Primary request: correct only the top geometry and repeat-edge finish of the target platform.
+Change only: replace the wavy top silhouette with one perfectly straight, uninterrupted, 1-pixel-high walkable surface along the top of the terrain; remove all yellow, red, white, cyan, and bright fringe pixels around the top and outer alpha edges; clean the two inner repeat boundaries so their RGBA pixels match row-for-row.
+Keep: one compact horizontal grass-topped earth platform with restrained warm ochre soil, muted sage grass and a few muted teal stone details. Keep its single-piece side view and the target's broad material bands.
+Geometry: the tile has a 128x32 display canvas. The active platform occupies exactly the centered 112px width; the 8px left and right gutters stay completely transparent at every row. The top surface begins at the top row of the active platform and stays level across all 112 active pixels. Neighboring tiles placed every 112px must meet without a visible break.
+Style: crisp pixel clusters, hard clean edges, small-game readability, matching the three references.
+Constraints: true transparent alpha in both side gutters, no RGB matte in transparent pixels, no shadows or extra height above the top, no dangling grass, detached pixels, spikes, supports, posts, ropes, scenery, characters, text, symbols, logos, or watermark.
+```
+- Tool: built-in ImageGen, `transparent_background=true`. References in order: `art-source/environment/env-tile-platform-t11-06-fresh-candidate-20261018-v2.png` (the exact local edit target), `art-source/environment/forest-style-reference-v1.png`, and `public/assets/environment/env-tile-ground-v1.png`.
+- Generated correction: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-ac470f98-3b5a-4d87-907f-b3416501b06e.png`, generated 2026-10-18 04:57:21 UTC. Unmodified source copy: `art-source/environment/env-tile-platform-t11-06-fresh-correction-20261018-v2.png`; 2174×723 RGBA, 736,798 bytes, SHA-256 `ED1A9B3B7F79CB93A22FF9DA38F3EB63473EA2B05EB836267FEDB6557515ABA6`. Alpha bounds `(126,11,2122,698)`, all four corner samples transparent. At the nominal 128×32 display geometry, the 6.25% gutters contained 2,237 nontransparent pixels; top-row alpha covered 0/1,902 active columns; inner active edges at columns 136 and 2037 mismatched on 161/723 rows (RGBA delta sum 5,858). Visual review still shows a bright red/yellow line along the top and protruding lower pixels. Reject both images; keep them source-only. No crop, resize, or pixel repair was applied. No runtime PNG or manifest row was added.
+- Unverified: final runtime downscaling, renderer overlap, and in-game placement. No build, typecheck, tests, browser, or full-pack check was run.
+
+## `env:tile-slope` — fresh composition and one targeted correction (2026-10-18), source-only / REJECTED
+
+- Generation prompt (full):
+
+```text
+Use case: stylized-concept.
+Asset type: production terrain material tile for env:tile-slope in an original 2D side-scrolling pixel-art game; the renderer rotates this tile to follow diagonal footholds.
+Primary request: create one square 128x128-display horizontal earth cross-section, not a diagonal wedge.
+Input images: Image 1 is the forest style and pixel-cluster reference only; Image 2 is the accepted ground tile's color/material reference only; Image 3 is a muted overall palette reference only. Do not copy any scene or character.
+Scene/backdrop: isolated terrain sprite on true transparent alpha.
+Subject and geometry: one square cross-section with a straight, continuous, level sage-grass edge along the entire top row, and a compact solid warm earth body directly beneath it. The top is one stable collision-aligned line; no grass tufts or pixels above it. Keep the full square material within the canvas, with genuine transparency only outside a clean horizontal boundary if any; left and right edges are calm and low detail for visual repetition. Do not draw an angled surface or diagonal wedge inside the tile: the game rotates the whole square texture to make a slope.
+Style/medium: crisp readable pixel clusters consistent with the accepted ground tile; broad simplified shapes and restrained detail.
+Color palette: muted sage grass, warm ochre/brown soil, a few restrained dark teal stones located near the center and away from the repeat edges.
+Constraints: clean natural alpha edge without colored fringe, halo, outline or matte; repeat edges visually quiet; no detached pixels, bright specks, dangling grass, spikes, shadow, supports, scenery, people, creatures, text, symbols, logos, or watermark. No background.
+```
+- Tool: built-in ImageGen, `transparent_background=true`. References in order: `art-source/environment/forest-style-reference-v1.png`, `public/assets/environment/env-tile-ground-v1.png`, and `art-source/actors/hero-style-reference-v1.png`. All three local references were inspected before generation.
+- Generated original: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-95adb0bd-3da7-40c2-a564-2ac73abc6c7e.png`, generated 2026-10-18 04:53:23 UTC. Unmodified source copy: `art-source/environment/env-tile-slope-t11-06-fresh-candidate-20261018-v2.png`; 1254×1254 RGBA, 1,652,158 bytes, SHA-256 `EF19E93E622054BE6FFA716C1B068FD3A27AAE646E4C1F488916ADFFBD8003C3`. Alpha bounds `(0,0,1238,1254)`, corners transparent. The top row covered 14/1254 columns; the left/right edge comparison mismatched on 26/1254 rows (RGBA delta sum 26). Visual review shows a wavy grass cap and bright red/yellow side fringe.
+- Targeted correction prompt (full):
+
+```text
+Use case: precise-object-edit.
+Asset type: final correction of the shared env:tile-slope terrain texture for a 2D side-scroller. The renderer rotates this square earth tile to follow diagonal footholds.
+Input images: Image 1 is the exact edit target; preserve its warm earth and pixel-art material. Image 2 is only a forest pixel-cluster technique reference. Image 3 is only the approved ground tile palette/material reference.
+Primary request: correct only the top boundary and visible edge fringe on the existing square terrain tile.
+Change only: make the grass/earth boundary a single level, perfectly straight, uninterrupted horizontal line across the full top edge. Remove all red, yellow, white and bright chromatic stray pixels from the top and side edges; keep clean, natural terrain-colored edges. Keep left and right boundary bands visually calm and repeatable, with matching edge colors row-for-row so the square material can be tiled before rotation.
+Keep: square canvas; one full warm forest-earth cross-section; muted sage grass cap over warm ochre soil; restrained muted teal stone clusters centered away from the boundaries. Do not turn it into a diagonal wedge; the renderer supplies the slope by rotating the whole square texture.
+Style: crisp pixel clusters and broad shapes consistent with the accepted ground tile, clear at 128x128 display.
+Constraints: true transparent background outside the terrain if present, preserve alpha with no checkerboard or RGB matte; no fringe, halo, outline, jagged top, detached pixels, dangling grass, spikes, additional scenery, people, creatures, props, text, symbols, logos, or watermark.
+```
+- Tool: built-in ImageGen, `transparent_background=true`. References in order: `art-source/environment/env-tile-slope-t11-06-fresh-candidate-20261018-v2.png` (the exact local edit target), `art-source/environment/forest-style-reference-v1.png`, and `public/assets/environment/env-tile-ground-v1.png`.
+- Generated correction: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-90141abb-5767-435a-8baf-05884694ee4b.png`, generated 2026-10-18 04:58:26 UTC. Unmodified source copy: `art-source/environment/env-tile-slope-t11-06-fresh-correction-20261018-v2.png`; 1254×1254 RGBA, 1,655,252 bytes, SHA-256 `D4FD8B1D125476A84252714545A2754C3775DD94F592276FA0BB95F88C2774EF`. Alpha bounds `(0,0,1238,1254)`, corners transparent. The top row covered 21/1254 columns; left/right edges mismatched on 60/1254 rows (RGBA delta sum 60). Visual review still shows a wavy top edge and bright red/yellow fringe. Reject both images; keep them source-only. No crop, resize, or pixel repair was applied. No runtime PNG or manifest row was added.
+- Unverified: rotated rendering, texture seams after the T07 rotation, and in-game visuals. No build, typecheck, tests, browser, or full-pack check was run.
