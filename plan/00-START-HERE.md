@@ -14,7 +14,7 @@
 
 程式、依賴與Git repository已建立。T00 G0與T00-09已完成；2026-10-18使用者曾授權確定性裁切／重排／最近鄰縮放／清邊alpha，T10–T12素材現已完整：actors 22 images／64 animations＋96 hero anchors、environment 20/20、interface 47 images／5 VFX animations；audio manifest 有16 entries。原ImageGen稿、prompt、匯出腳本與檢查證據保留於art-source；詳[本次素材交付](reports/asset-recovery-20261018.md)。
 
-目前仍沒有經驗收的可玩候選、封面或ZIP。T07/T14需接合可見腳底邊距、anchors裝備附著與動作／技能節拍，並以瀏覽器確認音訊與完整主線；不要因舊source-only紀錄重做已入庫素材。其他包現況見[狀態板](status.md)。原八題及追加題已回答，見[06](06-decisions-and-risks.md)。
+目前已有本機 production `dist/`、真實遊戲畫面封面與官方通過的候選 ZIP：`artifacts/game.zip`（`brightwood-first-oath` v`1.0.0-beta.1`）。T07/T08 與 T14 app source 已整合；T16 有限瀏覽器證據到 q01 2/3，另驗 read-load、Esc、正式 UI icons、跨 origin `/dist/` sandbox iframe 與 960/640 尺寸。完整 q01–q08／45–60 分鐘、q01 回報獎勵、瀏覽器 console／真實音訊、fullscreen、cloud、FPS 與 Playroom 帳號發布仍未驗證。請先看[狀態板](status.md)、[T16 報告](reports/T16.md)及[T15封裝證據](../artifacts/T15-package-evidence.json)；不要因舊 source-only 紀錄重做已入庫素材。原八題及追加題已回答，見[06](06-decisions-and-risks.md)。
 
 1. 新開發包開始前讀根 AGENTS，完整讀取最新 Playroom 指定文件，簡述適用要求後開工。
 2. 先讀 [狀態板](status.md)、本包 report 與 task，核對實際工作樹；不要重做已完成包，也不能把未驗證狀態標成通過。

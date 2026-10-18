@@ -1,12 +1,12 @@
 # 經典劍士冒險：多代理實作交接索引
 
-更新：2026-10-18（香港時間）。T00 基礎與 G0 已完成；T00-09 隨四包 canonical manifests 收尾。多個 domain、UI、app、音訊及 Playroom adapter 工作包已有局部報告；T10–T12正式素材交付詳[本次素材交付](reports/asset-recovery-20261018.md)。T07/T14 視聽接合與瀏覽器驗收仍待完成，目前沒有經驗收的可玩候選、封面或ZIP。最新狀態見 [狀態板](status.md) 與各包報告。
+更新：2026-10-18（香港時間）。T00 基礎與 G0 已完成；四包 canonical assets 已齊。T14 app、T07 renderer、T08 UI 已合入；`dist/` 與官方驗證的候選 ZIP 已產出，封面與 package evidence 已交付。T16 目前 PARTIAL：有限真實路線到 q01 2/3、read-load、Esc、icons、跨 origin `/dist/` iframe／sandbox／960/640 有限驗證完成；完整 q01–q08、45–60 分鐘、真實音訊、cloud、fullscreen、FPS 與平台發布未驗證。最新細節見[狀態板](status.md)、[T14 報告](reports/T14.md)、[T16 報告](reports/T16.md)與[封裝證據](../artifacts/T15-package-evidence.json)。
 
 ## 下一位主 Agent 從這裡開始
 
 1. 讀根目錄 AGENTS.md，完整讀取當時最新 Playroom 指定線上規格。
 2. 讀 [00-START-HERE.md](00-START-HERE.md) 與 [狀態板](status.md)，再讀 [01 定案範圍](01-game-design.md)、[07 共用契約](07-shared-contracts.md)、[08 內容與數值](08-content-spec.md)。
-3. T00 G0 與 T00-09 已完成。依 [09 並行調度](09-parallel-dispatch.md) 接續未完成包：T07/T14 實際視覺接合、T14-22 瀏覽器音訊與接合驗收、T14-25 完整路線，再完成 T15-08/11 與 T16。不要重新生成已入庫素材；畫面接合及路線時間未驗收前不標候選完成。
+3. T00 G0 與 T00-09 已完成。T07/T08 source、T14 app、T15 official pack/validate 已交付；接著只處理 T16 明列的必要未驗收項目。完整 q01–q08 及 45–60 分鐘時長未驗證前，不標完整主線驗收通過。不要重新生成已入庫素材。
 4. 不要對所有 17 包重新派工；先讀各 package report 和實際檔案，只補缺口。每包有細步驟、檔案所有權、介面、依賴與完成條件。
 5. 主 Agent 只派工協調、不直接改程式碼；所有子代理依本包 ownership 修改，發現契約缺口時向主 Agent回報，不自行繞過。
 6. 依 [11 整合驗收](11-integration-and-validation.md) 做有限驗收與交付，由主 Agent 維護 [狀態板](status.md)。

@@ -11,16 +11,24 @@
 | T04 | REVIEW | T04 package | 成長、背包、經濟 domain 已交付，待 app/主線整合驗收 |
 | T05 | REVIEW | T05 package | 七地圖與八任務資料/核心已交付，未做全套跨表建置驗收 |
 | T06 | REVIEW | T06 package | actor/boss 核心及局部測試已交付，待 T14 實際遊戲整合 |
-| T07 | PARTIAL | T07 renderer | resize／terrain geometry focused checks 已更新（commit `a118ab6`；8 tests、renderer-only strict tsc 通過）；正式素材已補齊，地圖視覺接合仍未驗收 |
+| T07 | PARTIAL | T07 renderer | renderer／anchor／quest marker／VFX source 已合入；本輪有限瀏覽器看過角色、武器、場景與標記。完整動作、地圖／技能視覺及路線驗收仍未完成 |
 | T08 | DONE | T08 UI | 桌面 UI package 已交 T14；完整 app/遊戲驗收仍由 T14/T16 負責 |
 | T09 | REVIEW | T09 persistence | 存檔核心與格式驗證已交付，待整合/cloud 環境驗收 |
 | T10 | DONE | T10 assets | 素材22 images／64 animations＋96 hero anchors；缺圖已由原ImageGen稿匯出補齊；遊戲接合未驗證 |
 | T11 | DONE | T11 assets | 素材20/20 keys；platform／slope由原ImageGen稿確定性匯出入庫（`4765c45`）；遊戲接合未驗證 |
 | T12 | DONE | T12 assets | 素材47 images／5 VFX animations；heavy-strike v9匯出入庫（`0520204`）；遊戲接合未驗證 |
 | T13 | REVIEW | T13 audio | 16 個原創 WAV/controller 已交付；瀏覽器解碼、播放與生命週期未驗收 |
-| T14 | PARTIAL | 本輪整合代理 | app 流程與 16 項音訊 controller 已接線；四包正式 manifests 現已齊全。T07 視覺接合、瀏覽器音訊驗收與 T14-25 完整路線仍未驗證 |
-| T15 | PARTIAL | T15 package | SDK/tools/Manifest/workflow 已備妥；缺實際畫面封面，無 ZIP/validate |
-| T16 | NOT_STARTED | 主 Agent | 等 T14-c 與 T15 候選 ZIP；不得先填通過 |
+| T14 | PARTIAL | 本輪整合代理 | app／T07／T08 已整合；有限正常瀏覽器路線到 q01 2/3，讀檔、Esc、正式 UI icons 與 iframe input 有限驗證。真實音訊播放及完整路線仍 UNVERIFIED |
+| T15 | DONE | T15 package | 正式 gameplay cover、119-entry ZIP、官方 pack/validate、hash／entry／機密掃描已完成；證據見 `artifacts/T15-package-evidence.json` |
+| T16 | PARTIAL | 本輪整合代理 | typecheck/build/content、T15 archive、cross-origin `/dist/` iframe、sandbox/allow、960/640 resize 已完成；完整主線、fullscreen、雲端與 FPS 未驗證 |
+
+## 2026-10-18 候選與驗收更新
+
+- main runtime candidate 為 commit `56ec0fe`。`npm.cmd run typecheck`、`npm.cmd run build`、`npm.cmd run check:content` 各執行一次且 exit 0；build 另有 Vite 大 chunk 建議警告。未重跑完整測試套件。
+- T15 以 `56ec0fe` 的 `dist/` 產生 `artifacts/game.zip`：`brightwood-first-oath` v`1.0.0-beta.1`、tools `1.1.0`；官方 pack/validate 通過。119 entries、36,361,975 bytes、SHA-256 `13920DD169E1852DF200DFA8416A85D6268A179342ECB45C9C6CAEE3D68CE875`；T15 機密／可疑檔名掃描無命中。完整紀錄見 `artifacts/T15-package-evidence.json`。
+- 單一 Vite server `http://127.0.0.1:5173/` 與 hidden IAB：建立 `旅人`、正常接取 q01，真實擊殺計數到 2/3；reload 後「繼續冒險」恢復 EXP 20/55、角色、地圖與道具，續玩後進度到 2/3。Esc 關閉任務面板、官方 interface icons、角色武器／場景有限視檢通過。未完成 q01 第三擊、森芽回報／獎勵，也未走 q02–q08；沒有計時或宣稱 45–60 分鐘。
+- 同一 server 以 `http://localhost:5173/dist/` 載入不同 origin 子目錄 iframe，`sandbox="allow-scripts allow-same-origin allow-pointer-lock"`、`allow="fullscreen; autoplay; gamepad"`。production 首屏可載入，960×540 與 640×360 顯示正常；暫時遊玩中 ArrowRight、J、Esc 與普攻可操作。CUA 沒有此頁的 browser-console logs capability；Vite server log未見錯誤，只有 production dynamic-import analysis warning。瀏覽器 console clean、可聽見 WAV／音訊 lifecycle、fullscreen／平台退出、真實 Playroom account/cloud、FPS／完整路線均維持 UNVERIFIED。
+- T14-22、T14-25、T16-04/05/07/08/09 未完成。T16-06 只完成跨 origin／子目錄、sandbox/allow、尺寸及基本輸入子集；未完成 console、音訊或全套平台矩陣。沒有 tag、Release 或平台上架。
 
 ## 契約
 
@@ -30,7 +38,7 @@
 
 本次只完成素材：經使用者明確授權，復原既有ImageGen原稿並保留裁切／重排／最近鄰縮放／清邊alpha腳本。新素材完成視檢，離線素材audit通過檔案存在、相對路徑、key唯一、切格、動畫引用、96個anchors、各包體積及新圖16px安全邊／binary alpha。應用程式loadRequiredAssetManifests以本地JSON檔案讀取通過四包（audio沿用既有16 entries）。詳細證據見[素材交付報告](reports/asset-recovery-20261018.md)。
 
-未跑本輪build、typecheck、測試套件、瀏覽器、完整路線、pack/validate或iframe驗收。T07/T14需整合可見腳底邊距、anchors裝備附著及動作／技能節拍；T14-22／T14-25、T15-08／11、T16仍未完成。沒有新可玩候選、封面或ZIP，沒有tag／Release／上架。先前程式檢查結果只見各包歷史report，本次不重複宣稱通過。
+（歷史紀錄）截至素材復原報告建立時，本輪 build、typecheck、瀏覽器、pack/validate 與 iframe 驗收尚未執行，當時亦沒有候選封面或 ZIP。以上結論已由本節 2026-10-18 候選與驗收更新取代；完整路線、真實音訊播放、雲端、fullscreen 與平台發布仍未驗證。
 
 2026-10-18 主線節奏補充（package-level 靜態估算，非完整路線試玩）：T01/T03 估算 41 隻必需敵人的高輸出攻擊窗約 58.55 秒（首擊至末擊理想下界約 55.60 秒）；普攻-only 配置約 790.56 次攻擊、約 7.20 分鐘理想連續攻擊。T02 前向地圖走訪為 11,110 px／約 79 秒；T02/T05 代表任務路線約 34,340–35,140 px／約 4.1–4.2 分鐘無阻走路。估值不含完整追敵、互動、選單、失誤、操作與實際戰鬥節奏，不能相加宣稱通關時間；目前沒有證據支持 45–60 分鐘，模型顯示主線很可能偏短。各包依 08 等待整合可玩路線的代表性實測再集中調節奏；T14-25 仍未執行，主線時長未驗證。
 

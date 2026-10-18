@@ -87,3 +87,5 @@ ImageGen按T10/T11/T12資產ID排工作單，不使用模糊的「最近一張�
 主 Agent 僅負責派工與協調，未直接寫程式；經明確委派，主工作目錄的單一整合代理負責 T00 收尾、T14 組裝及後續 T16 唯一瀏覽器驗收。其寫入範圍為根設定、`src/contracts/**`、`src/app/**`、`src/main.ts`、`tests/integration/**`、`tools/check-content.ts`、全局狀態與交接文件；不改 `src/render/**` 或 T15 平台打包路徑。
 
 T07 renderer 與 T15 package 分別在獨立 worktree 工作，只由整合代理核對並合併；共用 main index 不並行寫入。整合代理先完成 T00-09 與自身 T14 準備並提交，再承接 T07/T15 合併。T16 只在 T07 接合及可執行候選就緒後進行，使用單一共用瀏覽器／server，截取真實遊戲畫面供 T15 封面，不以測試資料注入或跳級代表完整主線時長。
+
+2026-10-18 交接更新：整合代理已完成 T07/T08/T14/T15 main 組裝，候選 runtime 固定為 `56ec0fe`；T15 的 `artifacts/game.zip`／官方 validate 與 evidence scan 已完成。T16 仍為 PARTIAL：有限 q01 路線、save reload、Esc、interface icons、跨 origin 子目錄 iframe／sandbox／resize 已記錄；完整 q01–q08、45–60 分鐘、可聽音訊、browser console、fullscreen、cloud/FPS 與平台發布不宣稱通過。若只更新 task/report/status，不重建或重包；任何 runtime source 變更都必須重新 build/pack/validate。
