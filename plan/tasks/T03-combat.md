@@ -11,7 +11,7 @@
 - [x] T03-03 按玩家／敵人faction選目標，facing決定x範圍、腳底決定y範圍，判碰撞體重疊；targets按距離再id穩定排序。
 - [x] T03-04 stepCombat處理(now−dt,now]與有效窗相交，不能因一步跨窗而漏命中；每段每target只一次，hitIds在state更新。
 - [x] T03-05 套08傷害公式，注入rng固定測試；首領knockback0，其他以來源方向；只產Hit，app套用。
-- [ ] T03-06 回傳started／rejected／hits供app產音畫，已結束攻擊回收；來源死亡／離圖由app清狀態，不保留幽靈攻擊。
+- [x] T03-06 回傳started／rejected／hits供app產音畫，已結束攻擊回收；來源死亡／離圖由app清狀態，不保留幽靈攻擊。`tests/combat.test.ts` 覆蓋開始事件、死／缺失來源的 rejected 與攻擊移除、到期回收；T14-24 filtered integration 通過致死即清玩家攻擊及復活重置戰鬥。成功離圖清理由 `completeMapTransition` 以新 `CombatState` 重置，已核對程式；T14-24 沒有單獨驗收一般成功離圖。
 - [x] T03-07 排除自己、同陣營及dead目標；普攻只一個、sweep最多三個；多次呼叫不重複扣血。
 - [x] T03-08 將「預備攻擊」回傳狀態與原state分開，app可在MP失敗時放棄，不消耗冷卻。不要直接扣MP或檢查另一套PlayerProgress。
 - [x] T03-09 核心測試：窗前／內／後、跨窗、固定面向、重複tick去重、群攻上限、冷卻拒絕輸入未變、固定rng結果。只跑combat.test.ts。
