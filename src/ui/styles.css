@@ -167,6 +167,11 @@
   background: rgba(93, 40, 37, .54);
 }
 
+.ms-interface-icon-fallback {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .ms-badge--level,
 .ms-badge--category {
   border-color: rgba(229, 199, 122, .48);
@@ -233,6 +238,18 @@
 
 .ms-profile__portrait--missing {
   color: #ffd39b;
+}
+
+.ms-profile__portrait--empty {
+  border-style: solid;
+  color: #ffe9a7;
+}
+
+.ms-profile__marker {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .ms-profile__main {
@@ -448,6 +465,28 @@
   font-weight: 800;
 }
 
+.ms-quick-slot__icon {
+  display: grid;
+  grid-row: 1 / span 2;
+  width: 31px;
+  height: 30px;
+  place-items: center;
+  overflow: hidden;
+}
+
+.ms-quick-slot__icon-image,
+.ms-quick-slot__icon .ms-interface-icon-fallback {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.ms-quick-slot__icon .ms-interface-icon-fallback {
+  padding: 1px;
+  font-size: 7px;
+}
+
 .ms-quick-slot .ms-badge {
   grid-row: 1 / span 2;
   width: 31px;
@@ -620,6 +659,20 @@
 .ms-bag-slot__number { color: rgba(217, 229, 223, .28); font-size: 9px; }
 .ms-bag-slot__name { overflow: hidden; color: #f5e8c7; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .ms-bag-slot__quantity { align-self: flex-end; color: #f5d987; font-size: 9px; font-weight: 800; }
+
+.ms-bag-slot__icon {
+  align-self: center;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.ms-item-detail__icon { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+.ms-equipment-slot__icon { justify-self: center; width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+.ms-skill-card__icon,
+.ms-shop-card__icon,
+.ms-sell-row__icon { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
 
 .ms-item-detail,
 .ms-equipment-slot,
