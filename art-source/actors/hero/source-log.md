@@ -358,3 +358,40 @@ Constraints: the 1024×1024 image must be evenly sliceable into exact 128×128 c
 ### Focused review
 
 Pillow confirms the image is 1254×1254, not divisible into 8×8. For diagnostic purposes only, floor-divided 156×156 bins show 0/64 cells meeting a 16 px margin and 0/64 with the alpha bounding box contained in the requested central 76×76 pixel area. These are not valid frame boundaries because the full grid is invalid. Visual inspection shows the eight broad action rows and consistent character identity, but colored red/yellow-green fringe and painterly partial-alpha edges persist; pose silhouettes also exceed the requested small central area. This composition is source-only. No runtime copy, actor manifest row, animation entry, anchors, or further hero retry was created.
+
+## Hero-cloth v8 one-shot pixel-art recovery (2026-10-18)
+
+**UNFINISHED — source-only.** The parent agent authorized one materially different fresh attempt for actor:hero-cloth only. It used the built-in ImageGen tool with transparent_background=true and two local references that were opened with view_image before generation: the protagonist identity/style board and the accepted in-game guide sprite. This was one generation call; no edit or repair followed.
+
+- Raw ImageGen output: D:\dev-data\codex-home\generated_images\01a14d94-7caf-76d3-b8a4-db39f8fc5a6f\exec-d6be4251-4b07-4d8d-970c-f0e34511e917.png
+- Local references: F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png; F:\Desktop\MapleStory\public\assets\actors\npcs\guide-idle-v1.png
+- Source copy: F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v8-attempt-1.png
+- PNG metadata: RGBA, 1254×1254; width and height each leave remainder 6 when divided by 8.
+- Alpha count: 880,648 fully transparent; 690,117 partially transparent; 1,751 fully opaque; all 256 alpha values occur.
+- SHA-256 of raw output and source copy: 4c5d6cf8f371f226e8825efbbc9a04f6575685a8e3d9b572f6d5ed4aa57dcb99 (identical).
+
+The image visually reads as eight broad action rows and preserves the recognizable hero, but it is still softly painted rather than crisp limited-palette pixel art and shows visible red/yellow/green edge fringe. Because 1254×1254 is not divisible into an exact 8×8 grid, frame boundaries, per-cell containment, and the required 16 px margins cannot be certified. No approximate bins were treated as frame measurements. The source copy is byte-identical to the raw output; no crop, resize, regrid, threshold, recolor, alpha edit, or other repair was performed. No runtime asset, manifest row, animation entry, or anchors were added. The one-shot recovery allowance is exhausted.
+
+### Full generation prompt
+
+~~~text
+Use case: stylized-concept
+Asset type: production pixel-art sprite atlas for actor:hero-cloth in a 2D side-scrolling desktop action RPG.
+Primary request: create one fresh 8×8 animation atlas of the same original young swordsman shown in the references, wearing only his simple beginner cloth outfit. Every cell contains one independent animation frame, all poses face right in side view, with the same identity, scale, head shape, hair and clothing.
+Input images: Image 1 is the local protagonist identity and palette reference at F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png. Keep the short chestnut hair, friendly large brown eye, warm skin and big-head proportions; ignore its painted background, front/back poses, scarf, sword, scabbard and strap. Image 2 is the accepted local guide actor sprite at F:\Desktop\MapleStory\public\assets\actors\npcs\guide-idle-v1.png. Use only its compact game-sprite readability, dark outline weight and warm/teal palette relationship; do not copy the guide's clothes, bag, hairstyle, frame layout or any edge fringe.
+Scene/backdrop: genuine transparent alpha, empty between sprites; no ground, shadow, backdrop, color key or checkerboard.
+Subject: a small, right-facing boy hero in a muted teal short tunic with a simple cream hem, ochre belt, pale trousers, brown wrist wraps and dark boots. Keep both hands empty. No equipment or effects.
+Style/medium: deliberately crisp limited-palette pixel art made from hard opaque square pixel clusters and stepped silhouettes, with about 16 consistent colors, compact highlights, stable 1–2 pixel outlines, and no soft texture. It should look like a manually authored classic 16-bit game sprite, not a painted illustration, not smooth digital art, not 3D, and not antialiased.
+Composition/framing: output EXACTLY 1024×1024 pixels. The canvas is exactly 8 columns by 8 rows, each cell exactly 128×128 pixels, with boundaries aligned to the canvas edges. No outer border, gutters, dividers, gridlines, labels, panels or padding. Each sprite stays entirely in the central 64×80-pixel safe box of its own cell, centered horizontally; leave at least 24 fully transparent pixels on left/right and 24 top/bottom. Grounded soles share local y=104; jump and climb frames remain centered within their cell. Exactly one sprite per cell, no touching or crossing boundaries.
+Rows top to bottom, columns left to right:
+1 idle: four tiny breathing shifts in columns 1–4; columns 5–8 duplicate frame 4.
+2 walk: six clear alternating gait poses in columns 1–6; columns 7–8 duplicate frame 6.
+3 jump: rising then falling in columns 1–2; columns 3–8 duplicate frame 2.
+4 climb: four alternating hand/foot poses in columns 1–4; columns 5–8 duplicate frame 4.
+5 attack: six readable bare-handed forward melee poses in columns 1–6; columns 7–8 duplicate frame 6.
+6 hurt: two distinct recoil poses in columns 1–2; columns 3–8 duplicate frame 2.
+7 dead: four compact collapse poses ending lying down in columns 1–4; columns 5–8 duplicate the final pose.
+8 buff: four restrained power-up stances in columns 1–4, no particles or aura; columns 5–8 duplicate frame 4.
+Lighting/mood: warm, friendly, readable at small size, with consistent flat pixel shading.
+Constraints: exact 1024×1024 dimensions and exact 128×128 cells are mandatory. Keep every pose within its own safe box. Use the same face, hair and beginner outfit throughout. Every sprite pixel is fully opaque; every empty pixel is fully transparent. No antialiasing, partially transparent edge pixels, red/yellow/green fringe, stray marks, glow, haze, gradients, blur, painterly texture, weapon, sword, sheath, strap, scarf, shield, hat, helmet, background, shadow, text, logo, watermark, extra person or object.
+~~~
