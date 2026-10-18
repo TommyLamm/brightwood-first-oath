@@ -1,0 +1,353 @@
+{
+  "version": 1,
+  "pack": "actors",
+  "images": [
+    {
+      "key": "equip:starter-sword",
+      "url": "assets/actors/equip-starter-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0.25,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:iron-sword",
+      "url": "assets/actors/equip-iron-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0.25,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:steel-sword",
+      "url": "assets/actors/equip-steel-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0.25,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:guardian-sword",
+      "url": "assets/actors/equip-guardian-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0.25,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:cloth-cap",
+      "url": "assets/actors/equip-cloth-cap-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "equip:leather-cap",
+      "url": "assets/actors/equip-leather-cap-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "equip:iron-helm",
+      "url": "assets/actors/equip-iron-helm-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:slime",
+      "url": "assets/actors/monsters/slime-atlas-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:sentinel",
+      "url": "assets/actors/monsters/sentinel-atlas-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:guide",
+      "url": "assets/actors/npcs/guide-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:mentor",
+      "url": "assets/actors/npcs/mentor-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:healer",
+      "url": "assets/actors/npcs/healer-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:keeper",
+      "url": "assets/actors/npcs/keeper-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    }
+  ],
+  "animations": [
+    {
+      "key": "slime:idle",
+      "imageKey": "actor:slime",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "slime:walk",
+      "imageKey": "actor:slime",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "slime:attack",
+      "imageKey": "actor:slime",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "slime:hurt",
+      "imageKey": "actor:slime",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "slime:dead",
+      "imageKey": "actor:slime",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "sentinel:idle",
+      "imageKey": "actor:sentinel",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "sentinel:walk",
+      "imageKey": "actor:sentinel",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "sentinel:attack",
+      "imageKey": "actor:sentinel",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "sentinel:hurt",
+      "imageKey": "actor:sentinel",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "sentinel:dead",
+      "imageKey": "actor:sentinel",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:guide:idle",
+      "imageKey": "actor:guide",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:mentor:idle",
+      "imageKey": "actor:mentor",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:healer:idle",
+      "imageKey": "actor:healer",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:keeper:idle",
+      "imageKey": "actor:keeper",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    }
+  ],
+  "audio": []
+}
