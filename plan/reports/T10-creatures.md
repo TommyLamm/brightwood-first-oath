@@ -43,3 +43,16 @@
 - `package.json` 沒有專用 assets-check script。已以 PowerShell `ConvertFrom-Json` + `System.Drawing` 對本子集 manifest 執行局部完整性檢查：JSON 可解析、6 個 URL 存在、圖像尺寸可被 columns/rows 整除、image/animation keys 唯一、frame index 在格數範圍內、frameMs 數量相符且皆為正數。實際輸出：`PASS manifest JSON v1, 6 images, 14 animations; all URLs exist, grids divide image dimensions, keys are unique, and frames/timings are in range.`
 - 沒有執行 `typecheck`、`build`、完整測試套件或 `check:content`。`plan/tasks/T10-actor-assets.md` 的 T10-06/07/08 保持未完成勾選，並附上 partial/UNFINISHED 狀態。
 - 上輪提交記錄曾因 `.git/index.lock` 權限被拒而未建立 scoped commit。本輪僅商人 source/log 與兩張 source-only 候選已由精確路徑提交，commit `2ae81ef`；本輪 task/report 狀態另作獨立提交，未改 runtime 或 subset metadata。
+
+## `actor:mushroom` reattempt (2026-10-18)
+
+**UNFINISHED — source-only; no runtime asset or subset-manifest entry.** Before updating this report, the live template and seven linked Playroom specifications were read in full at 2026-10-18 01:40 UTC. Their exact raw URLs, applicable requirements, and this package's check scope are recorded in the corresponding mushroom section of `art-source/actors/monsters/source-log.md`. Applicable requirements: keep resource URLs relative if promoted, accurately declare desktop support, handle iframe size, avoid navigation/popups/forms, avoid account/admin APIs, and do not publish. Checks were limited to this mushroom atlas and its possible subset metadata.
+
+One new composition and the one permitted targeted repair used built-in ImageGen with `transparent_background: true`. The first call passed the accepted slime atlas, accepted sentinel atlas, and hero style reference through `referenced_image_paths`. The repair call passed attempt-05 as target and the same three style references. Both generated files were copied unchanged to `art-source/actors/monsters/mushroom/`:
+
+| Candidate | Image dimensions and alpha | Per-cell/layout result | SHA-256 |
+| --- | --- | --- | --- |
+| `mushroom-atlas-attempt-05.png` | 1374×1145 RGBA, exact 229×229 cells; alpha 0/partial/255 = 823,027/749,544/659; transparent corners | All five action rows are visible; red halo persists. All 30 cells miss the 16 px safety margin in at least one direction; several attack poses touch horizontal cell edges and rows 1–4 touch vertical edges. | `AB6682DE0C27EB3E065FFA10489D8D8C7F41FE936728727D009683E8BD8B1DC6` |
+| `mushroom-atlas-attempt-06.png` (repair) | 1374×1145 RGBA, exact 229×229 cells; alpha 0/partial/255 = 824,771/748,221/238; transparent corners | Red fringe is more vivid after repair. Every cell still has <16 px margin on at least one side, so containment fails. | `81B0A3037584B0C70E9B273D4E89244F46434421064FE15692615C9EF4472B89` |
+
+Visual review of both full sheets plus focused `System.Drawing.Bitmap` dimension/alpha/bounds checks were performed; each project copy's hash matches the corresponding generated output. The single repair is exhausted. Neither image was copied to `public/assets/actors/`, and the existing six-image/14-animation creature subset remains unchanged. No complete actors manifest or T10 completion is claimed. No build, tests, typecheck, browser, or project-level regression checks were run.
