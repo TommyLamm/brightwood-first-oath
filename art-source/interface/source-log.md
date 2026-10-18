@@ -401,3 +401,27 @@ Per-frame bounds use exclusive right/bottom coordinates within each 512×512 sou
 | 5 | (7,23,426,416) / (7,23,86,96) | (215,270,275,322) / (215,270,237,190) | (1,0,468,512) / (1,0,44,0) | (248,265,318,323) / (248,265,194,189) |
 
 Both PNGs divide exactly into the prompted 3×2 square source grid; each cell is 512×512. Neither source meets the required true-transparent field or the minimum 8px alpha>0 clearance: alpha>0 extends to or within 6px of frame edges in multiple frames, and the visible images show broad brown/black and orange haze behind all effects. The repair did not remove the haze; the 1–15 alpha pixel count increased from 83029 to 101849. The six-frame composition is visibly distinct from the older diagonal crescent candidates, but both source images are rejected for runtime. No strip rearrangement, extraction, alpha editing, runtime PNG, or manifest change was made. vfx:heavy-strike remains source-only and absent from the manifest. The one generation and one repair are spent; stop here.
+
+## Heavy-strike v4 horizontal composition — rejected after edge inspection (2026-10-18)
+
+- Tool: built-in ImageGen with `transparent_background=true`.
+- Raw ImageGen output: `D:\dev-data\codex-home\generated_images\01a14d56-7672-7503-ab36-99b3ec121ffd\exec-fc76dd50-d57c-41a6-be98-e1138392571a.png`.
+- Preserved unchanged as `interface-vfx-heavy-strike-v4-attempt1.png`; SHA-256 `3573684C156CFBAEB0DEFA78D0FE516D12E4AD5967D359816BC34CB446653E90`.
+- Dimensions/mode: 2172×724 RGBA. Six equal horizontal cells are 362×724 each.
+- Viewed local references: `public/assets/interface/vfx-sweep-v2.png`, `public/assets/interface/vfx-hit-v2.png`, `public/assets/interface/vfx-guard-v2.png` (style and clean alpha only).
+- Alpha histogram bins `[0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255]`: `[1498267, 47444, 2551, 2373, 3318, 3572, 14992, 11]`; alpha extrema 0–255.
+- Alpha>0 exclusive cell-local bounds and margins `(left,top,right,bottom)`: frame 0 `(9,164,362,558)`, margins `(9,164,0,166)`; frame 1 `(0,150,362,555)`, margins `(0,150,0,169)`; frame 2 `(23,55,362,620)`, margins `(23,55,0,104)`; frame 3 `(1,138,362,667)`, margins `(1,138,0,57)`; frame 4 `(0,192,362,668)`, margins `(0,192,0,56)`; frame 5 `(3,200,310,541)`, margins `(3,200,52,183)`.
+- Visual review found the new near-vertical cleave and low two-sided shockwave progression. However, alpha-bearing pixels reach a cell edge in all six frames and the source contains 47,444 low-alpha (1–15) pixels. It fails frame containment and clean transparent negative-space review; it is source-only. No crop, rearrangement, alpha edit, runtime file, or manifest change was made.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: one original six-frame horizontal transparent pixel-art VFX strip for vfx:heavy-strike in a classic 2D side-view forest RPG.
+Input images: Image 1 is the accepted vfx:sweep runtime strip, for crisp pixel clusters and clean alpha only; do not copy its blue crescent. Image 2 is the accepted vfx:hit strip, for compact pixel-scale particles only; do not copy its starburst. Image 3 is the accepted vfx:guard strip, only as a reference for genuine transparent negative space; do not copy its ring.
+Primary request: create one forceful heavy sword impact animation with a distinctive near-vertical falling cleave and low two-sided ground shockwave, visibly different from a horizontal crescent sweep and a radial starburst. Show exactly six distinct chronological frames, left to right: (1) one tiny suspended steel-white glint with two amber pixels; (2) a short, narrow near-vertical steel-white blade-energy stroke tipped with restrained gold; (3) the stroke descends and compresses into a small sharp gold contact point; (4) one compact peak impact with two separate jagged amber-and-steel shockwave wedges spreading low to the left and right, plus only a few short upward chips; (5) the wedges separate into a few contracting angular fragments near the ground; (6) only two tiny fading gold motes. Effects only, with no character and no drawn weapon. Use hard pixel clusters as the full effect; a forceful hit must come from the angular shapes, not a diffuse aura.
+Composition/framing: exactly six equal cells in one horizontal row, one chronological frame per cell, no extra rows. Keep every alpha-bearing pixel at least 32 pixels inside all four edges of its own cell, with generous fully transparent empty space between neighboring cells. Center the full action in each cell; keep the main shapes compact enough that no frame is clipped. Preserve a consistent center and scale, while allowing the frame-4 wedges to be the widest pose. Do not draw cell borders or grid lines.
+Style/medium: handcrafted pixel-art game effect matching the supplied accepted strips' crisp clusters, outlined edges, and restrained luminous highlights; no blur, smooth gradients, bloom, or photographic rendering.
+Color palette: warm amber and gold with a small steel-white core and muted steel-blue edge accents.
+Constraints: genuine RGBA transparency. Every empty pixel and all negative space must be alpha 0. No haze, fog, mist, translucent color wash, tinted bands, background, fill, floor line, shadow, glow field, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, repeated frames, crescent arc, starburst, extra objects, character, sword, or cross-cell pixels.
+```
