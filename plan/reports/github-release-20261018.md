@@ -21,7 +21,14 @@
 
 ## 發布結果
 
-main 已推送；tag／workflow／Release 尚待本次發布流程完成，完成後補實際結果。
+main 已推送，`v1.0.0-beta.1` 已發布為非 draft 的預發布版，唯一資產為 `game.zip`。
+
+- Release：https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.1
+- 成品：https://github.com/TommyLamm/brightwood-first-oath/releases/download/v1.0.0-beta.1/game.zip
+- 成功的 workflow：https://github.com/TommyLamm/brightwood-first-oath/actions/runs/39114729320
+- 固定 tag 對應 source commit：`b4bb6f01c29a9e62684492bc000eaf3872a18d5f`；workflow 修正位於 main `24396ce`，以手動 dispatch checkout 此固定 tag。
+- CI 重新建置的發布 ZIP：36,361,927 bytes，GitHub asset digest `sha256:b3b6d2eb34fbc20ecfd8350a7695d75ee7eb4b6f2353bc04cbbd74fb32001d03`。這是雲端建置成品，與上方保留的 Windows 本機候選 ZIP hash 分開記錄。
+- CI 的建置、版本核對、固定工具 archive／metadata checksum、官方 pack／validate 與資產上傳均成功。Release notes 已包含 q01 2/3 及其餘未驗證限制。
 
 首次 tag workflow 在排程前被 GitHub 拒絕：範本於 job-level env 使用 `runner.temp`，該位置不支援 runner context。已在 main 改為執行 step 時以 `RUNNER_TEMP` 寫入 `GITHUB_ENV`，保留既有完整驗證；並加入指定既有 tag 的手動 dispatch，從固定 tag checkout 發布。不移動、刪除或覆寫 `v1.0.0-beta.1`；其 runtime 與內容版本不變。
 

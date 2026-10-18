@@ -1,6 +1,6 @@
 # 實作狀態板
 
-2026-10-18 repository 更新：已建立 Public repository [TommyLamm/brightwood-first-oath](https://github.com/TommyLamm/brightwood-first-oath)，main 已推送。三個已完成工作樹與臨時分支已清除，原提交歷史保存在 main；尚未追蹤的計畫、來源原稿與預覽已補提交。正在發布 `v1.0.0-beta.1` 預發布版；實際結果見 [GitHub 發布報告](reports/github-release-20261018.md)。下方先前「沒有 tag／Release」是候選驗收當時的歷史狀態，不代表本次後續發布結果。Playroom 尚未上架。
+2026-10-18 repository 更新：Public repository [TommyLamm/brightwood-first-oath](https://github.com/TommyLamm/brightwood-first-oath) 的 main 已推送，[v1.0.0-beta.1 預發布 Release](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.1) 已建立，唯一 `game.zip` 已上傳；GitHub workflow 建置／固定工具驗證／pack／validate 全部成功。三個已完成工作樹與臨時分支已清除，原提交歷史保存在 main；尚未追蹤的計畫、來源原稿與預覽已補提交。實際結果見 [GitHub 發布報告](reports/github-release-20261018.md)。下方先前「沒有 tag／Release」是候選驗收當時的歷史狀態。Playroom 尚未上架。
 
 只有主 Agent 更新。建立計劃不算實作完成。狀態：NOT_STARTED → READY → IN_PROGRESS → PARTIAL／BLOCKED／REVIEW → DONE。缺驗收標 UNVERIFIED，不寫 PASS。
 
