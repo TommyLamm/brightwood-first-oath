@@ -19,5 +19,6 @@
 - [x] T08-11 960×540預設、640×360仍能捲動視窗，頂層panel關閉順序固定，拖移若提供則clamp可達；文字用textContent，名稱不插HTML。
 - [x] T08-12 dispose移除監聽，render不反覆重新綁事件／丟失文字焦點；不自行new遊戲或更改localStorage。
 - [x] T08-13 純布局／文字不新增測試、不開瀏覽器；只確認實際匯出／命令完整，最終一次整合操作由T16負責。
+- [x] T08-14 快捷欄、背包、裝備、技能與商店按正式 `UiSnapshot.interfaceManifest` key 顯示介面圖示；快捷欄按鍵從 `settings.bindings` 讀取。manifest 缺 key 或圖片載入失敗時保留明確提示，移除過期 T12/T05 暫用版面標籤。
 
 完成：每個承諾功能有可用操作和錯誤訊息，非假按鈕；report列所有GameCommand發送點與app需要提供的view欄位。缺欄位報主Agent改contracts，不私讀全局。
