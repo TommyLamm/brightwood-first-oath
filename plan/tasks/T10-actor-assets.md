@@ -27,3 +27,8 @@
 
 UNFINISHED，source-only。新候選 snail-atlas-attempt-05.png 為 1373×1145，寬度不能整除6；alpha 含 638,942 個 partial pixels，且可見紅色外緣殘留。因格線無效，逐格結果僅作近似診斷：120 個cell邊中110個未達16px安全距離，腳底線也不一致。一次新構圖額度已用完，不作repair；無runtime PNG或subset manifest entry。完整prompt、參考路徑、工具、hash與檢查記於 art-source/actors/monsters/snail/source-log.md 和 plan/reports/T10-creatures.md。
 **Snail attempt-06 (2026-10-18):** UNFINISHED, source-only. New built-in ImageGen output is 1374×1145 and divides exactly into 6×5 cells, but all 30 cells fail the 16 px safety margin on at least one side. The full atlas has 619,020 partially transparent pixels and visible red/yellow-green fringe; no repair or runtime copy was made. Full prompt, reference paths, hash and focused checks are in art-source/actors/monsters/snail/source-log.md and plan/reports/T10-creatures.md.
+## T10-02/06 recovery evidence (2026-10-18)
+
+Hero-cloth v6 and its single targeted repair are both UNFINISHED and source-only. Both outputs are 1254×1254 RGBA, not divisible into 8×8 cells, and visibly retain colored fringe/soft alpha; the repair did not improve the full-image red-fringe diagnostic or approximate per-cell safety margins. No runtime hero image or anchors were created. See plan/reports/T10-hero.md and art-source/actors/hero/source-log.md.
+
+Snail attempt-06 is also UNFINISHED and source-only. It divides into 6×5 cells but every cell misses the 16 px safety margin on at least one side and the atlas has visible colored fringe. No runtime snail image or manifest entry was created. See plan/reports/T10-creatures.md and art-source/actors/monsters/snail/source-log.md.
