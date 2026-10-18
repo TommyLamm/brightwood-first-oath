@@ -19,6 +19,7 @@ import {
   telegraphCueGeometry,
 } from './combat-primitives.js';
 import {
+  actorFootOffset,
   GROUND_TILE_OVERLAP,
   groundTilePositions,
   ladderSpriteGeometry,
@@ -65,6 +66,12 @@ type TextureRegistration = {
   url: string;
   columns: number;
   rows: number;
+};
+
+type DrawnActor = {
+  sprite: Phaser.GameObjects.Sprite;
+  frame: number;
+  footOffsetY: number;
 };
 
 const BASE_WIDTH = 960;
@@ -292,6 +299,7 @@ export function createWorldRenderer(
   }
   const loadedImages = new Set<string>();
   const ownedTextureKeys = new Set<string>();
+  const actorFootOffsets = new Map<string, number[]>();
   const actorSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropLabels = new Map<string, Phaser.GameObjects.Text>();
@@ -325,6 +333,56 @@ export function createWorldRenderer(
     textureRegistrations!.delete(key);
     loadedImages.delete(key);
     ownedTextureKeys.delete(key);
+    actorFootOffsets.delete(key);
+  };
+
+  const measureActorFootOffsets = (asset: AssetImage): void => {
+    if (!asset.key.startsWith('actor:') || actorFootOffsets.has(asset.key)) return;
+    if (typeof document === 'undefined') {
+      actorFootOffsets.set(asset.key, Array.from({ length: asset.columns * asset.rows }, () => 0));
+      return;
+    }
+
+    const source = scene.textures.get(asset.key).getSourceImage() as CanvasImageSource & { width: number; height: number };
+    const frameWidth = source.width / asset.columns;
+    const frameHeight = source.height / asset.rows;
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) {
+      throw new RendererAssetError(`無法檢查角色透明腳底：${asset.key}`, [asset.key]);
+    }
+
+    try {
+      context.drawImage(source, 0, 0);
+      const pixels = context.getImageData(0, 0, source.width, source.height).data;
+      const offsets: number[] = [];
+      for (let frame = 0; frame < asset.columns * asset.rows; frame += 1) {
+        const frameX = (frame % asset.columns) * frameWidth;
+        const frameY = Math.floor(frame / asset.columns) * frameHeight;
+        let lastOpaqueRow = -1;
+        for (let y = frameHeight - 1; y >= 0 && lastOpaqueRow < 0; y -= 1) {
+          for (let x = 0; x < frameWidth; x += 1) {
+            const alphaIndex = ((frameY + y) * source.width + frameX + x) * 4 + 3;
+            if (pixels[alphaIndex]! > 0) {
+              lastOpaqueRow = y;
+              break;
+            }
+          }
+        }
+        offsets.push(actorFootOffset(asset.displayHeight, asset.pivotY, frameHeight, lastOpaqueRow));
+      }
+      actorFootOffsets.set(asset.key, offsets);
+    } catch (error) {
+      throw new RendererAssetError(
+        `無法讀取角色透明腳底：${asset.key}。確認圖片同源且可讀後重試。`,
+        [asset.key],
+      );
+    } finally {
+      canvas.width = 0;
+      canvas.height = 0;
+    }
   };
 
   const textureDisplayScale = (image: AssetImage): { x: number; y: number } => {
@@ -365,6 +423,7 @@ export function createWorldRenderer(
         if (registration?.url === resolveUrl(image.url) && registration.columns === image.columns && registration.rows === image.rows) {
           loadedImages.add(image.key);
           ownedTextureKeys.add(image.key);
+          measureActorFootOffsets(image);
           continue;
         }
         throw new RendererAssetError(`Phaser texture key 已由其他來源佔用：${image.key}`, [image.key]);
@@ -407,6 +466,7 @@ export function createWorldRenderer(
       for (const image of toLoad) {
         if (!scene.textures.exists(image.key)) throw new RendererAssetError(`載入完成但找不到 Phaser texture：${image.key}。確認 URL 與檔案後可重試。`, [image.key]);
         splitLoadedImage(image);
+        measureActorFootOffsets(image);
         newlyLoaded.add(image.key);
         loadedImages.add(image.key);
         ownedTextureKeys.add(image.key);
@@ -588,7 +648,7 @@ export function createWorldRenderer(
     startedAtMs?: number,
     totalDurationMs?: number,
     frameOverride?: number,
-  ): Phaser.GameObjects.Sprite => {
+  ): DrawnActor => {
     const image = assets.images.get(imageKey);
     if (!image) throw new RendererAssetError(`Snapshot 引用未載入角色圖：${imageKey}`, [imageKey]);
     let sprite = actorSprites.get(key);
@@ -601,9 +661,11 @@ export function createWorldRenderer(
     const previousClock = actorAnimationClocks.get(key);
     const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
     actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
-    setImageFrame(sprite, image, frameOverride ?? pickAnimationFrame(animation, nowMs, animationStartedAtMs, totalDurationMs));
-    sprite.setPosition(position.x, position.y).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);
-    return sprite;
+    const frame = frameOverride ?? pickAnimationFrame(animation, nowMs, animationStartedAtMs, totalDurationMs);
+    const footOffsetY = imageKey.startsWith('actor:') ? actorFootOffsets.get(imageKey)?.[frame] ?? 0 : 0;
+    setImageFrame(sprite, image, frame);
+    sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);
+    return { sprite, frame, footOffsetY };
   };
 
   const attackStartedAt = (snapshot: WorldSnapshot, actorId: string): AttackInstance | undefined =>
@@ -638,7 +700,7 @@ export function createWorldRenderer(
     const playerAnimationDuration = playerAnimation === 'attack' && playerAttack
       ? skillDuration(playerAttack, catalog)
       : undefined;
-    const playerSprite = drawActor(
+    const drawnPlayer = drawActor(
       'player',
       playerKey,
       playerAnimation,
@@ -649,12 +711,13 @@ export function createWorldRenderer(
       playerAnimationDuration,
       jumpFrame,
     );
+    const playerSprite = drawnPlayer.sprite;
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
       if (!npc || !npcVisual) continue;
       const image = assets.images.get(npcVisual.imageKey)!;
-      const npcSprite = drawActor(`npc:${placement.npcId}`, npcVisual.imageKey, `npc:${npc.id}:idle`, { x: placement.x, y: placement.y }, 1, snapshot.nowMs);
+      const npcSprite = drawActor(`npc:${placement.npcId}`, npcVisual.imageKey, `npc:${npc.id}:idle`, { x: placement.x, y: placement.y }, 1, snapshot.nowMs).sprite;
       const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
       npcVisual.nameText.setVisible(npcInViewport);
@@ -678,7 +741,7 @@ export function createWorldRenderer(
         snapshot.nowMs,
         dead ? monster.deadAtMs ?? snapshot.nowMs : monsterIsAttacking ? attack?.startedAtMs : undefined,
         monsterIsAttacking && attack ? skillDuration(attack, catalog) : undefined,
-      );
+      ).sprite;
       if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
       if (!dead && isInViewport(monster.movement.position)) {
         const image = assets.images.get(definition.actorKey);
@@ -721,7 +784,7 @@ export function createWorldRenderer(
     for (const drop of visibleDrops) {
       const imageKey = drop.itemId ? catalog.rules.items[drop.itemId]?.iconKey : undefined;
       if (imageKey && assets.images.has(imageKey)) {
-        const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs);
+        const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
         if (!isInViewport(drop.position)) sprite.setVisible(false).setActive(false);
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
