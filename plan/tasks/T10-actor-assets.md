@@ -7,8 +7,8 @@
 ## 步驟
 
 - [x] T10-01 建source-log，生成固定短髮劍士、正側視／服裝輪廓參考，保留相同比例／五官／配色。這是開工參考，不當正式動畫完成。
-- [ ] T10-02 生成hero-cloth的8×8動作圖集，依10的8列狀態，畫面純透明、foot一致、各格無裁切。檢查格數及跨格污染，不可用一張站姿當走路。（本輪 UNFINISHED：v3 attempt + 一次 targeted repair 仍輸出 1254×1254、mod 8=6×6 且有彩邊／大量 partial alpha；候選及完整 prompts 僅存 art-source/actors/hero，未入 runtime／manifest／anchors，詳 plan/reports/T10.md。）回收的 v4 原稿與一次修正均為 1254×1254，未整除 8×8 且仍有彩邊；僅保存於 source，詳 plan/reports/T10.md。
-- [ ] T10-03 基於同主角參考製作hero-leather、hero-iron，動作／臉／髮不改、僅服裝不同；三衣服具可見升級差異。本輪 leather/iron v3 各生成一版並各做一次修正；仍未整除 8×8 且邊緣檢視不合格，僅保存於 source。
+- [ ] T10-02 生成hero-cloth的8×8動作圖集，依10的8列狀態，畫面純透明、foot一致、各格無裁切。檢查格數及跨格污染，不可用一張站姿當走路。（UNFINISHED：v3/v4 均為1254×1254、mod 8=6×6且有彩邊／大量partial alpha；最新attempt/repair的hash與視覺檢查記於plan/reports/T10.md。曾評估可重現後處理；因無法可靠還原格界，且色彩key會有抹除角色顏色風險，未處理或入runtime／manifest／anchors。）
+- [ ] T10-03 基於同主角參考製作hero-leather、hero-iron，動作／臉／髮不改、僅服裝不同；三衣服具可見升級差異。最新v3 attempt/repair仍為1254×1254、mod 8=6×6且有紅／黃綠外緣與繪畫式柔邊；未通過格線、安全邊與輪廓檢視，僅保存於source，詳plan/reports/T10.md。
 - [x] T10-04 生成四武器及三帽，透明、方向／pivot一致，主角圖集手上不烘焙固定武器，避免換裝仍拿兩把。
 - [ ] T10-05 為每個hero有效frame填hand/head anchors，按10坐標，武器attack rotation逐格可用；不是全部frame盲填同一點。
 - [ ] T10-06 逐個生成snail/slime/mushroom/boar/golem/sentinel五狀態圖集（6×5），身形／色盤一致但輪廓可分辨；不加第七普通怪。（部分：slime、sentinel已驗收入選；snail、mushroom、boar、golem均UNFINISHED且只有source候選。golem新增attempt-03/04後仍未通過：attempt-03可整除但有可見彩邊、柔邊且腳底貼格底；attempt-04寬1373不能整除6，仍有彩邊與大量partial alpha。無runtime/manifest entry；完整prompt、hash及檢查詳`plan/reports/T10-creatures.md`與怪物source log。）
