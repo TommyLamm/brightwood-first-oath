@@ -3,3 +3,4 @@ dist/
 artifacts/
 .playroom/tmp/
 .playroom/work/
+.playroom/tools/extracted-*/

@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-18 16:45 HKT",
+  "sourceCommit": "56ec0fe",
+  "aggregateChecks": {
+    "owner": "integration",
+    "result": "exit 0",
+    "commands": [
+      "npm.cmd run typecheck",
+      "npm.cmd run build",
+      "npm.cmd run check:content"
+    ]
+  },
+  "tools": {
+    "version": "1.1.0",
+    "sdkVersion": "1.1.0",
+    "protocolVersion": 1,
+    "manifestSchemaVersions": [
+      1,
+      2
+    ],
+    "archive": ".playroom/tools/playroom-game-tools-1.1.0.zip",
+    "sha256": "e016fa38a89de5ffb026a4629d3d436f45ea9f009c6e97ca5447c99c22b20aa1"
+  },
+  "packagingCommands": [
+    {
+      "command": "node tools/playroom/pack.mjs dist artifacts/game.zip",
+      "exitCode": 0,
+      "output": "Packed brightwood-first-oath v1.0.0-beta.1 (tools 1.1.0)"
+    },
+    {
+      "command": "node tools/playroom/validate.mjs artifacts/game.zip",
+      "exitCode": 0,
+      "output": "Valid: brightwood-first-oath v1.0.0-beta.1 (tools 1.1.0)"
+    }
+  ],
+  "archive": {
+    "path": "F:\\Desktop\\MapleStory\\artifacts\\game.zip",
+    "sha256": "13920DD169E1852DF200DFA8416A85D6268A179342ECB45C9C6CAEE3D68CE875",
+    "zipBytes": 36361975,
+    "entryCount": 119,
+    "uncompressedBytes": 39357115,
+    "topLevelNames": [
+      "assets",
+      "cover.png",
+      "game.json",
+      "index.html",
+      "vendor"
+    ],
+    "requiredRootFilesPresent": [
+      "game.json",
+      "index.html",
+      "cover.png",
+      "vendor/playroom-sdk.js"
+    ],
+    "platformLimits": {
+      "zip64MiB": true,
+      "uncompressed256MiB": true,
+      "entries10000": true,
+      "cover5MiB": true
+    }
+  },
+  "cover": {
+    "entry": "cover.png",
+    "bytes": 1006776,
+    "sha256": "4E66F74FFFE578F3FE9A040DB5E0DAA9430DE0493BE18F478A66C4B5A888BE77"
+  },
+  "limitedScan": {
+    "runtimeTextEntriesScanned": 12,
+    "secretPatternMatches": [],
+    "suspiciousNames": []
+  },
+  "publication": {
+    "tagCreated": false,
+    "githubReleaseCreated": false,
+    "platformPublishCalled": false
+  }
+}
