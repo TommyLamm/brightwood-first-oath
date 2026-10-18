@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Foothold } from '../contracts/definitions.js';
+import type { Foothold, QuestDef, QuestView } from '../contracts/definitions.js';
 import {
   GROUND_TILE_OVERLAP,
   groundTilePositions,
@@ -15,6 +15,10 @@ import {
   segmentTileGeometry,
   WORLD_DEPTH,
   actorFootOffset,
+  heroAnchorPosition,
+  heroAnchorRotation,
+  questMarkerGeometry,
+  questMarkerNpcIds,
 } from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {
@@ -142,5 +146,60 @@ describe('actor foot geometry', () => {
     expect(actorFootOffset(96, 1, 128, 127)).toBe(0);
     expect(actorFootOffset(96, 0.5, 128, 111)).toBe(-36);
     expect(actorFootOffset(96, 1, 128, -1)).toBe(0);
+  });
+
+  it('maps per-frame hero anchors through the foot trim and mirrors them with facing', () => {
+    const image = { displayWidth: 96, displayHeight: 96, pivotX: 0.5, pivotY: 1 };
+    const coordinateSpace = {
+      width: 96,
+      height: 96,
+      origin: 'frame-top-left',
+      facing: 'right',
+      sourceFramePixels: 128,
+    } as const;
+    const anchor = { x: 52.5, y: 33 };
+
+    expect(heroAnchorPosition({ x: 100, y: 200 }, image, anchor, coordinateSpace, 1, 12))
+      .toEqual({ x: 104.5, y: 149 });
+    expect(heroAnchorPosition({ x: 100, y: 200 }, image, anchor, coordinateSpace, -1, 12))
+      .toEqual({ x: 95.5, y: 149 });
+    expect(heroAnchorPosition(
+      { x: 100, y: 200 },
+      { ...image, pivotX: 0.25 },
+      anchor,
+      coordinateSpace,
+      -1,
+      12,
+    )).toEqual({ x: 71.5, y: 149 });
+    expect(heroAnchorRotation(-15, 1)).toBe(-15);
+    expect(heroAnchorRotation(-15, -1)).toBe(15);
+  });
+});
+
+describe('renderer quest markers', () => {
+  it('shows markers for available givers and ready turn-ins only', () => {
+    const statuses: QuestView['status'][] = ['available', 'ready', 'active', 'locked', 'claimed'];
+    const views: QuestView[] = statuses.map((status, index) => ({
+      questId: `q${index}`,
+      title: `Quest ${index}`,
+      status,
+      objectives: [],
+      reward: { exp: 0, coins: 0, items: [] },
+    }));
+    const quests: Record<string, Pick<QuestDef, 'giverNpcId' | 'turnInNpcId'>> = {
+      q0: { giverNpcId: 'guide', turnInNpcId: 'guide' },
+      q1: { giverNpcId: 'mentor', turnInNpcId: 'keeper' },
+      q2: { giverNpcId: 'mentor', turnInNpcId: 'mentor' },
+      q3: { giverNpcId: 'guide', turnInNpcId: 'guide' },
+      q4: { giverNpcId: 'keeper', turnInNpcId: 'keeper' },
+    };
+
+    expect([...questMarkerNpcIds(views, quests)].sort()).toEqual(['guide', 'keeper']);
+    expect(questMarkerGeometry({ npcId: 'guide', x: 250, y: 300 }, 96, 32)).toEqual({
+      x: 250,
+      y: 164,
+      originX: 0.5,
+      originY: 0.5,
+    });
   });
 });

@@ -1,4 +1,6 @@
-import type { Foothold, Ladder, NpcPlacement, Portal } from '../contracts/definitions.js';
+import type { AssetImage } from '../contracts/asset-manifest.js';
+import type { HeroAnchorCoordinateSpace, HeroAnchorFrame } from '../contracts/hero-anchors.js';
+import type { Foothold, Ladder, NpcPlacement, Portal, QuestDef, QuestView } from '../contracts/definitions.js';
 
 export type TerrainPoint = { x: number; y: number };
 
@@ -22,6 +24,13 @@ export type FootAnchor = {
 export type LadderSpriteGeometry = FootAnchor & {
   width: number;
   height: number;
+};
+
+export type QuestMarkerGeometry = {
+  x: number;
+  y: number;
+  originX: 0.5;
+  originY: 0.5;
 };
 
 export const PLATFORM_TILE_DISPLAY_WIDTH = 128;
@@ -81,6 +90,61 @@ export function actorFootOffset(
     return 0;
   }
   return displayHeight * pivotY - (lastOpaqueRow + 1) * displayHeight / sourceFrameHeight;
+}
+
+/** Maps a measured 96x96 hero anchor through the actor frame's pivot and foot trim. */
+export function heroAnchorPosition(
+  footPosition: TerrainPoint,
+  image: Pick<AssetImage, 'displayWidth' | 'displayHeight' | 'pivotX' | 'pivotY'>,
+  anchor: HeroAnchorFrame['head'] | HeroAnchorFrame['hand'],
+  coordinateSpace: HeroAnchorCoordinateSpace,
+  facing: -1 | 1,
+  footOffsetY: number,
+): TerrainPoint {
+  const anchorOffsetX = anchor.x * image.displayWidth / coordinateSpace.width;
+  const localOffsetX = facing > 0
+    ? anchorOffsetX
+    : image.pivotX * image.displayWidth * 2 - anchorOffsetX;
+  return {
+    x: footPosition.x - image.displayWidth * image.pivotX + localOffsetX,
+    y: footPosition.y + footOffsetY - image.displayHeight * image.pivotY
+      + anchor.y * image.displayHeight / coordinateSpace.height,
+  };
+}
+
+/** Mirrors an anchor-driven weapon angle together with the sprite's horizontal flip. */
+export function heroAnchorRotation(rotationDeg: number, facing: -1 | 1): number {
+  return facing > 0 ? rotationDeg : -rotationDeg;
+}
+
+/** Returns the NPCs that should display a quest marker from the shared quest projection. */
+export function questMarkerNpcIds(
+  questViews: readonly QuestView[],
+  quests: Readonly<Record<string, Pick<QuestDef, 'giverNpcId' | 'turnInNpcId'>>>,
+): Set<string> {
+  const npcIds = new Set<string>();
+  for (const view of questViews) {
+    const quest = quests[view.questId];
+    if (!quest) continue;
+    if (view.status === 'available') npcIds.add(quest.giverNpcId);
+    if (view.status === 'ready') npcIds.add(quest.turnInNpcId);
+  }
+  return npcIds;
+}
+
+/** Places a quest marker above both the actor and its name label. */
+export function questMarkerGeometry(
+  placement: NpcPlacement,
+  actorHeight: number,
+  markerHeight: number,
+  labelClearance = 24,
+): QuestMarkerGeometry {
+  return {
+    x: placement.x,
+    y: placement.y - actorHeight - markerHeight / 2 - labelClearance,
+    originX: 0.5,
+    originY: 0.5,
+  };
 }
 
 /** Places overlapping ground tiles from the foothold's left endpoint. */
