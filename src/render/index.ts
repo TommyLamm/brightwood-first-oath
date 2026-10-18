@@ -3,7 +3,13 @@ import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/ass
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
 import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
-import { groundTilePositions, segmentTileGeometry } from './geometry.js';
+import {
+  groundTilePositions,
+  ladderSpriteGeometry,
+  npcNameGeometry,
+  portalFootAnchor,
+  segmentTileGeometry,
+} from './geometry.js';
 
 type RendererAssets = {
   images: Map<string, AssetImage>;
@@ -536,28 +542,30 @@ export function createWorldRenderer(
       environmentTextureKeys.add(key);
     }
     for (const ladder of map.ladders) {
-      const height = ladder.bottomY - ladder.topY;
-      if (height <= 0) throw new RendererAssetError(`Ladder 高度必須為正：${ladder.id}`, ['env:ladder']);
       const image = assets.images.get('env:ladder')!;
-      const sprite = addStaticSprite(terrainLayer, 'env:ladder', ladder.x, ladder.bottomY);
-      sprite.setOrigin(0.5, 1).setDisplaySize(image.displayWidth, height);
+      const geometry = ladderSpriteGeometry(ladder, image.displayWidth);
+      if (geometry.height <= 0) throw new RendererAssetError(`Ladder 高度必須為正：${ladder.id}`, ['env:ladder']);
+      const sprite = addStaticSprite(terrainLayer, 'env:ladder', geometry.x, geometry.y);
+      sprite.setOrigin(geometry.originX, geometry.originY).setDisplaySize(geometry.width, geometry.height);
       environmentTextureKeys.add('env:ladder');
     }
     for (const portal of map.portals) {
-      addStaticSprite(terrainLayer, 'env:portal', portal.x, portal.y).setOrigin(0.5, 1);
+      const anchor = portalFootAnchor(portal);
+      addStaticSprite(terrainLayer, 'env:portal', anchor.x, anchor.y).setOrigin(anchor.originX, anchor.originY);
       environmentTextureKeys.add('env:portal');
     }
     for (const placement of map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       if (!npc) continue;
       const image = assets.images.get(npc.actorKey)!;
-      const text = scene.add.text(placement.x, placement.y - image.displayHeight - 4, npc.name, {
+      const nameGeometry = npcNameGeometry(placement, image.displayHeight);
+      const text = scene.add.text(nameGeometry.x, nameGeometry.y, npc.name, {
         color: '#fff4d4',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
         stroke: '#27323a',
         strokeThickness: 3,
-      }).setOrigin(0.5, 1);
+      }).setOrigin(nameGeometry.originX, nameGeometry.originY);
       foregroundLayer.add(text);
       npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text });
       text.setDepth(placement.y + 0.1);
@@ -651,7 +659,8 @@ export function createWorldRenderer(
       const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
       npcVisual.nameText.setVisible(npcInViewport);
-      npcVisual.nameText.setPosition(placement.x, placement.y - image.displayHeight - 4);
+      const nameGeometry = npcNameGeometry(placement, image.displayHeight);
+      npcVisual.nameText.setPosition(nameGeometry.x, nameGeometry.y);
     }
     scene.cameras.main.startFollow(playerSprite, true);
     for (const monster of snapshot.monsters) {

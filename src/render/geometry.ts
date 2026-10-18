@@ -1,4 +1,4 @@
-import type { Foothold } from '../contracts/definitions.js';
+import type { Foothold, Ladder, NpcPlacement, Portal } from '../contracts/definitions.js';
 
 export type TerrainPoint = { x: number; y: number };
 
@@ -10,6 +10,18 @@ export type SegmentTileGeometry = {
   rotation: number;
   originX: 0.5;
   originY: 0;
+};
+
+export type FootAnchor = {
+  x: number;
+  y: number;
+  originX: 0.5;
+  originY: 1;
+};
+
+export type LadderSpriteGeometry = FootAnchor & {
+  width: number;
+  height: number;
 };
 
 /** Places overlapping ground tiles from the foothold's left endpoint. */
@@ -40,5 +52,36 @@ export function segmentTileGeometry(foothold: Foothold, displayHeight: number): 
     rotation: Math.atan2(dy, dx),
     originX: 0.5,
     originY: 0,
+  };
+}
+
+/** Treats ladder.bottomY as its footpoint and sizes it up to topY. */
+export function ladderSpriteGeometry(ladder: Ladder, displayWidth: number): LadderSpriteGeometry {
+  return {
+    x: ladder.x,
+    y: ladder.bottomY,
+    width: displayWidth,
+    height: ladder.bottomY - ladder.topY,
+    originX: 0.5,
+    originY: 1,
+  };
+}
+
+/** Positions a portal's visual anchor at its map-defined foot coordinate. */
+export function portalFootAnchor(portal: Pick<Portal, 'x' | 'y'>): FootAnchor {
+  return { x: portal.x, y: portal.y, originX: 0.5, originY: 1 };
+}
+
+/** Keeps the NPC label attached above the actor whose position is its footpoint. */
+export function npcNameGeometry(
+  placement: NpcPlacement,
+  actorHeight: number,
+  gap = 4,
+): FootAnchor {
+  return {
+    x: placement.x,
+    y: placement.y - actorHeight - gap,
+    originX: 0.5,
+    originY: 1,
   };
 }

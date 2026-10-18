@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { Foothold } from '../contracts/definitions.js';
-import { groundTilePositions, segmentTileGeometry } from './geometry.js';
+import {
+  groundTilePositions,
+  ladderSpriteGeometry,
+  npcNameGeometry,
+  portalFootAnchor,
+  segmentTileGeometry,
+} from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {
   return { id: 'test', x1, y1, x2, y2, dropThrough };
@@ -46,5 +52,31 @@ describe('renderer terrain geometry', () => {
     expect(left.y).toBeCloseTo(start.y);
     expect(right.x).toBeCloseTo(end.x);
     expect(right.y).toBeCloseTo(end.y);
+  });
+
+  it('anchors ladders by bottom foot coordinate and stretches to the declared top', () => {
+    expect(ladderSpriteGeometry({ id: 'ladder-1', x: 80, topY: 140, bottomY: 300 }, 32)).toEqual({
+      x: 80,
+      y: 300,
+      width: 32,
+      height: 160,
+      originX: 0.5,
+      originY: 1,
+    });
+  });
+
+  it('anchors portals and NPC labels to map foot positions', () => {
+    expect(portalFootAnchor({ x: 420, y: 360, id: 'portal-1', targetMapId: 'town', targetSpawnId: 'in', requiredQuestId: null, minLevel: 1 })).toEqual({
+      x: 420,
+      y: 360,
+      originX: 0.5,
+      originY: 1,
+    });
+    expect(npcNameGeometry({ npcId: 'guide', x: 160, y: 300 }, 96)).toEqual({
+      x: 160,
+      y: 200,
+      originX: 0.5,
+      originY: 1,
+    });
   });
 });
