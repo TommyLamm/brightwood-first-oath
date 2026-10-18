@@ -148,6 +148,7 @@ export type UiSnapshot = {
   stats: import('./types.js').DerivedStats | null;
   questViews: QuestView[];
   catalog: ContentCatalog;
+  interfaceManifest?: AssetManifest | null;
   saveStatus: SaveStatus;
   toast: string | null;
   panels: PanelId[];

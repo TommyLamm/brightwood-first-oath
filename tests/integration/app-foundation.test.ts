@@ -132,9 +132,18 @@ describe('T14-a app foundation', () => {
     expect('error' in started).toBe(false);
     if ('error' in started) return;
 
+    const interfaceManifest = {
+      version: 1 as const,
+      pack: 'interface' as const,
+      images: [],
+      animations: [],
+      audio: [],
+    };
+
     const snapshot = createUiSnapshot({
       ...createInitialAppState(2, 'ui-test'),
       catalog: catalog.value,
+      assetManifests: [interfaceManifest],
       gameplay: started.gameplay,
       screen: 'playing',
     });
@@ -143,6 +152,7 @@ describe('T14-a app foundation', () => {
     expect(snapshot?.stats?.maxHp).toBeGreaterThan(0);
     expect(snapshot?.panels).toEqual([]);
     expect(snapshot?.canReturnTown).toBe(true);
+    expect(snapshot?.interfaceManifest).toBe(interfaceManifest);
 
     const arenaGameplay = structuredClone(started.gameplay);
     arenaGameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
