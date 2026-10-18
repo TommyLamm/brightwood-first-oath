@@ -14,7 +14,7 @@
 - [x] T00-06 建立穩定nextEntityId、可注入seeded RNG與結果helper放contracts/helpers.ts；這些沒有DOM／Phaser依賴。ID帶session前綴，不在runtime重用。
 - [x] T00-07 建index.html遊戲容器與UI容器；src/main.ts只顯示「開發中：系統尚未接入」，可以載入Phaser但不偽造開始遊戲。無自動播放。（T00 初始入口已完成；後由 T14 commit `ab0019f` 接線替代，本次不重加 `src/main.ts`。）
 - [x] T00-08 建最小內容檢查runner，依T01/T05公開資料聚合檢查；資料未就緒由主Agent暫不執行聚合，勿製造大量佔位正式內容。
-- [ ] T00-09 建public/assets四包目錄與manifest schema說明、art-source不入成品策略；不替素材包提交空manifest當完成。（部分完成：四包目錄與 schema policy 已有；actors 有 13 images／14 animations 的 partial canonical manifest，但缺完整主角圖集、anchors、五種怪及 merchant；environment 缺 platform/slope；interface 缺 heavy-strike；audio 已完成。只列已驗收素材，缺項未用佔位 row。）
+- [x] T00-09 建立 `public/assets/` 四包目錄與 manifest schema policy，並由 Vite 僅打包 `public/`，讓 `art-source/` 留在成品外。2026-10-18 素材交付後四包 canonical manifests 均完整：actors 22 images／64 animations＋96 hero anchors、environment 20 images、interface 47 images／5 VFX animations、audio 16 entries；素材報告的 app loader 檢查通過，引用檔案存在。詳見 `plan/reports/asset-recovery-20261018.md`。不代表 renderer 視覺接合或音訊瀏覽器播放已驗收。
 - [x] T00-10 確認最小typecheck/build，記實際命令；發布G0，通知所有包真實匯入路徑、工具指令及contracts版本。
 
 ## 完成條件與交付

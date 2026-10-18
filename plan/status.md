@@ -4,7 +4,7 @@
 
 | 包 | 狀態 | 擁有者 | 輸出／下一步 |
 | --- | --- | --- | --- |
-| T00 | PARTIAL | 主 Agent | G0 已開放；T10–T12正式素材已補齊；T00-09聚合／遊戲接線驗收待後續工作，見素材交付報告 |
+| T00 | DONE | 本輪整合代理 | G0、共用契約與根設定完成；T00-09 已隨四包 canonical manifests／素材交付收尾。遊戲接合另由 T14/T16 驗收 |
 | T01 | REVIEW | T01 package | 規則、物品、技能、怪物資料與局部測試已交付，待整合驗收 |
 | T02 | REVIEW | T02 package | 移動核心及 15 項局部測試已交付，待手感／遊戲整合驗收 |
 | T03 | REVIEW | T03 package | 戰鬥核心及死亡清理交接已交付，未驗收完整路線 |
@@ -18,7 +18,7 @@
 | T11 | DONE | T11 assets | 素材20/20 keys；platform／slope由原ImageGen稿確定性匯出入庫（`4765c45`）；遊戲接合未驗證 |
 | T12 | DONE | T12 assets | 素材47 images／5 VFX animations；heavy-strike v9匯出入庫（`0520204`）；遊戲接合未驗證 |
 | T13 | REVIEW | T13 audio | 16 個原創 WAV/controller 已交付；瀏覽器解碼、播放與生命週期未驗收 |
-| T14 | PARTIAL | 主 Agent | app 流程已接線；T14-22 正式視覺與 T14-25 完整路線未完成，無可玩候選 |
+| T14 | PARTIAL | 本輪整合代理 | app 流程與 16 項音訊 controller 已接線；四包正式 manifests 現已齊全。T07 視覺接合、瀏覽器音訊驗收與 T14-25 完整路線仍未驗證 |
 | T15 | PARTIAL | T15 package | SDK/tools/Manifest/workflow 已備妥；缺實際畫面封面，無 ZIP/validate |
 | T16 | NOT_STARTED | 主 Agent | 等 T14-c 與 T15 候選 ZIP；不得先填通過 |
 
@@ -39,3 +39,5 @@
 
 
 2026-10-18 本次素材復原完成：下方／前段歷史紀錄中的source-only結論是指未處理原稿，已由本次使用者授權的確定性匯出解除缺圖；原稿仍保留，正式使用新版本PNG與更新manifest。素材完成不等於T14/T16遊戲驗收完成。
+
+2026-10-18 T00-09 收尾：四包正式 manifest／素材齊全（actors 22 images／64 animations＋96 anchors、environment 20 images、interface 47 images／5 animations、audio 16 entries），asset-recovery 報告已記 `loadRequiredAssetManifests` 以本地 JSON 通過。T00 標 DONE。T14 音訊接線已在 app；仍需 T07 將正式角色／地形／VFX 呈現接到實際遊戲並檢查腳底、anchors、動作節拍，另以瀏覽器驗證 WAV 播放。T14-25 完整 45–60 分鐘路線未跑，時長仍 UNVERIFIED；T15 截圖／封面／ZIP 及 T16 驗收未完成。沒有 build、typecheck、測試、瀏覽器、pack/validate 或發布的新結果。
