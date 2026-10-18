@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { AssetManifest } from './asset-manifest.js';
+import type { HeroAnchorManifest } from './hero-anchors.js';
 import type { CommandDraft, PanelId } from './commands.js';
 import type {
   ContentCatalog,
@@ -116,6 +117,7 @@ export type DropState = {
 export type WorldSnapshot = {
   mapId: Id;
   nowMs: number;
+  questViews: QuestView[];
   player: {
     id: EntityId;
     movement: MovementState;
@@ -176,6 +178,7 @@ export type WorldRendererFactory = (
   scene: Phaser.Scene,
   assetManifests: AssetManifest[],
   catalog: ContentCatalog,
+  heroAnchors?: HeroAnchorManifest,
 ) => WorldRenderer;
 
 export type UiFactory = (
