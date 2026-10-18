@@ -24,6 +24,12 @@ export type LadderSpriteGeometry = FootAnchor & {
   height: number;
 };
 
+export const PLATFORM_TILE_DISPLAY_WIDTH = 128;
+export const PLATFORM_TILE_DISPLAY_HEIGHT = 32;
+export const PLATFORM_TILE_SIDE_GUTTER = 8;
+export const PLATFORM_TILE_ACTIVE_PITCH =
+  PLATFORM_TILE_DISPLAY_WIDTH - PLATFORM_TILE_SIDE_GUTTER * 2;
+
 /** Places overlapping ground tiles from the foothold's left endpoint. */
 export function groundTilePositions(
   foothold: Foothold,
@@ -36,6 +42,16 @@ export function groundTilePositions(
   const count = Math.max(1, Math.ceil(Math.max(0, length - displayWidth) / pitch) + 1);
   return Array.from({ length: count }, (_, index) => ({
     x: foothold.x1 + index * pitch,
+    y: foothold.y1,
+  }));
+}
+
+/** Places full platform cells so their 112px active bands begin at the foothold. */
+export function platformTilePositions(foothold: Foothold): TerrainPoint[] {
+  const length = Math.max(0, foothold.x2 - foothold.x1);
+  const count = Math.max(1, Math.ceil(length / PLATFORM_TILE_ACTIVE_PITCH));
+  return Array.from({ length: count }, (_, index) => ({
+    x: foothold.x1 - PLATFORM_TILE_SIDE_GUTTER + index * PLATFORM_TILE_ACTIVE_PITCH,
     y: foothold.y1,
   }));
 }

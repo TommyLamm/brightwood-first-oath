@@ -10,7 +10,7 @@
 
 - [x] T07-01 建manifest loader，relative URL、key衝突檢查、實際寬高除格數切sprite，不能假設生成圖像固定尺寸。
 - [x] T07-02 loadMap先載入theme及本圖actor依賴，Promise成功才顯示；失敗回可重試錯誤，保留舊地圖供app恢復。
-- [ ] T07-03 按sky/far/mid／platform／actors／foreground／effects固定層級，視差依10；地面平台按Foothold重複拼tile，斜坡按真線段畫。
+- [ ] T07-03 按sky/far/mid／platform／actors／foreground／effects固定層級，視差依10；ground沿foothold以16px重疊拼接，platform完整顯示128×32格、以左右各8px透明gutter形成112px有效pitch，水平foothold從有效左緣定位並覆蓋末端；斜坡按真線段畫。平台幾何局部測試不代表缺少的正式素材或地圖視覺已驗收。
 - [ ] T07-04 畫梯繩／傳點／NPC名／任務marker，位置皆foot coords；沒有用背景照片假裝可站平台。
 - [ ] T07-05 畫hero三衣服sheet、四武器及三帽，讀anchors，翻向時同步鏡像；裝備換外觀不改碰撞／角色foot。
 - [ ] T07-06 根據movement／attack／hurt／dead選動畫；attack按技能總時長縮放，命中特效配VisualEvent，不因動畫callback再次扣血。

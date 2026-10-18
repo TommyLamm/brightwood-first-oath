@@ -22,6 +22,9 @@ import {
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
+  PLATFORM_TILE_DISPLAY_HEIGHT,
+  PLATFORM_TILE_DISPLAY_WIDTH,
+  platformTilePositions,
   portalFootAnchor,
   segmentTileGeometry,
 } from './geometry.js';
@@ -515,6 +518,18 @@ export function createWorldRenderer(
           throw new RendererAssetError(`Ground tile display width must exceed its ${GROUND_TILE_OVERLAP}px overlap`, [key]);
         }
         for (const position of groundTilePositions(foothold, image.displayWidth, GROUND_TILE_OVERLAP)) {
+          const tile = scene.add.sprite(position.x, position.y, key, frameKey(key, 0));
+          tile.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(0, 0);
+          terrainLayer.add(tile);
+        }
+      } else if (key === 'env:tile-platform') {
+        if (image.displayWidth !== PLATFORM_TILE_DISPLAY_WIDTH || image.displayHeight !== PLATFORM_TILE_DISPLAY_HEIGHT) {
+          throw new RendererAssetError(
+            `Platform tile display size must be ${PLATFORM_TILE_DISPLAY_WIDTH}x${PLATFORM_TILE_DISPLAY_HEIGHT}`,
+            [key],
+          );
+        }
+        for (const position of platformTilePositions(foothold)) {
           const tile = scene.add.sprite(position.x, position.y, key, frameKey(key, 0));
           tile.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(0, 0);
           terrainLayer.add(tile);

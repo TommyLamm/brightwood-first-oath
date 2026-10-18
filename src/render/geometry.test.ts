@@ -4,6 +4,11 @@ import {
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
+  PLATFORM_TILE_ACTIVE_PITCH,
+  PLATFORM_TILE_DISPLAY_HEIGHT,
+  PLATFORM_TILE_DISPLAY_WIDTH,
+  PLATFORM_TILE_SIDE_GUTTER,
+  platformTilePositions,
   portalFootAnchor,
   segmentTileGeometry,
 } from './geometry.js';
@@ -22,16 +27,27 @@ describe('renderer terrain geometry', () => {
     expect(groundTilePositions(foothold(40, 320, 90, 320), 128, 16)).toEqual([{ x: 40, y: 320 }]);
   });
 
-  it('keeps platform top edges on their horizontal foothold', () => {
-    expect(segmentTileGeometry(foothold(50, 300, 250, 300, true), 32)).toEqual({
-      x: 150,
-      y: 300,
-      width: 200,
-      height: 32,
-      rotation: 0,
-      originX: 0.5,
-      originY: 0,
-    });
+  it('repeats full platform display cells at the 112px active pitch and covers the foothold end', () => {
+    const horizontalFoothold = foothold(50, 300, 275, 300, true);
+    const positions = platformTilePositions(horizontalFoothold);
+
+    expect(PLATFORM_TILE_DISPLAY_WIDTH).toBe(128);
+    expect(PLATFORM_TILE_DISPLAY_HEIGHT).toBe(32);
+    expect(PLATFORM_TILE_SIDE_GUTTER).toBe(8);
+    expect(PLATFORM_TILE_ACTIVE_PITCH).toBe(112);
+    expect(positions).toEqual([
+      { x: 42, y: 300 },
+      { x: 154, y: 300 },
+      { x: 266, y: 300 },
+    ]);
+    expect(positions[0]!.x + PLATFORM_TILE_SIDE_GUTTER).toBe(horizontalFoothold.x1);
+    expect(positions.at(-1)!.x + PLATFORM_TILE_SIDE_GUTTER).toBeLessThanOrEqual(horizontalFoothold.x2);
+    expect(positions.at(-1)!.x + PLATFORM_TILE_DISPLAY_WIDTH - PLATFORM_TILE_SIDE_GUTTER)
+      .toBeGreaterThanOrEqual(horizontalFoothold.x2);
+  });
+
+  it('uses one full display cell for a foothold shorter than one active pitch', () => {
+    expect(platformTilePositions(foothold(50, 300, 90, 300, true))).toEqual([{ x: 42, y: 300 }]);
   });
 
   it('rotates slope tiles so their top edge follows both foothold endpoints', () => {
