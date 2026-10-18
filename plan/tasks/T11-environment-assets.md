@@ -24,3 +24,5 @@
 已完成 T11-01–05、07、09–11。T11-06 尚未完成：ground 已作正式素材並需 T07 每格重疊 16px；platform 與 slope 經舊候選／修正及本次各一次新構圖生成與一次定向修正後，目標尺寸仍見亮色 alpha 邊緣與接縫，不採用、保留 source-only。T11-08 manifest 仍有 18/20 keys；不加入缺少的 platform、slope 占位項。整包維持 PARTIAL，不能標 DONE。
 
 本次 follow-up（2026-10-18）：平台 128×32 修正版左右邊界 28/32 行不匹配，RGBA edge delta sum 414、max 60；斜坡 128×128 修正版左右邊界 121/128 行不匹配，delta sum 27,615、max 546。兩者在目標尺寸均仍見亮邊；已停止重試，保留原稿／修正稿與預覽於 `art-source/environment/`，沒有像素修補或 runtime／manifest 變更。完整 prompt、來源路徑、尺寸、hash 與檢查在 `art-source/environment/source-log.md`。
+
+單資產平台重試（2026-10-18）：T11-06 的 env:tile-platform 另做一次定向生成與一次檢視後修正。修正版輸出 2172×724 RGBA，alpha≥32 bounds 為 (169,228,2003,510)；原尺寸不是 128×32，且頂邊仍可見黃／紅色邊線。診斷 128×32 預覽在中心 112px 接合邊有 17/32 行不匹配、RGBA 差值總和 564、最大單行 157。候選與修正版保留於 art-source/environment，明確記為 UNFINISHED、source-only；未新增 runtime 或 manifest 項，也未做像素修補。T11-06 維持未勾選。
