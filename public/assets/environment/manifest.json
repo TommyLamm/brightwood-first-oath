@@ -133,6 +133,26 @@
       "pivotY": 0
     },
     {
+      "key": "env:tile-platform",
+      "url": "assets/environment/env-tile-platform-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:tile-slope",
+      "url": "assets/environment/env-tile-slope-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0
+    },
+    {
       "key": "env:ladder",
       "url": "assets/environment/env-ladder-v1.png",
       "columns": 1,

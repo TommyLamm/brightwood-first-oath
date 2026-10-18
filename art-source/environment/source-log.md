@@ -471,3 +471,46 @@ Constraints: preserve true alpha zero across both full-height 8-pixel gutters; n
 - Source-copy metadata: 2172×724 RGBA, 565,791 bytes, SHA-256 `a489d098d63dba50bb4def24bcb2b8fbc4a74945d1c3fee592758f23dff5aa63`; alpha bounds `(25,35,2156,684)` and four corner alpha values `0`.
 - Focused raw-source checks using the nominal 6.25% width side bands (x=0..135 and x=2036..2171) found 6,847 and 7,395 nontransparent pixels respectively. Nominal active columns x=136..2035 have no alpha at row 0 (0/1,900); the first row reaching 98% active coverage is y=275. Inner edge columns x=136 and x=2035 differ on 223/724 rows (RGBA delta sum 4,296; max row delta 345). The output is 3:1 (2172×724), not the required 4:1 (128×32); the artwork is vertically inset, and visual inspection shows chromatic specks along the moss top. Reject as source-only. These nominal bands are raw-source diagnostics, not a target-size or repaired preview.
 - No crop, resize, regrid, pixel repair, runtime image, or manifest row was added. `public/assets/environment/manifest.json` remains at 18/20 keys; `env:tile-platform` and `env:tile-slope` are still absent. No build, typecheck, tests, browser, renderer seam, or full-pack check was run.
+
+## Terrain recovery with authorized deterministic export — 2026-10-18 06:37 UTC
+
+**Current result: both terrain keys are formal runtime assets; environment coverage is 20/20.** The preceding rejection records describe untouched generation originals before this recovery. The user explicitly allowed cropping transparent whitespace, frame arrangement, nearest-neighbor resizing, edge and alpha cleanup, with originals and processing scripts retained. No new ImageGen call was made for this recovery.
+
+Read the root `AGENTS.md`, ImageGen skill, `plan/10-asset-spec.md`, T11 report, T07 report and actual terrain geometry before export. Read the live Playroom template and all seven linked specifications (`game-development.md`, `command-contracts.md`, `game.schema.json`, `game-release.yml`, starter SDK, `sdk-versioning.md`, `save-compatibility.md`) using the web tool. Applicable acceptance was relative runtime paths, project-owned deliverables, truthful source/verification records, exact sprite dimensions/alpha, horizontal terrain repetition, and the current renderer's foothold alignment. No game release or iframe acceptance is claimed.
+
+### Retained ImageGen sources and prompt provenance
+
+| Key | Unmodified source | Source SHA-256 | Prompt record |
+| --- | --- | --- | --- |
+| `env:tile-platform` | `env-tile-platform-t11-06-stone-timber-one-shot-20261018.png`, 2172×724 RGBA | `40cfc78fa389c6f2e60396a73a9bf3135237157f176e0805a004c81d9bca5b0d` | Complete recorded ImageGen `revisedPrompt` in `stone-timber-generation-retrieved.json`; explicitly retrieved from thread `01a14da6-8a6b-7112-91fd-050310896357`, **not** claimed to be the original verbatim tool input. |
+| `env:tile-slope` | `env-tile-slope-t11-06-fresh-correction-20261018-v2.png`, 1254×1254 RGBA | `d4fd8b1d125476a84252714545a2754c3775dd94f592276fa0bb95f88c2774ef` | Full original generation and correction prompts are retained above under `env:tile-slope — fresh composition and one targeted correction (2026-10-18)`; exact edit target and reference order are recorded there. |
+
+Both sources were inspected with `view_image` before processing. The platform's original saved output was `D:/dev-data/codex-home/generated_images/01a14da6-8a6b-7112-91fd-050310896357/exec-d881ad87-fd04-4152-9d75-ab67a8abf3e8.png`. Its recorded revised prompt identifies the accepted ground tile as material reference and forest style board as style reference: `public/assets/environment/env-tile-ground-v1.png` and `art-source/environment/forest-style-reference-v1.png`. The newly recovered platform original had not previously been inspected or accepted; its broad stone pavers and timber apron were usable after exact export. No raw generation original was overwritten.
+
+### Reproducible export
+
+Script: `art-source/environment/export_terrain_v1.py` (Pillow + numpy). Command from the project root:
+
+```powershell
+& 'C:\Users\lamyu\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' art-source/environment/export_terrain_v1.py
+```
+
+The script uses generated materials; it does not draw replacement terrain. Platform takes interior crop `(750,305,1198,425)`, nearest-neighbor scales it to 112×30, and places it at `(8,0)` on transparent 128×32. Slope takes interior crop `(100,192,1150,1160)`, nearest-neighbor scales it to 128×127, and places it at `(0,0)` on transparent 128×128. Both crops stay inside high-alpha material (minimum sampled alpha ≥224), discarding fringe, irregular outside silhouettes and transparent noise. Alpha is normalized to opaque for the interior; empty pixels are RGBA zero.
+
+Each material is reduced to 48 generated colors without dithering. A narrow 8px wrap band matches repeat boundaries, snapping blended samples to that material's existing palette. No antialias colors, glow, matte, decoration or objects are added. Source-only `terrain-v1-review.png` was inspected at native size, enlarged nearest-neighbor size, repeated pitch, and an illustrative -16° rotated strip. Stone/wood details remain readable, grass/earth materials remain coherent, top edges are level, no exterior colored fringe is visible, and no transparent gap appears at the demonstrated joins.
+
+| Formal runtime | Native/display size | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| `public/assets/environment/env-tile-platform-v1.png` | 128×32 | 3,921 | `7fe92b796778c3024f47cd3aa511520d6615bac5cfdcdf4af8994b1a0820041c` |
+| `public/assets/environment/env-tile-slope-v1.png` | 128×128 | 31,129 | `10650fb5b41037deab9d9d3f3f3e1e2935c4637931f8769fc794c1c84299d585` |
+
+Machine-readable parameters, source/output hashes and local measurements are in `terrain-v1-export.json`; the review sheet stays source-only. Platform has 8px alpha-zero side gutters, flat opaque y=0 across all 112 active columns, identical RGBA active edges x=8/x=119 on all 32 rows, and transparent y=30..31. Current T07 places each full sprite at x1−8 and advances 112px, matching these active boundaries.
+
+Slope has opaque walking top y=0 across all 128 columns, matching RGBA edges x=0/x=127 on all 128 rows, and a transparent final row. It is a horizontal material because current T07 rotates the texture about its top edge along actual segment endpoints; a baked-in second slope angle would misalign artwork and foothold.
+
+### Focused evidence and limits
+
+- Script assertions passed for dimensions, high-alpha crop interiors, 8px platform gutters, flat walking tops, repeat-edge equality, alpha values limited to `{0,255}`, and zero RGB in empty pixels. Both exports contain **0 partial-alpha pixels**; both repeat comparisons have **0 mismatched rows**.
+- Parsed the environment manifest against the required 12 theme-layer keys and eight shared keys: **20 unique keys, no missing or extra key**. Every relative URL exists; all images divide by their declared single-frame grid.
+- Referenced environment PNGs are **16,265,754 bytes**, leaving **511,462 bytes** under 16 MiB.
+- Only new terrain originals/exports/review sheet received visual review. No build, typecheck, test suite, browser, game run, full asset-pack test, pack/validate or iframe test was performed. Renderer, collision, map geometry and contracts were unchanged. Actual Phaser rotation, runtime map joins and game integration remain unverified.

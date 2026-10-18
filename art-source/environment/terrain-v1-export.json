@@ -1,0 +1,65 @@
+{
+  "tool": "deterministic Pillow/numpy export of retained built-in ImageGen originals",
+  "sources": [
+    {
+      "file": "env-tile-platform-t11-06-stone-timber-one-shot-20261018.png",
+      "sha256": "40cfc78fa389c6f2e60396a73a9bf3135237157f176e0805a004c81d9bca5b0d",
+      "crop": [
+        750,
+        305,
+        1198,
+        425
+      ],
+      "nearest_neighbor_size": [
+        112,
+        30
+      ]
+    },
+    {
+      "file": "env-tile-slope-t11-06-fresh-correction-20261018-v2.png",
+      "sha256": "d4fd8b1d125476a84252714545a2754c3775dd94f592276fa0bb95f88c2774ef",
+      "crop": [
+        100,
+        192,
+        1150,
+        1160
+      ],
+      "nearest_neighbor_size": [
+        128,
+        127
+      ]
+    }
+  ],
+  "palette_colors_per_material": 48,
+  "repeat_edge_band_px": 8,
+  "platform_side_gutter_px": 8,
+  "platform_active_pitch_px": 112,
+  "platform_top_coverage": 112,
+  "slope_top_coverage": 128,
+  "partial_alpha_pixels": 0,
+  "platform_active_edge_mismatched_rows": 0,
+  "slope_repeat_edge_mismatched_rows": 0,
+  "outputs": [
+    {
+      "key": "env:tile-platform",
+      "file": "env-tile-platform-v1.png",
+      "size": [
+        128,
+        32
+      ],
+      "bytes": 3921,
+      "sha256": "7fe92b796778c3024f47cd3aa511520d6615bac5cfdcdf4af8994b1a0820041c"
+    },
+    {
+      "key": "env:tile-slope",
+      "file": "env-tile-slope-v1.png",
+      "size": [
+        128,
+        128
+      ],
+      "bytes": 31129,
+      "sha256": "10650fb5b41037deab9d9d3f3f3e1e2935c4637931f8769fc794c1c84299d585"
+    }
+  ],
+  "renderer_integration": "not verified; no browser or game run"
+}
