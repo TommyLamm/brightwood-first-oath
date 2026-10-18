@@ -14,7 +14,7 @@ All originals remain under `art-source/interface/`; only extracted, alpha-preser
 | VFX targeted repair | same five rows | `interface-vfx-sheet-v2-repair1.png` | 1536×1024; rejected: opaque row tints remain |
 | VFX isolated strips | sweep, hit, levelup | per-key attempts documented below | 2172×724 RGBA each; accepted after direct alpha and visual review |
 | VFX guard | six-frame ring, one targeted center cleanup | per-key attempt and repair documented below | 2172×724 RGBA each; repair accepted after alpha and visual review |
-| VFX heavy-strike | six-frame slash | `interface-vfx-heavy-strike-v2-attempt1.png`, `interface-vfx-heavy-strike-v2-repair1.png` | 2172×724 RGBA each; source-only after the one repair still touched frame edges |
+| VFX heavy-strike | six-frame slash | v2 attempt/repair and v3 3×2 attempt/repair documented below | v2: 2172×724 RGBA; v3: 1536×1024 RGBA; all source-only after edge/alpha checks |
 
 The item, material, skill, marker, and repaired UI sheets were cropped into independent assets with unchanged RGBA content and downsampled only. The initial UI sheet is retained as source evidence; its panel frame crossed a cell edge, so the one targeted repair was used and the repaired sheet supplies all nine runtime pieces. The original five-row VFX sheet and its repair remain rejected because tinted background rows stayed near-opaque; they are not used by the new runtime strips. Separate per-effect one-row candidates and their current status are documented below.
 
@@ -214,6 +214,36 @@ Style/medium: crisp hand-painted pixel-art VFX matching the hero and sword refer
 Color palette: warm amber and gold with a small steel-white highlight.
 Constraints: genuine transparent alpha across every empty pixel. Repair only the per-frame scale and placement needed for safe cell containment; do not recolor, add, remove, or redraw effect elements except where required to fit. No colored haze, tinted band, gradient, floor, background fill, shadow, checkerboard, gridlines, cell borders, lettering, numbers, HUD, watermark, repeated static frames, or overlapping cells.
 ```
+
+### heavy-strike v3 — rejected after one targeted repair
+
+Generation reference: `public/assets/interface/vfx-sweep-v2.png` (accepted runtime strip; opened with `view_image` at original resolution before generation and used only as style/negative-space reference). The first output was `exec-6d139cfa-c674-4eed-b000-3bb40f257ac4.png`, copied from ImageGen's generated-images folder to `interface-vfx-heavy-strike-v3-attempt1.png` (1536×1024 RGBA). One targeted repair referenced that exact source plus the accepted sweep strip. Its output was `exec-2c6b167e-3bd8-458c-bc47-b48d366a61aa.png`, copied to `interface-vfx-heavy-strike-v3-repair1.png` (1536×1024 RGBA). Both are source-only. The source layout is a 3×2 contact sheet of six 512×512 cells, row-major; no runtime extraction was performed.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: six-frame animated VFX sprite sheet for an original pixel-art side-view forest RPG.
+Input images: Image 1 is the accepted runtime vfx:sweep strip. Use it only as a reference for the established crisp pixel-art finish, luminosity, edge detail, and transparent negative space. Do not copy the blue crescent subject; create the distinct heavy-strike effect in warm steel-and-amber colors.
+Primary request: create vfx:heavy-strike as one chronological six-frame animation. Show six clearly different diagonal sword-energy slash poses, no character and no drawn sword: (1) a tiny amber contact spark at the upper-left start, (2) a short narrow steel-white glint angled down-right, (3) a gold-white diagonal crescent begins opening, (4) a strong broad descending diagonal crescent at its peak, (5) the crescent breaks into a few separated amber spark fragments, (6) only two tiny fading sparks. The changing slash angle, position, length, and fragment pattern must make the six poses individually distinct and read smoothly left-to-right then continue on the second row.
+Composition/framing: exact 3-column by 2-row contact sheet with six equal square cells in row-major chronological order, three columns, two rows. Each cell is 512×512 on a 1536×1024 canvas. Every cell has an explicit minimum 8-pixel clear transparent safety inset on all four sides; keep all nontransparent and semitransparent pixels at least 8 pixels away from every cell edge. Center each effect inside its own cell. Adjacent cells must remain visually separate. This is a source contact sheet to be extracted into a six-frame 1×6 runtime strip; do not draw a frame grid.
+Style/medium: crisp hand-painted pixel-art VFX matching the accepted reference's controlled luminous pixel clusters, hard-edged particles, and polished game-ready finish; no blur, no photorealism.
+Color palette: warm amber and gold with small steel-white highlights, a restrained dark warm outline.
+Constraints: genuine transparent alpha on every empty pixel and all negative space. No background, filled cell, tint or haze, gradient, floor, shadow, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, extra objects, repeated static frames, or pixels touching any cell boundary.
+```
+
+Targeted repair prompt (one attempt; failed transparency and containment review):
+
+```text
+Use case: precise-object-edit
+Asset type: repair the existing six-frame heavy-strike source contact sheet for a pixel-art side-view RPG.
+Input images: Image 1 is the exact vfx:heavy-strike 3×2 source sheet to repair. Image 2 is the accepted runtime vfx:sweep strip used only for its crisp pixel-art finish and clean transparent negative space.
+Primary request: perform one targeted repair to Image 1. Keep the existing amber-gold and steel-white slash motif, six-cell order, crisp pixel clusters, and overall game-art style. Remove the broad dark/orange glow haze around every effect so all empty sheet space is genuine zero-alpha transparency. Scale down and re-center the effect inside every cell so all nontransparent and semitransparent pixels stay at least 24px from every cell edge. Make the six poses clearly chronological in row-major order: cell 1 tiny contact spark; cell 2 short diagonal steel glint; cell 3 a short, newly forming gold-white crescent; cell 4 the single broadest full-power diagonal slash at its peak; cell 5 that slash breaks into a few separated amber fragments; cell 6 only two tiny fading sparks. Keep no slash or spark connected across different cells.
+Composition/framing: preserve exactly a 3-column by 2-row contact sheet, six equal 512×512 cells on a 1536×1024 transparent canvas, read left-to-right across the first row then the second. Keep every effect centered in its own cell with at least 24px fully transparent safety margin on all four sides. No drawn frame boundaries.
+Constraints: change only what is needed to remove the colored background haze, improve per-cell containment, and distinguish the forming slash in cell 3 from the peak slash in cell 4. Preserve the pixel-art slash colors and established style. The background and every empty pixel must have alpha 0. Do not use an opaque or translucent black background; do not add gradients, haze, glows, floor, shadow, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, characters, weapons, or extra objects.
+```
+
+Both outputs were opened at original size with `view_image` and checked by Pillow against the actual six 512×512 cell regions. The generation alpha extrema were 0–254 with 277,326 nonzero pixels, all semitransparent; every frame touched a cell edge and failed its 8px transparent safety inset. Per-frame clear margins in pixels, ordered (left, top, right, bottom), were `(0,25,0,0)`, `(0,9,0,0)`, `(0,17,16,0)`, `(33,1,0,0)`, `(0,3,0,0)`, `(0,0,12,0)`. After the targeted repair, alpha extrema remained 0–254 with 292,704 nonzero pixels, all semitransparent; all six frames still failed the 8px inset and each alpha bounding box touched at least one cell edge (minimum clear margin 0px). Repair margins were `(0,15,0,0)`, `(1,15,0,0)`, `(1,21,12,0)`, `(17,0,0,0)`, `(0,0,0,0)`, `(0,0,20,0)`. Broad orange/black haze remained visible. No gridlines were drawn, but cell-boundary transparency failed. No further generation, repair, alpha editing, or runtime extraction was performed; `vfx:heavy-strike` remains missing from the runtime manifest.
 
 ### sweep — accepted source
 
