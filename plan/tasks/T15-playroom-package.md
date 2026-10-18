@@ -11,7 +11,7 @@
 - [x] T15-03 將生成工具ZIP放.playroom/tools及SHA256 lock放.playroom/game-tools.lock.json，記版本／來源／metadata／逐檔雜湊。不假設遠端工具Release已存在。
 - [x] T15-04 SDK JS（及需要的d.ts）複製public/vendor，使用相對匯入；只保留一份正式SDK。
 - [x] T15-05 playroom-port.ts實作07 CloudPort，透傳ready／load／save、null、saved及Error.code/machineCode，不catch成空存檔；無自製postMessage、無帳號憑證。
-- [x] T15-06 建正式Manifest schema2，候選ID/名稱/作者用06、devices只有desktop、cloudSave readable[1]/write1；不宣告leaderboard，不加$schema／未知欄位。
+- [x] T15-06 建正式Manifest schema2；使用者已定案固定候選ID `brightwood-first-oath`、名稱 `Brightwood: First Oath`。保留作者 `獨立製作`、devices只有desktop及cloudSave readable[1]/write1；不宣告leaderboard，不加$schema／未知欄位。
 - [x] T15-07 instructions寫實際按鍵與玩法、description不誇稱官方／完整世界，entry index.html、cover cover.png、tags≤8；本機候選版號與未發布狀態清楚。
 - [ ] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖；本包不另開共用瀏覽器干擾主Agent，可請其提供一次真實截圖。T14-c 已於 f0bcc6c 提交，但截圖仍阻塞：Playwright wrapper 因 Git Bash/MSYS `NtCreateDirectoryObject(...): 0xC0000022` 失敗，唯一 `npx` 備援因 registry DNS `ENOTFOUND` 失敗；未產生來源截圖或封面。
 - [x] T15-09 tools/playroom提供明確本地pack/validate入口，指向固定工具解壓CLI；dist來源、artifacts/game.zip輸出，工具／zip均在dist外。
