@@ -13,7 +13,7 @@
 - [x] T08-05 五技能rank／需求／SP／學習按鈕，快捷1/2/3對應，隱藏敵招及不可學basic；未學狀態仍有說明。
 - [x] T08-06 任務available/active/ready/claimed分組、目標進度、給交NPC、獎勵；NPC對話提供accept／claim，所有交易結果由app回toast。
 - [x] T08-07 商店顯示可買裝備／藥水、數量1..99、總價與背包賣出；不給任務物出售按鈕，但app仍驗證。
-- [ ] T08-08 地圖列已訪七區／當前位置／傳點條件，提供returnTown命令，arena交戰中依view顯禁用原因，不跳網址。（UI 已依 `canReturnTown` 顯示禁用狀態並發命令；待 T14 修正 field／arena lifecycle gate。）
+- [x] T08-08 地圖列已訪七區／當前位置／傳點條件，提供returnTown命令，arena交戰中依view顯禁用原因，不跳網址。（UI 的所有回城按鈕以 `view.canReturnTown` 禁用，dispatch handler 也以同欄位阻止無效命令；地圖面板明確顯示首領戰期間不能回城的原因。已核對 app gate：一般非城鎮地圖於 playing/result 可回城，guardian-arena 僅 bossResult 後可回城。）
 - [x] T08-09 設定master/music/sfx/mute、改鍵、操作說明；不允許同一動作多鍵衝突，保留Esc關頂層，儲存Settings命令由app套用。
 - [x] T08-10 儲存狀態精確區分本機已存／雲端已存／保存中／預覽未正式保存／失敗／衝突／登入失效；loadError給retrySave與playTemporary，conflict只提供載入雲端版本，不自動覆蓋。
 - [x] T08-11 960×540預設、640×360仍能捲動視窗，頂層panel關閉順序固定，拖移若提供則clamp可達；文字用textContent，名稱不插HTML。
