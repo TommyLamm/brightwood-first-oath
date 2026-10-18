@@ -2,13 +2,19 @@
 
 目的：交付平台能接收的靜態成品與正式SDK薄介面。所有權src/platform/**、public/vendor/**、public/game.json、public/cover.png、.playroom/**、tools/playroom/**、.github/workflows/release.yml。G0後可準備，正式封面／打包需T14成品；package scripts變更交主Agent，不自行改根設定。
 
-## 2026-10-18 15:40 HKT 最新交接
+## 2026-10-18 15:40 HKT 包裝規格審查
 
 - T10–T12正式素材已完整（actors 22 images／64 animations＋96 anchors、environment 20 images、interface 47 images／5 effects）；音訊沿用已交付的16個WAV。遊戲接合與完整路線仍由T14/T16驗收，素材完成不代表候選已可玩。
 - 已重新完整讀取根 `AGENTS.md`、Playroom `main` 範本及其七份線上規格，並讀本包依賴的 README/status、asset recovery report、05/07/10/11、T15 task/report。版本要求維持 SDK/tools 1.1.0、protocol 1、Manifest schema 2；候選固定 `brightwood-first-oath`／`1.0.0-beta.1`、desktop、cloudSave format 1。
 - 對 adapter、Manifest、固定工具入口及 Release workflow 做了最新規格差異檢視，未發現需要改動的包裝缺口；工具 ZIP SHA-256 與 lock 相符。此 audit 沒有改 source，亦未執行 build、瀏覽器、pack 或 validate。
 - T15-08等待T14提供真實遊玩畫面。請把實際執行中的遊戲截圖原始PNG放在 `art-source/cover/gameplay-source.png`；畫面須包含遊戲場景與玩家，不能以概念圖、素材圖集或空白載入／標題畫面代替。由原圖製作精確800×500的 `public/cover.png`，保留來源證據。
 - T15-11待整合方完成最終build並明確授權後，在main repository根目錄依序執行 `node tools/playroom/pack.mjs dist artifacts/game.zip` 及 `node tools/playroom/validate.mjs artifacts/game.zip`，然後另查ZIP內容無機密與無關檔案。不得手動ZIP或提前重跑 build/install；未經授權不建立tag、Release或呼叫平台API。
+
+## 2026-10-18 16:26 HKT 封面交付
+
+- T15-08已完成。integration提供的原始瀏覽器截圖JPEG與1280×720 PNG轉碼已保存於 `art-source/cover/`；兩份來源均原樣複製，轉換描述與雜湊見同目錄README。
+- `public/cover.png` 由實際遊戲PNG裁切 `(x=264,y=256,width=496,height=310)` 後以HighQualityBicubic縮放為800×500，排除臨時UI且未重繪；大小1,006,776 bytes，低於5MiB。
+- T15-11仍待integration final build及明確pack授權；之後只跑已記錄的官方固定pack／validate並檢查成品，不手動產生ZIP。
 
 先依根AGENTS完整讀當時main七文件，來源見05。本包不能實作或呼叫帳號／管理API，不用第三方同名Playroom套件代替本專案SDK。分段交付：T15-a先完成01..07與09..10供T14接正式adapter；T15-b在T14完成後做08封面及11..12候選驗證，不讓整包等待造成循環。
 
@@ -21,13 +27,13 @@
 - [x] T15-05 playroom-port.ts實作07 CloudPort，透傳ready／load／save、null、saved及Error.code/machineCode，不catch成空存檔；無自製postMessage、無帳號憑證。
 - [x] T15-06 建正式Manifest schema2；使用者已定案固定候選ID `brightwood-first-oath`、名稱 `Brightwood: First Oath`。保留作者 `獨立製作`、devices只有desktop及cloudSave readable[1]/write1；不宣告leaderboard，不加$schema／未知欄位。
 - [x] T15-07 instructions寫實際按鍵與玩法、description不誇稱官方／完整世界，entry index.html、cover cover.png、tags≤8；本機候選版號與未發布狀態清楚。
-- [ ] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖；本包不另開共用瀏覽器干擾主Agent，可請其提供一次真實截圖。T14-c 已於 f0bcc6c 提交，但截圖仍阻塞：Playwright wrapper 因 Git Bash/MSYS `NtCreateDirectoryObject(...): 0xC0000022` 失敗，唯一 `npx` 備援因 registry DNS `ENOTFOUND` 失敗；未產生來源截圖或封面。
+- [x] T15-08 T14正式畫面可用後從實際畫面製800×500封面，≤5MiB，不能用概念圖冒充截圖。2026-10-18 16:26 HKT已使用真實Q01營地畫面完成；原始JPEG、全解析度PNG、crop/resize來源與SHA-256見 `art-source/cover/README.md` 及T15 report。
 - [x] T15-09 tools/playroom提供明確本地pack/validate入口，指向固定工具解壓CLI；dist來源、artifacts/game.zip輸出，工具／zip均在dist外。
 - [x] T15-10 複製當時最新workflow到release.yml，GAME_DIR=dist，在版本檢查前加npm ci/build，Node24與checksum/metadata全驗證；不添加略過失敗設定。
 - [ ] T15-11 已對重新執行 `npm run build` 生成的真實 `dist/` 嘗試官方pack；因缺少 `dist/cover.png` 得到 `VALIDATION_ERROR` 而停止，未產生ZIP，故validate及ZIP層級檢查未執行。補上實際封面後完成官方pack、完整validate及檔案／大小檢查，保留實際輸出。
 - [x] T15-12 report列工具版本／SHA／SDK／Manifest／產物路徑、實際命令、未驗證事項與需要主Agent提供的整合；清楚區分本機ZIP與未發布。
 
-> T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T14-c 已提交；T15-08、11 仍待可用的實際遊戲截圖、封面及候選成品。
+> T15-02/03 已由官方平台 main checkout 生成、驗證並固定工具 ZIP／lock；本機 pack/validate 入口需先解壓至 `.playroom/tools/extracted-1.1.0/`。T15-08已完成；T15-11仍待最終dist、官方pack/validate及成品檢查。
 
 > 2026-10-18 adapter/vendor scoped source commit：`b46ce34`，僅含 `src/platform/**` 與 `public/vendor/**`。本次提交不代表 T15-08/11 完成；詳見 T15 report。
 
