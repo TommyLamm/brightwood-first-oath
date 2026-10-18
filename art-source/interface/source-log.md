@@ -325,3 +325,79 @@ Primary request: make one precise repair to Image 1. In each of the six existing
 Composition/framing: preserve the same single horizontal six-frame strip and the same cell layout. Do not recompose or redraw the rings.
 Constraints: change only pixels inside the ring openings to transparent alpha; preserve all effect pixels on or outside the ring. Maintain real transparent alpha everywhere empty. No background, glow field, filled center, checkerboard, text, labels, gridlines, borders, watermark, new pixels, or added objects.
 ```
+
+## Heavy-strike fresh composition — rejected after one targeted repair (2026-10-18)
+
+This was a new composition after the earlier v2 and v3 work. The earlier candidates were opened only to compare the composition; neither was used as an ImageGen input or repair target. This design uses a near-vertical descending cleave followed by a low, bilateral angular shockwave, distinct from the prior diagonal crescent.
+
+### Generation
+
+- Tool: built-in ImageGen; transparent_background=true.
+- Output saved: 2026-10-18 02:59:32 UTC (output file LastWriteTimeUtc).
+- Raw ImageGen output: D:\dev-data\codex-home\generated_images\01a14ceb-a1eb-7731-a129-9d563f35c55c\exec-d800013b-3a31-4632-bef6-6f67f6fadf2a.png
+- Preserved unchanged at: art-source/interface/interface-vfx-heavy-strike-t12-fresh-attempt1.png
+- Raw and preserved SHA-256: 44855E9EBD3907D22925652FF6964054F87F312DF20CE274A9A14F804385D639
+- Image: RGBA PNG, 1536×1024. Source grid is 3×2 equal 512×512 cells, row-major frames 0–5. This source layout would require lossless rearrangement into the required runtime 6×1 strip (3072×512) if accepted.
+- Viewed references, all opened locally before generation: public/assets/interface/vfx-sweep-v2.png; public/assets/interface/vfx-hit-v2.png; art-source/actors/hero-style-reference-v1.png; art-source/actors/equip-starter-sword-v1.png.
+- Per-frame bounds are measured in cell-local coordinates; margins are (left, top, right, bottom). Alpha>0 is the contract boundary; alpha>16 is also reported to distinguish the principal effect from low-opacity haze.
+
+Generation prompt:
+
+~~~text
+Use case: stylized-concept
+Asset type: six-frame animated pixel-art VFX sprite sheet for a 2D side-view forest RPG, intended for vfx:heavy-strike.
+Input images: Image 1 is the accepted vfx:sweep strip, for crisp pixel clusters and clean transparent negative space only; do not reuse its cool crescent. Image 2 is the accepted vfx:hit strip, for compact particle finish only; do not reuse its starburst. Image 3 is the established hero pixel-art style reference, for palette and handcrafted pixel rendering only. Image 4 is the established starter sword reference, for steel and warm-gold material colors only. These are style references, not edit targets.
+Primary request: create one new, clearly different heavy sword-strike animation. Its composition is a steep downward cleave and ground-level shock burst, not a diagonal crescent slash and not a starburst. Show exactly six distinct chronological poses, row-major: frame 1, one tiny steel-white glint suspended just above the center; frame 2, a narrow near-vertical steel-white energy stroke with a restrained amber edge drops toward the center; frame 3, the stroke lands at the center in one compact gold impact point with a few short angular shards; frame 4, the peak is a strong low horizontal shockwave made of two separated, jagged amber-and-steel wedge blades extending left and right from the impact point, with small upward chips, no curved crescent; frame 5, the two ground-level wedges break into a few separated rising angular fragments that contract toward the center; frame 6, only two tiny fading gold motes remain. Keep the action forceful and readable as one heavy descending sword impact. Effects only: no character and no drawn weapon.
+Composition/framing: exact 3-column by 2-row contact sheet with six equal 512×512 square cells on a 1536×1024 transparent canvas, row-major chronological order. Every frame is centered and self-contained; keep all visible pixels, including semitransparent edge pixels, at least 32 pixels from every cell edge. Use consistent scale within the central area so the 128×128 display reads clearly. Leave empty transparent space between frames. Do not draw a grid; this is six independent frames to rearrange losslessly into the required 6×1 runtime strip.
+Style/medium: crisp hand-painted pixel-art VFX matching the supplied game assets; hard-edged, clearly grouped pixel clusters, no blur, no photorealism, no soft lighting effects.
+Color palette: warm amber and controlled gold with a small steel-white core and muted steel-blue edge accents.
+Lighting/mood: brief sharp impact, visually heavy but compact.
+Materials/textures: polished steel glints and a few dense, angular energy fragments.
+Text (verbatim): none.
+Constraints: request genuine transparent alpha. Every empty pixel and all negative space must have alpha 0; preserve true transparency. Keep the six poses visually distinct, centered, contained and in the exact stated order. No background, cell fill, haze, fog, soft glow, gradient, bloom, floor, shadow, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, repeated static frames, extra objects, crescent arc, full-frame slash, cross-cell pixels or frame-edge pixels.
+~~~
+
+### One targeted repair
+
+- Tool: built-in ImageGen; transparent_background=true.
+- Output saved: 2026-10-18 03:02:57 UTC (output file LastWriteTimeUtc).
+- Raw ImageGen output: D:\dev-data\codex-home\generated_images\01a14ceb-a1eb-7731-a129-9d563f35c55c\exec-b9746c0d-eeb3-4893-8667-7963b9d2e5ca.png
+- Preserved unchanged at: art-source/interface/interface-vfx-heavy-strike-t12-fresh-repair1.png
+- Raw and preserved SHA-256: 834C8E655565E12B00E1AA25233E340D6824663D8AC5AE5F22748C61D3CF7F2D
+- Image: RGBA PNG, 1536×1024; same 3×2 row-major layout with 512×512 cells.
+- References: the viewed local generation target art-source/interface/interface-vfx-heavy-strike-t12-fresh-attempt1.png, public/assets/interface/vfx-sweep-v2.png, public/assets/interface/vfx-hit-v2.png, and art-source/actors/hero-style-reference-v1.png.
+
+Repair prompt:
+
+~~~text
+Use case: precise-object-edit
+Asset type: one targeted alpha and frame-containment repair for a six-frame animated pixel-art VFX sheet for vfx:heavy-strike.
+Input images: Image 1 is the exact fresh heavy-strike 3×2 sheet to repair. Images 2–4 are viewed local style references only: accepted vfx:sweep for crisp pixel edges and empty transparency, accepted vfx:hit for compact particles, and the game's hero style for palette. Keep the fresh sheet's unique near-vertical descending cleave and low left/right angular shockwave composition; do not use the older crescent-swipe composition.
+Primary request: make one narrowly targeted repair to Image 1. Preserve the same six heavy-strike poses, their order, the centered vertical steel-and-amber downstroke, the central impact, the low horizontal pair of angular shockwave wedges, the fragments, colors, hard pixel clusters and distinctive new composition. Remove only the broad brown/black translucent cloud, soft orange glow and all low-opacity haze from every cell so all empty space becomes true zero-alpha transparency. Where needed, scale down and recenter the existing sharp effect inside each cell so every visible or semitransparent effect pixel has at least 32 pixels of fully transparent clearance on all four sides. Keep the six poses clearly chronological: small suspended glint; narrow vertical falling stroke; compact center impact; widest low two-sided shockwave peak; separated receding fragments; two tiny fading motes. Do not turn the vertical cleave into a crescent or starburst.
+Composition/framing: preserve exactly six equal square cells in the same 3-column by 2-row grid on a 1536×1024 canvas, row-major order. No content crosses cell boundaries; keep generous clear space between cells. Do not draw a grid or borders.
+Style/medium: preserve crisp hand-painted pixel-art rendering and sharp outlined clusters; no blur or soft lighting effects.
+Color palette: preserve warm amber/gold with a small steel-white core and muted steel-blue accents.
+Constraints: change only the unwanted translucent haze and any effect scale/position strictly needed for cell containment. Maintain genuine alpha transparency in all empty pixels. No added or removed sharp effect motif, no background, fog, bloom, gradient, floor line, shadow, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, character, drawn sword, repeated frames, or new objects.
+~~~
+
+### Measurements and decision
+
+The grouped alpha histogram bins below are exact pixel counts in order [0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255].
+
+| File | Alpha min–max | Histogram bins | Nonzero pixels |
+| --- | --- | --- | ---: |
+| Attempt 1 | 0–254 | [1406963, 83029, 4302, 3814, 5650, 6115, 62991, 0] | 165901 |
+| Repair 1 | 0–254 | [1378985, 101849, 5637, 4654, 5448, 6251, 70040, 0] | 193879 |
+
+Per-frame bounds use exclusive right/bottom coordinates within each 512×512 source cell:
+
+| Frame | Attempt alpha>0 bbox / margins | Attempt alpha>16 bbox / margins | Repair alpha>0 bbox / margins | Repair alpha>16 bbox / margins |
+| ---: | --- | --- | --- | --- |
+| 0 | (81,159,482,512) / (81,159,30,0) | (252,250,338,368) / (252,250,174,144) | (71,47,512,512) / (71,47,0,0) | (264,258,354,375) / (264,258,158,137) |
+| 1 | (1,20,496,506) / (1,20,16,6) | (210,108,318,500) / (210,108,194,12) | (1,19,492,512) / (1,19,20,0) | (230,108,342,501) / (230,108,170,11) |
+| 2 | (55,37,466,508) / (55,37,46,4) | (92,270,341,479) / (92,270,171,33) | (47,53,474,512) / (47,53,38,0) | (106,273,359,485) / (106,273,153,27) |
+| 3 | (33,0,512,468) / (33,0,0,44) | (41,121,512,353) / (41,121,0,159) | (35,0,512,476) / (35,0,0,36) | (43,138,512,364) / (43,138,0,148) |
+| 4 | (0,3,496,512) / (0,3,16,0) | (0,131,426,341) / (0,131,86,171) | (0,1,512,478) / (0,1,0,34) | (0,141,452,355) / (0,141,60,157) |
+| 5 | (7,23,426,416) / (7,23,86,96) | (215,270,275,322) / (215,270,237,190) | (1,0,468,512) / (1,0,44,0) | (248,265,318,323) / (248,265,194,189) |
+
+Both PNGs divide exactly into the prompted 3×2 square source grid; each cell is 512×512. Neither source meets the required true-transparent field or the minimum 8px alpha>0 clearance: alpha>0 extends to or within 6px of frame edges in multiple frames, and the visible images show broad brown/black and orange haze behind all effects. The repair did not remove the haze; the 1–15 alpha pixel count increased from 83029 to 101849. The six-frame composition is visibly distinct from the older diagonal crescent candidates, but both source images are rejected for runtime. No strip rearrangement, extraction, alpha editing, runtime PNG, or manifest change was made. vfx:heavy-strike remains source-only and absent from the manifest. The one generation and one repair are spent; stop here.
