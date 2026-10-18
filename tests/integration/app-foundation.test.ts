@@ -81,6 +81,22 @@ describe('T14-a app foundation', () => {
     expect(input.consumeMovementFrame()).toEqual({ moveX: 0, climbY: 0, jumpPressed: false, downHeld: false });
   });
 
+  it('allows Escape from a focused UI control without allowing gameplay input or text-entry shortcuts', () => {
+    const input = new KeyboardInputState();
+    expect(input.keyDown('Escape', {
+      focused: false, uiFocused: true, textInput: false, panels: ['quests'],
+    })).toEqual({ command: { type: 'closePanel', payload: {} }, preventDefault: true });
+    expect(input.keyDown('ControlLeft', {
+      focused: false, uiFocused: true, textInput: false, panels: ['quests'],
+    })).toEqual({ command: null, preventDefault: false });
+    expect(input.keyDown('Escape', {
+      focused: false, uiFocused: true, textInput: true, panels: ['quests'],
+    })).toEqual({ command: null, preventDefault: false });
+    expect(input.keyDown('Escape', {
+      focused: false, uiFocused: false, textInput: false, panels: ['quests'],
+    })).toEqual({ command: null, preventDefault: false });
+  });
+
   it('rejects a present but incomplete manifest and reports all missing pack manifests', async () => {
     expect(() => parseAssetManifest({
       version: 1,

@@ -34,6 +34,7 @@ export const DEFAULT_KEY_BINDINGS: Readonly<Record<GameAction, string>> = {
 
 export type KeyDownContext = {
   focused: boolean;
+  uiFocused?: boolean;
   textInput: boolean;
   repeat?: boolean;
   panels: readonly PanelId[];
@@ -99,11 +100,13 @@ export class KeyboardInputState {
   }
 
   keyDown(code: string, context: KeyDownContext): KeyDownResult {
-    if (!context.focused || context.textInput) return { command: null, preventDefault: false };
+    const action = actionForCode(this.bindings, code);
+    if (context.textInput || (!context.focused && !(context.uiFocused && action === 'escape'))) {
+      return { command: null, preventDefault: false };
+    }
     this.heldCodes.add(code);
     if (context.repeat) return { command: null, preventDefault: false };
 
-    const action = actionForCode(this.bindings, code);
     if (!action) return { command: null, preventDefault: false };
     if (action === 'jump') this.jumpPressed = true;
     if (action === 'escape') return { command: escCommandForPanels(context.panels), preventDefault: true };
@@ -186,14 +189,16 @@ export class KeyboardControls {
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
     const focused = this.isGameInputFocused(event.target);
     const textInput = isTextEntryTarget(event.target) || isTextEntryTarget(this.options.uiRoot.ownerDocument.activeElement);
-    if (!focused) {
-      if (this.inputHasHeldKeys()) this.input.releaseAll();
+    const uiFocused = this.isUiControlFocused(event.target);
+    if (!focused && this.inputHasHeldKeys()) this.input.releaseAll();
+    if (!focused && !uiFocused) {
       return;
     }
-    if (event.isTrusted) this.options.onTrustedGesture?.();
-    if ((event.ctrlKey || event.altKey) && !textInput) event.preventDefault();
+    if (focused && event.isTrusted) this.options.onTrustedGesture?.();
+    if (focused && (event.ctrlKey || event.altKey) && !textInput) event.preventDefault();
     const result = this.input.keyDown(event.code, {
       focused,
+      uiFocused,
       textInput,
       repeat: event.repeat,
       panels: this.options.getPanels(),
@@ -275,6 +280,18 @@ export class KeyboardControls {
       && !this.options.uiRoot.contains(active)
       && targetNode !== null
       && this.options.gameRoot.contains(targetNode)
+      && !isTextEntryTarget(active)
+      && !isTextEntryTarget(target);
+  }
+
+  private isUiControlFocused(target: EventTarget | null): boolean {
+    const active = this.options.uiRoot.ownerDocument.activeElement;
+    const targetNode = target !== null && typeof target === 'object' && 'nodeType' in target
+      ? target as Node
+      : null;
+    return targetNode !== null
+      && this.options.uiRoot.contains(active)
+      && this.options.uiRoot.contains(targetNode)
       && !isTextEntryTarget(active)
       && !isTextEntryTarget(target);
   }
