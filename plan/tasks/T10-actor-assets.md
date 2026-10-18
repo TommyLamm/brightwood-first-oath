@@ -13,7 +13,7 @@
 - [ ] T10-05 為每個hero有效frame填hand/head anchors，按10坐標，武器attack rotation逐格可用；不是全部frame盲填同一點。
 - [ ] T10-06 逐個生成snail/slime/mushroom/boar/golem/sentinel五狀態圖集（6×5），身形／色盤一致但輪廓可分辨；不加第七普通怪。（部分：slime、sentinel已驗收入選；snail、mushroom、boar、golem均UNFINISHED且只有source候選。golem已記錄一次生成及一次局部修正，修正版仍有可見紅／黃外緣殘色；各候選及檢查詳`plan/reports/T10-creatures.md`與怪物source log。）
 - [ ] T10-07 生成guardian兩倍顯示尺寸五狀態圖集，具有可辨識蓄力／揮擊姿勢；phase2可用渲染染色，不額外增加AI招式。（UNFINISHED；已有一次生成及一次針對修正，修正版紅色高alpha殘像增加且仍可見，因此不入runtime；詳`plan/reports/T10-creatures.md`及怪物source log。）
-- [ ] T10-08 生成五NPC兩格idle，與role外觀相符，名字文字不放圖片中。（部分：guide、mentor、healer、keeper已驗收入選；merchant仍為UNFINISHED。已記錄兩輪生成／修正（attempt-01..04），最新修正版仍有明顯紅色外緣與柔化邊，不入runtime；詳`plan/reports/T10-creatures.md`及NPC source log。）
+- [ ] T10-08 生成五NPC兩格idle，與role外觀相符，名字文字不放圖片中。（部分：guide、mentor、healer、keeper已驗收入選；merchant仍為UNFINISHED。單項追補生成／referenced-image修正為attempt-05/06，兩格尺寸合規但修正版仍有紅色外緣與大量部分透明柔邊，不入runtime／manifest；提示全文及檢查詳`plan/reports/T10-creatures.md`及NPC source log。）
 - [ ] T10-09 建本包manifest及animation keys，URL指入遊戲檔，實際寬高可整除格數；不假設工具固定產出尺寸。（目前只有gear與creature subset metadata，未建立完整`manifest.json`。）
 - [ ] T10-10 檢視每個新圖的alpha、臉一致、foot／握點、格序；失敗僅重做該組。ImageGen修正local圖先查看再指定referenced_image_paths。
 - [ ] T10-11 檔案複製進workspace，原稿／prompt留art-source不入dist，正式包內部預算18MiB；多餘候選不指入manifest。
