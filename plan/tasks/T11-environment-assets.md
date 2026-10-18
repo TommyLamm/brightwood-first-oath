@@ -34,3 +34,7 @@
 斜坡修正版 128×128 預覽左右 120/128 列不匹配（RGBA delta sum 9,166、max 343），頂列 alpha 覆蓋 48/128 欄；-16° 旋轉檢視仍見亮色側邊與裁角，拒收。完整輸出／預覽路徑、alpha bounds、hash、工具時間和檢查詳見 `art-source/environment/source-log.md`。斜坡 ImageGen 的逐字 prompt 無法從保留的 tool transcript 取回，source log 僅記錄可確認的 prompt 範圍，沒有假稱逐字原文。
 
 兩個 key 皆 source-only，沒有 runtime PNG 或 manifest row；manifest 仍 18/20，T11 保持 PARTIAL，T11-06／T11-08 未勾選。T07 當前 platform TileSprite 仍按 128px manifest display width 重複，與 112px active tile pitch 規格不一致；本次局部影像檢查不宣稱 runtime seam、旋轉整合或 renderer 通過。未跑 build、typecheck、tests 或 browser。
+
+## env:tile-platform low-saturation fresh attempt — 2026-10-18
+
+另做一次全新構圖，採用低彩度 moss-sage 頂面、muted warm-gray 土層與少數大塊像素，避免既有高彩 grass/soil/teal details；本次只呼叫一次 ImageGen，沒有第二次修正。輸出 `art-source/environment/env-tile-platform-t11-06-moss-sage-fresh-20261018.png` 是 1983×793 RGBA，而非 128×32；四角透明，raw alpha bounds `(90,64,1915,775)`，alpha≥32 bounds `(207,314,1777,533)`。診斷預覽平頂覆蓋 112/112 欄，但 112px active edge 有 11/32 列 RGBA 不一致（delta sum 359、max 227），且預覽仍見 14 個符合記錄閾值的黃調像素。拒收為 source-only / UNFINISHED；沒有 runtime PNG 或 manifest row，T11-06／T11-08 不勾選，manifest 維持 18/20。完整 prompt、refs、路徑、時間、SHA-256 及檢查在 `art-source/environment/source-log.md`。不驗證 renderer seam，也未跑 build、typecheck、tests、browser 或 full-pack 檢查。
