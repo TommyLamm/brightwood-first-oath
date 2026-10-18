@@ -4,6 +4,13 @@ import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
 import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
 import {
+  claimVisualEventPlayback,
+  pickAnimationFrame,
+  selectHeroAnimation,
+  selectMonsterAnimation,
+  skillAnimationDuration,
+} from './animation.js';
+import {
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
@@ -254,29 +261,6 @@ function animationFor(
   );
 }
 
-function pickFrame(animation: AssetAnimation | undefined, nowMs: number, startedAtMs?: number, totalDurationMs?: number): number {
-  if (!animation) return 0;
-  if (totalDurationMs !== undefined && totalDurationMs > 0 && startedAtMs !== undefined) {
-    const progress = Math.max(0, Math.min(0.999999, (nowMs - startedAtMs) / totalDurationMs));
-    return animation.frames[Math.min(animation.frames.length - 1, Math.floor(progress * animation.frames.length))] ?? 0;
-  }
-  const duration = animation.frameMs.reduce((sum, value) => sum + value, 0);
-  if (animation.loop) {
-    let elapsed = ((nowMs % duration) + duration) % duration;
-    for (let index = 0; index < animation.frames.length; index += 1) {
-      if (elapsed < animation.frameMs[index]!) return animation.frames[index]!;
-      elapsed -= animation.frameMs[index]!;
-    }
-  } else {
-    let elapsed = Math.max(0, startedAtMs === undefined ? nowMs : nowMs - startedAtMs);
-    for (let index = 0; index < animation.frames.length; index += 1) {
-      if (elapsed < animation.frameMs[index]!) return animation.frames[index]!;
-      elapsed -= animation.frameMs[index]!;
-    }
-  }
-  return animation.frames.at(-1) ?? 0;
-}
-
 function actorImageKey(bodyVisual: Id | null, catalog: ContentCatalog): string {
   const imageKey = bodyVisual ? catalog.rules.items[bodyVisual]?.visualKey : null;
   return imageKey?.startsWith('actor:hero-') ? imageKey : 'actor:hero-cloth';
@@ -310,7 +294,7 @@ export function createWorldRenderer(
   const dropLabels = new Map<string, Phaser.GameObjects.Text>();
   const eventTexts = new Map<string, TextEffect>();
   const eventSprites = new Map<string, SpriteEffect>();
-  const eventVfx = new Map<string, number>();
+  const playedVisualEventIds = new Set<string>();
   const actorAnimationClocks = new Map<string, { animationKey: string; startedAtMs: number }>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
@@ -602,7 +586,7 @@ export function createWorldRenderer(
     const previousClock = actorAnimationClocks.get(key);
     const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
     actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
-    setImageFrame(sprite, image, frameOverride ?? pickFrame(animation, nowMs, animationStartedAtMs, totalDurationMs));
+    setImageFrame(sprite, image, frameOverride ?? pickAnimationFrame(animation, nowMs, animationStartedAtMs, totalDurationMs));
     sprite.setPosition(position.x, position.y).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);
     return sprite;
   };
@@ -624,13 +608,13 @@ export function createWorldRenderer(
 
     const playerKey = actorImageKey(snapshot.player.visual.body, catalog);
     const playerAttack = attackStartedAt(snapshot, snapshot.player.id);
-    const playerDead = snapshot.player.movement.mode === 'dead' || snapshot.player.hp <= 0;
-    const playerHurt = snapshot.player.movement.knockbackUntilMs > snapshot.nowMs;
-    const playerAnimation = playerDead
-      ? 'dead'
-      : playerHurt ? 'hurt'
-        : playerAttack ? 'attack'
-          : snapshot.player.animationKey === 'fall' ? 'jump' : snapshot.player.animationKey || 'idle';
+    const playerAnimation = selectHeroAnimation(
+      snapshot.player.movement,
+      snapshot.player.hp,
+      snapshot.nowMs,
+      playerAttack !== undefined,
+      snapshot.player.animationKey,
+    );
     const jumpAnimation = playerAnimation === 'jump' ? animationFor(assets, playerKey, 'jump') : undefined;
     const jumpFrame = jumpAnimation?.frames.length && playerAnimation === 'jump'
       ? jumpAnimation.frames[snapshot.player.movement.velocity.y < 0 ? 0 : 1]
@@ -667,14 +651,9 @@ export function createWorldRenderer(
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
       const attack = attackStartedAt(snapshot, monster.id);
-      const dead = monster.mode === 'dead';
-      const hurt = monster.movement.knockbackUntilMs > snapshot.nowMs;
-      const animationKey = dead
-        ? `${monster.monsterId}:dead`
-        : hurt ? `${monster.monsterId}:hurt`
-          : attack || monster.mode === 'windup' ? `${monster.monsterId}:attack`
-            : `${monster.monsterId}:${monster.mode === 'patrol' || monster.mode === 'chase' ? 'walk' : 'idle'}`;
-      const monsterIsAttacking = !dead && !hurt && animationKey.endsWith(':attack');
+      const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
+      const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
+      const monsterIsAttacking = animationKey.endsWith(':attack');
       const monsterSprite = drawActor(
         `monster:${monster.spawnId}`,
         definition.actorKey,
@@ -739,7 +718,7 @@ export function createWorldRenderer(
 
   const skillDuration = (attack: AttackInstance, sourceCatalog: ContentCatalog): number => {
     const skill = sourceCatalog.rules.skills[attack.skillId];
-    return skill ? skill.windupMs + skill.activeMs + skill.recoveryMs : 1;
+    return skillAnimationDuration(skill);
   };
 
   const drawAttackCue = (attack: AttackInstance, nowMs: number, graphics: Phaser.GameObjects.Graphics): void => {
@@ -769,9 +748,12 @@ export function createWorldRenderer(
   };
 
   const processVisualEvent = (event: VisualEvent, nowMs: number): void => {
-    if (eventVfx.has(event.id)) return;
+    if (playedVisualEventIds.has(event.id)) return;
     const textLifetimeMs = event.kind === 'levelup' ? 1500 : EVENT_LIFETIME_MS;
-    if (event.atMs + Math.max(textLifetimeMs, EVENT_LIFETIME_MS) <= nowMs) return;
+    if (event.atMs + Math.max(textLifetimeMs, EVENT_LIFETIME_MS) <= nowMs) {
+      claimVisualEventPlayback(event.id, playedVisualEventIds);
+      return;
+    }
     let animation: AssetAnimation | undefined;
     if (event.key) {
       if (!assets.images.has(event.key)) {
@@ -782,8 +764,11 @@ export function createWorldRenderer(
     }
     const spriteLifetimeMs = animation?.frameMs.reduce((sum, frameMs) => sum + frameMs, 0) ?? 0;
     const expiresAtMs = event.atMs + Math.max(textLifetimeMs, spriteLifetimeMs);
-    if (expiresAtMs <= nowMs) return;
-    eventVfx.set(event.id, expiresAtMs);
+    if (expiresAtMs <= nowMs) {
+      claimVisualEventPlayback(event.id, playedVisualEventIds);
+      return;
+    }
+    if (playedVisualEventIds.has(event.id)) return;
     if (event.kind === 'damage') {
       if (eventTexts.size >= DAMAGE_TEXT_LIMIT) {
         const oldest = [...eventTexts.entries()].find(([key]) => !key.startsWith('drop-text:'));
@@ -810,6 +795,7 @@ export function createWorldRenderer(
       sprite.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(image.pivotX, image.pivotY);
       eventSprites.set(event.id, { object: sprite, imageKey: image.key, animationKey: event.key, startedAtMs: event.atMs, expiresAtMs: event.atMs + spriteLifetimeMs });
     }
+    claimVisualEventPlayback(event.id, playedVisualEventIds);
   };
 
   const pruneEvents = (nowMs: number): void => {
@@ -827,10 +813,7 @@ export function createWorldRenderer(
       }
       const image = assets.images.get(entry.imageKey)!;
       const animation = animationFor(assets, image.key, entry.animationKey);
-      setImageFrame(entry.object, image, pickFrame(animation, nowMs - entry.startedAtMs));
-    }
-    for (const [id, expiresAtMs] of eventVfx) {
-      if (expiresAtMs <= nowMs) eventVfx.delete(id);
+      setImageFrame(entry.object, image, pickAnimationFrame(animation, nowMs - entry.startedAtMs));
     }
   };
 
@@ -935,7 +918,7 @@ export function createWorldRenderer(
       actorsLayer.destroy(true);
       for (const effect of eventSprites.values()) effect.object.destroy();
       eventSprites.clear();
-      eventVfx.clear();
+      playedVisualEventIds.clear();
       // Shared actor, gear and interface textures stay in the Scene for reuse.
       ownedTextureKeys.clear();
       loadedImages.clear();
