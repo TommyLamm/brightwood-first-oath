@@ -220,3 +220,49 @@ Repair prompt:
 ```text
 Use case: precise-object-edit. Asset type: transparent sprite atlas edge cleanup. Input image 1 is the exact 8x8 iron armor hero atlas. Perform only a targeted alpha/edge cleanup: remove every visible bright red and yellow-green fringe outside the sprite silhouettes; preserve the original pixel contour with crisp hard edges and make outside pixels fully transparent. Do not change character, poses, outfit, frame order, cell layout, canvas size, cell bounds, baseline, colors inside the sprites, or any details. Keep the exact existing 8-column by 8-row atlas at its current dimensions with each cell unchanged. Do not crop, scale, shift, redraw, simplify, add, or remove any character content. No background, floor, shadows, glow, labels, watermark, or props.
 ```
+
+## T10-02 fresh hero-cloth v5 attempt and one targeted repair (2026-10-18)
+
+**UNFINISHED — source-only; no runtime image, manifest entry, or anchors.** A fresh composition was generated with built-in `image_gen.imagegen`, `transparent_background: true`, and the required local reference `F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png` explicitly passed as `referenced_image_paths`. The only repair used the new v5 attempt plus that same style reference; no v3/v4 candidate was used as an input.
+
+| Candidate | Generated output | Project source copy | Size / alpha=0, partial, 255 | SHA-256 |
+| --- | --- | --- | --- | --- |
+| attempt | `D:\dev-data\codex-home\generated_images\01a14d40-8ea6-7af0-abec-92c397f916b3\exec-17962ac9-60c3-4862-aa20-9972b3641c3a.png` | `hero-cloth-v5-attempt-1.png` | 1254×1254 RGBA; 684,407 / 887,263 / 846 | `5e6871087357c4fa87312f0bba2a4395ccf8313de3a2b3b412b9b5577d462ec3` |
+| targeted repair | `D:\dev-data\codex-home\generated_images\01a14d40-8ea6-7af0-abec-92c397f916b3\exec-d72c55e7-114d-4406-99df-3f6551dd2cc8.png` | `hero-cloth-v5-repair-1.png` | 1254×1254 RGBA; 720,829 / 850,536 / 1,151 | `be6476e2c361a18217fb69d08a774c59343f5b9b4e062694b6410c49a66960f2` |
+
+Both generated PNGs and their workspace source copies were opened for visual review; SHA-256 checks confirmed each source copy is byte-identical to its ImageGen output. Both have four alpha-zero corners and 256 distinct alpha values. The 8×8 arrangement and broad row order are visually recognizable, with the hero facing right, but both images are 6 pixels over an 8-divisible width and height (`mod 8 = 6×6`) and therefore cannot be certified as an exact uniform grid. Partial alpha is extensive in both. Visible red/yellow-green fringe remains after the repair; using the diagnostic `alpha > 32 && R > 1.5G && R > 1.5B`, red-dominant pixels rose from 324,654 to 358,296. Approximate equal-bin diagnostics (not valid cell measurements because dimensions fail) found all 64 bins under a 16 px safety margin on at least one edge. Exact cell containment, cross-cell contamination, per-frame foot baselines, and 64-frame boundaries cannot pass review on this invalid grid. No image was copied to `public/assets/actors/`; no image processing, crop, resize, regrid, recolor, or chroma key was applied. The one allowed repair is exhausted.
+
+### Fresh composition prompt
+
+```text
+Use case: stylized-concept
+Asset type: production 2D side-scrolling game hero sprite atlas, asset ID actor:hero-cloth (T10-02).
+Input images: Image 1 is the local hero-style-reference-v1.png identity and palette reference only. Preserve the same young hero's friendly face, large brown eyes, warm skin, short tousled dark chestnut hair, big-head proportions, muted teal tunic with cream trim, cream neck wrap, ochre waist sash, light cream trousers, brown wrist wraps and dark brown boots. Ignore the reference board background and omit its carried sword, scabbard and cross-body strap.
+Primary request: create one genuinely game-ready, crisp pixel-art atlas of this same original hero in the beginner cloth outfit, shown facing right in side profile in every frame, with empty hands and no equipment attached.
+Scene/backdrop: truly transparent canvas with real alpha; no floor, scenery, shadow, checkerboard or background color.
+Style/medium: compact original pixel sprite art with deliberate hard-edged pixel clusters, stepped contours, restrained warm earthy and muted teal palette, consistent simple highlights; not painterly, not blurred, not airbrushed, no antialias fringe.
+Composition/framing: EXACT square canvas 1024 × 1024 pixels, a strict 8-column by 8-row grid of 64 equal 128 × 128 pixel cells, aligned exactly to all image edges; zero gutters, zero separators, zero grid lines, zero labels. Put exactly one complete same-scale character fully inside every cell, centered horizontally, about 86–94 pixels tall, with at least 16 transparent pixels between every sprite/effect and every cell edge. Never crop and never let any pixel or effect cross a cell boundary. Keep grounded boot soles aligned to one common horizontal baseline at local y=116 in each cell; maintain a consistent foot origin and anatomy. All poses face right. From top to bottom, rows must be exactly:
+1 idle: four subtly distinct relaxed breathing frames in columns 1–4; columns 5–8 exactly repeat frame 4.
+2 walk: six distinct alternating gait frames in columns 1–6; columns 7–8 exactly repeat frame 6.
+3 jump: rising pose then falling pose in columns 1–2; columns 3–8 exactly repeat frame 2.
+4 climb: four distinct alternating hand/foot climbing poses in columns 1–4; columns 5–8 exactly repeat frame 4.
+5 attack: six distinct bare-handed forward melee strike poses in columns 1–6, with empty hands and no weapon; columns 7–8 exactly repeat frame 6.
+6 hurt: two distinct recoil/flinch poses in columns 1–2; columns 3–8 exactly repeat frame 2.
+7 dead: four distinct collapsing/downed poses in columns 1–4, ending lying still; columns 5–8 exactly repeat the final lying pose.
+8 buff: four distinct calm power-up poses in columns 1–4 with only a few tiny fully opaque pixel sparkles kept within the same cell; columns 5–8 exactly repeat frame 4.
+Lighting/mood: friendly, warm, readable at small game scale.
+Constraints: preserve the same face, hairstyle, proportions and cloth outfit in all 64 cells; no weapon, sword, scabbard, sheath, strap, shield, hat, helmet, extra person, text, logo, watermark, border or UI. Every character/effect pixel must be fully opaque and every empty pixel fully transparent. Exact requested dimensions and uniform 8×8 boundaries are mandatory; no approximate grid.
+```
+
+### One targeted repair prompt
+
+```text
+Use case: precise-object-edit
+Asset type: the single allowed targeted correction for the new production sprite atlas actor:hero-cloth (T10-02).
+Input images: Image 1 is the newly generated cloth atlas edit target; preserve its intended character, eight row order, frame sequence, action poses, and cell meanings. Image 2 is the required local hero-style-reference-v1.png identity reference only; preserve the same short chestnut hair, friendly face, body proportions, warm skin, muted teal beginner tunic, cream scarf, ochre sash, cream trousers, wrist wraps and dark boots. Ignore its background and carried gear.
+Primary request: re-render and correct this atlas so it can be uniformly sliced and reviewed as a real game sprite sheet. Remove every visible red, yellow, green, or other colored fringe/outline/stray pixel and all partial-alpha halos around the hero silhouettes. Do not add any halo or glow.
+Scene/backdrop: genuinely transparent empty canvas, real alpha; no floor, scene, backdrop, shadow, checkerboard, color key, or background paint.
+Style/medium: crisp original pixel sprite art with hard stepped opaque pixel edges, limited warm palette, and no painterly or airbrushed soft edges.
+Composition/framing: output EXACTLY 1024 × 1024 pixels, exactly 8 equal columns and 8 equal rows of 128 × 128 pixels, grid boundaries aligned to all canvas edges with no gutters or separators. Preserve the eight state rows and their existing sequence from image 1. In every cell keep exactly one complete right-facing side-profile hero, same scale and same identity, with at least 16 clear fully transparent pixels from every silhouette/effect to each cell edge; no cropping, no overlap, no pixels crossing cell boundaries. Keep grounded boot soles on one common local baseline at y=116. Row order remains idle, walk, jump, climb, attack, hurt, dead, buff; effective pose counts remain 4, 6, 2, 4, 6, 2, 4, 4, and unused cells repeat their row's last effective pose.
+Constraints: keep the hero's hands empty and preserve the cloth outfit; no sword, scabbard, sheath, cross-body strap, shield, hat, helmet, extra person, text, logo, watermark, border, or UI. Every hero/effect pixel must be fully opaque and every empty pixel fully transparent. The exact 1024 × 1024 dimensions and exact uniform 8 × 8 grid are required; do not approximate, crop, regrid or recolor afterward.
+```

@@ -7,7 +7,7 @@
 ## 步驟
 
 - [x] T10-01 建source-log，生成固定短髮劍士、正側視／服裝輪廓參考，保留相同比例／五官／配色。這是開工參考，不當正式動畫完成。
-- [ ] T10-02 生成hero-cloth的8×8動作圖集，依10的8列狀態，畫面純透明、foot一致、各格無裁切。檢查格數及跨格污染，不可用一張站姿當走路。（UNFINISHED：v3/v4 均為1254×1254、mod 8=6×6且有彩邊／大量partial alpha；最新attempt/repair的hash與視覺檢查記於plan/reports/T10.md。曾評估可重現後處理；因無法可靠還原格界，且色彩key會有抹除角色顏色風險，未處理或入runtime／manifest／anchors。）
+- [ ] T10-02 生成hero-cloth的8×8動作圖集，依10的8列狀態，畫面純透明、foot一致、各格無裁切。檢查格數及跨格污染，不可用一張站姿當走路。（UNFINISHED：v3/v4與2026-10-18新構圖v5及唯一一次針對修正均為1254×1254、mod 8=6×6；v5修正後仍有大量partial alpha和彩色halo，近似等分格診斷64/64格安全邊不足16px。僅source保存，無runtime／manifest／anchors；本輪生成與修正額度已用完，不裁切、重排或色鍵。prompt、參考路徑、尺寸、alpha、hash與視檢記於art-source/actors/hero/source-log.md及plan/reports/T10-hero.md。）
 - [ ] T10-03 基於同主角參考製作hero-leather、hero-iron，動作／臉／髮不改、僅服裝不同；三衣服具可見升級差異。最新v3 attempt/repair仍為1254×1254、mod 8=6×6且有紅／黃綠外緣與繪畫式柔邊；未通過格線、安全邊與輪廓檢視，僅保存於source，詳plan/reports/T10.md。
 - [x] T10-04 生成四武器及三帽，透明、方向／pivot一致，主角圖集手上不烘焙固定武器，避免換裝仍拿兩把。
 - [ ] T10-05 為每個hero有效frame填hand/head anchors，按10坐標，武器attack rotation逐格可用；不是全部frame盲填同一點。
