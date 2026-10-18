@@ -47,3 +47,12 @@ No crop, resize, pixel repair, renderer change, or runtime/manifest edit was mad
 ## env:tile-platform low-saturation fresh attempt — 2026-10-18
 
 另做一次全新構圖，採用低彩度 moss-sage 頂面、muted warm-gray 土層與少數大塊像素，避免既有高彩 grass/soil/teal details；本次只呼叫一次 ImageGen，沒有第二次修正。輸出 `art-source/environment/env-tile-platform-t11-06-moss-sage-fresh-20261018.png` 是 1983×793 RGBA，而非 128×32；四角透明，raw alpha bounds `(90,64,1915,775)`，alpha≥32 bounds `(207,314,1777,533)`。診斷預覽平頂覆蓋 112/112 欄，但 112px active edge 有 11/32 列 RGBA 不一致（delta sum 359、max 227），且預覽仍見 14 個符合記錄閾值的黃調像素。拒收為 source-only / UNFINISHED；沒有 runtime PNG 或 manifest row，T11-06／T11-08 不勾選，manifest 維持 18/20。完整 prompt、refs、路徑、時間、SHA-256 及檢查在 `art-source/environment/source-log.md`。不驗證 renderer seam，也未跑 build、typecheck、tests、browser 或 full-pack 檢查。
+
+## T11-06 minimal hard-edge one-shot follow-up — 2026-10-18
+
+Per follow-up dispatch, generated exactly one new composition each for platform and slope with built-in ImageGen, transparent background, and explicit local references to the accepted ground tile and forest style reference. The exact prompts, output paths/times, reference paths, hashes, raw dimensions, alpha checks, seam measurements, and visual notes are recorded in `art-source/environment/source-log.md`.
+
+- `env:tile-platform`: source-only `env-tile-platform-t11-06-minimal-attempt-20261018.png`, 2172×724 RGBA, SHA-256 `7B7E779F3B109D1BB1041754D80AAC822AFCF61E5C6FACB28ADE300140264344`. The image is 3:1 instead of 128×32; the nominal 8px gutters have 9 nontransparent pixels combined, source row 0 has no artwork, and visual review shows yellow/red fringe with a jagged underside. Reject; no runtime or manifest entry.
+- `env:tile-slope`: source-only `env-tile-slope-t11-06-minimal-attempt-20261018.png`, 1254×1254 RGBA, SHA-256 `8EC4BB69999E45A9DE4A92E9E0F2BFE9D841ECB28991EDFA5A563A3D7F983555`. Measured top angle is 18.33° vs ~16°; after the expected ~353-row source-scale offset, 338/901 edge rows mismatch (RGBA difference sum 50,454). Bottom corners are opaque and the slope edge has bright green/yellow fringe. Reject; no runtime or manifest entry.
+
+No correction, crop, resize, pixel repair, renderer change, or runtime/manifest edit followed this one-shot round. T11-06 and T11-08 remain unchecked; T11 remains PARTIAL at 18/20 keys. Checks were limited to copy-hash/dimension, alpha/geometry/edge metrics, and visual review. No build, typecheck, tests, browser, or full-pack validation was run; renderer integration remains unverified.
