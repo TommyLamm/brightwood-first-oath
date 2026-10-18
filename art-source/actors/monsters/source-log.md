@@ -313,3 +313,90 @@ Repair result:
 - Dimensions remain 1374×1145 RGBA, divisible into 6×5 cells of 229×229; all four corners alpha 0. Full-image alpha counts: 824,771 zero; 748,221 partial; 238 fully opaque. Red-dominant nontransparent pixels: 391,376.
 - Full-sheet view still shows conspicuous bright red edge halos and detached red pixels; the repair made the visible fringe worse. Alpha>8 per-cell bounds still have less than 16 pixels of safety margin in every cell: rows 1–3 touch cell bottoms/tops, row 4 touches the cell tops and leaves only 7 pixels at the bottom, and the dead-row poses have only 2–17 pixels of horizontal margin. The required containment and edge checks fail despite correct total dimensions and grid divisibility.
 - Decision: `UNFINISHED`, source-only. The single allowed repair is exhausted. No copy was placed under `public/assets/actors/`, and no `actor:mushroom` image/animation entry was added to `creature-subset-manifest-v1.json`. Attempts 05 and 06 are both preserved unchanged; no further generation or repair will be made for this task.
++## 古礦守衛全新構圖追補 (actor:guardian, 2026-10-18)
+
+狀態：UNFINISHED，僅 source。這是與 attempt-01/02 不同的新側身構圖，之後只做了一次指定修復；兩張仍未通過實際格數與透明安全邊，不複製到 runtime，不新增 creature subset manifest entry。本組生成額度已用完。
+
+T10 正式圖集目標顯示尺寸為 192×192（一般怪物 96×96 的兩倍）；本次候選未通過格數及邊界驗收，因此沒有建立 runtime display metadata。
+
+本輪參考圖已先行查看。全新生成明確引用以下本地檔案：
+
+- F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png — 遊戲調色與完成度參考。
+- F:\Desktop\MapleStory\public\assets\actors\monsters\slime-atlas-v1.png — 側視圖塊、透明間距參考。
+- F:\Desktop\MapleStory\public\assets\actors\monsters\sentinel-atlas-v1.png — 硬邊裝甲輪廓參考。
+
+舊 guardian attempt-01/02 也先行檢視，只用來確認新構圖確實不同；未把舊稿當作 ImageGen 編輯目標，未覆寫舊圖。新構圖改為左向側身、鐘形裂岩頭盔及前方大護臂，與舊稿的正面寬肩外形有可見差異。
+
+### 新構圖生成 prompt 全文
+
+Use case: stylized-concept.
+Asset type: production boss sprite atlas for an original 2D side-view pixel-art adventure game.
+Primary request: create a genuinely new composition for one ancient mine guardian; this is a fresh generation, not an edit or continuation of any previously rejected guardian sheet. Design it in a clear left-facing side profile with a tall split-bell basalt helmet, a narrow amber eye slit, a sloped asymmetrical stone shoulder, one oversized blocky forward gauntlet, and layered muted bronze-gray mine armor fused to dark slate stone. Its silhouette and profile must differ clearly from a broad front-facing armored golem.
+Input images: Image 1 is the local traveler style reference, for warm palette and game-art finish only. Image 2 is the accepted slime atlas, for side-view pixel clusters and clean transparent spacing only. Image 3 is the accepted iron sentinel atlas, for readable stepped armor contours only. Do not copy or include any reference subject.
+Scene/backdrop: genuinely transparent canvas, with no scenery, floor, cast shadow, or effects.
+Style/medium: crisp hand-authored-looking pixel sprite art with stepped hard-edged pixel clusters, simple readable shading, and a restrained dark outline. Avoid 3D rendering, painterly blur, gradients, glow, bloom, or soft antialiasing.
+Composition/framing: exact 1374×1145 px canvas, strict 6 columns × 5 rows, each cell exactly 229×229 px, with no gutters, dividers, or outside padding. One complete guardian in each cell; same character, profile direction, and scale throughout. Keep every visible pixel at least 16 fully transparent pixels inside its own cell. Keep the standing foot baseline at local y=208; align the dead poses' lowest point to that baseline. Use a compact silhouette about 168–184 px tall and no more than 190 px wide per cell. Never crop, touch, or cross a cell edge.
+Row order, top to bottom: idle, walk, attack, hurt, dead. Effective frames: idle 2, walk 6, attack 4, hurt 2, dead 4. Repeat the final effective pose exactly in unused cells. Idle shows two subtle heavy breathing/weight-shift poses. Walk shows six distinct slow stone-plated stomps. Attack shows one clear four-pose sequence: low braced anticipation, lift the huge gauntlet overhead, downward ground slam with compressed body, heavy recovery. This shared attack sequence is for the existing guardian-slam and guardian-wave skills; do not add another row, attack, enemy, or effect. Hurt shows two readable heavy flinches. Dead shows four progressive collapses ending in a low inert heap of stone armor.
+Color palette: muted iron-gray, warm bronze and dark slate with small amber eyes; keep all colors inside the natural silhouette. No vivid red, cyan glow, blood, or colored edge pixels.
+Materials/textures: broad simple stone plates, a few bronze bands and mineral seams; low visual noise so silhouettes remain clear at runtime size.
+Text (verbatim): none.
+Constraints: exact canvas and 6×5 equal-cell grid; exact row order, frame counts, repeated final poses, transparent background, consistent design/scale/baseline, one enemy only.
+Avoid: any background or checkerboard, cell borders, red/yellow/green fringe or halo, detached color specks, soft alpha shadows, glow, blur, labels, text, logo, watermark, props, weapons, extra characters, additional attack poses, or changed animation rows.
+
+### 單次 targeted repair prompt 全文
+
+Use case: precise-object-edit.
+Asset type: targeted transparent boss sprite-atlas repair.
+Input images: Image 1 is the guardian-atlas-attempt-03 target to repair. Images 2–4 are local palette/edge references only (traveler style, accepted slime, accepted sentinel); do not add or copy their subjects.
+Primary request: make only the structural and edge corrections needed for this atlas to pass its sprite-sheet requirements. Correct the canvas to exactly 1374×1145 pixels and a strict 6-column × 5-row grid of exactly 229×229 cells. Remove every detached red or colored halo pixel outside the natural guardian silhouettes by making exterior pixels fully transparent. Uniformly scale and recenter individual poses only as needed so every pose has at least 16 fully transparent pixels on all four sides within its own cell. Keep the standing foot baseline at local y=208 and align the dead poses' lowest point to that baseline.
+Composition/framing: preserve the existing fresh left-facing side-profile guardian design, exact 30-cell layout, row order, cell positions, and same single guardian. Keep the tall split-bell helmet, amber eye slit, asymmetric stone shoulder, oversized forward gauntlet, muted iron-gray/bronze armor, all body proportions, hard outline, and all recognizable poses. Do not crop any sprite or change the character's direction. Keep the exact canvas/grid above.
+Action rows, top to bottom: idle (2 effective poses, repeat pose 2 in cells 3–6); walk (6 distinct stomps); attack (4 poses: brace, raised gauntlet, ground slam, recovery; repeat pose 4 in cells 5–6); hurt (2 flinches, repeat pose 2 in cells 3–6); dead (4 progressive collapses, repeat pose 4 in cells 5–6).
+Constraints: retain true transparent alpha outside every natural outline, crisp stepped pixel-cluster edges, consistent baseline and scale. Repair the width and edge/margin defects only; preserve all intended interior colors and the existing animation sequence.
+Avoid: any red/yellow/green fringe, detached pixels, soft exterior alpha, glow, blur, cast shadow, floor, background, checkerboard, grid line, label, text, watermark, extra character, prop, additional attack, new pose, redesign, or compositional change.
+
+### 原始輸出與本地副本
+
+兩次呼叫均使用 built-in ImageGen、transparent_background=true，沒有使用 CLI/API。
+
+| 用途 | ImageGen 原始輸出路徑 | 輸出建立時間 (UTC) | 本地 source 副本 |
+| --- | --- | --- | --- |
+| 全新構圖 | D:\dev-data\codex-home\generated_images\01a14cd6-56d9-7281-83c0-a52769177167\exec-551dfb49-bf41-4ae4-bd0b-6c7bf5fd728b.png | 2026-10-18 02:38:46 | art-source/actors/monsters/guardian/guardian-atlas-attempt-03.png |
+| targeted repair | D:\dev-data\codex-home\generated_images\01a14cd6-56d9-7281-83c0-a52769177167\exec-51a0f612-db95-4e47-a359-0c243da219c5.png | 2026-10-18 02:40:54 | art-source/actors/monsters/guardian/guardian-atlas-attempt-04.png |
+
+生成引用路徑：
+
+- attempt-03: F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png; F:\Desktop\MapleStory\public\assets\actors\monsters\slime-atlas-v1.png; F:\Desktop\MapleStory\public\assets\actors\monsters\sentinel-atlas-v1.png
+- attempt-04: F:\Desktop\MapleStory\art-source\actors\monsters\guardian\guardian-atlas-attempt-03.png; F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png; F:\Desktop\MapleStory\public\assets\actors\monsters\slime-atlas-v1.png; F:\Desktop\MapleStory\public\assets\actors\monsters\sentinel-atlas-v1.png
+
+### PNG、alpha、hash 與逐格界限檢查
+
+使用 System.Drawing 讀取原始 PNG 並逐像素檢查 alpha。兩份 source 副本均與工具原始輸出的 SHA-256 完全相同，沒有經過 regrid、裁切、重採樣或 alpha 後處理。兩份圖的四角 alpha 均為 0。
+
+| 候選 | 尺寸／格式 | alpha 0 / partial / 255 | 整張圖 red-dominant、alpha>32 像素 | SHA-256 |
+| --- | --- | --- | ---: | --- |
+| attempt-03 | 1373×1145 RGBA；mod 6×5 = 5×0 | 726,487 / 845,088 / 510 | 79,676 | 1644F4B78A27B551FA8F169645A53EA64A15006DD87A993A70B243108F4E51D5 |
+| attempt-04 repair | 1373×1145 RGBA；mod 6×5 = 5×0 | 746,771 / 824,122 / 1,192 | 108,322 | 4D5EFC489B1FF1C5276876D8EF269B1D35E61975121728F48C25BF10F7FD6B51 |
+
+兩張都寬1373，不能平均整除成六個整數寬度 cell；因此任何逐格結果只能作為診斷近似值，不能視為有效 spritesheet 驗收。以下以 X/Y 六等分／五等分的 floor 邊界分箱，對 alpha>0 像素計算每個近似 cell 的非透明 bbox 尺寸及左/右/上/下透明邊距。格式為「bbox寬×高 [左/右/上/下像素]」；所有格的安全邊檢查皆未達四邊至少16 px。
+
+attempt-03 approximate cells:
+
+| 列 | C1 | C2 | C3 | C4 | C5 | C6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| idle | 228×202 [0/0/27/0] | 229×208 [0/0/21/0] | 229×200 [0/0/29/0] | 229×200 [0/0/29/0] | 228×204 [1/0/25/0] | 211×201 [0/18/28/0] |
+| walk | 228×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 215×229 [0/14/0/0] |
+| attack | 228×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] |
+| hurt | 228×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 228×229 [0/1/0/0] |
+| dead | 199×205 [29/0/0/24] | 227×229 [0/2/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] |
+
+attempt-04 repair approximate cells:
+
+| 列 | C1 | C2 | C3 | C4 | C5 | C6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| idle | 201×196 [15/12/33/0] | 199×196 [11/19/33/0] | 206×198 [23/0/31/0] | 211×198 [0/18/31/0] | 219×196 [1/9/33/0] | 211×196 [2/16/33/0] |
+| walk | 228×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 219×229 [0/10/0/0] |
+| attack | 215×229 [13/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] |
+| hurt | 199×229 [29/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] | 229×229 [0/0/0/0] |
+| dead | 188×203 [40/0/0/26] | 229×229 [0/0/0/0] | 229×202 [0/0/0/27] | 229×229 [0/0/0/0] | 229×202 [0/0/0/27] | 229×229 [0/0/0/0] |
+
+視覺檢查：新稿的左向側面、鐘形頭盔和大護臂區別於舊正面構圖；五列大致可辨 idle/walk/attack/hurt/dead，dead 列由站立倒下至低姿態堆疊。兩張仍有肉眼可見的紅色外緣殘像與大量柔邊，walk/attack/hurt/dead 多格 alpha bbox 貼近或延伸到近似分格邊界。修正後 alpha>32 的 red-dominant 全圖像素由79,676增至108,322；此為整張圖顏色統計而非外緣專用分割，但與目視仍有紅暈相符。畫布寬度也未被修至可整分格的1374。所有 30 格近似分箱均未達16px安全邊，修正失敗。T10-07 保持 UNFINISHED，兩圖 source-only；沒有 public PNG，沒有 guardian image/animation manifest entries，沒有宣稱 T10 或 T10/10 驗收完成。這已用盡一生成加一次修正，不再重試。
