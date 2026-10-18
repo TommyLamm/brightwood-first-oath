@@ -473,3 +473,27 @@ Style/medium: crisp handcrafted pixel-art VFX, hard-edged outlined clusters and 
 Color palette: warm amber and gold with a small steel-white core and restrained steel-blue edge pixels.
 Constraints: genuine RGBA transparency. All empty pixels must have alpha 0. No haze, fog, mist, translucent wash, tinted band, background, floor, shadow, aura, crescent, radial starburst, wide shockwave, long light trail, expanding particles, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, character, weapon, extra object, duplicate pose, cross-cell pixel, or frame-edge pixel.
 ```
+
+## Heavy-strike v6 compact centered candidate — source-only after alpha edge check (2026-10-18)
+
+- Tool: built-in ImageGen; `transparent_background=true`.
+- Raw ImageGen output: `D:\dev-data\codex-home\generated_images\01a14d56-7672-7503-ab36-99b3ec121ffd\exec-a092016d-4f5a-4fde-af44-ef3372bf56f8.png`.
+- Preserved unchanged as `interface-vfx-heavy-strike-v6-attempt1.png`; SHA-256 `C53EA3F52798B3AE9C08F51FA81EE6073604FA588B3E1643AE6052C33840B726`.
+- Local references viewed at original size and provided by path: `public/assets/interface/vfx-hit-v2.png`, `public/assets/interface/vfx-sweep-v2.png`, `public/assets/interface/vfx-guard-v2.png`.
+- Dimensions/mode: 2172×724 RGBA; six horizontal cells of 362×724, evenly divisible into 6×1.
+- Alpha histogram bins `[0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255]`: `[1532307, 16873, 856, 985, 1269, 1347, 18778, 113]`; extrema 0–255; nonzero pixels 40,221.
+- Alpha>0 exclusive cell-local bounds and margins `(left,top,right,bottom)`: frame 0 `(55,184,354,650)`, margins `(55,184,8,74)`; frame 1 `(9,176,358,560)`, margins `(9,176,4,164)`; frame 2 `(1,110,362,579)`, margins `(1,110,0,145)`; frame 3 `(1,101,362,571)`, margins `(1,101,0,153)`; frame 4 `(41,216,316,668)`, margins `(41,216,46,56)`; frame 5 `(7,216,292,507)`, margins `(7,216,70,217)`.
+- Viewed at original size: effects are visibly smaller and centered than v5, but faint alpha pixels still extend to the horizontal cell edge in frames 2–3 and within 4–9 pixels in frames 0–1 and 5; 16,873 pixels have alpha 1–15. One middle frame also reads as a crossed/starburst mark rather than the intended short blade-contact shape. Rejected for clean alpha/frame safety and motif clarity. This was the single assigned v6 attempt; no repair, crop, rearrangement, alpha edit, runtime image or manifest entry was made. No further retry is authorized in this stage.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: one six-frame horizontal sprite strip for vfx:heavy-strike, a compact sword-hit effect in an original classic 2D side-view forest RPG.
+Input images: Image 1 is the accepted vfx:hit runtime strip, only for its tight pixel scale and clean alpha. Image 2 is the accepted vfx:sweep strip, only for its crisp outlined pixel clusters. Image 3 is the accepted vfx:guard strip, only for its fully transparent empty spaces. Do not copy any of their motifs.
+Primary request: draw one very short, centered heavy sword-contact beat as six distinct pixel-art frames: (1) a tiny cream glint; (2) a short steel diagonal cut only a few pixels long; (3) that cut meets the center in a compact amber impact; (4) one small angular broken-chevron burst, no more than three clustered shards; (5) the fragments contract to two tiny gold chips; (6) one fading center dot. The animation must read as a quick sword hit through this small cut and contact spark alone.
+Composition/framing: exactly six equal cells in one horizontal row, left-to-right chronological order. Each cell is 362×724 pixels on a 2172×724 transparent canvas. Place the entire effect inside a centered 170×170 square in each cell, leaving at least 96 fully empty pixels on left/right and very large transparent space above/below. Use the same center and scale for all six frames. Every frame is isolated; no pixel or glow crosses a cell boundary.
+Style/medium: clean, hard-edged pixel-art sprite with clear dark outline and small pale highlights; use fully opaque pixels for the solid clusters, with only a few semitransparent pixels directly on cluster edges. No soft lighting.
+Color palette: muted steel-blue outline, small steel-white cut, warm amber/gold contact chips.
+Constraints: genuine RGBA alpha. Every pixel outside the stated small effect shapes is alpha 0; all empty canvas is truly transparent. No background color, alpha wash, noise, haze, smoke, mist, aura, halo, glow, bloom, gradients, long trail, long slash, crescent, large shockwave, radial starburst, cloud, floor, shadow, checkerboard, guides, gridlines, frame borders, text, numbers, HUD, watermark, character, drawn sword, extra subjects, repeated frames, or cross-cell detail.
+```
