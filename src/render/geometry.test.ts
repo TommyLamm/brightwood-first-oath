@@ -14,6 +14,7 @@ import {
   rendererViewportGeometry,
   segmentTileGeometry,
   WORLD_DEPTH,
+  actorFootOffset,
 } from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {
@@ -132,5 +133,14 @@ describe('renderer terrain geometry', () => {
     expect(tall?.worldHeight).toBeGreaterThan(540);
     expect(rendererViewportGeometry(0, 540)).toBeNull();
     expect(rendererViewportGeometry(Number.NaN, 540)).toBeNull();
+  });
+});
+
+describe('actor foot geometry', () => {
+  it('scales the measured transparent bottom edge into world pixels', () => {
+    expect(actorFootOffset(96, 1, 128, 111)).toBe(12);
+    expect(actorFootOffset(96, 1, 128, 127)).toBe(0);
+    expect(actorFootOffset(96, 0.5, 128, 111)).toBe(-36);
+    expect(actorFootOffset(96, 1, 128, -1)).toBe(0);
   });
 });

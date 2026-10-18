@@ -68,6 +68,21 @@ export function rendererViewportGeometry(
   return { zoom, worldWidth: width / zoom, worldHeight: height / zoom };
 }
 
+/** Offsets an actor frame so its lowest opaque pixel rests on its world footpoint. */
+export function actorFootOffset(
+  displayHeight: number,
+  pivotY: number,
+  sourceFrameHeight: number,
+  lastOpaqueRow: number,
+): number {
+  if (![displayHeight, pivotY, sourceFrameHeight, lastOpaqueRow].every(Number.isFinite)
+    || displayHeight <= 0 || pivotY < 0 || pivotY > 1 || sourceFrameHeight <= 0
+    || lastOpaqueRow < 0 || lastOpaqueRow >= sourceFrameHeight) {
+    return 0;
+  }
+  return displayHeight * pivotY - (lastOpaqueRow + 1) * displayHeight / sourceFrameHeight;
+}
+
 /** Places overlapping ground tiles from the foothold's left endpoint. */
 export function groundTilePositions(
   foothold: Foothold,
