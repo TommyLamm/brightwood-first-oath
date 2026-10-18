@@ -19,6 +19,7 @@ import {
   telegraphCueGeometry,
 } from './combat-primitives.js';
 import {
+  GROUND_TILE_OVERLAP,
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
@@ -28,6 +29,7 @@ import {
   portalFootAnchor,
   rendererViewportGeometry,
   segmentTileGeometry,
+  WORLD_DEPTH,
 } from './geometry.js';
 
 type RendererAssets = {
@@ -67,24 +69,10 @@ type TextureRegistration = {
 
 const BASE_WIDTH = 960;
 const BASE_HEIGHT = 540;
-const WORLD_DEPTH = {
-  sky: 0,
-  far: 1,
-  mid: 2,
-  terrain: 10,
-  actors: 30,
-  foreground: 35,
-  health: 31,
-  attack: 39,
-  telegraph: 40,
-  effect: 41,
-  text: 42,
-} as const;
 const DAMAGE_TEXT_LIMIT = 30;
 const DROP_DRAW_LIMIT = 60;
 const PARTICLE_LIMIT = 100;
 const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
-const GROUND_TILE_OVERLAP = 16;
 const registeredTextures = new WeakMap<Phaser.Textures.TextureManager, Map<string, TextureRegistration>>();
 const HERO_IMAGE_KEYS = ['actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron'] as const;
 const HERO_ANIMATION_STATES = ['idle', 'walk', 'jump', 'climb', 'attack', 'hurt', 'dead', 'buff'] as const;

@@ -29,6 +29,22 @@ export const PLATFORM_TILE_DISPLAY_HEIGHT = 32;
 export const PLATFORM_TILE_SIDE_GUTTER = 8;
 export const PLATFORM_TILE_ACTIVE_PITCH =
   PLATFORM_TILE_DISPLAY_WIDTH - PLATFORM_TILE_SIDE_GUTTER * 2;
+export const GROUND_TILE_OVERLAP = 16;
+
+/** Stable draw order for the world renderer and its depth-order tests. */
+export const WORLD_DEPTH = {
+  sky: 0,
+  far: 1,
+  mid: 2,
+  terrain: 10,
+  actors: 30,
+  health: 31,
+  foreground: 35,
+  attack: 39,
+  telegraph: 40,
+  effect: 41,
+  text: 42,
+} as const;
 
 export type RendererViewportGeometry = {
   zoom: number;

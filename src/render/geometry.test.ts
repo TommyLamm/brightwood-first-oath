@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Foothold } from '../contracts/definitions.js';
 import {
+  GROUND_TILE_OVERLAP,
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
@@ -12,6 +13,7 @@ import {
   portalFootAnchor,
   rendererViewportGeometry,
   segmentTileGeometry,
+  WORLD_DEPTH,
 } from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {
@@ -19,13 +21,31 @@ function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = 
 }
 
 describe('renderer terrain geometry', () => {
+  it('keeps world layers at their fixed depth order', () => {
+    expect(WORLD_DEPTH).toEqual({
+      sky: 0,
+      far: 1,
+      mid: 2,
+      terrain: 10,
+      actors: 30,
+      health: 31,
+      foreground: 35,
+      attack: 39,
+      telegraph: 40,
+      effect: 41,
+      text: 42,
+    });
+  });
+
   it('repeats ground tiles from the surface footpoint with the specified overlap', () => {
-    expect(groundTilePositions(foothold(40, 320, 340, 320), 128, 16)).toEqual([
+    expect(GROUND_TILE_OVERLAP).toBe(16);
+    expect(groundTilePositions(foothold(40, 320, 340, 320), 128, GROUND_TILE_OVERLAP)).toEqual([
       { x: 40, y: 320 },
       { x: 152, y: 320 },
       { x: 264, y: 320 },
     ]);
-    expect(groundTilePositions(foothold(40, 320, 90, 320), 128, 16)).toEqual([{ x: 40, y: 320 }]);
+    expect(groundTilePositions(foothold(40, 320, 90, 320), 128, GROUND_TILE_OVERLAP))
+      .toEqual([{ x: 40, y: 320 }]);
   });
 
   it('repeats full platform display cells at the 112px active pitch and covers the foothold end', () => {
