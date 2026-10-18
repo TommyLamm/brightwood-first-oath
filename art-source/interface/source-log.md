@@ -425,3 +425,27 @@ Style/medium: handcrafted pixel-art game effect matching the supplied accepted s
 Color palette: warm amber and gold with a small steel-white core and muted steel-blue edge accents.
 Constraints: genuine RGBA transparency. Every empty pixel and all negative space must be alpha 0. No haze, fog, mist, translucent color wash, tinted bands, background, fill, floor line, shadow, glow field, checkerboard, gridlines, borders, text, letters, numbers, HUD, watermark, repeated frames, crescent arc, starburst, extra objects, character, sword, or cross-cell pixels.
 ```
+
+### Heavy-strike v4 — one targeted repair rejected (2026-10-18)
+
+- Tool: built-in ImageGen; `transparent_background=true`.
+- Raw ImageGen output: `D:\dev-data\codex-home\generated_images\01a14d56-7672-7503-ab36-99b3ec121ffd\exec-8d450596-8b80-4fef-9dfe-27d262f50685.png`.
+- Preserved unchanged as `interface-vfx-heavy-strike-v4-repair1.png`; SHA-256 `86612BD767C42F05693BC9CACC36BC59BC3A99DDFB9AA106`.
+- Local references: exact edit target `art-source/interface/interface-vfx-heavy-strike-v4-attempt1.png`; style/alpha references `public/assets/interface/vfx-sweep-v2.png` and `public/assets/interface/vfx-guard-v2.png`.
+- Dimensions/mode: 2172×724 RGBA; six 362×724 cells, one horizontal row.
+- Alpha histogram bins `[0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255]`: `[1473271, 37606, 1836, 1845, 2993, 3236, 51654, 87]`; alpha extrema 0–255; nonzero pixels 99,257.
+- Alpha>0 exclusive cell-local bounds and margins `(left,top,right,bottom)`: frame 0 `(33,127,346,507)`, margins `(33,127,16,217)`; frame 1 `(9,182,308,636)`, margins `(9,182,54,88)`; frame 2 `(31,120,362,628)`, margins `(31,120,0,96)`; frame 3 `(0,224,362,658)`, margins `(0,224,0,66)`; frame 4 `(0,240,362,491)`, margins `(0,240,0,233)`; frame 5 `(0,159,304,587)`, margins `(0,159,58,137)`.
+- Visual review retains the distinct down-cleave and low bilateral wedges, but alpha-bearing pixels still touch a cell edge in frames 2–5 and the source retains 37,606 low-alpha pixels. Rejected for frame safety and clean negative space. This was the one targeted correction; no further generation or repair will be made. No crop, rearrangement, alpha edit, runtime image, or manifest entry was created. `vfx:heavy-strike` remains absent from runtime.
+
+Repair prompt:
+
+```text
+Use case: precise-object-edit
+Asset type: one corrected six-frame horizontal transparent pixel-art VFX strip for vfx:heavy-strike.
+Input images: Image 1 is the exact v4 heavy-strike strip to edit. Image 2 is the accepted sweep strip, for crisp pixel clusters and clean negative space only. Image 3 is the accepted guard strip, only for genuine transparency; do not copy its blue crescent or ring.
+Primary request: make one narrow repair to Image 1 while preserving the same distinct near-vertical falling cleave and low two-sided shockwave action. Keep all six frames and their left-to-right chronology: (1) tiny steel-white glint with amber specks; (2) narrow descending steel stroke with restrained gold edge; (3) compressed gold impact point; (4) two separate low jagged amber-and-steel wedges spreading left and right with a few short upward chips; (5) separated contracting angular fragments; (6) two fading gold motes. Preserve the hard-edged pixel motifs, overall palette and centers. Remove only all diffuse brown/orange haze, translucent wash and stray low-opacity background pixels so every truly empty area has alpha exactly 0. If necessary, scale down or reposition the complete existing effect inside its own frame so every remaining alpha-bearing pixel has at least 32 pixels of clear transparent inset from every cell edge. Do not crop any effect or move pixels between frames.
+Composition/framing: preserve the same 2172×724 canvas and exactly six equal vertical cells in one horizontal row, 362×724 each, in the same order. Keep the same center for each cell; only the smallest per-frame adjustment needed to create safe margins is allowed. All six cells remain separate, with no cross-cell pixels. Do not add lines, borders, or grid marks.
+Style/medium: preserve crisp handcrafted pixel-art clusters and outlined edges; no blur or photorealism.
+Color palette: retain warm amber/gold, a small steel-white core, and muted steel-blue accents.
+Constraints: genuine RGBA transparency. Keep the unique downward cleave and two-sided ground-level wedge motif; no crescent arc, starburst, filled or colored background, fog, mist, haze, cloud, soft glow, gradient, bloom, floor line, shadow, checkerboard, gridlines, borders, text, numbers, watermark, character, drawn sword, added objects, repeated still frames, or frame-edge pixels. Do not rearrange the source frames or alter alpha with a color key.
+```
