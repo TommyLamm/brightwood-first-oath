@@ -80,6 +80,35 @@ function makeBadge(document: Document, text: string, tone = ''): HTMLElement {
   return makeElement(document, 'span', 'ms-badge' + (tone ? ' ms-badge--' + tone : ''), text);
 }
 
+function makeInterfaceIcon(
+  document: Document,
+  view: UiSnapshot,
+  key: string,
+  label: string,
+  className: string,
+): HTMLElement {
+  const missingIcon = (message: string): HTMLElement => {
+    const fallback = makeBadge(document, message, 'missing');
+    fallback.classList.add(className, 'ms-interface-icon-fallback');
+    fallback.setAttribute('aria-label', label + message);
+    return fallback;
+  };
+  const asset = view.interfaceManifest?.images.find((image) => image.key === key);
+  if (!asset) return missingIcon('圖示未載入');
+
+  const image = makeElement(document, 'img', className);
+  image.src = new URL(asset.url, document.baseURI).href;
+  image.alt = label;
+  image.width = asset.displayWidth;
+  image.height = asset.displayHeight;
+  image.draggable = false;
+  image.dataset.assetKey = key;
+  image.addEventListener('error', () => {
+    image.replaceWith(missingIcon('圖示載入失敗'));
+  }, { once: true });
+  return image;
+}
+
 function makeSectionTitle(document: Document, title: string, note?: string): HTMLElement {
   const row = makeElement(document, 'div', 'ms-section-title');
   row.append(makeElement(document, 'h3', '', title));
@@ -231,9 +260,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     makeElement(document, 'strong', '', '楓之故事'),
     makeElement(document, 'span', '', '桌面冒險介面'),
   );
-  const assetNote = makeBadge(document, 'UI 暫用版面・T12 圖示／特效缺失', 'temporary');
-  assetNote.setAttribute('aria-label', '臨時版面；正式圖示與特效仍待 T12 素材包');
-  header.append(brand, assetNote);
+  header.append(brand);
 
   const hud = makeElement(document, 'div', 'ms-hud');
   const profile = makeElement(document, 'section', 'ms-card ms-profile');
@@ -262,12 +289,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const quickSlots = makeElement(document, 'div', 'ms-quickbar__slots');
   const quickDefinitions = [
-    { id: 'basic', label: '普通攻擊', key: 'Ctrl', kind: 'attack' },
-    { id: 'heavy-strike', label: '重斬', key: '1', kind: 'skill' },
-    { id: 'sweep', label: '橫掃', key: '2', kind: 'skill' },
-    { id: 'iron-guard', label: '堅韌守護', key: '3', kind: 'skill' },
-    { id: 'small-red', label: 'HP 藥水', key: 'Q', kind: 'item' },
-    { id: 'small-blue', label: 'MP 藥水', key: 'W', kind: 'item' },
+    { id: 'basic', label: '普通攻擊', kind: 'attack' },
+    { id: 'heavy-strike', label: '重斬', kind: 'skill' },
+    { id: 'sweep', label: '橫掃', kind: 'skill' },
+    { id: 'iron-guard', label: '堅韌守護', kind: 'skill' },
+    { id: 'small-red', label: 'HP 藥水', kind: 'item' },
+    { id: 'small-blue', label: 'MP 藥水', kind: 'item' },
   ] as const;
   const quickButtons = new Map<string, HTMLButtonElement>();
   for (const slot of quickDefinitions) {
@@ -275,15 +302,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       className: 'ms-quick-slot',
       data: slot.kind === 'item' ? { itemId: slot.id } : { skillId: slot.id },
     });
-    const keyHint = makeElement(document, 'span', 'ms-quick-slot__key', slot.key);
+    const keyHint = makeElement(document, 'span', 'ms-quick-slot__key', '—');
+    const icon = makeElement(document, 'span', 'ms-quick-slot__icon');
     const label = makeElement(document, 'strong', 'ms-quick-slot__label', slot.label);
     const state = makeElement(document, 'span', 'ms-quick-slot__state', '');
-    const fallback = makeBadge(document, 'TEMP', 'temporary');
-    button.append(keyHint, fallback, label, state);
+    button.append(keyHint, icon, label, state);
     quickSlots.append(button);
     quickButtons.set(slot.id, button);
   }
-  quickbar.append(makeSectionTitle(document, '快捷操作', '圖示 TEMP'), quickSlots);
+  quickbar.append(makeSectionTitle(document, '快捷操作'), quickSlots);
 
   const panelHost = makeElement(document, 'div', 'ms-panel-host');
   panelHost.hidden = true;
@@ -336,20 +363,23 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const renderProfile = (view: UiSnapshot): void => {
     const player = view.saveData?.player;
-    const signature = player ? JSON.stringify({ player, stats: view.stats }) : 'empty';
+    const signature = player
+      ? JSON.stringify({ player, stats: view.stats, interfaceReady: Boolean(view.interfaceManifest) })
+      : 'empty';
     if (signature === lastProfileSignature) return;
     lastProfileSignature = signature;
     profile.replaceChildren();
     if (!player) {
       profile.append(
-        makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--missing', '缺圖'),
+        makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--empty', '楓'),
         makeElement(document, 'div', 'ms-profile__main', '登入或建立角色後開始冒險'),
       );
       return;
     }
 
-    const portrait = makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--missing', 'TEMP');
-    portrait.title = '角色肖像素材待 T10/T12 正式交付';
+    const portrait = makeElement(document, 'div', 'ms-profile__portrait');
+    portrait.append(makeInterfaceIcon(document, view, 'marker:player', '玩家標記', 'ms-profile__marker'));
+    portrait.setAttribute('aria-label', '玩家標記');
     const main = makeElement(document, 'div', 'ms-profile__main');
     const heading = makeElement(document, 'div', 'ms-profile__heading');
     heading.append(
@@ -397,7 +427,21 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     };
     for (const [skillId, button] of quickButtons) {
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
-      if (key && view.saveData) key.textContent = codeLabel(view.saveData.settings.bindings[keyForSkill[skillId]]);
+      if (key) {
+        key.textContent = view.saveData
+          ? codeLabel(view.saveData.settings.bindings[keyForSkill[skillId]])
+          : '—';
+      }
+      const definition = quickDefinitions.find((slot) => slot.id === skillId);
+      const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
+      if (iconHost) {
+        const iconKey = definition?.kind === 'item'
+          ? view.catalog.rules.items[skillId]?.iconKey
+          : definition?.kind === 'skill' ? 'skill:' + skillId : null;
+        iconHost.replaceChildren(iconKey
+          ? makeInterfaceIcon(document, view, iconKey, definition?.label ?? skillId, 'ms-quick-slot__icon-image')
+          : makeBadge(document, '普攻', 'neutral'));
+      }
       const skill = view.catalog.rules.skills[skillId];
       const state = button.querySelector<HTMLElement>('.ms-quick-slot__state');
       const label = button.querySelector<HTMLElement>('.ms-quick-slot__label');
@@ -603,6 +647,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const signature = JSON.stringify({
       panel,
       data: view.saveData,
+      interfaceReady: Boolean(view.interfaceManifest),
       quests: view.questViews,
       interaction: view.interaction,
       canReturnTown: view.canReturnTown,
@@ -622,7 +667,6 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const title = makeElement(document, 'div', 'ms-panel__title');
       title.append(
         makeElement(document, 'h2', '', PANEL_LABELS[panel]),
-        makeBadge(document, '暫用版面', 'temporary'),
       );
       const closeButton = makeButton(document, '關閉', 'close-panel', {
         className: 'ms-button ms-button--close',
@@ -946,7 +990,6 @@ function makeScreenCard(document: Document, title: string, description: string):
   card.setAttribute('role', 'dialog');
   card.setAttribute('aria-modal', 'true');
   card.append(
-    makeBadge(document, 'UI 暫用版面', 'temporary'),
     makeElement(document, 'h1', '', title),
     makeElement(document, 'p', 'ms-screen-card__description', description),
   );
@@ -1069,7 +1112,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     slot.setAttribute('aria-label', (item?.name ?? stack.itemId) + ' ×' + stack.quantity + '，背包第 ' + (index + 1) + ' 格');
     slot.dataset.focus = 'bag-slot-' + bagIndex;
     slot.append(
-      makeBadge(document, '缺圖', 'missing'),
+      makeInterfaceIcon(document, view, item?.iconKey ?? '', item?.name ?? stack.itemId, 'ms-bag-slot__icon'),
       makeElement(document, 'span', 'ms-bag-slot__name', item?.name ?? stack.itemId),
       makeElement(document, 'span', 'ms-bag-slot__quantity', '×' + stack.quantity),
     );
@@ -1080,14 +1123,13 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   const detail = makeElement(document, 'aside', 'ms-item-detail');
   if (!selected) {
     detail.append(
-      makeBadge(document, '圖示缺失・文字資訊可用', 'temporary'),
       makeElement(document, 'h3', '', '選取一件物品'),
       makeElement(document, 'p', '', '選取背包格後可查看需求、能力、價格，並使用、裝備或出售。'),
     );
   } else {
     const { stack, bagIndex, item } = selected;
     detail.append(
-      makeBadge(document, '圖示缺失', 'missing'),
+      makeInterfaceIcon(document, view, item?.iconKey ?? '', item?.name ?? stack.itemId, 'ms-item-detail__icon'),
       makeElement(document, 'h3', '', item?.name ?? stack.itemId),
       makeBadge(document, kindLabel(item?.kind ?? '未知'), 'category'),
       makeElement(document, 'p', 'ms-detail-quantity', '數量 ×' + stack.quantity),
@@ -1140,7 +1182,8 @@ function buildEquipmentPanel(document: Document, view: UiSnapshot, parent: HTMLE
     const card = makeElement(document, 'section', 'ms-equipment-slot');
     card.append(
       makeElement(document, 'span', 'ms-eyebrow', slotLabel(slot)),
-      makeBadge(document, item ? '圖示缺失' : '空槽', item ? 'missing' : 'neutral'),
+      makeInterfaceIcon(document, view, item?.iconKey ?? 'slot:normal', item?.name ?? slotLabel(slot) + '空槽', 'ms-equipment-slot__icon'),
+      makeBadge(document, item ? '已裝備' : '空槽', item ? 'success' : 'neutral'),
       makeElement(document, 'h3', '', item?.name ?? '尚未裝備'),
       makeElement(document, 'pre', 'ms-detail-copy', item ? itemDetails(item) : '此裝備槽目前為空。'),
     );
@@ -1207,7 +1250,7 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     const card = makeElement(document, 'article', 'ms-skill-card');
     const head = makeElement(document, 'div', 'ms-skill-card__head');
     head.append(
-      makeBadge(document, '圖示缺失', 'missing'),
+      makeInterfaceIcon(document, view, 'skill:' + skill.id, skill.name, 'ms-skill-card__icon'),
       makeElement(document, 'h3', '', skill.name),
       makeBadge(document, 'Rank ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
     );
@@ -1285,7 +1328,7 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
     );
     mapList.append(row);
   }
-  parent.append(makeSectionTitle(document, '地區', 'T05 世界資料'), mapList);
+  parent.append(makeSectionTitle(document, '地區'), mapList);
 
   const portals = currentMap?.portals ?? [];
   const portalSection = makeElement(document, 'section', 'ms-portal-list');
@@ -1351,7 +1394,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     const total = quantity * item.buyPrice;
     const card = makeElement(document, 'article', 'ms-shop-card');
     card.append(
-      makeBadge(document, '圖示缺失', 'missing'),
+      makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-shop-card__icon'),
       makeBadge(document, kindLabel(item.kind), 'category'),
       makeElement(document, 'h4', '', item.name),
       makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item)),
@@ -1394,7 +1437,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     const quantity = clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity);
     const row = makeElement(document, 'div', 'ms-sell-row');
     row.append(
-      makeBadge(document, '圖示缺失', 'missing'),
+      makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-sell-row__icon'),
       makeElement(document, 'strong', '', item.name + ' ×' + stack.quantity),
       makeElement(document, 'span', '', '賣價 ' + formatNumber(item.sellPrice) + '／個・合計 ' + formatNumber(item.sellPrice * quantity)),
     );
@@ -1426,7 +1469,6 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
   }
   const npc = view.catalog.world.npcs[interaction.npcId];
   parent.append(
-    makeBadge(document, 'NPC 肖像缺失', 'missing'),
     makeElement(document, 'h3', '', npc?.name ?? interaction.npcId),
   );
   const lines = makeElement(document, 'div', 'ms-dialogue-lines');
