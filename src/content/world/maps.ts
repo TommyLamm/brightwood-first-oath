@@ -37,7 +37,11 @@ const blueprints: MapBlueprint[] = [
       { id: 'camp:east', x: 1340, y: 600, targetMapId: 'town', targetSpawnId: 'left', requiredQuestId: 'q01', minLevel: 1 },
     ],
     npcs: [{ npcId: 'guide', x: 250, y: 600 }],
-    monsters: [{ monsterId: 'snail', x: 1050, roamLeft: 950, roamRight: 1300 }],
+    monsters: [
+      { monsterId: 'snail', x: 1000, roamLeft: 950, roamRight: 1050 },
+      { monsterId: 'snail', x: 1125, roamLeft: 1075, roamRight: 1175 },
+      { monsterId: 'snail', x: 1250, roamLeft: 1200, roamRight: 1300 },
+    ],
   },
   {
     id: 'town', name: '木葉鎮', width: 1920, themeKey: 'town', musicKey: 'theme-town', safe: true, boss: false,

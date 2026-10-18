@@ -105,8 +105,13 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
         return failure(`Monster position or roam range is invalid: ${mapId}/${monster.spawnId}`);
       }
     }
-    if (mapId === 'camp' && (map.monsters.length !== 1 || map.monsters[0]?.monsterId !== 'snail')) {
-      return failure('Camp must contain only one snail spawn');
+    if (mapId === 'camp') {
+      const requiredSnails = world.quests.q01?.objectives
+        .find((objective) => objective.type === 'kill' && objective.targetId === 'snail')?.count ?? 0;
+      const campSnails = map.monsters.filter(({ monsterId }) => monsterId === 'snail').length;
+      if (campSnails < requiredSnails) {
+        return failure('Camp must provide enough snail spawns to complete q01 without respawns');
+      }
     }
     for (const placement of map.npcs) {
       if (!hasRecordKey(world.npcs, placement.npcId) || placement.x < 0 || placement.x > map.width || placement.y !== 600) {
