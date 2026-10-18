@@ -1,0 +1,916 @@
+{
+  "scope": "offline asset files, metadata, grid, references, budgets and new export invariants; not gameplay acceptance",
+  "packs": {
+    "actors": {
+      "images": 22,
+      "animations": 64,
+      "bytes": 14397572,
+      "entries": [
+        {
+          "key": "equip:starter-sword",
+          "url": "assets/actors/equip-starter-sword-v1.png",
+          "size": [
+            1278,
+            1230
+          ],
+          "bytes": 408097,
+          "sha256": "93049c8f1c2a34f101f87710fb484f69ced795e3807f58318f2ad7efbd1c0b27"
+        },
+        {
+          "key": "equip:iron-sword",
+          "url": "assets/actors/equip-iron-sword-v1.png",
+          "size": [
+            1254,
+            1254
+          ],
+          "bytes": 426986,
+          "sha256": "c9eb5a9a396707464352ca00d091c265ff18c4cabb6f55b4498303a584732265"
+        },
+        {
+          "key": "equip:steel-sword",
+          "url": "assets/actors/equip-steel-sword-v1.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "bytes": 1059641,
+          "sha256": "98e6262922aca900485f792e059eaf807f5851bb97948340c900451605ad1148"
+        },
+        {
+          "key": "equip:guardian-sword",
+          "url": "assets/actors/equip-guardian-sword-v1.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "bytes": 1116732,
+          "sha256": "08f3d07ac784825398b992d79f3318c5655d3693268e7ca06f76dfde03f266db"
+        },
+        {
+          "key": "equip:cloth-cap",
+          "url": "assets/actors/equip-cloth-cap-v1.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "bytes": 1524389,
+          "sha256": "c096422564d74b6ba8193c7dde58e111d401b35870fa17cc237be8132955c3dd"
+        },
+        {
+          "key": "equip:leather-cap",
+          "url": "assets/actors/equip-leather-cap-v1.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "bytes": 1300193,
+          "sha256": "7e1ae14045fe899c2820d9bffb704c1df519d558d3f910a6f86fa138fee09d33"
+        },
+        {
+          "key": "equip:iron-helm",
+          "url": "assets/actors/equip-iron-helm-v1.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "bytes": 1307040,
+          "sha256": "6c65c1f5457259b927af9883272e1d73e7d117d34588d7b35eebfaf0e8cd43ca"
+        },
+        {
+          "key": "actor:slime",
+          "url": "assets/actors/monsters/slime-atlas-v1.png",
+          "size": [
+            1374,
+            1145
+          ],
+          "bytes": 963867,
+          "sha256": "68706146e8326afb33483f6d8801db450ce6c1cb1a3e56bb09beb996e9ec6be5"
+        },
+        {
+          "key": "actor:sentinel",
+          "url": "assets/actors/monsters/sentinel-atlas-v1.png",
+          "size": [
+            1374,
+            1145
+          ],
+          "bytes": 1879710,
+          "sha256": "4b84267f0f04a9c8fddd278f3239d12a3b70b0262f3823923ac3ff9ce6f6fce1"
+        },
+        {
+          "key": "actor:guide",
+          "url": "assets/actors/npcs/guide-idle-v1.png",
+          "size": [
+            1774,
+            887
+          ],
+          "bytes": 780112,
+          "sha256": "1f62c2e118767e34d717e845fa66ff0bf1a91e186d8e4384e8b65dace370fcdb"
+        },
+        {
+          "key": "actor:mentor",
+          "url": "assets/actors/npcs/mentor-idle-v1.png",
+          "size": [
+            1774,
+            887
+          ],
+          "bytes": 864448,
+          "sha256": "027dc0bf7062c937dea8849b7db48accb1f3209ad686179d7ec89d9cb405e4a1"
+        },
+        {
+          "key": "actor:healer",
+          "url": "assets/actors/npcs/healer-idle-v1.png",
+          "size": [
+            1774,
+            887
+          ],
+          "bytes": 849670,
+          "sha256": "612ad41f4cc4c66d8b194040bc598b6b75e961541f79f284658b742f12fdc8b6"
+        },
+        {
+          "key": "actor:keeper",
+          "url": "assets/actors/npcs/keeper-idle-v1.png",
+          "size": [
+            1774,
+            887
+          ],
+          "bytes": 981376,
+          "sha256": "95c36454f3b3449d6219c325a2b6a95c9203b3980c7d3698b6296f2050473452"
+        },
+        {
+          "key": "actor:hero-cloth",
+          "url": "assets/actors/hero-cloth-v9.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "bytes": 201038,
+          "sha256": "9120e9c8fde20f70fc17ab19a99cdfada84b206f747e08b25edbe0938c6da6f7"
+        },
+        {
+          "key": "actor:hero-leather",
+          "url": "assets/actors/hero-leather-v9.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "bytes": 246707,
+          "sha256": "4f425573adc18bfe467909723aaed1045ce6a9966724e34b27a8e6dcf92e4597"
+        },
+        {
+          "key": "actor:hero-iron",
+          "url": "assets/actors/hero-iron-v9.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "bytes": 237229,
+          "sha256": "5195f7daafb5e2bb9f8f38c1a37dc9e1eee2a5b2308e12cee86b53096d33788a"
+        },
+        {
+          "key": "actor:snail",
+          "url": "assets/actors/monsters/snail-atlas-v2.png",
+          "size": [
+            768,
+            640
+          ],
+          "bytes": 37832,
+          "sha256": "19677577013c14179634b8890a1fc651ada294a31731bef0ea4f6c433f911737"
+        },
+        {
+          "key": "actor:mushroom",
+          "url": "assets/actors/monsters/mushroom-atlas-v2.png",
+          "size": [
+            768,
+            640
+          ],
+          "bytes": 38834,
+          "sha256": "0fd0cf70150ae3a840007ad08f970bd6737a4552d7f0b078b5f41ba1194b77ff"
+        },
+        {
+          "key": "actor:boar",
+          "url": "assets/actors/monsters/boar-atlas-v2.png",
+          "size": [
+            768,
+            640
+          ],
+          "bytes": 43656,
+          "sha256": "05a598809d35ae051f52ab9d3d73bab98ea8efe2b736a7de7a35c48a90998620"
+        },
+        {
+          "key": "actor:golem",
+          "url": "assets/actors/monsters/golem-atlas-v2.png",
+          "size": [
+            768,
+            640
+          ],
+          "bytes": 62041,
+          "sha256": "ff46688789f0e6f66b558065a1433fd11a13c040d0bab48711ea0a7a7538a94d"
+        },
+        {
+          "key": "actor:guardian",
+          "url": "assets/actors/monsters/guardian-atlas-v2.png",
+          "size": [
+            768,
+            640
+          ],
+          "bytes": 62212,
+          "sha256": "76e4308ee57a436d5d79216df9a34c4ed60d78e18f7f8e1594e6534195f284dd"
+        },
+        {
+          "key": "actor:merchant",
+          "url": "assets/actors/npcs/merchant-idle-v2.png",
+          "size": [
+            256,
+            128
+          ],
+          "bytes": 5762,
+          "sha256": "5ab3064f9a584928b64155c87461ff5c45a22cd480bbd2dfe94e85f309668ea1"
+        }
+      ]
+    },
+    "environment": {
+      "images": 20,
+      "animations": 0,
+      "bytes": 16265754,
+      "entries": [
+        {
+          "key": "env:camp:sky",
+          "url": "assets/environment/env-camp-sky-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1729160,
+          "sha256": "f755c918dd58cfd89acbe91782e339ea39693c3edc692934a5f68bfae55ac569"
+        },
+        {
+          "key": "env:camp:far",
+          "url": "assets/environment/env-camp-far-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 776127,
+          "sha256": "0807a3613f7a408fe4966850c0c5f057c39d3ed2cbd9e1cef74a60e500c6eb29"
+        },
+        {
+          "key": "env:camp:mid",
+          "url": "assets/environment/env-camp-mid-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1823708,
+          "sha256": "59be7923d560250b9d6d8c5c78f6ac785c874edbc1b60963b02c4c21b6769d39"
+        },
+        {
+          "key": "env:town:sky",
+          "url": "assets/environment/env-town-sky-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1543678,
+          "sha256": "32770d3fc9d1198cc72b6e7d5da4b46c66af75d17ad8420e6b332d78b80c260f"
+        },
+        {
+          "key": "env:town:far",
+          "url": "assets/environment/env-town-far-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 891730,
+          "sha256": "34f9749dcea6bfb5be85a4b5ecf262cdd1125251d3ccfd2ea347ab6e5aa22c88"
+        },
+        {
+          "key": "env:town:mid",
+          "url": "assets/environment/env-town-mid-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 959701,
+          "sha256": "10e99d0c245805f08b566c0d7f3d0efc1cfa115dceb03479b5b63c716a90c01f"
+        },
+        {
+          "key": "env:forest:sky",
+          "url": "assets/environment/env-forest-sky-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1670056,
+          "sha256": "b8ff274c5aa55dfe22e48689f7add89af3439e194a8fcebb7ffc5fd5a55f4f40"
+        },
+        {
+          "key": "env:forest:far",
+          "url": "assets/environment/env-forest-far-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 889072,
+          "sha256": "c074667c03d018b2eeebba8efbb159ceb889b546ba414ba5d3bbc0cae3b80679"
+        },
+        {
+          "key": "env:forest:mid",
+          "url": "assets/environment/env-forest-mid-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1193545,
+          "sha256": "c9e48d2c1cf52c02f4db062c8d723acb57bc58a00452bf2476f253a98bf6a52e"
+        },
+        {
+          "key": "env:rock:sky",
+          "url": "assets/environment/env-rock-sky-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 1656100,
+          "sha256": "dfb953c9f840edffa76e21393e39054c7b62e279a00c1dedc8bc87e6aee06cf8"
+        },
+        {
+          "key": "env:rock:far",
+          "url": "assets/environment/env-rock-far-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 513002,
+          "sha256": "9bb8bf37ca444cfa9fef997ac0579bbb2d7e1dd074d09525820d14007d0a87d7"
+        },
+        {
+          "key": "env:rock:mid",
+          "url": "assets/environment/env-rock-mid-v1.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 607899,
+          "sha256": "64e7eed80196c6d2bc324f31165e64b73ea47e2b2958df5432b35198406c2993"
+        },
+        {
+          "key": "env:tile-ground",
+          "url": "assets/environment/env-tile-ground-v1.png",
+          "size": [
+            1254,
+            1254
+          ],
+          "bytes": 1871693,
+          "sha256": "42c6b29063f730c60194458a2aff94084b0280b8f9e65b68dd5435d651083f61"
+        },
+        {
+          "key": "env:tile-platform",
+          "url": "assets/environment/env-tile-platform-v1.png",
+          "size": [
+            128,
+            32
+          ],
+          "bytes": 3921,
+          "sha256": "7fe92b796778c3024f47cd3aa511520d6615bac5cfdcdf4af8994b1a0820041c"
+        },
+        {
+          "key": "env:tile-slope",
+          "url": "assets/environment/env-tile-slope-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 31129,
+          "sha256": "10650fb5b41037deab9d9d3f3f3e1e2935c4637931f8769fc794c1c84299d585"
+        },
+        {
+          "key": "env:ladder",
+          "url": "assets/environment/env-ladder-v1.png",
+          "size": [
+            32,
+            128
+          ],
+          "bytes": 8575,
+          "sha256": "cd305e8962cfcfb10b8d09c3ef8f8902a8a7cd6e977db05d706af9c44303d284"
+        },
+        {
+          "key": "env:portal",
+          "url": "assets/environment/env-portal-v1.png",
+          "size": [
+            64,
+            96
+          ],
+          "bytes": 17272,
+          "sha256": "2aaf861cd9c423dd71cdf0fa899819ddd1f694f7a2738946948fb456d4f4ffab"
+        },
+        {
+          "key": "env:town-sign",
+          "url": "assets/environment/env-town-sign-v1.png",
+          "size": [
+            96,
+            128
+          ],
+          "bytes": 16783,
+          "sha256": "7fb475df5af26b7d18acd52152840a3608a9015dbdabc06f9a3250a77ccbef0f"
+        },
+        {
+          "key": "env:mine-door",
+          "url": "assets/environment/env-mine-door-v1.png",
+          "size": [
+            128,
+            160
+          ],
+          "bytes": 43258,
+          "sha256": "93661940620400522a6d9b4288ca0c2510fd8e62aa76b1906349a9967ede5f92"
+        },
+        {
+          "key": "env:altar",
+          "url": "assets/environment/env-altar-v1.png",
+          "size": [
+            112,
+            96
+          ],
+          "bytes": 19345,
+          "sha256": "51a21e6fca695ac757e7c5070a9a83109dda91149f7c76140596562c0b380d1d"
+        }
+      ]
+    },
+    "interface": {
+      "images": 47,
+      "animations": 5,
+      "bytes": 3212480,
+      "entries": [
+        {
+          "key": "item:starter-sword",
+          "url": "assets/interface/item-starter-sword-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 12449,
+          "sha256": "6eb5cb5eec038fc10f9cbde9d355a442186679b4882de9176502fee29e2ba160"
+        },
+        {
+          "key": "item:iron-sword",
+          "url": "assets/interface/item-iron-sword-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 13424,
+          "sha256": "337cd19d1deb09b445c08b997fd9f598f008d006d35dcab4d3a07d884effa2af"
+        },
+        {
+          "key": "item:steel-sword",
+          "url": "assets/interface/item-steel-sword-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 14235,
+          "sha256": "1487e0664dd119fe41beff99a9bf4fa54b6751ad2a141af60b5f2eea74398e55"
+        },
+        {
+          "key": "item:guardian-sword",
+          "url": "assets/interface/item-guardian-sword-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 17098,
+          "sha256": "4233db38d3a84909a15f749099985807a9fc602cb06ff8e164ed9b6e2ee07682"
+        },
+        {
+          "key": "item:cloth-shirt",
+          "url": "assets/interface/item-cloth-shirt-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 24416,
+          "sha256": "1b3d0871af6e4e0c66322d5b39cd67f7d124f381894c1b10e74fa294bffa2bbd"
+        },
+        {
+          "key": "item:leather-vest",
+          "url": "assets/interface/item-leather-vest-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 23271,
+          "sha256": "c8511b7bc6bcde39342d84039dde4098f937138f6fec4e46e5691eceb52fd8fd"
+        },
+        {
+          "key": "item:iron-mail",
+          "url": "assets/interface/item-iron-mail-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 30690,
+          "sha256": "7243b43785bc59a9c2dd13e062652440196d74495474b779e509cba94334a78c"
+        },
+        {
+          "key": "item:cloth-cap",
+          "url": "assets/interface/item-cloth-cap-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18133,
+          "sha256": "d5546c48004ad8b6a01ecf168b7b7078d7cf3764e00ee2ed5efa0cae90d656eb"
+        },
+        {
+          "key": "item:leather-cap",
+          "url": "assets/interface/item-leather-cap-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18449,
+          "sha256": "28d88b0409ed81498e467f13faa986da2b6eeb7ae27284b4222f24ff27910ed7"
+        },
+        {
+          "key": "item:iron-helm",
+          "url": "assets/interface/item-iron-helm-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 26999,
+          "sha256": "658671a55713d13343767e174f6e8147f9a890d4a08464d2ced40cdc30e9c2d1"
+        },
+        {
+          "key": "item:small-red",
+          "url": "assets/interface/item-small-red-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 11939,
+          "sha256": "8a89914958b2f5e9aff7717cd95b1898e12d905402976a1a1c3f7b2e0c9a84ce"
+        },
+        {
+          "key": "item:large-red",
+          "url": "assets/interface/item-large-red-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18021,
+          "sha256": "d8aceb33a179ed300f7eaab487c24ee941e09097761b21fecd44cb78237968a5"
+        },
+        {
+          "key": "item:small-blue",
+          "url": "assets/interface/item-small-blue-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 11240,
+          "sha256": "97647b8f162597309e690dc61f3dd44fd54159c72ff06d6045e147795b26e806"
+        },
+        {
+          "key": "item:large-blue",
+          "url": "assets/interface/item-large-blue-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18563,
+          "sha256": "d2a55c008fc3e776f05288bc694b0fb1c660ca6bca3feb4b974305c196fa5857"
+        },
+        {
+          "key": "item:snail-shell",
+          "url": "assets/interface/item-snail-shell-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18687,
+          "sha256": "e4a7fc9762e1abb1f1bf98d18ea8b40b6e9e4072b1ea0df4df32b47e21af0842"
+        },
+        {
+          "key": "item:slime-gel",
+          "url": "assets/interface/item-slime-gel-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 14652,
+          "sha256": "b30b08157a4d486782c72ca88de6baec32b958a15d249dfb930dcb10555b83ee"
+        },
+        {
+          "key": "item:mushroom-cap",
+          "url": "assets/interface/item-mushroom-cap-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 16797,
+          "sha256": "61ec3e9349fdbff1e59b291a93da362f344ec27a87e39e9589d1b62cdae03efb"
+        },
+        {
+          "key": "item:boar-tusk",
+          "url": "assets/interface/item-boar-tusk-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 12695,
+          "sha256": "0a4344fe46167bf064261f54421090caf10b391ba66c7da5d8c1c393e6730d1a"
+        },
+        {
+          "key": "item:stone-chip",
+          "url": "assets/interface/item-stone-chip-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 15460,
+          "sha256": "43caecdd3724e017174ed68be416b31fad45f100c52b6a1d6d6fcc9e460d31c4"
+        },
+        {
+          "key": "item:metal-shard",
+          "url": "assets/interface/item-metal-shard-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 14251,
+          "sha256": "ab42482eb6fdc52b0873c0710c524a20364722acb252f5009680c40db0a8a09d"
+        },
+        {
+          "key": "item:forest-seed",
+          "url": "assets/interface/item-forest-seed-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 17746,
+          "sha256": "a3a9924a5d0a05355042c7320607d05e6ccd4fdb20c51a311cfd2bd15c8767f7"
+        },
+        {
+          "key": "item:spore-sample",
+          "url": "assets/interface/item-spore-sample-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 18567,
+          "sha256": "c757a66662dfcac8ca08793f7cc0f224980d6be373981dddb860d24039f0fcb9"
+        },
+        {
+          "key": "item:ridge-emblem",
+          "url": "assets/interface/item-ridge-emblem-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 23849,
+          "sha256": "849c3ad8a95a15d73c80e1b32b8abd32a6fa80724f05753ed905cb8023d5bdde"
+        },
+        {
+          "key": "item:guardian-core",
+          "url": "assets/interface/item-guardian-core-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 23888,
+          "sha256": "d79d5cbd7f48ee4800e783d1f03fa851ad41407d6c7cc1294a8230822ccf549f"
+        },
+        {
+          "key": "skill:heavy-strike",
+          "url": "assets/interface/skill-heavy-strike-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 32419,
+          "sha256": "143a0d048f61cfa2dc436bbafcedda255b8a925303e13c80109aace8cf0e7b59"
+        },
+        {
+          "key": "skill:sweep",
+          "url": "assets/interface/skill-sweep-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 31544,
+          "sha256": "98481b5940ddd322210614b57766d7f9b38a978671504def3984cbdc4adeb352"
+        },
+        {
+          "key": "skill:iron-guard",
+          "url": "assets/interface/skill-iron-guard-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 32070,
+          "sha256": "2e5e9e811dbeaa3262ef1f82c0a4bc647ffa6b4c32080b3f387faaa8a932159a"
+        },
+        {
+          "key": "skill:vitality",
+          "url": "assets/interface/skill-vitality-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 28856,
+          "sha256": "8ecdb1c2d2ed85d0438606a54c388f54a2bea652ece06ad05569fabd8d37bcc4"
+        },
+        {
+          "key": "skill:rest-recovery",
+          "url": "assets/interface/skill-rest-recovery-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 31644,
+          "sha256": "1b086cc3d0914a506fc914b2c4e61cc3beb860dc9e4482822450b469c641f4cb"
+        },
+        {
+          "key": "marker:quest",
+          "url": "assets/interface/marker-quest-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 15057,
+          "sha256": "ac683fd6dc335b5a6a9130c6e8562334669d216a896b00a7fbaf1883d1ca6cd4"
+        },
+        {
+          "key": "marker:portal",
+          "url": "assets/interface/marker-portal-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 20363,
+          "sha256": "f51841f25795968666672001d99c16b80bea395e4021b046bf7eff59ec8a588b"
+        },
+        {
+          "key": "marker:shop",
+          "url": "assets/interface/marker-shop-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 21626,
+          "sha256": "5af1859cfd6e57b62fab7cc357775698b19187233446788c44b83eac9302b93e"
+        },
+        {
+          "key": "marker:player",
+          "url": "assets/interface/marker-player-v1.png",
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 14267,
+          "sha256": "851c8a15b295995a697e4abe0e669ea9e27caab6a2ef385ac9216e186716fe25"
+        },
+        {
+          "key": "panel:frame",
+          "url": "assets/interface/panel-frame-v1.png",
+          "size": [
+            256,
+            256
+          ],
+          "bytes": 68138,
+          "sha256": "302a6a52d0e83e65f3d549e2776cfdc400478f47db622ab660413c6035f7559c"
+        },
+        {
+          "key": "button:normal",
+          "url": "assets/interface/button-normal-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 71166,
+          "sha256": "688a26b7f64bc2207b384f5c7eb4968e4daf9bbf032205c1e4b88c3502b14b72"
+        },
+        {
+          "key": "button:hover",
+          "url": "assets/interface/button-hover-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 73966,
+          "sha256": "175042e4bcbd182892a6f2e68ecb78f292f1f9be1e40c09ff1e4373ac30a79c4"
+        },
+        {
+          "key": "button:pressed",
+          "url": "assets/interface/button-pressed-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 27799,
+          "sha256": "65317128fa4d0e738990f99e6a1d34acc2710c1323a03740e1ece4a293344e6e"
+        },
+        {
+          "key": "bar:hp",
+          "url": "assets/interface/bar-hp-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 58002,
+          "sha256": "aecfba1b229b8225923524ca828f6566bafbc7ad6ef0be5ac9e7a74ab979fcc8"
+        },
+        {
+          "key": "bar:mp",
+          "url": "assets/interface/bar-mp-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 57406,
+          "sha256": "57f81916d2ea7b4ef4d10cfb9d268cbed255f05d6fb3da8959bfad45e771e716"
+        },
+        {
+          "key": "bar:exp",
+          "url": "assets/interface/bar-exp-v1.png",
+          "size": [
+            512,
+            160
+          ],
+          "bytes": 59000,
+          "sha256": "2c7e350e7523b84649af42247b158b0286960cf1c90e965145217706cf35413e"
+        },
+        {
+          "key": "slot:normal",
+          "url": "assets/interface/slot-normal-v1.png",
+          "size": [
+            160,
+            160
+          ],
+          "bytes": 42841,
+          "sha256": "5a1ef782522c018a16f6672f12c3a0f48dc75f80047e670912deab91118235da"
+        },
+        {
+          "key": "slot:selected",
+          "url": "assets/interface/slot-selected-v1.png",
+          "size": [
+            160,
+            160
+          ],
+          "bytes": 48619,
+          "sha256": "7d8e6729ec8a1ed31343c370618bac08dce5b1e02b7c195c0c1cab8c68642476"
+        },
+        {
+          "key": "vfx:sweep",
+          "url": "assets/interface/vfx-sweep-v2.png",
+          "size": [
+            4344,
+            724
+          ],
+          "bytes": 453104,
+          "sha256": "34e836584fd997516b60a3f253d80b6c21ad97479aa4690de80fb60063a77aea"
+        },
+        {
+          "key": "vfx:hit",
+          "url": "assets/interface/vfx-hit-v2.png",
+          "size": [
+            4344,
+            724
+          ],
+          "bytes": 224516,
+          "sha256": "8c7f4ee51e7adfd1ae98916c16fb7b3269a33904af679695f59b91c89bc22742"
+        },
+        {
+          "key": "vfx:levelup",
+          "url": "assets/interface/vfx-levelup-v2.png",
+          "size": [
+            4344,
+            724
+          ],
+          "bytes": 703712,
+          "sha256": "b937d92ee13064f4dedad47c8e1d3b05736d20155e21d7e60c837ad0a9434152"
+        },
+        {
+          "key": "vfx:guard",
+          "url": "assets/interface/vfx-guard-v2.png",
+          "size": [
+            4344,
+            724
+          ],
+          "bytes": 656531,
+          "sha256": "79c5f4be6be11d37175bdae50175d5e326d1d2822aba1f0fc505ec95dd926242"
+        },
+        {
+          "key": "vfx:heavy-strike",
+          "url": "assets/interface/vfx-heavy-strike-v9.png",
+          "size": [
+            768,
+            128
+          ],
+          "bytes": 4315,
+          "sha256": "ca01073feaa82bfabcc641136c9fadeb0e31f28bcf39830493303f613dd29855"
+        }
+      ]
+    }
+  }
+}

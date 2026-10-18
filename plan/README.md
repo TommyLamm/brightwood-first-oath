@@ -1,12 +1,12 @@
 # 經典劍士冒險：多代理實作交接索引
 
-更新：2026-10-18（香港時間）。T00 共用骨架／契約已落地並開放 G0；多個 domain、UI、app、音訊及 Playroom adapter 工作包已實作並有局部報告。T10–T12 美術仍缺必要資產，尚無可玩靜態候選、封面或 ZIP。最新狀態見 [狀態板](status.md) 與各包報告。
+更新：2026-10-18（香港時間）。T00 共用骨架／契約已落地並開放 G0；多個 domain、UI、app、音訊及 Playroom adapter 工作包已實作並有局部報告。T10–T12正式素材已補齊，詳[本次素材交付](reports/asset-recovery-20261018.md)；遊戲接合仍待後續工作，尚無經驗收的可玩候選、封面或ZIP。最新狀態見 [狀態板](status.md) 與各包報告。
 
 ## 下一位主 Agent 從這裡開始
 
 1. 讀根目錄 AGENTS.md，完整讀取當時最新 Playroom 指定線上規格。
 2. 讀 [00-START-HERE.md](00-START-HERE.md) 與 [狀態板](status.md)，再讀 [01 定案範圍](01-game-design.md)、[07 共用契約](07-shared-contracts.md)、[08 內容與數值](08-content-spec.md)。
-3. T00 G0 已開放；先按 [09 並行調度](09-parallel-dispatch.md) 續派未完成包。優先處理 T10 主角／怪物素材、T11 platform/slope、T12 heavy-strike，再解鎖 T14-22／T14-25 與 T15-08/11。
+3. T00 G0 已開放；先按 [09 並行調度](09-parallel-dispatch.md) 續派未完成包。T10–T12素材已完成，下一步是T07／T14實際接合，再處理T14-22／T14-25與T15-08/11；不要重新生成已入庫素材。
 4. 不要對所有 17 包重新派工；先讀各 package report 和實際檔案，只補缺口。每包有細步驟、檔案所有權、介面、依賴與完成條件。
 5. 主 Agent 只派工協調、不直接改程式碼；所有子代理依本包 ownership 修改，發現契約缺口時向主 Agent回報，不自行繞過。
 6. 依 [11 整合驗收](11-integration-and-validation.md) 做有限驗收與交付，由主 Agent 維護 [狀態板](status.md)。

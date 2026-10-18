@@ -12,7 +12,9 @@
 
 ## 現況與目前阻塞（2026-10-18）
 
-程式、依賴與 Git repository 均已建立，多個 domain、UI、app、音訊及 Playroom adapter 工作包已實作。T00 的共用契約與骨架已通過當時的 strict typecheck/build 並開放 G0；T00-09 仍因缺少正式素材而部分完成。T10 有 13 images／14 animations 的 partial canonical manifest，但缺主角圖集、anchors、五種怪與 merchant；T11 為 18/20 keys，缺 platform/slope；T12 有 46 images／4 VFX animations，缺 heavy-strike。沒有可玩的靜態候選、實際遊戲封面或 ZIP；T14-22、T14-25、T15-08/11、T16 未完成。細節以 [狀態板](status.md) 與各包 report 為準。原八題及追加題已回答，見 [06](06-decisions-and-risks.md)。舊的 15–30 分鐘／四職業提案已被取代。
+程式、依賴與Git repository已建立。T00 G0已開放；2026-10-18使用者將本輪範圍限定為素材，並明確允許確定性裁切／重排／最近鄰縮放／清邊alpha。T10–T12素材現已完整：actors22 images／64 animations＋96 hero anchors；environment20/20；interface47 images／5 VFX animations。原ImageGen稿、prompt、匯出腳本與檢查證據保留於art-source；詳[本次素材交付](reports/asset-recovery-20261018.md)。
+
+本次未改遊戲src、未跑build／browser／完整路線／pack/validate／iframe驗收，沒有新可玩候選、封面或ZIP。下一次遊戲工作應接合可見腳底邊距、anchors裝備附著與動作／技能節拍，再處理T14/T15/T16；不要因舊source-only紀錄重做已入庫素材。其他包現況見[狀態板](status.md)。原八題及追加題已回答，見[06](06-decisions-and-risks.md)。
 
 1. 新開發包開始前讀根 AGENTS，完整讀取最新 Playroom 指定文件，簡述適用要求後開工。
 2. 先讀 [狀態板](status.md)、本包 report 與 task，核對實際工作樹；不要重做已完成包，也不能把未驗證狀態標成通過。
