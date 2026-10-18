@@ -3,6 +3,7 @@ import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/ass
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
 import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
+import { groundTilePositions, segmentTileGeometry } from './geometry.js';
 
 type RendererAssets = {
   images: Map<string, AssetImage>;
@@ -38,6 +39,19 @@ type TextureRegistration = {
 
 const BASE_WIDTH = 960;
 const BASE_HEIGHT = 540;
+const WORLD_DEPTH = {
+  sky: 0,
+  far: 1,
+  mid: 2,
+  terrain: 10,
+  actors: 30,
+  foreground: 35,
+  health: 31,
+  attack: 39,
+  telegraph: 40,
+  effect: 41,
+  text: 42,
+} as const;
 const DAMAGE_TEXT_LIMIT = 30;
 const DROP_DRAW_LIMIT = 60;
 const PARTICLE_LIMIT = 100;
@@ -49,9 +63,9 @@ const HERO_ANIMATION_STATES = ['idle', 'walk', 'jump', 'climb', 'attack', 'hurt'
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
 const BACKGROUND_LAYERS = [
-  { name: 'sky', factor: 0 },
-  { name: 'far', factor: 0.2 },
-  { name: 'mid', factor: 0.5 },
+  { name: 'sky', factor: 0, depth: WORLD_DEPTH.sky },
+  { name: 'far', factor: 0.2, depth: WORLD_DEPTH.far },
+  { name: 'mid', factor: 0.5, depth: WORLD_DEPTH.mid },
 ] as const;
 
 /** A load error is safe to display and retry; the currently active map remains intact. */
@@ -292,9 +306,10 @@ export function createWorldRenderer(
   const eventSprites = new Map<string, SpriteEffect>();
   const eventVfx = new Map<string, number>();
   const actorAnimationClocks = new Map<string, { animationKey: string; startedAtMs: number }>();
-  const hpGraphics = scene.add.graphics().setDepth(31);
-  const telegraphGraphics = scene.add.graphics().setDepth(40);
-  const attackGraphics = scene.add.graphics().setDepth(39);
+  const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
+  const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
+  const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
+  const attackGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.attack);
   let activeVisual: MapVisual | null = null;
   let disposed = false;
   let activeLoadCancel: (() => void) | null = null;
@@ -466,9 +481,9 @@ export function createWorldRenderer(
   const buildMapVisual = (map: MapDef): MapVisual => {
     const backgrounds: Phaser.GameObjects.TileSprite[] = [];
     const layers = [
-      scene.add.container(0, 0).setDepth(10),
-      scene.add.container(0, 0).setDepth(33),
-      scene.add.container(0, 0).setDepth(35),
+      scene.add.container(0, 0).setDepth(WORLD_DEPTH.terrain),
+      scene.add.container(0, 0).setDepth(WORLD_DEPTH.foreground),
+      scene.add.container(0, 0).setDepth(WORLD_DEPTH.effect),
     ];
     const terrainLayer = layers[0]!;
     const foregroundLayer = layers[1]!;
@@ -477,10 +492,10 @@ export function createWorldRenderer(
     const npcSprites = new Map<string, { imageKey: string; nameText: Phaser.GameObjects.Text }>();
 
     try {
-    for (const { name, factor } of BACKGROUND_LAYERS) {
+    for (const { name, factor, depth } of BACKGROUND_LAYERS) {
       const key = `env:${map.themeKey}:${name}`;
       const image = assets.images.get(key)!;
-      const background = scene.add.tileSprite(0, 0, BASE_WIDTH, BASE_HEIGHT, key).setOrigin(0, 0).setDepth(factor === 0 ? 0 : factor === 0.2 ? 1 : 2);
+      const background = scene.add.tileSprite(0, 0, BASE_WIDTH, BASE_HEIGHT, key).setOrigin(0, 0).setDepth(depth);
       background.setScrollFactor(factor);
       const scale = textureDisplayScale(image);
       background.setTileScale(scale.x, scale.y);
@@ -488,48 +503,48 @@ export function createWorldRenderer(
       environmentTextureKeys.add(key);
     }
 
-    const slopeGraphics = scene.add.graphics().setDepth(11);
     for (const foothold of map.footholds) {
       const isSlope = foothold.y1 !== foothold.y2;
       const key = isSlope
         ? 'env:tile-slope'
         : foothold.dropThrough ? 'env:tile-platform' : 'env:tile-ground';
       const image = assets.images.get(key)!;
-      const dx = foothold.x2 - foothold.x1;
-      const dy = foothold.y2 - foothold.y1;
-      const length = Math.hypot(dx, dy);
-      const angle = Math.atan2(dy, dx);
       if (key === 'env:tile-ground') {
-        const pitch = image.displayWidth - GROUND_TILE_OVERLAP;
-        if (pitch <= 0) throw new RendererAssetError(`Ground tile display width must exceed its ${GROUND_TILE_OVERLAP}px overlap`, [key]);
-        const count = Math.max(1, Math.ceil(Math.max(0, length - image.displayWidth) / pitch) + 1);
-        const coveredWidth = image.displayWidth + (count - 1) * pitch;
-        const firstCenter = (foothold.x1 + foothold.x2) / 2 - coveredWidth / 2 + image.displayWidth / 2;
-        for (let index = 0; index < count; index += 1) {
-          const tile = scene.add.sprite(firstCenter + index * pitch, (foothold.y1 + foothold.y2) / 2, key, frameKey(key, 0));
-          tile.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(0.5, 0.5);
+        if (image.displayWidth <= GROUND_TILE_OVERLAP) {
+          throw new RendererAssetError(`Ground tile display width must exceed its ${GROUND_TILE_OVERLAP}px overlap`, [key]);
+        }
+        for (const position of groundTilePositions(foothold, image.displayWidth, GROUND_TILE_OVERLAP)) {
+          const tile = scene.add.sprite(position.x, position.y, key, frameKey(key, 0));
+          tile.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(0, 0);
           terrainLayer.add(tile);
         }
       } else {
-        const tile = scene.add.tileSprite((foothold.x1 + foothold.x2) / 2, (foothold.y1 + foothold.y2) / 2, length, image.displayHeight, key);
+        const geometry = segmentTileGeometry(foothold, image.displayHeight);
+        const tile = scene.add.tileSprite(
+          geometry.x,
+          geometry.y,
+          geometry.width,
+          geometry.height,
+          key,
+        );
         const scale = textureDisplayScale(image);
-        tile.setRotation(angle).setTileScale(scale.x, scale.y);
+        tile.setOrigin(geometry.originX, geometry.originY)
+          .setRotation(geometry.rotation)
+          .setTileScale(scale.x, scale.y);
         terrainLayer.add(tile);
       }
       environmentTextureKeys.add(key);
-      if (isSlope) {
-        slopeGraphics.lineStyle(2, 0xe7d8ad, 0.8).beginPath().moveTo(foothold.x1, foothold.y1).lineTo(foothold.x2, foothold.y2).strokePath();
-      }
     }
-    terrainLayer.add(slopeGraphics);
-
     for (const ladder of map.ladders) {
-      const sprite = addStaticSprite(terrainLayer, 'env:ladder', ladder.x, (ladder.topY + ladder.bottomY) / 2);
-      sprite.setDisplaySize(assets.images.get('env:ladder')!.displayWidth, ladder.bottomY - ladder.topY);
+      const height = ladder.bottomY - ladder.topY;
+      if (height <= 0) throw new RendererAssetError(`Ladder 高度必須為正：${ladder.id}`, ['env:ladder']);
+      const image = assets.images.get('env:ladder')!;
+      const sprite = addStaticSprite(terrainLayer, 'env:ladder', ladder.x, ladder.bottomY);
+      sprite.setOrigin(0.5, 1).setDisplaySize(image.displayWidth, height);
       environmentTextureKeys.add('env:ladder');
     }
     for (const portal of map.portals) {
-      addStaticSprite(terrainLayer, 'env:portal', portal.x, portal.y);
+      addStaticSprite(terrainLayer, 'env:portal', portal.x, portal.y).setOrigin(0.5, 1);
       environmentTextureKeys.add('env:portal');
     }
     for (const placement of map.npcs) {
@@ -571,7 +586,8 @@ export function createWorldRenderer(
     if (!image) throw new RendererAssetError(`Snapshot 引用未載入角色圖：${imageKey}`, [imageKey]);
     let sprite = actorSprites.get(key);
     if (!sprite) {
-      sprite = scene.add.sprite(position.x, position.y, imageKey, frameKey(imageKey, 0)).setDepth(30);
+      sprite = scene.add.sprite(position.x, position.y, imageKey, frameKey(imageKey, 0));
+      actorsLayer.add(sprite);
       actorSprites.set(key, sprite);
     }
     const animation = animationFor(assets, imageKey, animationKey);
@@ -579,7 +595,7 @@ export function createWorldRenderer(
     const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
     actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
     setImageFrame(sprite, image, frameOverride ?? pickFrame(animation, nowMs, animationStartedAtMs, totalDurationMs));
-    sprite.setPosition(position.x, position.y).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(30 + position.y / 100000);
+    sprite.setPosition(position.x, position.y).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);
     return sprite;
   };
 
@@ -708,6 +724,7 @@ export function createWorldRenderer(
 
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
     pruneEvents(snapshot.nowMs);
+    actorsLayer.sort('depth');
     updateCamera(snapshot, playerSprite);
   };
 
@@ -731,10 +748,14 @@ export function createWorldRenderer(
       object = scene.add.text(position.x, position.y, content, {
         color: '#ffeaa5', fontFamily: 'system-ui, sans-serif', fontSize: '12px',
         stroke: '#342e32', strokeThickness: 3,
-      }).setOrigin(0.5, 1).setDepth(34);
+      }).setOrigin(0.5, 1);
+      actorsLayer.add(object);
       dropLabels.set(id, object);
     }
-    object.setText(content).setPosition(position.x, position.y - 8 + Math.sin(nowMs / 180) * 2).setVisible(true);
+    object.setText(content)
+      .setPosition(position.x, position.y - 8 + Math.sin(nowMs / 180) * 2)
+      .setDepth(position.y)
+      .setVisible(true);
     return object;
   };
 
@@ -765,18 +786,18 @@ export function createWorldRenderer(
       const object = scene.add.text(event.position.x, event.position.y - 20, event.value === undefined ? '命中' : String(event.value), {
         color: '#fff0be', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontStyle: 'bold',
         stroke: '#502c35', strokeThickness: 4,
-      }).setOrigin(0.5, 1).setDepth(42);
+      }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
       eventTexts.set(event.id, { object, expiresAtMs: event.atMs + textLifetimeMs });
     } else if (event.kind === 'levelup') {
       const object = scene.add.text(event.position.x, event.position.y - 55, 'LEVEL UP!', {
         color: '#fff4a8', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontStyle: 'bold',
         stroke: '#523c2b', strokeThickness: 4,
-      }).setOrigin(0.5, 1).setDepth(42);
+      }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
       eventTexts.set(event.id, { object, expiresAtMs: event.atMs + textLifetimeMs });
     }
     if (event.key && animation && eventSprites.size < PARTICLE_LIMIT) {
       const image = assets.images.get(event.key)!;
-      const sprite = scene.add.sprite(event.position.x, event.position.y, image.key, frameKey(image.key, 0)).setDepth(41);
+      const sprite = scene.add.sprite(event.position.x, event.position.y, image.key, frameKey(image.key, 0)).setDepth(WORLD_DEPTH.effect);
       sprite.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(image.pivotX, image.pivotY);
       eventSprites.set(event.id, { object: sprite, imageKey: image.key, animationKey: event.key, startedAtMs: event.atMs, expiresAtMs: event.atMs + spriteLifetimeMs });
     }
@@ -902,6 +923,7 @@ export function createWorldRenderer(
       scene.cameras.main.stopFollow();
       for (const label of dropLabels.values()) label.destroy();
       dropLabels.clear();
+      actorsLayer.destroy(true);
       for (const effect of eventSprites.values()) effect.object.destroy();
       eventSprites.clear();
       eventVfx.clear();
