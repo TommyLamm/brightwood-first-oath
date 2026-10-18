@@ -14,7 +14,7 @@ All originals remain under `art-source/interface/`; only extracted, alpha-preser
 | VFX targeted repair | same five rows | `interface-vfx-sheet-v2-repair1.png` | 1536×1024; rejected: opaque row tints remain |
 | VFX isolated strips | sweep, hit, levelup | per-key attempts documented below | 2172×724 RGBA each; accepted after direct alpha and visual review |
 | VFX guard | six-frame ring, one targeted center cleanup | per-key attempt and repair documented below | 2172×724 RGBA each; repair accepted after alpha and visual review |
-| VFX heavy-strike | six-frame slash | v2 attempt/repair and v3 3×2 attempt/repair documented below | v2: 2172×724 RGBA; v3: 1536×1024 RGBA; all source-only after edge/alpha checks |
+| VFX heavy-strike | six-frame slash | v2–v8 attempts and repairs documented below | v2: 2172×724 RGBA; v3: 1536×1024 RGBA; v8: 2172×724 RGBA, source-only after the final 6:1 geometry, 16px safety and alpha checks |
 
 The item, material, skill, marker, and repaired UI sheets were cropped into independent assets with unchanged RGBA content and downsampled only. The initial UI sheet is retained as source evidence; its panel frame crossed a cell edge, so the one targeted repair was used and the repaired sheet supplies all nine runtime pieces. The original five-row VFX sheet and its repair remain rejected because tinted background rows stayed near-opaque; they are not used by the new runtime strips. Separate per-effect one-row candidates and their current status are documented below.
 
@@ -523,4 +523,33 @@ Composition/framing: exactly six equal vertical cells in a single horizontal str
 Lighting/mood: restrained highlights only; no illumination beyond the pixel clusters.
 Color palette: dark steel-blue outline, cool steel-white, warm amber and gold.
 Constraints: request genuine RGBA transparency; empty canvas and inter-cell gutters must be alpha 0, and all effect pixels should be fully opaque with no anti-aliased or semi-transparent fringe. No haze, fog, smoke, mist, cloud, blur, gradient, glow, bloom, aura, diffuse light, tinted wash, background, floor, shadow, checkerboard, gridlines, cell borders, cross-cell detail, text, letters, numbers, HUD, watermark, repeated still frames, radial shape, crescent, crossed starburst, chevron, large wedge, character, sword sprite, or extra object.
+```
+
+## Heavy-strike v8 final one-shot candidate — source-only after geometry and transparency rejection (2026-10-18)
+
+- Tool: built-in ImageGen; `transparent_background=true`. This was the single assigned generation; no edit, repair, crop, regrid, alpha adjustment, or follow-up generation was made.
+- Generated output path: `D:\dev-data\codex-home\generated_images\01a14da6-a469-7802-9702-7392321f9cb4\exec-1a965b6b-4a1e-4cb7-8d0f-38b8f057c8b4.png`; output file last-write time `2026-10-18 06:19:02 UTC`.
+- Preserved unchanged at `art-source/interface/interface-vfx-heavy-strike-v8-attempt1.png` (210,051 bytes). Raw output and source copy SHA-256 both equal `fdac55c2321356377cd752f274c9dad6e22ca9af6eefc6244aa2be748c30b490`.
+- Local accepted references viewed and supplied by path: `public/assets/interface/vfx-sweep-v2.png` (crisp pixel edges/palette only) and `public/assets/interface/vfx-hit-v2.png` (compact pixel scale/color separation only).
+- Dimensions/mode: 2172×724 RGBA. Width divides into six 362×724 cells, but canvas ratio is 3:1 and each cell is portrait 1:2; the requested composition was 6:1 with six square cells. Grid divisibility alone passes; required geometry fails.
+- Alpha bins `[0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255]`: `[1492543, 24283, 1457, 1534, 2343, 2545, 47521, 302]`. There are 79,985 nonzero pixels; 79,683 have intermediate alpha (1–254), so alpha is not binary as required.
+- Alpha>0 exclusive cell-local bounds and margins `(left,top,right,bottom)` by frame: frame 0 `(41,154,362,658)`, margins `(41,154,0,66)`; frame 1 `(5,53,362,640)`, margins `(5,53,0,84)`; frame 2 `(1,31,360,690)`, margins `(1,31,2,34)`; frame 3 `(1,166,362,660)`, margins `(1,166,0,64)`; frame 4 `(5,92,346,658)`, margins `(5,92,16,66)`; frame 5 `(15,335,245,626)`, margins `(15,335,117,98)`. All six cells fail the required minimum 16px clear inset; several alpha bounds touch a cell edge.
+- Visual review at original size: the sequence reads as small anticipation marks, a diagonal descending cleave, contact, a low bilateral segmented shockwave, fragments, and two ending motes. The new silhouette is legible, but red/pink fringe pixels are visibly present around impact despite the requested palette, and the semitransparent edges violate the alpha requirement. Reject for runtime; retain source-only. No runtime PNG or manifest entry was created; `vfx:heavy-strike` remains absent. This was the final assigned attempt.
+
+Generation prompt (verbatim):
+
+```text
+Use case: stylized-concept
+Asset type: one game-ready six-frame horizontal pixel-art VFX sprite sheet for a classic 2D side-view RPG.
+Input images: Image 1 is the accepted local vfx:sweep sprite strip at public/assets/interface/vfx-sweep-v2.png, for its crisp pixel edges and limited palette only; do not reuse its curved slash. Image 2 is the accepted local vfx:hit sprite strip at public/assets/interface/vfx-hit-v2.png, for its compact pixel scale and color separation only; do not reuse its radial impact mark.
+Scene/backdrop: genuinely transparent RGBA canvas.
+Subject: a heavy sword-strike effect only, with no character and no drawn weapon.
+Primary request: draw exactly six distinct chronological frames, left to right: (1) anticipation: three small squared steel-and-amber pixels gather high-left of center; (2) downward cleave: one broad stepped diagonal stroke travels from upper-left toward lower-right through the center, with a pale steel core and a few warm gold edge pixels; (3) impact: the lower end compresses into a compact squared contact mark near the lower-middle; (4) bilateral shockwave: two low, straight, segmented bands begin spreading simultaneously left and right from the contact, made from separate rectangular pixel blocks; (5) the two horizontal bands extend farther in both directions and break into several small square chips; (6) the bands vanish, leaving only two tiny separated gold pixels near the ground. Make the action read as one weighty top-to-bottom blow followed by a left-and-right ground burst.
+Style/medium: clean limited-color pixel art with deliberate hard-edged square clusters, visible dark steel-blue outline pixels, and no painterly rendering.
+Composition/framing: exact six-to-one horizontal canvas divided into one row of six equal square cells; each cell is displayed at 128×128. Keep the entire effect in each frame at least 16 pixels inside all four cell edges, with a fully empty transparent safety border. The slash is diagonally offset from upper-left to lower-right; the spreading bands stay low. Keep every frame distinct and in its own cell, with no overlap or stray pixels across cell boundaries.
+Lighting/mood: flat color clusters with restrained solid highlights.
+Color palette: dark steel-blue, pale steel-white, and warm amber-gold; use hard opaque pixel shapes only.
+Materials/textures: stepped pixel clusters and clean outlines, no blur or smooth edges.
+Text (verbatim): none.
+Constraints: true transparent background; every pixel must be either alpha 0 or alpha 255. No background, floor, shadow, glow, haze, fog, mist, gradient, bloom, anti-aliasing, checkerboard, grid lines, cell borders, text, letters, numbers, watermark, red colors, character, weapon drawing, crescent, circular ring, radial burst, starburst, crossed mark, triangular wedge, or details outside the six effect cells.
 ```
