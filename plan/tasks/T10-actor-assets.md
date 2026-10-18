@@ -22,3 +22,7 @@
 - [ ] T10-12 report列實際image/animation key、圖格、anchors、每項formal/temporary、檢視及未完成，給T07一套主角+snail提早接入。（目前可用子集及所有未完成／拒收項已列於`plan/reports/T10.md`、`plan/reports/T10-creatures.md`與source logs；hero、snail仍未完成。）
 
 完成：三套完整主角、四武器、三帽、六普通怪、一boss、五NPC及可用metadata全部存在。不得用CSS形狀替代、只交prompt、只交站姿或靜態怪卻標動作完成。生成工具受限報主Agent排佇列，不建立新聊天／自行改用API。
+
+## T10-06 snail fresh composition update (2026-10-18)
+
+UNFINISHED，source-only。新候選 snail-atlas-attempt-05.png 為 1373×1145，寬度不能整除6；alpha 含 638,942 個 partial pixels，且可見紅色外緣殘留。因格線無效，逐格結果僅作近似診斷：120 個cell邊中110個未達16px安全距離，腳底線也不一致。一次新構圖額度已用完，不作repair；無runtime PNG或subset manifest entry。完整prompt、參考路徑、工具、hash與檢查記於 art-source/actors/monsters/snail/source-log.md 和 plan/reports/T10-creatures.md。

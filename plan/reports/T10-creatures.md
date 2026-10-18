@@ -57,6 +57,26 @@ One new composition and the one permitted targeted repair used built-in ImageGen
 
 Visual review of both full sheets plus focused `System.Drawing.Bitmap` dimension/alpha/bounds checks were performed; each project copy's hash matches the corresponding generated output. The single repair is exhausted. Neither image was copied to `public/assets/actors/`, and the existing six-image/14-animation creature subset remains unchanged. No complete actors manifest or T10 completion is claimed. No build, tests, typecheck, browser, or project-level regression checks were run.
 
+## actor:snail fresh composition (2026-10-18)
+
+**UNFINISHED — source-only; no runtime image or subset-manifest entry.** One fresh composition was generated with built-in ImageGen and copied unchanged to art-source/actors/monsters/snail/snail-atlas-attempt-05.png. No targeted repair was run. This prompt changed the earlier taller, cream-bodied presentation to a low horizontal moss-green body, broad low-set chestnut spiral shell, and cream rim, and specified the 229 px cell geometry and safety margins before generation. The full prompt, tool output path, references, and metadata are recorded in art-source/actors/monsters/snail/source-log.md.
+
+References explicitly passed by absolute path via referenced_image_paths and viewed before generation:
+
+- F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png
+- F:\Desktop\MapleStory\public\assets\actors\monsters\slime-atlas-v1.png
+- F:\Desktop\MapleStory\public\assets\actors\monsters\sentinel-atlas-v1.png
+
+The output has recognizable snail character design and five approximate action rows, though the walk frames vary too subtly to read clearly. It fails the mandatory structural and edge checks:
+
+| Candidate | Dimensions / grid | Alpha zero / partial / opaque | Corner alpha | Approximate per-cell diagnostics | SHA-256 |
+| --- | --- | --- | --- | --- | --- |
+| snail-atlas-attempt-05.png | 1373×1145 RGBA; width mod 6 = 5, so no valid equal-width 6×5 grid | 932,316 / 638,942 / 827 | all 0 | Using floor-divided bins only for diagnosis, 110 of 120 sides have under 16 px of transparent margin; row baseline lowest-pixel ranges: idle 228–228, walk 228–228, attack 228–228, hurt 228–228, dead 200–228 | C49109C1CE9C1AEA4C2BEA95804BA6F9533B370874C0383635EF42C1E54C0BF6 |
+
+The approximate bounds are not formal cell measurements because the image width is invalid. Visual review shows bright red edge residue and softened, partially transparent contours. Both the grid divisibility and per-cell safety-margin requirements fail; the baseline is inconsistent in the dead row. The source copy hash matches the raw ImageGen output. No PNG was placed under public/assets/actors, the existing creature subset manifest was not changed, and T10-06 remains unfinished. This used the single new-composition allowance; no repair or additional generation was made.
+
+Focused checks only: viewed all three required references and the source copy; read the PNG IHDR and decoded RGBA alpha to count pixels, inspect corners, calculate diagnostic bins/baselines, and compare source/output SHA-256. No build, typecheck, test suite, browser, or project-level check was run.
+
 ## Guardian boss follow-up (2026-10-18)
 
 The fresh left-facing guardian composition and one targeted repair were generated with `transparent_background: true`, explicitly referencing the local hero style, accepted slime, and accepted sentinel images; the repair also referenced attempt-03. The original PNGs were copied unchanged to the source folder and their hashes match the ImageGen outputs.
