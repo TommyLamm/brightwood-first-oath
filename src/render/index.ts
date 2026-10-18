@@ -11,6 +11,14 @@ import {
   skillAnimationDuration,
 } from './animation.js';
 import {
+  DAMAGE_NUMBER_LIFETIME_MS,
+  damageNumberGeometry,
+  formatDamageNumber,
+  isDamageNumberEvent,
+  monsterHealthBarGeometry,
+  telegraphCueGeometry,
+} from './combat-primitives.js';
+import {
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
@@ -34,6 +42,9 @@ type MapVisual = {
 type TextEffect = {
   object: Phaser.GameObjects.Text;
   expiresAtMs: number;
+  position: Vec2;
+  startedAtMs: number;
+  kind: 'damage' | 'hit' | 'levelup';
 };
 
 type SpriteEffect = {
@@ -68,7 +79,7 @@ const WORLD_DEPTH = {
 const DAMAGE_TEXT_LIMIT = 30;
 const DROP_DRAW_LIMIT = 60;
 const PARTICLE_LIMIT = 100;
-const EVENT_LIFETIME_MS = 900;
+const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
 const GROUND_TILE_OVERLAP = 16;
 const registeredTextures = new WeakMap<Phaser.Textures.TextureManager, Map<string, TextureRegistration>>();
 const HERO_IMAGE_KEYS = ['actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron'] as const;
@@ -666,10 +677,21 @@ export function createWorldRenderer(
       );
       if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
       if (!dead && isInViewport(monster.movement.position)) {
-        const width = Math.max(28, definition.width);
-        const ratio = Math.max(0, Math.min(1, monster.hp / definition.maxHp));
-        hpGraphics.fillStyle(0x342e32, 0.9).fillRect(monster.movement.position.x - width / 2, monster.movement.position.y - monster.height - 10, width, 5);
-        hpGraphics.fillStyle(ratio > 0.35 ? 0x76c36d : 0xe2625c, 1).fillRect(monster.movement.position.x - width / 2 + 1, monster.movement.position.y - monster.height - 9, (width - 2) * ratio, 3);
+        const image = assets.images.get(definition.actorKey);
+        const bar = monsterHealthBarGeometry(
+          monster.movement.position,
+          monster.hp,
+          definition.maxHp,
+          image?.displayWidth ?? Math.max(monster.width, definition.width),
+          image?.displayHeight ?? Math.max(monster.height, definition.height),
+          activeVisual.map.boss,
+        );
+        hpGraphics.fillStyle(0x261f2a, 0.88).fillRect(bar.x - 1, bar.y - 1, bar.width + 2, bar.height + 2);
+        hpGraphics.fillStyle(0x342e32, 0.95).fillRect(bar.x, bar.y, bar.width, bar.height);
+        hpGraphics.fillStyle(bar.ratio > 0.35 ? 0x76c36d : 0xe2625c, 1)
+          .fillRect(bar.fillX, bar.fillY, bar.fillWidth, bar.fillHeight);
+        hpGraphics.lineStyle(activeVisual.map.boss ? 2 : 1, activeVisual.map.boss ? 0xffd884 : 0x17151b, 0.95)
+          .strokeRect(bar.x, bar.y, bar.width, bar.height);
       }
     }
 
@@ -706,8 +728,19 @@ export function createWorldRenderer(
 
     for (const attack of snapshot.attacks) drawAttackCue(attack, snapshot.nowMs, attackGraphics);
     for (const telegraph of snapshot.telegraphs) {
-      telegraphGraphics.fillStyle(0xef6459, 0.2).fillRect(telegraph.rect.x, telegraph.rect.y, telegraph.rect.width, telegraph.rect.height);
-      telegraphGraphics.lineStyle(2, 0xff8a73, 0.9).strokeRect(telegraph.rect.x, telegraph.rect.y, telegraph.rect.width, telegraph.rect.height);
+      const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
+      const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, activeVisual.map.boss);
+      if (!cue) continue;
+      const fillColor = activeVisual.map.boss ? 0xd94442 : 0xef6459;
+      const borderColor = activeVisual.map.boss ? 0xffd071 : 0xff8a73;
+      telegraphGraphics.fillStyle(fillColor, cue.fillAlpha)
+        .fillRect(cue.rect.x, cue.rect.y, cue.rect.width, cue.rect.height);
+      telegraphGraphics.lineStyle(cue.borderWidth, borderColor, cue.borderAlpha)
+        .strokeRect(cue.rect.x, cue.rect.y, cue.rect.width, cue.rect.height);
+      if (cue.progressWidth !== null && cue.progressWidth > 0) {
+        telegraphGraphics.fillStyle(borderColor, cue.borderAlpha)
+          .fillRect(cue.rect.x, cue.rect.y, cue.progressWidth, Math.min(4, cue.rect.height));
+      }
     }
 
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
@@ -769,25 +802,37 @@ export function createWorldRenderer(
       return;
     }
     if (playedVisualEventIds.has(event.id)) return;
-    if (event.kind === 'damage') {
-      if (eventTexts.size >= DAMAGE_TEXT_LIMIT) {
-        const oldest = [...eventTexts.entries()].find(([key]) => !key.startsWith('drop-text:'));
-        if (oldest) {
-          oldest[1].object.destroy();
-          eventTexts.delete(oldest[0]);
-        }
+    if (isDamageNumberEvent(event.kind)) {
+      const oldestDamage = [...eventTexts.entries()].find(([, entry]) => isDamageNumberEvent(entry.kind));
+      const damageTextCount = [...eventTexts.values()].filter((entry) => isDamageNumberEvent(entry.kind)).length;
+      if (damageTextCount >= DAMAGE_TEXT_LIMIT && oldestDamage) {
+        oldestDamage[1].object.destroy();
+        eventTexts.delete(oldestDamage[0]);
       }
-      const object = scene.add.text(event.position.x, event.position.y - 20, event.value === undefined ? '命中' : String(event.value), {
-        color: '#fff0be', fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontStyle: 'bold',
+      const object = scene.add.text(event.position.x, event.position.y - 20, formatDamageNumber(event.value), {
+        color: event.kind === 'damage' ? '#ffaaa3' : '#fff0be',
+        fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontStyle: 'bold',
         stroke: '#502c35', strokeThickness: 4,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
-      eventTexts.set(event.id, { object, expiresAtMs: event.atMs + textLifetimeMs });
+      eventTexts.set(event.id, {
+        object,
+        expiresAtMs: event.atMs + textLifetimeMs,
+        position: { ...event.position },
+        startedAtMs: event.atMs,
+        kind: event.kind,
+      });
     } else if (event.kind === 'levelup') {
       const object = scene.add.text(event.position.x, event.position.y - 55, 'LEVEL UP!', {
         color: '#fff4a8', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontStyle: 'bold',
         stroke: '#523c2b', strokeThickness: 4,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
-      eventTexts.set(event.id, { object, expiresAtMs: event.atMs + textLifetimeMs });
+      eventTexts.set(event.id, {
+        object,
+        expiresAtMs: event.atMs + textLifetimeMs,
+        position: { ...event.position },
+        startedAtMs: event.atMs,
+        kind: event.kind,
+      });
     }
     if (event.key && animation && eventSprites.size < PARTICLE_LIMIT) {
       const image = assets.images.get(event.key)!;
@@ -803,6 +848,13 @@ export function createWorldRenderer(
       if (entry.expiresAtMs <= nowMs) {
         entry.object.destroy();
         eventTexts.delete(id);
+        continue;
+      }
+      if (isDamageNumberEvent(entry.kind)) {
+        const geometry = damageNumberGeometry(entry.position, entry.startedAtMs, nowMs);
+        if (geometry) {
+          entry.object.setPosition(geometry.x, geometry.y).setAlpha(geometry.alpha).setScale(geometry.scale);
+        }
       }
     }
     for (const [id, entry] of eventSprites) {
