@@ -35,6 +35,15 @@
 
 兩個 key 皆 source-only，沒有 runtime PNG 或 manifest row；manifest 仍 18/20，T11 保持 PARTIAL，T11-06／T11-08 未勾選。T07 當前 platform TileSprite 仍按 128px manifest display width 重複，與 112px active tile pitch 規格不一致；本次局部影像檢查不宣稱 runtime seam、旋轉整合或 renderer 通過。未跑 build、typecheck、tests 或 browser。
 
+## T11-06 fresh composition and one targeted correction — 2026-10-18
+
+Per follow-up dispatch, each missing key received one fresh built-in ImageGen composition and one edge/top-geometry correction, using explicit local references and `transparent_background=true`. The four unmodified generated outputs are retained in `art-source/environment/`; source SHA-256 values match their generated originals. Both corrections failed and remain source-only:
+
+- `env:tile-platform`: the correction still has 2,237 nontransparent pixels in the nominal 8px gutters, no active alpha on the top row (0/1,902), and 161/723 mismatching active-edge rows (RGBA delta 5,858); visual inspection shows red/yellow top fringe and lower protrusions.
+- `env:tile-slope`: the correction has top-row alpha on only 21/1,254 columns and 60/1,254 left/right edge mismatches (RGBA delta 60); visual inspection shows a wavy grass edge and red/yellow fringe.
+
+No crop, resize, pixel repair, renderer change, or runtime/manifest edit was made. The environment manifest check still finds 18 unique keys, precisely platform and slope missing, no unresolved listed URL, and 16,230,704 referenced runtime bytes. T11-06 and T11-08 remain unchecked; the pack remains PARTIAL. Full prompts, hashes, dimensions, source paths, metrics, and visual notes are in `art-source/environment/source-log.md`. No build/typecheck/tests/browser/full-pack check was run.
+
 ## env:tile-platform low-saturation fresh attempt — 2026-10-18
 
 另做一次全新構圖，採用低彩度 moss-sage 頂面、muted warm-gray 土層與少數大塊像素，避免既有高彩 grass/soil/teal details；本次只呼叫一次 ImageGen，沒有第二次修正。輸出 `art-source/environment/env-tile-platform-t11-06-moss-sage-fresh-20261018.png` 是 1983×793 RGBA，而非 128×32；四角透明，raw alpha bounds `(90,64,1915,775)`，alpha≥32 bounds `(207,314,1777,533)`。診斷預覽平頂覆蓋 112/112 欄，但 112px active edge 有 11/32 列 RGBA 不一致（delta sum 359、max 227），且預覽仍見 14 個符合記錄閾值的黃調像素。拒收為 source-only / UNFINISHED；沒有 runtime PNG 或 manifest row，T11-06／T11-08 不勾選，manifest 維持 18/20。完整 prompt、refs、路徑、時間、SHA-256 及檢查在 `art-source/environment/source-log.md`。不驗證 renderer seam，也未跑 build、typecheck、tests、browser 或 full-pack 檢查。
