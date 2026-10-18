@@ -30,3 +30,5 @@
 
 最近一次整體程式 typecheck/build 證據見 T00 report；本輪未重跑聚合 typecheck/build/content check。T07 只跑其 renderer 核心測試（1 file／7 tests，通過）。T10/T11/T12 只做來源圖格、alpha、hash/manifest 檢查，拒收素材均為 source-only。當前發行阻塞：T10 缺 hero/anchors/五種怪/merchant，T11 缺 platform/slope，T12 缺 heavy-strike；因此 T14-22/T14-25、T15-08/T15-11 和 T16 都未完成。沒有可玩候選、封面或 ZIP；沒有 tag、Release 或平台上架。子代理報告放 reports/Txx.md。
 
+2026-10-18 主線節奏補充（package-level 靜態估算，非完整路線試玩）：T01/T03 估算 41 隻必需敵人的高輸出攻擊窗約 58.55 秒（首擊至末擊理想下界約 55.60 秒）；普攻-only 配置約 790.56 次攻擊、約 7.20 分鐘理想連續攻擊。T02 前向地圖走訪為 11,110 px／約 79 秒；T02/T05 代表任務路線約 34,340–35,140 px／約 4.1–4.2 分鐘無阻走路。估值不含完整追敵、互動、選單、失誤、操作與實際戰鬥節奏，不能相加宣稱通關時間；目前沒有證據支持 45–60 分鐘，模型顯示主線很可能偏短。各包依 08 等待整合可玩路線的代表性實測再集中調節奏；T14-25 仍未執行，主線時長未驗證。
+
