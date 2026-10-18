@@ -86,4 +86,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
           RELEASE_REPO: ${{ github.repository }}
-        run: gh release create "$RELEASE_TAG" "$GAME_ZIP" --repo "$RELEASE_REPO" --verify-tag --generate-notes --prerelease="$RELEASE_PRERELEASE"
+        run: |
+          notes=()
+          notes_file=".github/release-notes/${RELEASE_TAG}.md"
+          if [[ -f "$notes_file" ]]; then
+            notes+=(--notes-file "$notes_file")
+          fi
+          gh release create "$RELEASE_TAG" "$GAME_ZIP" --repo "$RELEASE_REPO" --verify-tag --generate-notes "${notes[@]}" --prerelease="$RELEASE_PRERELEASE"
