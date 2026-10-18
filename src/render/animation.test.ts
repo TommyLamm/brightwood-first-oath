@@ -3,9 +3,11 @@ import type { MovementState } from '../contracts/types.js';
 import {
   claimVisualEventPlayback,
   pickAnimationFrame,
+  pickSkillEffectFrame,
   selectHeroAnimation,
   selectMonsterAnimation,
   skillAnimationDuration,
+  visualEventEffectKey,
 } from './animation.js';
 
 function movement(overrides: Partial<MovementState> = {}): MovementState {
@@ -59,6 +61,16 @@ describe('renderer animation selection', () => {
     expect(pickAnimationFrame(animation, 300, 0, totalDurationMs)).toBe(3);
     expect(pickAnimationFrame(animation, totalDurationMs, 0, totalDurationMs)).toBe(5);
   });
+
+  it('starts skill VFX at the hit window and keeps the authored frame tempo', () => {
+    const animation = { frames: [0, 1, 2, 3, 4, 5], frameMs: [60, 60, 60, 60, 60, 60], loop: false };
+
+    expect(pickSkillEffectFrame(animation, 219, 0, 220)).toBeNull();
+    expect(pickSkillEffectFrame(animation, 220, 0, 220)).toBe(0);
+    expect(pickSkillEffectFrame(animation, 280, 0, 220)).toBe(1);
+    expect(pickSkillEffectFrame(animation, 579, 0, 220)).toBe(5);
+    expect(pickSkillEffectFrame(animation, 580, 0, 220)).toBeNull();
+  });
 });
 
 describe('visual event playback', () => {
@@ -69,5 +81,14 @@ describe('visual event playback', () => {
     expect(claimVisualEventPlayback('event-1', playedIds)).toBe(false);
     expect(claimVisualEventPlayback('event-2', playedIds)).toBe(true);
     expect(playedIds.size).toBe(2);
+  });
+
+  it('uses the event key or the matching delivered VFX for common visual events', () => {
+    expect(visualEventEffectKey({ kind: 'hit' }, 'vfx:guard')).toBe('vfx:hit');
+    expect(visualEventEffectKey({ kind: 'damage' }, 'vfx:guard')).toBe('vfx:hit');
+    expect(visualEventEffectKey({ kind: 'levelup' }, 'vfx:guard')).toBe('vfx:levelup');
+    expect(visualEventEffectKey({ kind: 'buff' }, 'vfx:guard')).toBe('vfx:guard');
+    expect(visualEventEffectKey({ kind: 'pickup' }, 'vfx:guard')).toBeUndefined();
+    expect(visualEventEffectKey({ kind: 'hit', key: 'vfx:sweep' }, 'vfx:guard')).toBe('vfx:sweep');
   });
 });
