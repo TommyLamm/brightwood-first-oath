@@ -7,9 +7,11 @@ import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
 import {
   claimVisualEventPlayback,
   pickAnimationFrame,
+  pickSkillEffectFrame,
   selectHeroAnimation,
   selectMonsterAnimation,
   skillAnimationDuration,
+  visualEventEffectKey,
 } from './animation.js';
 import {
   DAMAGE_NUMBER_LIFETIME_MS,
@@ -27,6 +29,8 @@ import {
   groundTilePositions,
   ladderSpriteGeometry,
   npcNameGeometry,
+  questMarkerGeometry,
+  questMarkerNpcIds,
   PLATFORM_TILE_DISPLAY_HEIGHT,
   PLATFORM_TILE_DISPLAY_WIDTH,
   platformTilePositions,
@@ -46,7 +50,11 @@ type MapVisual = {
   backgrounds: Phaser.GameObjects.TileSprite[];
   environmentLayers: Phaser.GameObjects.Container[];
   environmentTextureKeys: Set<string>;
-  npcSprites: Map<string, { imageKey: string; nameText: Phaser.GameObjects.Text }>;
+  npcSprites: Map<string, {
+    imageKey: string;
+    nameText: Phaser.GameObjects.Text;
+    questMarker: Phaser.GameObjects.Sprite;
+  }>;
 };
 
 type TextEffect = {
@@ -221,6 +229,10 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog): Set<string> {
   if (map.ladders.length > 0) keys.add('env:ladder');
   if (map.portals.length > 0) keys.add('env:portal');
   for (const key of VFX_IMAGE_KEYS) keys.add(key);
+  for (const skill of Object.values(catalog.rules.skills)) {
+    if (skill.effectKey) keys.add(skill.effectKey);
+  }
+  if (map.npcs.length > 0) keys.add('marker:quest');
 
   for (const placement of map.npcs) {
     const npc = catalog.world.npcs[placement.npcId];
@@ -254,7 +266,11 @@ function missingRequiredAnimations(map: MapDef, catalog: ContentCatalog, assets:
       for (const state of MONSTER_ANIMATION_STATES) required.push({ imageKey: monster.actorKey, state: `${monster.id}:${state}` });
     }
   }
-  for (const imageKey of VFX_IMAGE_KEYS) required.push({ imageKey, state: imageKey });
+  const effectKeys = new Set<string>(VFX_IMAGE_KEYS);
+  for (const skill of Object.values(catalog.rules.skills)) {
+    if (skill.effectKey) effectKeys.add(skill.effectKey);
+  }
+  for (const imageKey of effectKeys) required.push({ imageKey, state: imageKey });
 
   return required
     .filter(({ imageKey, state }) => {
@@ -350,6 +366,7 @@ export function createWorldRenderer(
   const playedVisualEventIds = new Set<string>();
   const actorAnimationClocks = new Map<string, { animationKey: string; startedAtMs: number }>();
   const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
+  const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
@@ -585,7 +602,11 @@ export function createWorldRenderer(
     const foregroundLayer = layers[1]!;
     const effectLayer = layers[2]!;
     const environmentTextureKeys = new Set<string>();
-    const npcSprites = new Map<string, { imageKey: string; nameText: Phaser.GameObjects.Text }>();
+    const npcSprites = new Map<string, {
+      imageKey: string;
+      nameText: Phaser.GameObjects.Text;
+      questMarker: Phaser.GameObjects.Sprite;
+    }>();
 
     try {
     for (const { name, factor, depth } of BACKGROUND_LAYERS) {
@@ -668,9 +689,16 @@ export function createWorldRenderer(
         stroke: '#27323a',
         strokeThickness: 3,
       }).setOrigin(nameGeometry.originX, nameGeometry.originY);
+      const markerImage = assets.images.get('marker:quest')!;
+      const questMarker = scene.add.sprite(placement.x, placement.y, markerImage.key, frameKey(markerImage.key, 0))
+        .setDisplaySize(markerImage.displayWidth, markerImage.displayHeight)
+        .setOrigin(markerImage.pivotX, markerImage.pivotY)
+        .setVisible(false);
       foregroundLayer.add(text);
-      npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text });
+      foregroundLayer.add(questMarker);
+      npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text, questMarker });
       text.setDepth(placement.y + 0.1);
+      questMarker.setDepth(placement.y + 0.2);
     }
     void effectLayer;
     return { map, backgrounds, environmentLayers: layers, environmentTextureKeys, npcSprites };
@@ -750,6 +778,7 @@ export function createWorldRenderer(
 
     for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
+    for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     telegraphGraphics.clear();
@@ -812,6 +841,7 @@ export function createWorldRenderer(
       );
       drawEquipment('hat', snapshot.player.visual.hat, head, snapshot.player.movement.facing, playerSprite.depth);
     }
+    const questNpcIds = questMarkerNpcIds(snapshot.questViews, catalog.world.quests);
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
@@ -823,6 +853,11 @@ export function createWorldRenderer(
       npcVisual.nameText.setVisible(npcInViewport);
       const nameGeometry = npcNameGeometry(placement, image.displayHeight);
       npcVisual.nameText.setPosition(nameGeometry.x, nameGeometry.y);
+      const markerImage = assets.images.get('marker:quest')!;
+      const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
+      npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
+        .setVisible(npcInViewport && questNpcIds.has(placement.npcId))
+        .setActive(npcInViewport && questNpcIds.has(placement.npcId));
     }
     scene.cameras.main.startFollow(playerSprite, true);
     for (const monster of snapshot.monsters) {
@@ -893,7 +928,17 @@ export function createWorldRenderer(
       }
     }
 
-    for (const attack of snapshot.attacks) drawAttackCue(attack, snapshot.nowMs, attackGraphics);
+    const visibleAttackIds = new Set(snapshot.attacks.map((attack) => attack.id));
+    for (const [attackId, sprite] of attackEffectSprites) {
+      if (!visibleAttackIds.has(attackId)) {
+        sprite.destroy();
+        attackEffectSprites.delete(attackId);
+      }
+    }
+    for (const attack of snapshot.attacks) {
+      drawAttackCue(attack, snapshot.nowMs, attackGraphics);
+      drawSkillEffect(attack, snapshot.nowMs);
+    }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, activeVisual.map.boss);
@@ -930,6 +975,30 @@ export function createWorldRenderer(
     graphics.lineStyle(1, 0xf8e6a2, 0.7).strokeRect(x, y, skill.reach, skill.height);
   };
 
+  const drawSkillEffect = (attack: AttackInstance, nowMs: number): void => {
+    const skill = catalog.rules.skills[attack.skillId];
+    if (!skill?.effectKey) return;
+    const image = assets.images.get(skill.effectKey);
+    const animation = image ? animationFor(assets, image.key, skill.effectKey) : undefined;
+    if (!image || !animation) {
+      throw new RendererAssetError(`攻擊引用缺少效果資產或 animation：${skill.effectKey}`, [skill.effectKey]);
+    }
+    const frame = pickSkillEffectFrame(animation, nowMs, attack.startedAtMs, skill.windupMs);
+    if (frame === null) return;
+    let sprite = attackEffectSprites.get(attack.id);
+    if (!sprite) {
+      sprite = scene.add.sprite(0, 0, image.key, frameKey(image.key, 0)).setDepth(WORLD_DEPTH.effect);
+      attackEffectSprites.set(attack.id, sprite);
+    }
+    const position = {
+      x: attack.origin.x + attack.facing * skill.reach / 2,
+      y: attack.origin.y - skill.height / 2,
+    };
+    setImageFrame(sprite, image, frame);
+    sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0).setDepth(WORLD_DEPTH.effect)
+      .setVisible(true).setActive(true);
+  };
+
   const getDropText = (id: string, content: string, position: Vec2, nowMs: number): Phaser.GameObjects.Text => {
     let object = dropLabels.get(id);
     if (!object) {
@@ -954,13 +1023,14 @@ export function createWorldRenderer(
       claimVisualEventPlayback(event.id, playedVisualEventIds);
       return;
     }
+    const effectKey = visualEventEffectKey(event, catalog.rules.skills['iron-guard']?.effectKey);
     let animation: AssetAnimation | undefined;
-    if (event.key) {
-      if (!assets.images.has(event.key)) {
-        throw new RendererAssetError(`Snapshot 引用未載入視覺特效圖：${event.key}`, [event.key]);
+    if (effectKey) {
+      if (!assets.images.has(effectKey)) {
+        throw new RendererAssetError(`Snapshot 引用未載入視覺特效圖：${effectKey}`, [effectKey]);
       }
-      animation = animationFor(assets, event.key, event.key);
-      if (!animation) throw new RendererAssetError(`缺少視覺特效 animation：${event.key}`, [event.key]);
+      animation = animationFor(assets, effectKey, effectKey);
+      if (!animation) throw new RendererAssetError(`缺少視覺特效 animation：${effectKey}`, [effectKey]);
     }
     const spriteLifetimeMs = animation?.frameMs.reduce((sum, frameMs) => sum + frameMs, 0) ?? 0;
     const expiresAtMs = event.atMs + Math.max(textLifetimeMs, spriteLifetimeMs);
@@ -1001,11 +1071,11 @@ export function createWorldRenderer(
         kind: event.kind,
       });
     }
-    if (event.key && animation && eventSprites.size < PARTICLE_LIMIT) {
-      const image = assets.images.get(event.key)!;
+    if (effectKey && animation && eventSprites.size < PARTICLE_LIMIT) {
+      const image = assets.images.get(effectKey)!;
       const sprite = scene.add.sprite(event.position.x, event.position.y, image.key, frameKey(image.key, 0)).setDepth(WORLD_DEPTH.effect);
       sprite.setDisplaySize(image.displayWidth, image.displayHeight).setOrigin(image.pivotX, image.pivotY);
-      eventSprites.set(event.id, { object: sprite, imageKey: image.key, animationKey: event.key, startedAtMs: event.atMs, expiresAtMs: event.atMs + spriteLifetimeMs });
+      eventSprites.set(event.id, { object: sprite, imageKey: image.key, animationKey: effectKey, startedAtMs: event.atMs, expiresAtMs: event.atMs + spriteLifetimeMs });
     }
     claimVisualEventPlayback(event.id, playedVisualEventIds);
   };
@@ -1083,6 +1153,8 @@ export function createWorldRenderer(
         eventTexts.clear();
         for (const effect of eventSprites.values()) effect.object.destroy();
         eventSprites.clear();
+        for (const sprite of attackEffectSprites.values()) sprite.destroy();
+        attackEffectSprites.clear();
         hpGraphics.clear();
         telegraphGraphics.clear();
         attackGraphics.clear();
@@ -1139,6 +1211,8 @@ export function createWorldRenderer(
       actorsLayer.destroy(true);
       for (const effect of eventSprites.values()) effect.object.destroy();
       eventSprites.clear();
+      for (const sprite of attackEffectSprites.values()) sprite.destroy();
+      attackEffectSprites.clear();
       playedVisualEventIds.clear();
       // Shared actor, gear and interface textures stay in the Scene for reuse.
       ownedTextureKeys.clear();
