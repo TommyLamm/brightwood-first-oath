@@ -361,9 +361,12 @@ export function makeWorldSnapshot(
     : movement.mode === 'airborne'
       ? movement.velocity.y < 0 ? 'jump' : 'fall'
       : Math.abs(movement.velocity.x) > 0.1 ? 'walk' : 'idle';
+  const questViews = Object.keys(catalog.world.quests)
+    .map((questId) => getQuestView(gameplay.saveData, questId, catalog));
   return {
     mapId: map.id,
     nowMs,
+    questViews,
     player: {
       id: gameplay.playerEntityId,
       movement,

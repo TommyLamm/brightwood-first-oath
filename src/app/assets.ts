@@ -5,6 +5,12 @@ import type {
   AssetManifest,
   AssetPack,
 } from '../contracts/asset-manifest.js';
+import type {
+  HeroAnchorFrame,
+  HeroAnchorManifest,
+  HeroAnchorOutfit,
+  HeroAnchorPose,
+} from '../contracts/hero-anchors.js';
 
 export const REQUIRED_ASSET_PACKS: readonly AssetPack[] = [
   'actors',
@@ -76,6 +82,17 @@ const expectedAudioKeys = [
   'ui-click', 'jump', 'attack', 'hit', 'hurt', 'pickup', 'potion', 'equip',
   'quest', 'levelup', 'portal', 'death', 'boss-win',
 ] as const;
+
+const heroAnchorFrameCounts: Record<HeroAnchorPose, number> = {
+  idle: 4,
+  walk: 6,
+  jump: 2,
+  climb: 4,
+  attack: 6,
+  hurt: 2,
+  dead: 4,
+  buff: 4,
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -216,6 +233,109 @@ export function parseAssetManifest(value: unknown, expectedPack: AssetPack): Ass
   if (missing.length > 0) throw new Error(`required keys missing: ${missing.join(', ')}`);
 
   return { version: 1, pack: expectedPack, images, animations, audio };
+}
+
+function parseHeroAnchorFrame(value: unknown, label: string): HeroAnchorFrame {
+  if (!isRecord(value)) throw new Error(`${label} must be an object`);
+  const hand = value.hand;
+  const head = value.head;
+  if (!isRecord(hand) || !isRecord(head)) throw new Error(`${label} requires hand and head anchors`);
+  const handX = hand.x;
+  const handY = hand.y;
+  const handRotation = hand.rotationDeg;
+  const headX = head.x;
+  const headY = head.y;
+  if (!isFiniteNumber(handX) || !isFiniteNumber(handY) || !isFiniteNumber(handRotation)
+    || !isFiniteNumber(headX) || !isFiniteNumber(headY)) {
+    throw new Error(`${label} coordinates and rotation must be finite numbers`);
+  }
+  return {
+    hand: { x: handX, y: handY, rotationDeg: handRotation },
+    head: { x: headX, y: headY },
+  };
+}
+
+function parseHeroAnchorPose(value: unknown, outfit: HeroAnchorOutfit, pose: HeroAnchorPose): HeroAnchorFrame[] {
+  const label = `heroes.${outfit}.${pose}`;
+  if (!Array.isArray(value) || value.length !== heroAnchorFrameCounts[pose]) {
+    throw new Error(`${label} must contain ${heroAnchorFrameCounts[pose]} valid frames`);
+  }
+  return value.map((frame, index) => parseHeroAnchorFrame(frame, `${label}[${index}]`));
+}
+
+function parseHeroAnchorOutfit(value: unknown, outfit: HeroAnchorOutfit): Record<HeroAnchorPose, HeroAnchorFrame[]> {
+  if (!isRecord(value)) throw new Error(`heroes.${outfit} must be an object`);
+  return {
+    idle: parseHeroAnchorPose(value.idle, outfit, 'idle'),
+    walk: parseHeroAnchorPose(value.walk, outfit, 'walk'),
+    jump: parseHeroAnchorPose(value.jump, outfit, 'jump'),
+    climb: parseHeroAnchorPose(value.climb, outfit, 'climb'),
+    attack: parseHeroAnchorPose(value.attack, outfit, 'attack'),
+    hurt: parseHeroAnchorPose(value.hurt, outfit, 'hurt'),
+    dead: parseHeroAnchorPose(value.dead, outfit, 'dead'),
+    buff: parseHeroAnchorPose(value.buff, outfit, 'buff'),
+  };
+}
+
+/** Validates the separate hero-hand/head anchor file required by the formal actor sheets. */
+export function parseHeroAnchorManifest(value: unknown): HeroAnchorManifest {
+  if (!isRecord(value) || value.version !== 1) throw new Error('hero anchors version must be 1');
+  const coordinateSpace = value.coordinateSpace;
+  if (!isRecord(coordinateSpace)
+    || coordinateSpace.width !== 96
+    || coordinateSpace.height !== 96
+    || coordinateSpace.origin !== 'frame-top-left'
+    || coordinateSpace.facing !== 'right'
+    || coordinateSpace.sourceFramePixels !== 128) {
+    throw new Error('hero anchors coordinateSpace must use 96x96 top-left frames sourced from 128px cells facing right');
+  }
+  const heroes = value.heroes;
+  if (!isRecord(heroes)) throw new Error('hero anchors must define heroes');
+  return {
+    version: 1,
+    coordinateSpace: {
+      width: 96,
+      height: 96,
+      origin: 'frame-top-left',
+      facing: 'right',
+      sourceFramePixels: 128,
+    },
+    heroes: {
+      cloth: parseHeroAnchorOutfit(heroes.cloth, 'cloth'),
+      leather: parseHeroAnchorOutfit(heroes.leather, 'leather'),
+      iron: parseHeroAnchorOutfit(heroes.iron, 'iron'),
+    },
+  };
+}
+
+/** Loads the canonical anchors beside the actor manifest, using the same entry-relative base URL. */
+export async function loadRequiredHeroAnchors(
+  baseUrl: string,
+  fetcher: ManifestFetcher,
+): Promise<HeroAnchorManifest> {
+  const base = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const url = `${base}assets/actors/anchors.json`;
+  let response: ManifestResponse;
+  try {
+    response = await fetcher(url);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`GET ${url} failed: ${reason}`);
+  }
+  if (!response.ok) throw new Error(`GET ${url} returned HTTP ${response.status}`);
+  let raw: unknown;
+  try {
+    raw = await response.json();
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`cannot parse ${url}: ${reason}`);
+  }
+  try {
+    return parseHeroAnchorManifest(raw);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`invalid hero anchors at ${url}: ${reason}`);
+  }
 }
 
 /** Loads all four manifests or fails with a per-pack diagnostic; no empty pack fallback exists. */

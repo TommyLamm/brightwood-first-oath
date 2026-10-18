@@ -105,7 +105,7 @@ describe('T14-a app foundation', () => {
     }
   });
 
-  it('keeps startup in an explicit incomplete state when any required pack is missing', async () => {
+  it('keeps startup incomplete when a required pack or hero anchors are missing', async () => {
     const app = new GameApp({
       baseUrl: './',
       fetcher: async () => ({ ok: false, status: 404, json: async () => null }),
@@ -116,10 +116,11 @@ describe('T14-a app foundation', () => {
     const result = await app.initialize();
     expect(result.ready).toBe(false);
     expect(result.status).toBe('incomplete');
-    expect(result.issues).toHaveLength(4);
+    expect(result.issues).toHaveLength(5);
     expect(app.state.screen).toBe('error');
     expect(app.state.catalog).not.toBeNull();
     expect(app.state.assetManifests).toBeNull();
+    expect(app.state.heroAnchors).toBeNull();
     app.dispose();
   });
 

@@ -158,6 +158,7 @@ describe('app gameplay vertical slice', () => {
     const snapshot = makeWorldSnapshot(gameplay, catalog, nowMs);
     expect(snapshot.mapId).toBe('camp');
     expect(snapshot.monsters).toHaveLength(1);
+    expect(snapshot.questViews.find(({ questId }) => questId === 'q01')?.status).toBe('active');
   });
 
   it('clears player attack state immediately on lethal damage and resets remaining combat on respawn', () => {

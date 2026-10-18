@@ -3,7 +3,9 @@ export type { AppFixedStep, AppOptions, AppStartupResult } from './app.js';
 export {
   AssetManifestLoadError,
   REQUIRED_ASSET_PACKS,
+  loadRequiredHeroAnchors,
   loadRequiredAssetManifests,
+  parseHeroAnchorManifest,
   parseAssetManifest,
 } from './assets.js';
 export type { AssetManifestIssue, ManifestFetcher } from './assets.js';

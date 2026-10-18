@@ -1,6 +1,7 @@
 import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand, PanelId } from '../contracts/commands.js';
 import type { ContentCatalog } from '../contracts/definitions.js';
+import type { HeroAnchorManifest } from '../contracts/hero-anchors.js';
 import type { RandomSource, SaveStatus, UiSnapshot } from '../contracts/index.js';
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
@@ -20,6 +21,7 @@ export type GameAppState = {
   startupIssues: string[];
   catalog: ContentCatalog | null;
   assetManifests: AssetManifest[] | null;
+  heroAnchors: HeroAnchorManifest | null;
   gameplay: GameplayState | null;
   saveStatus: SaveStatus;
   saveMessage: string | null;
@@ -44,6 +46,7 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
     startupIssues: [],
     catalog: null,
     assetManifests: null,
+    heroAnchors: null,
     gameplay: null,
     saveStatus: 'unavailable',
     saveMessage: null,

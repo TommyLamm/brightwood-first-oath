@@ -8,6 +8,7 @@ import { createNextEntityId } from '../../src/contracts/helpers.js';
 import type { SaveData } from '../../src/contracts/types.js';
 import { localSaveKeyForGame } from '../../src/persistence/index.js';
 import { SAVE_FORMAT_VERSION } from '../../src/persistence/validate.js';
+import { createHeroAnchorFixture } from './asset-fixtures.js';
 
 const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
   actors: [
@@ -70,6 +71,9 @@ function validManifest(pack: AssetPack): unknown {
 }
 
 const fetchManifests = async (url: string) => {
+  if (url.endsWith('/assets/actors/anchors.json')) {
+    return { ok: true, status: 200, json: async () => createHeroAnchorFixture() };
+  }
   const pack = url.split('/').at(-2) as AssetPack;
   return { ok: true, status: 200, json: async () => validManifest(pack) };
 };

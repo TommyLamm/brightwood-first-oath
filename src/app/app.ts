@@ -5,7 +5,7 @@ import type { EntityId, RandomSource, SaveData, Settings } from '../contracts/ty
 import type { AudioController, AudioFactory, CloudPort, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
 import { createAudio } from '../audio/index.js';
 import { FIXED_STEP_SECONDS, FixedStepClock } from './fixed-step.js';
-import { AssetManifestLoadError, loadRequiredAssetManifests, type ManifestFetcher } from './assets.js';
+import { AssetManifestLoadError, loadRequiredAssetManifests, loadRequiredHeroAnchors, type ManifestFetcher } from './assets.js';
 import { composeContentCatalog } from './catalog.js';
 import { AppCommandQueue } from './command-queue.js';
 import { DEFAULT_KEY_BINDINGS, KeyboardControls, type GameAction, type KeyBindings } from './keyboard.js';
@@ -315,8 +315,9 @@ export class GameApp {
     this.persistence = persistence;
     this.persistenceMode = 'memory';
 
-    const [assetsResult, saveResult] = await Promise.allSettled([
+    const [assetsResult, anchorsResult, saveResult] = await Promise.allSettled([
       loadRequiredAssetManifests(this.options.baseUrl, this.options.fetcher),
+      loadRequiredHeroAnchors(this.options.baseUrl, this.options.fetcher),
       persistence.initialize(),
     ]);
     if (generation !== this.operationGeneration || this.persistence !== persistence) {
@@ -326,13 +327,22 @@ export class GameApp {
     if (saveResult.status === 'fulfilled') this.applyLoadOutcome(saveResult.value, 'loading');
     else this.setState({ ...this.stateValue, saveStatus: 'loadError', saveMessage: errorMessage(saveResult.reason, '存檔初始化失敗。') });
 
+    const startupIssues: string[] = [];
     if (assetsResult.status === 'rejected') {
       const error = assetsResult.reason;
-      const issues = error instanceof AssetManifestLoadError
+      startupIssues.push(...(error instanceof AssetManifestLoadError
         ? error.issues.map(({ pack, message }) => `[${pack}] ${message}`)
-        : [errorMessage(error, '遊戲資產載入失敗。')];
-      return this.failStartup(issues, catalog);
+        : [errorMessage(error, '遊戲資產載入失敗。')]));
     }
+    if (anchorsResult.status === 'rejected') {
+      startupIssues.push(errorMessage(anchorsResult.reason, '主角正式裝備 anchors 載入失敗。'));
+    }
+    if (startupIssues.length > 0 || assetsResult.status !== 'fulfilled' || anchorsResult.status !== 'fulfilled') {
+      return this.failStartup(startupIssues, catalog);
+    }
+
+    const assetManifests = assetsResult.value;
+    const heroAnchors = anchorsResult.value;
 
     this.setState({
       ...this.stateValue,
@@ -340,9 +350,10 @@ export class GameApp {
       startupStatus: 'ready',
       startupIssues: [],
       catalog,
-      assetManifests: assetsResult.value,
+      assetManifests,
+      heroAnchors,
     });
-    this.initializeAudio(assetsResult.value);
+    this.initializeAudio(assetManifests);
     return { ready: true, status: 'ready', issues: [] };
   }
 
@@ -354,6 +365,7 @@ export class GameApp {
       startupIssues: issues,
       catalog,
       assetManifests: null,
+      heroAnchors: null,
     });
     return { ready: false, status: 'incomplete', issues };
   }
@@ -417,7 +429,7 @@ export class GameApp {
 
   private handleNewGame(name: string): void {
     const state = this.stateValue;
-    if (state.startupStatus !== 'ready' || !state.catalog || !state.assetManifests) {
+    if (state.startupStatus !== 'ready' || !state.catalog || !state.assetManifests || !state.heroAnchors) {
       this.setToast('遊戲資產尚未就緒，暫時不能建立角色。');
       return;
     }
@@ -449,7 +461,7 @@ export class GameApp {
 
   private startTemporaryGame(): void {
     const state = this.stateValue;
-    if (state.startupStatus !== 'ready' || !state.catalog || !state.assetManifests) {
+    if (state.startupStatus !== 'ready' || !state.catalog || !state.assetManifests || !state.heroAnchors) {
       this.setToast('必要遊戲資產尚未就緒，暫時不能開始遊玩。');
       return;
     }

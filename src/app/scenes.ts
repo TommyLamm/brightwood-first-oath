@@ -4,7 +4,7 @@ import { GameApp } from './app.js';
 import { makeWorldSnapshot } from './gameplay.js';
 import { shouldAttemptMapVisualLoad } from './map-load-retry.js';
 import type { MapDef } from '../contracts/definitions.js';
-import type { WorldRenderer } from '../contracts/ports.js';
+import type { WorldRenderer, WorldRendererFactory } from '../contracts/ports.js';
 
 export type AppStatusReporter = (title: string, details: string) => void;
 
@@ -62,15 +62,17 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       }).setOrigin(0.5);
       const catalog = app.state.catalog;
       const manifests = app.state.assetManifests;
+      const heroAnchors = app.state.heroAnchors;
       this.loadedWorldRevision = app.state.worldRevision;
-      if (!catalog || !manifests) {
-        app.reportRuntimeIssue('World Scene 缺少已驗證的 catalog、manifest 或 camp map。');
+      if (!catalog || !manifests || !heroAnchors) {
+        app.reportRuntimeIssue('World Scene 缺少已驗證的 catalog、manifest、hero anchors 或 camp map。');
         this.statusText.setText('開發中：遊戲內容尚未完成');
-        reportStatus('遊戲內容尚未完成', 'World Scene 缺少 catalog 或 manifest。');
+        reportStatus('遊戲內容尚未完成', 'World Scene 缺少 catalog、manifest 或 hero anchors。');
         return;
       }
 
-      this.worldRenderer = createWorldRenderer(this, manifests, catalog);
+      const rendererFactory: WorldRendererFactory = createWorldRenderer;
+      this.worldRenderer = rendererFactory(this, manifests, catalog, heroAnchors);
       const initialMap = app.state.gameplay
         ? catalog.world.maps[app.state.gameplay.saveData.location.mapId]
         : null;
