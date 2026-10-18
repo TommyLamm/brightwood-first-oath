@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing immutable version tag to publish
+        required: true
+        type: string
 permissions:
   contents: write
 env:
@@ -11,16 +17,17 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      PLATFORM_DIR: ${{ runner.temp }}/playroom-platform-tools
-      GAME_ZIP: ${{ runner.temp }}/playroom-release/game.zip
     defaults:
       run:
         shell: bash
     steps:
+      - name: Configure artifact directories
+        run: |
+          printf 'PLATFORM_DIR=%s\nGAME_ZIP=%s\n' "$RUNNER_TEMP/playroom-platform-tools" "$RUNNER_TEMP/playroom-release/game.zip" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          ref: ${{ github.event.inputs.release_tag || github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -30,7 +37,7 @@ jobs:
           npm run build
       - name: Check release version and resolve artifact directory
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.event.inputs.release_tag || github.ref_name }}
         run: |
           node --input-type=module <<'JS'
           import fs from 'node:fs';
@@ -84,7 +91,7 @@ jobs:
       - name: Publish release asset
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.event.inputs.release_tag || github.ref_name }}
           RELEASE_REPO: ${{ github.repository }}
         run: |
           notes=()

@@ -23,6 +23,8 @@
 
 main 已推送；tag／workflow／Release 尚待本次發布流程完成，完成後補實際結果。
 
+首次 tag workflow 在排程前被 GitHub 拒絕：範本於 job-level env 使用 `runner.temp`，該位置不支援 runner context。已在 main 改為執行 step 時以 `RUNNER_TEMP` 寫入 `GITHUB_ENV`，保留既有完整驗證；並加入指定既有 tag 的手動 dispatch，從固定 tag checkout 發布。不移動、刪除或覆寫 `v1.0.0-beta.1`；其 runtime 與內容版本不變。
+
 ## 驗收限制
 
 正常實玩僅 q01 擊殺 2/3。完整 q01–q08、死亡／首領重試、45–60 分鐘節奏、可聽音訊、全螢幕、完整 browser console、正式雲端與 FPS 尚未驗證。GitHub 預發布不代表 Playroom 人工確認或上架，本次沒有操作平台發布 API。
