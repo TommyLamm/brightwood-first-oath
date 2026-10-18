@@ -395,3 +395,14 @@ Rows top to bottom, columns left to right:
 Lighting/mood: warm, friendly, readable at small size, with consistent flat pixel shading.
 Constraints: exact 1024×1024 dimensions and exact 128×128 cells are mandatory. Keep every pose within its own safe box. Use the same face, hair and beginner outfit throughout. Every sprite pixel is fully opaque; every empty pixel is fully transparent. No antialiasing, partially transparent edge pixels, red/yellow/green fringe, stray marks, glow, haze, gradients, blur, painterly texture, weapon, sword, sheath, strap, scarf, shield, hat, helmet, background, shadow, text, logo, watermark, extra person or object.
 ~~~
+
+
+## 2026-10-18 使用者授權後的正式v9匯出
+
+使用者明確同意確定性裁切透明留白、逐格排列、最近鄰縮放、清邊與alpha整理；原稿及腳本須保留。舊one-shot限制屬前次任務，本次已重新授權。沒有新ImageGen呼叫；以下原稿完整prompt／本地參考保持在本log既有段落。
+
+採用：cloth=`hero-cloth-v8-attempt-1.png`；leather=`hero-leather-v3-repair-1.png`；iron=`hero-iron-v3-repair-1.png`。原稿不改。匯出`export_hero_v9.py`：真實alpha谷值分列／格、主角最大連通區、alpha>=160二值化、清紅綠黃邊、每套40色、同套一致NN比例、128×128格、16px安全邊與y112腳底基準；沒有程式繪製人物。三套正式PNG均1024×1024，引用metadata見`hero-v9-subset.json`，所有來源與輸出hash／採樣框／比例／邊距見`hero-v9-export.json`。
+
+`export_hero_anchors_v9.py`記錄96個有效畫格人工標註；正式anchors在public/assets/actors/anchors.json，96×96左上座標；武器方向為依動作設定的overlay方向提示。已視檢`hero-*-v9-review.png`及`hero-*-v9-anchors-review.png`；檢視發現初次等格裁切會帶入前列腳部碎片，已改真實空隙切格／最大連通區去除；覆疊發現climb及leather攻擊末格手點需調整，已修正標註。最後交付不含這些殘片。
+
+只驗收素材檔與metadata；frame安全邊／可見腳底offset、anchors握點與裝備旋轉、攻擊節拍仍需下游renderer/game整合。未跑browser/build/tests/iframe/ZIP驗收。

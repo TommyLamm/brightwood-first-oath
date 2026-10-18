@@ -1,0 +1,447 @@
+{
+  "version": 1,
+  "pack": "actors",
+  "images": [
+    {
+      "key": "actor:hero-cloth",
+      "url": "assets/actors/hero-cloth-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:hero-leather",
+      "url": "assets/actors/hero-leather-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:hero-iron",
+      "url": "assets/actors/hero-iron-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    }
+  ],
+  "animations": [
+    {
+      "key": "hero:cloth:idle",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:walk",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:jump",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:climb",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:attack",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:hurt",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:dead",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:buff",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:idle",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:walk",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:jump",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:climb",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:attack",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:hurt",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:dead",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:buff",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:idle",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:walk",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:jump",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:climb",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:attack",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:hurt",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:dead",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:buff",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    }
+  ],
+  "audio": []
+}

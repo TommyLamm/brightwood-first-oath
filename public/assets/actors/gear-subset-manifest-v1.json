@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "pack": "actors",
+  "images": [
+    { "key": "equip:starter-sword", "url": "assets/actors/equip-starter-sword-v1.png", "columns": 1, "rows": 1, "displayWidth": 64, "displayHeight": 64, "pivotX": 0.25, "pivotY": 0.8 },
+    { "key": "equip:iron-sword", "url": "assets/actors/equip-iron-sword-v1.png", "columns": 1, "rows": 1, "displayWidth": 64, "displayHeight": 64, "pivotX": 0.25, "pivotY": 0.8 },
+    { "key": "equip:steel-sword", "url": "assets/actors/equip-steel-sword-v1.png", "columns": 1, "rows": 1, "displayWidth": 64, "displayHeight": 64, "pivotX": 0.25, "pivotY": 0.8 },
+    { "key": "equip:guardian-sword", "url": "assets/actors/equip-guardian-sword-v1.png", "columns": 1, "rows": 1, "displayWidth": 64, "displayHeight": 64, "pivotX": 0.25, "pivotY": 0.8 },
+    { "key": "equip:cloth-cap", "url": "assets/actors/equip-cloth-cap-v1.png", "columns": 1, "rows": 1, "displayWidth": 48, "displayHeight": 32, "pivotX": 0.5, "pivotY": 1 },
+    { "key": "equip:leather-cap", "url": "assets/actors/equip-leather-cap-v1.png", "columns": 1, "rows": 1, "displayWidth": 48, "displayHeight": 32, "pivotX": 0.5, "pivotY": 1 },
+    { "key": "equip:iron-helm", "url": "assets/actors/equip-iron-helm-v1.png", "columns": 1, "rows": 1, "displayWidth": 48, "displayHeight": 32, "pivotX": 0.5, "pivotY": 1 }
+  ],
+  "animations": [],
+  "audio": []
+}

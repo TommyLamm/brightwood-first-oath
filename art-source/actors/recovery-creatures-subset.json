@@ -1,0 +1,487 @@
+{
+  "version": 1,
+  "pack": "actors",
+  "images": [
+    {
+      "key": "actor:snail",
+      "url": "assets/actors/monsters/snail-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:mushroom",
+      "url": "assets/actors/monsters/mushroom-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:boar",
+      "url": "assets/actors/monsters/boar-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:golem",
+      "url": "assets/actors/monsters/golem-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:guardian",
+      "url": "assets/actors/monsters/guardian-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 192,
+      "displayHeight": 192,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:merchant",
+      "url": "assets/actors/npcs/merchant-idle-v2.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    }
+  ],
+  "animations": [
+    {
+      "key": "snail:idle",
+      "imageKey": "actor:snail",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "snail:walk",
+      "imageKey": "actor:snail",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "snail:attack",
+      "imageKey": "actor:snail",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "snail:hurt",
+      "imageKey": "actor:snail",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "snail:dead",
+      "imageKey": "actor:snail",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:idle",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "mushroom:walk",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "mushroom:attack",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:hurt",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:dead",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:idle",
+      "imageKey": "actor:boar",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "boar:walk",
+      "imageKey": "actor:boar",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "boar:attack",
+      "imageKey": "actor:boar",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:hurt",
+      "imageKey": "actor:boar",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:dead",
+      "imageKey": "actor:boar",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:idle",
+      "imageKey": "actor:golem",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "golem:walk",
+      "imageKey": "actor:golem",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "golem:attack",
+      "imageKey": "actor:golem",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:hurt",
+      "imageKey": "actor:golem",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:dead",
+      "imageKey": "actor:golem",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:idle",
+      "imageKey": "actor:guardian",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "guardian:walk",
+      "imageKey": "actor:guardian",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "guardian:attack",
+      "imageKey": "actor:guardian",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        450,
+        450,
+        450,
+        450
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:hurt",
+      "imageKey": "actor:guardian",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:dead",
+      "imageKey": "actor:guardian",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:merchant:idle",
+      "imageKey": "actor:merchant",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    }
+  ],
+  "audio": []
+}

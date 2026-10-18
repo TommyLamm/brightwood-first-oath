@@ -131,6 +131,96 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:hero-cloth",
+      "url": "assets/actors/hero-cloth-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:hero-leather",
+      "url": "assets/actors/hero-leather-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:hero-iron",
+      "url": "assets/actors/hero-iron-v9.png",
+      "columns": 8,
+      "rows": 8,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:snail",
+      "url": "assets/actors/monsters/snail-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:mushroom",
+      "url": "assets/actors/monsters/mushroom-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:boar",
+      "url": "assets/actors/monsters/boar-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:golem",
+      "url": "assets/actors/monsters/golem-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:guardian",
+      "url": "assets/actors/monsters/guardian-atlas-v2.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 192,
+      "displayHeight": 192,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:merchant",
+      "url": "assets/actors/npcs/merchant-idle-v2.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -338,6 +428,832 @@
     {
       "key": "npc:keeper:idle",
       "imageKey": "actor:keeper",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:idle",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:walk",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:jump",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:climb",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:cloth:attack",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:hurt",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:dead",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:cloth:buff",
+      "imageKey": "actor:hero-cloth",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:idle",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:walk",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:jump",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:climb",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:leather:attack",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:hurt",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:dead",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:leather:buff",
+      "imageKey": "actor:hero-leather",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:idle",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:walk",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:jump",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        16,
+        17
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:climb",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "hero:iron:attack",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:hurt",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        40,
+        41
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:dead",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    {
+      "key": "hero:iron:buff",
+      "imageKey": "actor:hero-iron",
+      "frames": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "snail:idle",
+      "imageKey": "actor:snail",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "snail:walk",
+      "imageKey": "actor:snail",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "snail:attack",
+      "imageKey": "actor:snail",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "snail:hurt",
+      "imageKey": "actor:snail",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "snail:dead",
+      "imageKey": "actor:snail",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:idle",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "mushroom:walk",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "mushroom:attack",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:hurt",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "mushroom:dead",
+      "imageKey": "actor:mushroom",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:idle",
+      "imageKey": "actor:boar",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "boar:walk",
+      "imageKey": "actor:boar",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "boar:attack",
+      "imageKey": "actor:boar",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:hurt",
+      "imageKey": "actor:boar",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "boar:dead",
+      "imageKey": "actor:boar",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:idle",
+      "imageKey": "actor:golem",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "golem:walk",
+      "imageKey": "actor:golem",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "golem:attack",
+      "imageKey": "actor:golem",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:hurt",
+      "imageKey": "actor:golem",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "golem:dead",
+      "imageKey": "actor:golem",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:idle",
+      "imageKey": "actor:guardian",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "guardian:walk",
+      "imageKey": "actor:guardian",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "guardian:attack",
+      "imageKey": "actor:guardian",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        450,
+        450,
+        450,
+        450
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:hurt",
+      "imageKey": "actor:guardian",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "guardian:dead",
+      "imageKey": "actor:guardian",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:merchant:idle",
+      "imageKey": "actor:merchant",
       "frames": [
         0,
         1

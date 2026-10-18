@@ -4,22 +4,22 @@
 
 先讀imagegen技能及[10](../10-asset-spec.md)，本包全部key、格數、動畫與anchors照10。不要求使用者提供素材。內建ImageGen每次明確資產目標及本地參考，透明輸出保留alpha。
 
+目前狀態（2026-10-18，取代下方舊嘗試狀態）：素材製作 DONE。canonical actors manifest有22 images／64 animations與96個有效主角畫格anchors。使用者授權確定性匯出後，三套hero、四隻普通怪、guardian與merchant均由既有ImageGen原稿整理入庫。遊戲接合與裝備附著未驗證，詳reports/T10.md。
+
 ## 步驟
 
-- [x] T10-01 建source-log，生成固定短髮劍士、正側視／服裝輪廓參考，保留相同比例／五官／配色。這是開工參考，不當正式動畫完成。
-- [ ] T10-02 生成hero-cloth的8×8動作圖集，依10的8列狀態，畫面純透明、foot一致、各格無裁切。檢查格數及跨格污染，不可用一張站姿當走路。（UNFINISHED：v3/v4與2026-10-18新構圖v5及唯一一次針對修正均為1254×1254、mod 8=6×6；v5修正後仍有大量partial alpha和彩色halo，近似等分格診斷64/64格安全邊不足16px。僅source保存，無runtime／manifest／anchors；本輪生成與修正額度已用完，不裁切、重排或色鍵。prompt、參考路徑、尺寸、alpha、hash與視檢記於art-source/actors/hero/source-log.md及plan/reports/T10-hero.md。）
-- [ ] T10-03 基於同主角參考製作hero-leather、hero-iron，動作／臉／髮不改、僅服裝不同；三衣服具可見升級差異。最新v3 attempt/repair仍為1254×1254、mod 8=6×6且有紅／黃綠外緣與繪畫式柔邊；未通過格線、安全邊與輪廓檢視，僅保存於source，詳plan/reports/T10.md。
-- [x] T10-04 生成四武器及三帽，透明、方向／pivot一致，主角圖集手上不烘焙固定武器，避免換裝仍拿兩把。
-- [ ] T10-05 為每個hero有效frame填hand/head anchors，按10坐標，武器attack rotation逐格可用；不是全部frame盲填同一點。
-- [ ] T10-06 逐個生成snail/slime/mushroom/boar/golem/sentinel五狀態圖集（6×5），身形／色盤一致但輪廓可分辨；不加第七普通怪。（部分：slime、sentinel已驗收入選；snail、mushroom、boar、golem均UNFINISHED且只有source候選。golem新增attempt-03/04後仍未通過：attempt-03可整除但有可見彩邊、柔邊且腳底貼格底；attempt-04寬1373不能整除6，仍有彩邊與大量partial alpha。無runtime/manifest entry；完整prompt、hash及檢查詳`plan/reports/T10-creatures.md`與怪物source log。）
-
-  **Mushroom reattempt (2026-10-18):** Read gate completed at 2026-10-18 01:40 UTC; the live template and seven linked Playroom specifications were read in full (exact URLs and applicable requirements recorded in `art-source/actors/monsters/source-log.md`). Applicable requirements: relative asset paths, truthful desktop-only declaration, iframe sizing/no top navigation or popup, no account/admin API, and no publishing. Check scope: image grid, per-cell safe margins/containment, silhouette, baseline, alpha edges, and matching hash/metadata only. One fresh composition and its single targeted repair (`attempt-05/06`) both produced divisible 6×5 grids but visible red edge contamination; all 30 cells missed the required 16 px safe margin in at least one direction. Both are preserved source-only; no runtime asset or subset metadata entry was added. The generation/repair allowance is exhausted. See `plan/reports/T10-creatures.md` and the mushroom section in the monster source log.
-- [ ] T10-07 生成guardian兩倍顯示尺寸五狀態圖集，具有可辨識蓄力／揮擊姿勢；phase2可用渲染染色，不額外增加AI招式。（UNFINISHED；新構圖 attempt-03 及唯一一次針對修正 attempt-04 均為1373×1145，寬度不能整除6；修正版紅色高alpha殘像增加，且逐格診斷未達16px安全邊，故只保留source，不進runtime／manifest。生成額度已用完；驗收詳`plan/reports/T10-creatures.md`及怪物source log。）
-- [ ] T10-08 生成五NPC兩格idle，與role外觀相符，名字文字不放圖片中。（部分：guide、mentor、healer、keeper已驗收入選；merchant仍為UNFINISHED。單項追補生成／referenced-image修正為attempt-05/06，兩格尺寸合規但修正版仍有紅色外緣與大量部分透明柔邊，不入runtime／manifest；提示全文及檢查詳`plan/reports/T10-creatures.md`及NPC source log。）
-- [ ] T10-09 建本包manifest及animation keys，URL指入遊戲檔，實際寬高可整除格數；不假設工具固定產出尺寸。（已建立 public/assets/actors/manifest.json 作 PARTIAL renderer input，合併目前已驗收的 gear/creature subset 共13 images、14 animations；仍有角色/怪物缺件，不能勾選此步或視為完整 coverage，詳 plan/reports/T10.md。）
-- [ ] T10-10 檢視每個新圖的alpha、臉一致、foot／握點、格序；失敗僅重做該組。ImageGen修正local圖先查看再指定referenced_image_paths。
-- [ ] T10-11 檔案複製進workspace，原稿／prompt留art-source不入dist，正式包內部預算18MiB；多餘候選不指入manifest。
-- [ ] T10-12 report列實際image/animation key、圖格、anchors、每項formal/temporary、檢視及未完成，給T07一套主角+snail提早接入。（目前可用子集及所有未完成／拒收項已列於`plan/reports/T10.md`、`plan/reports/T10-creatures.md`與source logs；hero、snail仍未完成。）
+- [x] T10-01 已有主角身分與森林風格參考，沿用本地參考與既有ImageGen原稿。
+- [x] T10-02 布衣hero-cloth-v9：8×8、八狀態及完整有效格，未用格重複末有效格。
+- [x] T10-03 皮甲／鐵甲hero-leather-v9、hero-iron-v9：同主角特徵與八狀態規則。
+- [x] T10-04 沿用已驗收四武器／三帽獨立透明素材。
+- [x] T10-05 anchors.json含三服裝共96個有效畫格hand／head；以96×96左上座標，保留標註腳本與覆疊檢視。
+- [x] T10-06 六普通怪完整五狀態圖集；沿用slime／sentinel，新復原snail／mushroom／boar／golem。
+- [x] T10-07 guardian完整6×5圖集、五狀態、display192×192，已鏡像統一朝右。
+- [x] T10-08 五NPC各兩格idle；merchant新復原入庫。
+- [x] T10-09 canonical manifest有22 images／64 animations，引用皆為現有檔案，actual dimensions可切格。
+- [x] T10-10 新圖已視檢動作／alpha／腳底／握點覆疊；原稿保留，匯出新圖安全邊至少16px、binary alpha。
+- [x] T10-11 正式素材入public/assets/actors，原稿／prompt／匯出腳本留art-source，引用runtime PNG總14,397,572 bytes，低於18MiB。
+- [x] T10-12 reports已列正式素材、格序、anchors及未驗證整合項；主Agent已做離線檔案／manifest核對。
 
 完成：三套完整主角、四武器、三帽、六普通怪、一boss、五NPC及可用metadata全部存在。不得用CSS形狀替代、只交prompt、只交站姿或靜態怪卻標動作完成。生成工具受限報主Agent排佇列，不建立新聊天／自行改用API。
 

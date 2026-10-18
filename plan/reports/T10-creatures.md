@@ -1,5 +1,19 @@
 # T10 creatures 子包報告
 
+## 2026-10-18 recovery — 六個缺項已完成
+
+本節為最新狀態，取代下方歷史記錄的六個 `UNFINISHED` 結論。使用者已明確允許對 ImageGen 原稿做確定性素材匯出，原稿與處理腳本均保留。本次沒有新的 ImageGen 呼叫，也沒有改動既有 accepted slime/sentinel/guide/mentor/healer/keeper/gear。
+
+- `public/assets/actors/monsters/{snail,mushroom,boar,golem,guardian}-atlas-v2.png`：各 768×640，6×5 個 128×128 格；列序 idle/walk/attack/hurt/dead，有效格 2/6/4/2/4，各有效格均保留來源實際姿勢差異，多餘格重複各列末有效格。普通怪 display 96×96，guardian 192×192，pivot (.5, 1)。
+- `public/assets/actors/npcs/merchant-idle-v2.png`：256×128，2×1 個 128×128 格，兩個實際站立／招手姿勢，display 96×96、pivot (.5, 1)、350ms 循環。
+- 合併資料：`art-source/actors/recovery-creatures-subset.json`，6 images / 26 animations；canonical actors manifest 由主 Agent 統一合併，本子工作不直接修改它。
+- 可重現腳本：`art-source/actors/recovery-creatures-export.py`。採用 snail/mushroom/merchant attempt-06、boar/golem/guardian attempt-04。原稿不變；依實際 alpha 橫帶與欄間谷值切割，清除低 alpha 彩邊及極小分離碎片，以各角色固定縮放重排，32 色上限、最近鄰縮放，硬 alpha 0/255。Guardian 逐格水平鏡像統一朝右，符合 renderer 的 facing=1 原圖基準。
+- 精確來源／輸出 SHA-256、切割座標、尺寸、色數、安全邊、有效格 distinct 數與 bytes 記於 `art-source/actors/recovery-creatures-evidence.json`。
+
+Focused 驗收：已實際查看六張最終圖，角色完整、動作可辨、沒有可見紅粉外緣；匯出內斷言每格四側安全邊至少 16px、alpha 僅 0/255、有效格 distinct 數 2/6/4/2/4（NPC 2）、多餘格與末有效格完全相同。六張合計約 245 KiB。一般怪 attack metadata 為 4×350ms；guardian 為 4×450ms（1800ms slam），2100ms wave 共用四格，現有 renderer 按技能總時長取格；本次未作玩法時序實測。保留最新線上 Playroom 模板與七份規格的閱讀要求、相對 URL 及禁止未授權發布的界線。
+
+沒有執行 build、typecheck、測試套件、瀏覽器、ZIP 或 iframe 驗收，沒有發布。此處只確認六組素材已可交付，不宣稱 T07/T14 遊戲整合驗收完成。
+
 ## 範圍與規格核對
 
 依 `plan/09-parallel-dispatch.md`、`plan/10-asset-spec.md`、`plan/tasks/T10-actor-assets.md` 及 T06/T08 資料，只處理六普通怪、一首領和五 NPC 的圖像與本子集 manifest。普通怪 6×5、96×96 顯示，列序 idle/walk/attack/hurt/dead；guardian 同為 6×5、192×192 顯示；NPC 各 2×1 idle、96×96 顯示。不加新角色、不把名稱繪入圖。Enemy key 採 `actor:{id}`，動畫 key 採 `{id}:{state}`；NPC key 採 `actor:{id}` 與 `npc:{id}:idle`。來源圖保留於 `art-source/actors/monsters/` 或 `npcs/`，子集 manifest 使用相對 URL。每張正式圖均明確引用本地主角參考 `F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png`。

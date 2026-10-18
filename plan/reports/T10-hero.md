@@ -2,9 +2,7 @@
 
 ## 狀態
 
-**UNFINISHED — 三套主角圖集均未達 runtime 驗收，未建立 anchors.json。**
-
-布衣、皮甲、鐵甲都已有一份初次生成候選；每組均已按限制做過一次局部修正。修正後所有輸出仍是 1254 x 1254，寬高除以 8 皆餘 6，不能依 8 x 8 格均勻切片；各圖仍可見紅／黃或其他顏色殘邊。候選原稿已保存到 art-source/actors/hero/，未複製到 runtime。
+**素材製作完成（2026-10-18）：三套主角8×8圖集及96個有效畫格anchors已交付。** 使用者重新授權素材任務，並明確允許確定性的裁切／逐格重排／最近鄰縮放／邊緣與alpha清理。已復原既有ImageGen布衣v8、皮甲v3修正版、鐵甲v3修正版，不需新生成。以下舊失敗紀錄保留作歷史；最新交付詳最後一節。遊戲接合及握點實玩仍未驗證。
 
 ## 已讀文件與適用要求
 
@@ -124,3 +122,15 @@ One fresh built-in ImageGen call used transparent_background=true and two viewed
 The raw image is 1254×1254 RGBA, so both dimensions leave remainder 6 when divided by 8; it cannot be sliced into exact 8×8 cells. Alpha counts are 880,648 transparent / 690,117 partial / 1,751 opaque, with all 256 alpha values present. The raw output and art-source/actors/hero/hero-cloth-v8-attempt-1.png have matching SHA-256 4c5d6cf8f371f226e8825efbbc9a04f6575685a8e3d9b572f6d5ed4aa57dcb99. Visual review found recognizable broad action rows and the same hero, but still painterly soft edges plus red/yellow/green fringe. Since the actual grid is invalid, frame containment and the required 16 px per-cell margin cannot be certified. No crop, regrid, threshold, recolor, alpha editing, runtime copy, manifest entry, or anchors were created. The one-shot recovery allowance is exhausted.
 
 Focused checks only: viewed both local references and the output; checked PNG mode, exact dimensions, 8×8 modulo, full-image alpha histogram and raw/source SHA-256 equality. No tests, build, typecheck, content check, browser, or Playroom acceptance were run.
+
+
+## 正式v9匯出與anchors — 2026-10-18
+
+- 正式檔：`public/assets/actors/hero-cloth-v9.png`、`hero-leather-v9.png`、`hero-iron-v9.png`，各1024×1024 RGBA、8×8、每格128×128，display96×96、pivot(.5,1)。三套共3 images／24 animations。
+- 原稿依序為 `hero-cloth-v8-attempt-1.png`、`hero-leather-v3-repair-1.png`、`hero-iron-v3-repair-1.png`，皆在 `art-source/actors/hero/` 保留不變。生成工具為既有內建ImageGen；原始完整prompt及參考紀錄見同目錄source-log.md。
+- 可重現匯出：`export_hero_v9.py`。按實際alpha空隙定位來源列／格，取主角連通區去除鄰格腳／髮碎片；alpha閾值160，清除生成稿紅／綠／黃邊殘留，單套40色palette，依全套最大身形以同一最近鄰比例重排。各格固定腳底基準y112，保留至少16px透明邊。未重新繪製角色或動作。
+- 8列依 idle/walk/jump/climb/attack/hurt/dead/buff，有效格4/6/2/4/6/2/4/4；未用格確實複製末有效格。原稿與匯出hash、精確來源框／有效框／比例／偏移詳 `hero-v9-export.json`。
+- 已視檢三套全部有效姿勢及anchors覆疊：同一棕髮大眼主角特徵，布衣／皮甲／鐵甲可辨；腳步、跳躍、攀爬、前伸攻擊、後仰受傷、倒地與buff動作可辨，沒有烘焙武器／帽子或跨格殘片。
+- `public/assets/actors/anchors.json` schema為version1、coordinateSpace與heroes；heroes.{cloth,leather,iron}.{state}為有效frame順序陣列，每項hand{x,y,rotationDeg}、head{x,y}，全都相對96×96左上。共96項，人工依正式128px圖格標註後乘.75。rotationDeg為依姿勢設定的獨立武器overlay方向提示。`export_hero_anchors_v9.py`保留逐格原始標註；三張`hero-*-v9-anchors-review.png`為手部黃十字／頭部藍十字覆疊預覽。
+- atlas保留透明安全邊，sprite的可見腳底會位於frame pivot之上；renderer若需精確貼齊foothold，應依實際可見腳底／frame邊距整合。此輪只交素材，未修改renderer或碰撞。anchors尚未由renderer消費，裝備實際附著及攻擊命中節拍仍屬T07/T14整合驗收。
+- 只做新素材視檢、匯出assertions及最終離線metadata檢查，未跑build／typecheck／測試套件／瀏覽器／Playroom驗收。

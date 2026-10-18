@@ -119,3 +119,9 @@
 - 修正版：`D:\dev-data\codex-home\generated_images\01a14a6f-0f39-7a42-98c8-ee8fcec1968c\exec-5da6b49b-c49f-4ffe-9545-e7b6262cc9a4.png`
 - 專案圖：`art-source/actors/npcs/keeper/keeper-idle-attempt-01.png`、`keeper-idle-attempt-02.png`、`keeper-idle-v1.png`
 - 修正版1774×887，2×1、透明角，足底位置與兩姿勢可辨。紅色抽樣由29降至22、alpha>32樣本16降至15，完整預覽未見明顯外緣色暈。正式 source/runtime SHA-256 相同，顯示96×96、pivot(.5,1)、兩格各350ms循環。
+## 2026-10-18 merchant deterministic recovery export (current accepted)
+
+User explicitly authorized deterministic export of ImageGen originals, preserving originals and script. No new generation/prompt was needed. Adopted unchanged source: `art-source/actors/npcs/merchant/merchant-idle-attempt-06.png`; its original prompt/references remain in the historical section below. Script: `art-source/actors/recovery-creatures-export.py`; crop bounds, original/runtime SHA-256 and bytes: `art-source/actors/recovery-creatures-evidence.json`.
+
+Accepted runtime: `public/assets/actors/npcs/merchant-idle-v2.png`, 256×128, two 128×128 square cells. Crop true silhouettes, threshold alpha at 128, retain natural auburn hair and moss/tan outfit, up to 32 opaque colors, proportional nearest-neighbor scaling and a common foot baseline. Both full-body relaxed/waving poses were viewed and are distinct, complete, right-facing, and free of visible colored fringe. Export assertions passed: all cell margins ≥16px, alpha only 0/255, two distinct active frames. Metadata in `art-source/actors/recovery-creatures-subset.json`: actor:merchant, npc:merchant:idle, display96×96, pivot(.5,1), 350ms per frame, looping. Historical merchant UNFINISHED statuses below are superseded by this current accepted export. Existing accepted NPCs were not changed. No build/tests/typecheck/browser/ZIP/iframe checks or publishing.
+
