@@ -319,3 +319,42 @@ Constraints: exact divisible dimensions and full 16px safety margin are mandator
 ~~~
 
 Focused checks used Pillow to read exact dimensions, alpha histograms, corner values, red-dominant whole-image pixels, approximate equal-bin bounds and source/output SHA-256; both source copies match the raw files. Since the actual dimensions fail division by eight, the approximate 156×156 bins are only diagnostics. All 64 diagnostic bins in both images fail the 16px safety margin; they cannot certify frame containment, cross-cell cleanliness or baselines. Visual inspection found persistent red/yellow-green fringe and soft painterly alpha in the repair. No formal hero asset, manifest row or anchors were created. No further hero generation or repair is planned in this pass; T10-02 remains unfinished.
+## T10-02 hero-cloth v7 fresh composition (2026-10-18)
+
+**UNFINISHED — source-only; no runtime asset.** This was one fresh composition, not an edit or continuation of v6. The local identity reference was viewed immediately before generation and passed by its absolute path. The output was copied unchanged to the project source path; no repair, crop, resize, regrid, recolor, chroma key, or alpha editing was applied.
+
+- Tool: built-in image_gen.imagegen; transparent_background=true.
+- Raw output: D:\dev-data\codex-home\generated_images\01a14d56-509c-74e0-bcfe-f2cd539b13b1\exec-fca15294-1a9a-4981-8948-d5c4056ff2b3.png
+- Local identity reference: F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png
+- Source copy: F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v7-attempt-1.png
+- PNG: 1254×1254 RGBA; mod 8×8 = 6×6; alpha 0 / partial / 255 = 834,922 / 736,151 / 1,443; four corners alpha=0; 256 unique alpha values.
+- Whole-image red-dominant diagnostic (alpha > 32, R > 1.5G, R > 1.5B): 315,097 pixels.
+- Source and raw output SHA-256: F2C8D2F16A7A10DDDD32F90EAB22EF2707ADAE5A23E69C0898F758C893825312.
+
+### Full generation prompt
+
+~~~text
+Use case: stylized-concept
+Asset type: production hero-cloth animation atlas for a 2D side-scrolling desktop action RPG.
+Primary request: Make one completely new, isolated sprite-sheet composition for the same original short-haired traveler boy. This is a fresh generation, not a repair, continuation, or edit of any earlier atlas.
+Input images: Image 1 is the local protagonist identity reference at F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png. Use it only for the same short chestnut hairstyle, friendly face, warm skin, large brown eye, and cute big-head proportions. Do not copy the reference background, weapon, scabbard, scarf, diagonal strap, poses, or layout.
+Scene/backdrop: true transparent alpha everywhere outside the sprites; completely empty between cells.
+Subject: one small right-facing side-profile young swordsman in every cell, wearing a simple muted teal cloth tunic with a cream hem, ochre belt, pale trousers, brown wrist cuffs and dark brown boots. Keep both hands empty. Keep the same head, face, hair, clothes, body proportions, outline and scale in all 64 cells.
+Style/medium: crisp chunky pixel-art game sprites with stepped opaque contours, sparse deliberate color clusters and a restrained warm/teal palette. Avoid painterly illustration, gradients, blur, antialiasing haze or soft texture.
+Composition/framing: exact 1024×1024 square canvas, exactly 8 columns and 8 rows, exactly 128×128 pixels per cell, no gutters, dividers, gridlines, borders, labels, margins outside the grid or panel lines. Each pose is a separate centered miniature occupying no more than the central 60% of its own cell: every visible pixel must remain inside local coordinates x=26..102 and y=26..102. This gives at least 25 transparent pixels on every cell edge. Use a compact sprite about 68 pixels tall; keep grounded boot soles aligned at local y=102. Airborne poses remain within the same central rectangle. Do not connect poses or silhouettes across cells. Every empty pixel must have alpha 0; sprite pixels must have alpha 255. No object, effect or stray pixel outside the central 60% rectangle.
+Rows, top to bottom, exactly:
+1 idle: four subtle breathing frames, then repeat frame 4 in cells 5–8;
+2 walk: six distinct alternating walk poses with clear leg and arm changes, then repeat frame 6 in cells 7–8;
+3 jump: rising pose then falling pose, then repeat the falling pose in cells 3–8;
+4 climb: four distinct alternating hand/foot climbing poses, then repeat frame 4 in cells 5–8;
+5 attack: six distinct bare-handed forward strike poses, then repeat frame 6 in cells 7–8;
+6 hurt: two distinct recoil poses, then repeat frame 2 in cells 3–8;
+7 dead: four distinct collapse poses ending lying down, then repeat the last pose in cells 5–8;
+8 buff: four distinct composed power-up stances with no particles or effects, then repeat frame 4 in cells 5–8.
+Lighting/mood: simple consistent sprite shading and friendly adventure mood.
+Constraints: the 1024×1024 image must be evenly sliceable into exact 128×128 cells. Keep all 64 poses wholly within their individual cell's central 60%, with at least 16 pixels of true transparent clearance on all four sides. No glow, halo, shadow, particle, aura, colored fringe, soft alpha, floating item, weapon, sword, strap, scarf, hat, helmet, text, logo, watermark, scenery, extra character or cross-cell connection.
+~~~
+
+### Focused review
+
+Pillow confirms the image is 1254×1254, not divisible into 8×8. For diagnostic purposes only, floor-divided 156×156 bins show 0/64 cells meeting a 16 px margin and 0/64 with the alpha bounding box contained in the requested central 76×76 pixel area. These are not valid frame boundaries because the full grid is invalid. Visual inspection shows the eight broad action rows and consistent character identity, but colored red/yellow-green fringe and painterly partial-alpha edges persist; pose silhouettes also exceed the requested small central area. This composition is source-only. No runtime copy, actor manifest row, animation entry, anchors, or further hero retry was created.
