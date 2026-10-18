@@ -497,3 +497,30 @@ Style/medium: clean, hard-edged pixel-art sprite with clear dark outline and sma
 Color palette: muted steel-blue outline, small steel-white cut, warm amber/gold contact chips.
 Constraints: genuine RGBA alpha. Every pixel outside the stated small effect shapes is alpha 0; all empty canvas is truly transparent. No background color, alpha wash, noise, haze, smoke, mist, aura, halo, glow, bloom, gradients, long trail, long slash, crescent, large shockwave, radial starburst, cloud, floor, shadow, checkerboard, guides, gridlines, frame borders, text, numbers, HUD, watermark, character, drawn sword, extra subjects, repeated frames, or cross-cell detail.
 ```
+
+## Heavy-strike v7 one-shot pixel-art recovery — source-only after alpha/frame-safety rejection (2026-10-18)
+
+- Tool: built-in ImageGen; `transparent_background=true`. This was one new generation only; no edit or repair call followed.
+- Raw output: `D:\dev-data\codex-home\generated_images\01a14d94-9dca-7012-94f5-fd68539ff27a\exec-c1eb97b4-edac-462b-981e-0c60a88be3af.png`.
+- Preserved unchanged as `interface-vfx-heavy-strike-v7-attempt1.png`; source and project copy SHA-256 both `68CBC19F5B2998736AC28DDC973E0579C35909B8803E84180B23DAA3E91A835A`.
+- Viewed local references before generation and passed their workspace paths: `public/assets/interface/vfx-hit-v2.png`, `public/assets/interface/vfx-sweep-v2.png`, `art-source/actors/hero-style-reference-v1.png`.
+- Dimensions/mode: 2172×724 RGBA, evenly divisible into six horizontal 362×724 cells (6×1).
+- Alpha histogram bins `[0, 1–15, 16–31, 32–63, 64–127, 128–191, 192–254, 255]`: `[1503306, 25324, 1404, 1834, 2276, 2629, 35709, 46]`.
+- Alpha>0 exclusive cell-local bounds and margins `(left,top,right,bottom)`: frame 0 `(91,128,360,571)`, margins `(91,128,2,153)`; frame 1 `(1,172,360,571)`, margins `(1,172,2,153)`; frame 2 `(15,109,362,650)`, margins `(15,109,0,74)`; frame 3 `(3,216,344,702)`, margins `(3,216,18,22)`; frame 4 `(1,264,354,724)`, margins `(1,264,8,0)`; frame 5 `(33,313,342,664)`, margins `(33,313,20,60)`.
+- Visual review: the six frames read as descending cleave, impact, low paired shockwave, fragments, and fade. Red fringe and soft edge pixels remain around the cleave/impact; frames 0–4 fail the required 8px alpha inset (minimum inset 0–3px), and 25,324 pixels have alpha 1–15. Reject for runtime. No crop, regrid, thresholding, alpha edit, runtime file, or manifest entry was made; `vfx:heavy-strike` remains absent. Do not retry in this one-shot recovery stage.
+
+Generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: one game-ready 6-frame horizontal VFX strip for the heavy-strike skill in a classic 2D side-view RPG.
+Input images: Image 1 is the accepted local vfx:hit strip, for limited warm palette and compact hard-edged pixel clusters only; do not copy its starburst. Image 2 is the accepted local vfx:sweep strip, for crisp pixel scale and transparent negative space only; do not copy its crescent. Image 3 is the local hero style reference, for the game's warm steel-and-amber palette only; do not depict a character.
+Scene/backdrop: genuinely transparent canvas; no scene.
+Subject: a compact downward sword cleave that lands and resolves into a low bilateral ground shockwave, effects only, with no character and no drawn weapon.
+Primary request: create exactly six distinct chronological frames from left to right in one 6-column × 1-row strip. Frame 1: three small square amber pixels descend toward center. Frame 2: a short, straight, stepped steel-white cleave mark begins high in the center, edged by a few gold pixels. Frame 3: the mark lengthens downward as two close parallel hard-edged pixel strokes, ending just above the bottom-center. Frame 4: the cleave meets the ground and produces two separate low, flat, stepped gold shockwave strokes moving outward left and right; keep the center compact and avoid any radial impact burst. Frame 5: the paired ground strokes stretch farther sideways and break into a few separate square fragments while the cleave vanishes. Frame 6: only two tiny low amber pixels remain and fade. Make this an angular, compact, geometric action with a new silhouette distinct from crescents, diagonal slashes, starbursts, chevrons, wedges, and crossed marks.
+Style/medium: crisp classic pixel-art VFX; deliberate square pixel clusters, hard opaque pixel edges, limited palette of dark steel-blue, steel-white, amber-gold, and one warm outline color. No painterly rendering.
+Composition/framing: exactly six equal vertical cells in a single horizontal strip, in chronological order, each frame centered within its own cell. Keep the complete effect compact and wholly inside every cell with at least 8 pixels of fully transparent inset on all four sides. Make each pose visibly different. Keep all motifs in the lower-middle area at impact, without drawing a floor line. The image dimensions must divide evenly into six columns and one row.
+Lighting/mood: restrained highlights only; no illumination beyond the pixel clusters.
+Color palette: dark steel-blue outline, cool steel-white, warm amber and gold.
+Constraints: request genuine RGBA transparency; empty canvas and inter-cell gutters must be alpha 0, and all effect pixels should be fully opaque with no anti-aliased or semi-transparent fringe. No haze, fog, smoke, mist, cloud, blur, gradient, glow, bloom, aura, diffuse light, tinted wash, background, floor, shadow, checkerboard, gridlines, cell borders, cross-cell detail, text, letters, numbers, HUD, watermark, repeated still frames, radial shape, crescent, crossed starburst, chevron, large wedge, character, sword sprite, or extra object.
+```
