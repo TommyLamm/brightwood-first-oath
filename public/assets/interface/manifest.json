@@ -461,35 +461,122 @@
       "displayHeight": 128,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "vfx:heavy-strike",
+      "url": "assets/interface/vfx-heavy-strike-v9.png",
+      "columns": 6,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [
     {
       "key": "animation:vfx:sweep",
       "imageKey": "vfx:sweep",
-      "frames": [0, 1, 2, 3, 4, 5],
-      "frameMs": [60, 60, 60, 60, 60, 60],
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
       "loop": false
     },
     {
       "key": "animation:vfx:hit",
       "imageKey": "vfx:hit",
-      "frames": [0, 1, 2, 3, 4, 5],
-      "frameMs": [60, 60, 60, 60, 60, 60],
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
       "loop": false
     },
     {
       "key": "animation:vfx:levelup",
       "imageKey": "vfx:levelup",
-      "frames": [0, 1, 2, 3, 4, 5],
-      "frameMs": [60, 60, 60, 60, 60, 60],
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
       "loop": false
     },
     {
       "key": "animation:vfx:guard",
       "imageKey": "vfx:guard",
-      "frames": [0, 1, 2, 3, 4, 5],
-      "frameMs": [60, 60, 60, 60, 60, 60],
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "loop": false
+    },
+    {
+      "key": "animation:vfx:heavy-strike",
+      "imageKey": "vfx:heavy-strike",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
       "loop": false
     }
   ],

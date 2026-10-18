@@ -1,0 +1,221 @@
+{
+  "source": "art-source\\interface\\interface-vfx-heavy-strike-v8-attempt1.png",
+  "sourceSha256": "fdac55c2321356377cd752f274c9dad6e22ca9af6eefc6244aa2be748c30b490",
+  "output": "public\\assets\\interface\\vfx-heavy-strike-v9.png",
+  "outputSha256": "ca01073feaa82bfabcc641136c9fadeb0e31f28bcf39830493303f613dd29855",
+  "size": [
+    768,
+    128
+  ],
+  "alpha": [
+    0,
+    255
+  ],
+  "palette": [
+    [
+      32,
+      55,
+      71
+    ],
+    [
+      51,
+      87,
+      117
+    ],
+    [
+      91,
+      136,
+      168
+    ],
+    [
+      155,
+      201,
+      228
+    ],
+    [
+      234,
+      248,
+      255
+    ],
+    [
+      188,
+      122,
+      36
+    ],
+    [
+      232,
+      172,
+      53
+    ],
+    [
+      255,
+      226,
+      160
+    ]
+  ],
+  "bytes": 4315,
+  "frames": [
+    {
+      "frame": 0,
+      "sourceRegion": [
+        0,
+        0,
+        370,
+        724
+      ],
+      "coreBoundsInRegion": [
+        138,
+        291,
+        190,
+        368
+      ],
+      "runtimeBounds": [
+        57,
+        60,
+        70,
+        79
+      ],
+      "margins": [
+        57,
+        60,
+        58,
+        49
+      ]
+    },
+    {
+      "frame": 1,
+      "sourceRegion": [
+        370,
+        0,
+        780,
+        724
+      ],
+      "coreBoundsInRegion": [
+        67,
+        202,
+        318,
+        489
+      ],
+      "runtimeBounds": [
+        32,
+        38,
+        95,
+        110
+      ],
+      "margins": [
+        32,
+        38,
+        33,
+        18
+      ]
+    },
+    {
+      "frame": 2,
+      "sourceRegion": [
+        780,
+        0,
+        1080,
+        724
+      ],
+      "coreBoundsInRegion": [
+        39,
+        288,
+        208,
+        497
+      ],
+      "runtimeBounds": [
+        43,
+        59,
+        85,
+        111
+      ],
+      "margins": [
+        43,
+        59,
+        43,
+        17
+      ]
+    },
+    {
+      "frame": 3,
+      "sourceRegion": [
+        1080,
+        0,
+        1470,
+        724
+      ],
+      "coreBoundsInRegion": [
+        36,
+        419,
+        328,
+        497
+      ],
+      "runtimeBounds": [
+        27,
+        92,
+        100,
+        112
+      ],
+      "margins": [
+        27,
+        92,
+        28,
+        16
+      ]
+    },
+    {
+      "frame": 4,
+      "sourceRegion": [
+        1470,
+        0,
+        1880,
+        724
+      ],
+      "coreBoundsInRegion": [
+        6,
+        437,
+        321,
+        497
+      ],
+      "runtimeBounds": [
+        24,
+        96,
+        103,
+        111
+      ],
+      "margins": [
+        24,
+        96,
+        25,
+        17
+      ]
+    },
+    {
+      "frame": 5,
+      "sourceRegion": [
+        1880,
+        0,
+        2172,
+        724
+      ],
+      "coreBoundsInRegion": [
+        47,
+        464,
+        152,
+        493
+      ],
+      "runtimeBounds": [
+        51,
+        103,
+        77,
+        110
+      ],
+      "margins": [
+        51,
+        103,
+        51,
+        18
+      ]
+    }
+  ]
+}

@@ -553,3 +553,18 @@ Materials/textures: stepped pixel clusters and clean outlines, no blur or smooth
 Text (verbatim): none.
 Constraints: true transparent background; every pixel must be either alpha 0 or alpha 255. No background, floor, shadow, glow, haze, fog, mist, gradient, bloom, anti-aliasing, checkerboard, grid lines, cell borders, text, letters, numbers, watermark, red colors, character, weapon drawing, crescent, circular ring, radial burst, starburst, crossed mark, triangular wedge, or details outside the six effect cells.
 ```
+
+
+## Heavy-strike v9 authorized export — 2026-10-18
+
+Current status: FORMAL runtime. The user explicitly authorized deterministic cropping, frame arrangement, nearest-neighbor scaling, edge cleanup and alpha cleanup. No new generation or model call was made. The ImageGen source, full original prompt and local reference paths are preserved in the preceding v8 entry.
+
+- Input: `interface-vfx-heavy-strike-v8-attempt1.png`, SHA-256 `fdac55c2321356377cd752f274c9dad6e22ca9af6eefc6244aa2be748c30b490`, unchanged.
+- Reproducible exporter: `art-source/interface/export_heavy_strike_v9.py` (Python/Pillow/NumPy); run from repository root with Python.
+- Processing: explicitly identified six isolated motif regions rather than trusting nominal equal source columns; alpha threshold 128; nearest of eight steel/gold palette colors removes red fringe; identical 1/4 nearest-neighbor scale and shared source ground baseline y=500 for every frame. No new motif was painted or synthesized.
+- Runtime: `public/assets/interface/vfx-heavy-strike-v9.png`, 768×128 RGBA, 4,315 bytes; SHA-256 `ca01073feaa82bfabcc641136c9fadeb0e31f28bcf39830493303f613dd29855`.
+- Export metrics (source regions, retained bounds, output bounds/margins, palette, hashes): `heavy-strike-v9-export.json`.
+- Reviewed source and `heavy-strike-v9-review.png`: clear six-stage chronology, compact diagonal strike and low two-sided shockwave; no red/pink edge, labels, baked background or cross-cell artwork. Optional animation review: `heavy-strike-v9-review.gif`.
+- Six (left,top,right,bottom) clear margins: (57,60,58,49), (32,38,33,18), (43,59,43,17), (27,92,28,16), (24,96,25,17), (51,103,51,18). Alpha values are exactly 0/255; every frame nonempty.
+- Manifest adds `vfx:heavy-strike` and `animation:vfx:heavy-strike`, frames 0–5, 60ms/frame, loop false. Current interface coverage 47 images/5 animations, referenced PNG bytes 3,212,480.
+- Checks limited to new-asset visual review, export assertions, and final pack metadata audit. No build/typecheck/full tests/browser/ZIP/iframe checks.
