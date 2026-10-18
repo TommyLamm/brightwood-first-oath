@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
+import type { HeroAnchorManifest, HeroAnchorOutfit, HeroAnchorPose } from '../contracts/hero-anchors.js';
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
 import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
 import {
@@ -20,6 +21,8 @@ import {
 } from './combat-primitives.js';
 import {
   actorFootOffset,
+  heroAnchorPosition,
+  heroAnchorRotation,
   GROUND_TILE_OVERLAP,
   groundTilePositions,
   ladderSpriteGeometry,
@@ -83,6 +86,16 @@ const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
 const registeredTextures = new WeakMap<Phaser.Textures.TextureManager, Map<string, TextureRegistration>>();
 const HERO_IMAGE_KEYS = ['actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron'] as const;
 const HERO_ANIMATION_STATES = ['idle', 'walk', 'jump', 'climb', 'attack', 'hurt', 'dead', 'buff'] as const;
+const HERO_ANCHOR_FRAME_COUNTS: Record<HeroAnchorPose, number> = {
+  idle: 4,
+  walk: 6,
+  jump: 2,
+  climb: 4,
+  attack: 6,
+  hurt: 2,
+  dead: 4,
+  buff: 4,
+};
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
 const BACKGROUND_LAYERS = [
@@ -163,6 +176,33 @@ function validateRelativeUrl(url: string, key: string): void {
   if (!url || url.trim() !== url || /^(?:[a-z][a-z\d+.-]*:|\/|\\)/i.test(url)
     || /[\\?#%\u0000-\u001f]/.test(url) || /(?:^|\/)\.\.(?:\/|$)/.test(url)) {
     throw new RendererAssetError(`Asset URL 必須是入口相對路徑：${key}`, [key]);
+  }
+}
+
+function validateHeroAnchors(manifest: HeroAnchorManifest | undefined): void {
+  if (!manifest) return;
+  const space = manifest.coordinateSpace;
+  if (!space || !manifest.heroes || manifest.version !== 1 || space.width !== 96 || space.height !== 96
+    || space.origin !== 'frame-top-left' || space.facing !== 'right' || space.sourceFramePixels !== 128) {
+    throw new RendererAssetError('Hero anchors 必須使用 schema v1 的 96×96 frame-top-left 座標');
+  }
+  for (const outfit of ['cloth', 'leather', 'iron'] as const) {
+    const outfitAnchors = manifest.heroes[outfit];
+    if (!outfitAnchors) throw new RendererAssetError(`Hero anchors 缺少 outfit：${outfit}`);
+    for (const pose of HERO_ANIMATION_STATES) {
+      const frames = outfitAnchors[pose];
+      if (!Array.isArray(frames) || frames.length !== HERO_ANCHOR_FRAME_COUNTS[pose]) {
+        throw new RendererAssetError(`Hero anchors frame 數量無效：${outfit}:${pose}`);
+      }
+      for (const frame of frames) {
+        const points = [frame?.head, frame?.hand];
+        if (points.some((point) => !point || !Number.isFinite(point.x) || !Number.isFinite(point.y)
+          || point.x < 0 || point.x > space.width || point.y < 0 || point.y > space.height)
+          || !Number.isFinite(frame.hand.rotationDeg)) {
+          throw new RendererAssetError(`Hero anchors 座標無效：${outfit}:${pose}`);
+        }
+      }
+    }
   }
 }
 
@@ -290,8 +330,10 @@ export function createWorldRenderer(
   scene: Phaser.Scene,
   assetManifests: AssetManifest[],
   catalog: ContentCatalog,
+  heroAnchors?: HeroAnchorManifest,
 ): WorldRenderer {
   const assets = validateManifests(assetManifests);
+  validateHeroAnchors(heroAnchors);
   let textureRegistrations = registeredTextures.get(scene.textures);
   if (!textureRegistrations) {
     textureRegistrations = new Map();
@@ -307,6 +349,7 @@ export function createWorldRenderer(
   const eventSprites = new Map<string, SpriteEffect>();
   const playedVisualEventIds = new Set<string>();
   const actorAnimationClocks = new Map<string, { animationKey: string; startedAtMs: number }>();
+  const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
@@ -668,6 +711,35 @@ export function createWorldRenderer(
     return { sprite, frame, footOffsetY };
   };
 
+  const drawEquipment = (
+    slot: 'weapon' | 'hat',
+    itemId: Id | null,
+    position: Vec2,
+    facing: -1 | 1,
+    depth: number,
+    rotation = 0,
+  ): void => {
+    if (!itemId) return;
+    const item = catalog.rules.items[itemId];
+    const image = item?.visualKey ? assets.images.get(item.visualKey) : undefined;
+    if (!image) return;
+    let sprite = gearSprites.get(slot);
+    if (!sprite) {
+      sprite = scene.add.sprite(position.x, position.y, image.key, frameKey(image.key, 0));
+      actorsLayer.add(sprite);
+      gearSprites.set(slot, sprite);
+    }
+    sprite.setTexture(image.key, frameKey(image.key, 0))
+      .setDisplaySize(image.displayWidth, image.displayHeight)
+      .setOrigin(image.pivotX, image.pivotY)
+      .setPosition(position.x, position.y)
+      .setFlipX(facing < 0)
+      .setRotation(rotation)
+      .setDepth(depth + 0.05)
+      .setVisible(true)
+      .setActive(true);
+  };
+
   const attackStartedAt = (snapshot: WorldSnapshot, actorId: string): AttackInstance | undefined =>
     [...snapshot.attacks].reverse().find((attack) => attack.sourceId === actorId);
 
@@ -677,6 +749,7 @@ export function createWorldRenderer(
     updateBackgroundPositions();
 
     for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
+    for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     telegraphGraphics.clear();
@@ -712,6 +785,33 @@ export function createWorldRenderer(
       jumpFrame,
     );
     const playerSprite = drawnPlayer.sprite;
+    if (heroAnchors) {
+      const outfit = playerKey.slice('actor:hero-'.length) as HeroAnchorOutfit;
+      const heroImage = assets.images.get(playerKey)!;
+      const heroAnimation = animationFor(assets, playerKey, playerAnimation);
+      const animationFrame = Math.max(0, heroAnimation?.frames.indexOf(drawnPlayer.frame) ?? 0);
+      const anchorFrame = heroAnchors.heroes[outfit][playerAnimation][animationFrame];
+      const worldAnchor = (point: typeof anchorFrame.head | typeof anchorFrame.hand): Vec2 =>
+        heroAnchorPosition(
+          snapshot.player.movement.position,
+          heroImage,
+          point,
+          heroAnchors.coordinateSpace,
+          snapshot.player.movement.facing,
+          drawnPlayer.footOffsetY,
+        );
+      const hand = worldAnchor(anchorFrame.hand);
+      const head = worldAnchor(anchorFrame.head);
+      drawEquipment(
+        'weapon',
+        snapshot.player.visual.weapon,
+        hand,
+        snapshot.player.movement.facing,
+        playerSprite.depth,
+        heroAnchorRotation(anchorFrame.hand.rotationDeg, snapshot.player.movement.facing) * Math.PI / 180,
+      );
+      drawEquipment('hat', snapshot.player.visual.hat, head, snapshot.player.movement.facing, playerSprite.depth);
+    }
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
@@ -1035,6 +1135,7 @@ export function createWorldRenderer(
       scene.cameras.main.stopFollow();
       for (const label of dropLabels.values()) label.destroy();
       dropLabels.clear();
+      gearSprites.clear();
       actorsLayer.destroy(true);
       for (const effect of eventSprites.values()) effect.object.destroy();
       eventSprites.clear();
