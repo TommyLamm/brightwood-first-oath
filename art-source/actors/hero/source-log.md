@@ -266,3 +266,56 @@ Style/medium: crisp original pixel sprite art with hard stepped opaque pixel edg
 Composition/framing: output EXACTLY 1024 × 1024 pixels, exactly 8 equal columns and 8 equal rows of 128 × 128 pixels, grid boundaries aligned to all canvas edges with no gutters or separators. Preserve the eight state rows and their existing sequence from image 1. In every cell keep exactly one complete right-facing side-profile hero, same scale and same identity, with at least 16 clear fully transparent pixels from every silhouette/effect to each cell edge; no cropping, no overlap, no pixels crossing cell boundaries. Keep grounded boot soles on one common local baseline at y=116. Row order remains idle, walk, jump, climb, attack, hurt, dead, buff; effective pose counts remain 4, 6, 2, 4, 6, 2, 4, 4, and unused cells repeat their row's last effective pose.
 Constraints: keep the hero's hands empty and preserve the cloth outfit; no sword, scabbard, sheath, cross-body strap, shield, hat, helmet, extra person, text, logo, watermark, border, or UI. Every hero/effect pixel must be fully opaque and every empty pixel fully transparent. The exact 1024 × 1024 dimensions and exact uniform 8 × 8 grid are required; do not approximate, crop, regrid or recolor afterward.
 ```
+## T10-02 hero-cloth v6 composition and targeted repair (2026-10-18)
+
+**UNFINISHED — both outputs are source-only.** One fresh composition and one targeted repair were made with built-in ImageGen, transparent_background=true. The composition explicitly referenced the local hero identity/style image; the repair explicitly referenced the new attempt as its target and the same local identity reference. Both references were viewed locally before their calls. The output copies below are byte-identical to their raw ImageGen files. No crop, resize, regrid, recolor, chroma key, or other post-processing was applied.
+
+### Fresh composition
+
+- Raw ImageGen output: D:\dev-data\codex-home\generated_images\01a14d56-509c-74e0-bcfe-f2cd539b13b1\exec-624b1c3d-ebf1-4065-b0da-603fa7bd9a16.png
+- Source copy: F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v6-attempt-1.png
+- Local reference passed by absolute path: F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png
+- PNG: 1254×1254 RGBA; mod 8×8 = 6×6; alpha zero / partial / opaque = 725,880 / 845,503 / 1,133; corner alpha = 0, 0, 0, 1.
+- Whole-image red-dominant diagnostic (alpha > 32, R > 1.5G, R > 1.5B): 348,014 pixels.
+- SHA-256 of raw output and source copy: 2B13E731CAFC889E6A4E5C9FBE1843C81E9E31EBE178C69493D1398E639D9556.
+
+Full generation prompt:
+
+~~~text
+Use case: stylized-concept
+Asset type: production 2D side-scrolling game hero sprite atlas actor:hero-cloth, 8 by 8 uniform cells for a classic desktop action RPG.
+Primary request: Create a clean, game-ready animation atlas of the one original short-haired traveler-swordsman from the identity reference. The art must read as crisp pixel sprites at small size, with opaque pixel clusters and hard silhouette edges.
+Input images: Image 1 is the local hero identity/style reference at F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png. Use it only to keep the same young boy's short tousled chestnut hair, warm skin, large brown eye, friendly face, and big-head proportions. Do not copy the reference sheet background, sword, scabbard, diagonal strap, scarf, or exact drawing.
+Scene/backdrop: actual transparent canvas with alpha, no background.
+Subject: the same full-body right-facing side-view boy in all frames, wearing a beginner muted teal cloth tunic with cream trim, ochre waist sash, light cream trousers, brown wrist wraps and dark brown boots. Both hands stay bare and empty in every pose. No weapon.
+Style/medium: deliberate chunky 2D pixel art, clear step-shaped pixel contours, limited warm earthy and muted teal palette, simple consistent cel shading, visually coherent with early-2000s Taiwanese/Hong Kong side-scrolling fantasy games. Crisp and sprite-like, not painterly, not 3D, no blur, glow, soft shadow, or antialias haze.
+Composition/framing: exact square canvas 1536 by 1536 pixels. It is a strict coordinate grid of exactly 8 columns by 8 rows, each cell exactly 192 by 192 pixels, no outside margins, no gutters, no grid lines, no captions. Each cell contains exactly one complete character, same scale, facing right, centered at x=96, sole baseline y=176, with at least 16 fully transparent pixels between every visible pixel and every cell edge. No pose may cross a cell boundary or touch another cell. Top-to-bottom row order; every row has exactly 8 cells: idle has 4 subtle breathing frames then 4 exact duplicates of its final frame; walk has 6 clear alternating gait frames then 2 duplicates of its final frame; jump has a rising pose then a falling pose then 6 duplicates of the falling pose; climb has 4 distinct climbing poses then 4 duplicates of its final pose; attack has 6 distinct bare-handed forward strike poses then 2 duplicates of the final pose; hurt has 2 clear recoil poses then 6 duplicates of the second; dead has 4 distinct collapse-to-lying poses ending prone then 4 duplicates of the last; buff has 4 composed power-up poses with only tiny teal pixel sparkles inside the safe margin then 4 duplicates of the final pose. Keep body proportions and face consistent. Never draw row labels.
+Lighting/mood: consistent simple warm sprite lighting, friendly adventuring mood.
+Constraints: each cell must be an independent, slicable sprite. Perfect 8x8 geometry and real alpha are mandatory. No swords, scabbards, sheathes, straps, shield, hat, helmet, text, letters, labels, border, watermark, extra people, scene, or detached effects. Avoid colored fringe, stray pixels, soft edges, semi-transparent haze, painterly texture, and pixel leakage.
+~~~
+
+### One targeted repair
+
+- Edit target, viewed before the repair: F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v6-attempt-1.png
+- Identity reference passed by absolute path: F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png
+- Raw ImageGen output: D:\dev-data\codex-home\generated_images\01a14d56-509c-74e0-bcfe-f2cd539b13b1\exec-61edad63-54f1-425c-8feb-5bf9ca167bcf.png
+- Source copy: F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v6-repair-1.png
+- PNG: 1254×1254 RGBA; mod 8×8 = 6×6; alpha zero / partial / opaque = 746,646 / 824,542 / 1,328; corner alpha = 0, 0, 0, 0.
+- Whole-image red-dominant diagnostic: 398,943 pixels, increased from 348,014.
+- SHA-256 of raw output and source copy: 4B00BE1420D163943323E1158E387A8BA3A17D33EC9EAFC154EA3B130F041538.
+
+Full targeted-repair prompt:
+
+~~~text
+Use case: precise-object-edit
+Asset type: one targeted repair of a game-ready hero-cloth sprite atlas.
+Input images: Image 1 is the exact hero-cloth atlas to repair at F:\Desktop\MapleStory\art-source\actors\hero\hero-cloth-v6-attempt-1.png; preserve its eight action rows and protagonist identity. Image 2 is the local identity reference at F:\Desktop\MapleStory\art-source\actors\hero-style-reference-v1.png; preserve only the same boy's short chestnut hair, warm skin, brown eye and friendly big-head proportions.
+Primary request: repair only exact-grid structure, per-cell containment, transparent safety margins and edge contamination. Keep one recognizable cloth-outfit hero in every cell and retain the current overall pose sequence. Re-draw clean hard-edged sprites where necessary; do not keep colored halos or effects just to preserve the faulty pixels.
+Scene/backdrop: real transparent alpha throughout, no background.
+Subject: same right-facing young hero in muted teal cloth tunic, cream trim, ochre sash, light trousers, brown wrist wraps, dark boots; hands empty. Preserve the visible idle, walk, jump, climb, attack, hurt, dead and buff row identities.
+Style/medium: crisp pixel sprites with opaque stepped pixel clusters and clean hard edges. No painterly softness, blur, glow, antialias fringe or semi-transparent haze.
+Composition/framing: final canvas must be exactly 1024 × 1024 pixels. Precisely 8 equal columns by 8 equal rows, each cell exactly 128 × 128 pixels. No gutters, outer margin, gridlines, labels or borders. Each cell contains one complete centered sprite with both feet on the same baseline y=112 and at least 16 pixels of fully transparent safety margin on every side. Every sprite and every effect must stay inside its own cell. Row order top-to-bottom is idle, walk, jump, climb, bare-handed attack, hurt, dead, buff. Repeat the last valid pose in unused row cells. Buff uses only tiny teal pixel accents inside the safe margin; remove the large cyan/green energy plume. Do not place rows across cell boundaries.
+Constraints: exact divisible dimensions and full 16px safety margin are mandatory. Keep the hero's face and outfit recognizable. No weapon, strap, hat, helmet, text, watermark, cast shadow, extra person, red/yellow/green/cyan fringe, off-cell pixels or soft outline. This is a single targeted cleanup of Image 1, not a new design.
+~~~
+
+Focused checks used Pillow to read exact dimensions, alpha histograms, corner values, red-dominant whole-image pixels, approximate equal-bin bounds and source/output SHA-256; both source copies match the raw files. Since the actual dimensions fail division by eight, the approximate 156×156 bins are only diagnostics. All 64 diagnostic bins in both images fail the 16px safety margin; they cannot certify frame containment, cross-cell cleanliness or baselines. Visual inspection found persistent red/yellow-green fringe and soft painterly alpha in the repair. No formal hero asset, manifest row or anchors were created. No further hero generation or repair is planned in this pass; T10-02 remains unfinished.
