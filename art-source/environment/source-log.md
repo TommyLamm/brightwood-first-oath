@@ -447,3 +447,27 @@ Constraints: preserve the single straight diagonal top and true transparent exte
 - Geometry/seam checks: the alpha≥32 surface endpoints at x=0 and x=1253 are y=979 and y=564, a measured 18.33° rise rather than the specified ~16°. The expected source-scale join offset for 36px rise per 128px tile is about 353 rows; comparing the right edge to the left edge shifted by that offset mismatches on 338 of 901 compared rows (summed RGBA difference 50,454). Visual inspection shows a bright green/yellow fringe along the slope. Rejected; no runtime image or manifest row added.
 
 Neither attempt was cropped, resized, pixel-repaired, or followed by another generation. `public/assets/environment/manifest.json` remains unchanged at 18/20 keys; both missing keys remain absent. These local source metadata, alpha, edge-join, and visual checks do not verify renderer integration or in-game appearance. No build, typecheck, tests, browser, or full-pack check was run.
+
+## `env:tile-platform` — one-shot timber-walkway composition (2026-10-18), source-only / REJECTED
+
+- Full generation prompt:
+
+```text
+Use case: stylized-concept
+Asset type: production terrain sprite for an original 2D side-scrolling pixel-art game, shared env:tile-platform.
+Primary request: one straight, floating forest footbridge platform made from tightly joined squared cedar planks, as a repeated horizontal 128x32 game tile.
+Input images: Image 1 is only a material palette reference for warm earth-browns and subdued sage; Image 2 is only a 16-bit pixel-cluster style reference. Do not copy either composition.
+Scene/backdrop: isolated object on genuinely transparent alpha.
+Subject: a single continuous, level, walkable footbridge segment, side view. The top is a perfectly horizontal run of tightly fitted dark chestnut wooden planks, with a thin muted sage moss strip worked into the top edge. Beneath is a shallow squared timber apron with a few broad blocky grain marks; no dangling roots or supports.
+Composition/framing: exact 128 pixels wide by 32 pixels high at native pixel scale. Center the active structure in columns x=8 through x=119 inclusive, leaving full-height transparent gutters exactly 8 pixels wide on both sides. The top walking edge is one straight opaque horizontal line at y=0 across every active column. Make the complete vertical RGBA cross-section at active column x=8 exactly match that at x=119, row for row, for repetition at 112-pixel pitch.
+Style/medium: crisp 16-bit side-view pixel art, hard square pixel clusters, clean nearest-neighbor edges, cohesive with the forest reference, designed for clear display at 128x32. Not a photograph, 3D render, painterly scene, smooth illustration, or realistic wood texture.
+Color palette: restrained chestnut and dark bark-brown with a narrow muted sage accent, coordinated with Image 1; no bright highlights.
+Materials/textures: simple, readable flat-cut timber with only a few broad pixel-grain marks, same silhouette and edge profile at both active ends.
+Constraints: preserve true alpha zero across both full-height 8-pixel gutters; no background or matte; no antialiasing, blur, glow, halo, fringe, outline, shadows, gradient, color specks, irregular or sloped top, protrusions above y=0, chips outside the active width, rails, posts, ropes, scenery, people, creatures, text, symbols, logos, or watermark.
+```
+
+- Tool: built-in ImageGen, `transparent_background=true`, one generation only. References in call order: `public/assets/environment/env-tile-ground-v1.png` (material palette) and `art-source/environment/forest-style-reference-v1.png` (pixel-cluster style). Both exact local images were viewed before generation and passed explicitly as local references.
+- Generated original: `D:\dev-data\codex-home\generated_images\01a14d94-8bff-7010-bb7c-d9beed2f9c99\exec-28ed1724-96d6-47d8-af5e-bb94f8625434.png`, created 2026-10-18 06:02:00 UTC. Unmodified project copy: `art-source/environment/env-tile-platform-t11-07-cedar-plank-one-shot-20261018.png`.
+- Source-copy metadata: 2172×724 RGBA, 565,791 bytes, SHA-256 `a489d098d63dba50bb4def24bcb2b8fbc4a74945d1c3fee592758f23dff5aa63`; alpha bounds `(25,35,2156,684)` and four corner alpha values `0`.
+- Focused raw-source checks using the nominal 6.25% width side bands (x=0..135 and x=2036..2171) found 6,847 and 7,395 nontransparent pixels respectively. Nominal active columns x=136..2035 have no alpha at row 0 (0/1,900); the first row reaching 98% active coverage is y=275. Inner edge columns x=136 and x=2035 differ on 223/724 rows (RGBA delta sum 4,296; max row delta 345). The output is 3:1 (2172×724), not the required 4:1 (128×32); the artwork is vertically inset, and visual inspection shows chromatic specks along the moss top. Reject as source-only. These nominal bands are raw-source diagnostics, not a target-size or repaired preview.
+- No crop, resize, regrid, pixel repair, runtime image, or manifest row was added. `public/assets/environment/manifest.json` remains at 18/20 keys; `env:tile-platform` and `env:tile-slope` are still absent. No build, typecheck, tests, browser, renderer seam, or full-pack check was run.
