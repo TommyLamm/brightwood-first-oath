@@ -436,8 +436,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     pauseButton.hidden = !playing;
     pauseButton.disabled = !playing;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
-    returnTownButton.hidden = !player || atTown;
-    returnTownButton.disabled = !playing || !view.canReturnTown;
+    returnTownButton.hidden = !player || atTown || !playing;
+    returnTownButton.disabled = !view.canReturnTown;
     returnTownButton.title = view.canReturnTown
       ? '使用目前已解鎖的回城操作'
       : view.saveData?.location.mapId === 'guardian-arena'
@@ -707,6 +707,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         dispatchDraft({ type: 'retryBoss', payload: {} });
         return;
       case 'return-town':
+        if (!view.canReturnTown) return;
         dispatchDraft({ type: 'returnTown', payload: {} });
         return;
       case 'attack': {
@@ -1318,7 +1319,7 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
   const arenaBlocked = data.location.mapId === 'guardian-arena' && !canShowReturn;
   parent.append(makeButton(document, '返回城鎮', 'return-town', {
     className: 'ms-button ms-button--primary',
-    disabled: data.location.mapId === 'town' || !canShowReturn,
+    disabled: !canShowReturn,
     title: data.location.mapId === 'town'
       ? '目前已在木葉鎮'
       : arenaBlocked ? '首領戰尚未結束，不能返回城鎮。' : canShowReturn ? '返回木葉鎮' : '目前狀態不允許回城。',
