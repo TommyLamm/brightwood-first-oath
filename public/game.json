@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "桌面單機遊戲候選版：操作劍士探索地圖、戰鬥並推進任務。",
   "author": "獨立製作",
   "entry": "index.html",

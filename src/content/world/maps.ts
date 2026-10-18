@@ -30,7 +30,7 @@ type MapBlueprint = {
 const blueprints: MapBlueprint[] = [
   {
     id: 'camp', name: '晨光營地', width: 1440, themeKey: 'camp', musicKey: 'theme-field', safe: false, boss: false,
-    platforms: [[400, 500, 700, 500], [900, 520, 1150, 450]],
+    platforms: [[400, 500, 700, 500]],
     ladders: [{ x: 550, topY: 500, bottomY: 600 }],
     extraSpawns: [{ id: 'start', x: 150, y: 600 }],
     portals: [
@@ -61,7 +61,7 @@ const blueprints: MapBlueprint[] = [
   },
   {
     id: 'forest-edge', name: '嫩芽林道', width: 1920, themeKey: 'forest', musicKey: 'theme-field', safe: false, boss: false,
-    platforms: [[400, 490, 800, 490], [950, 520, 1300, 450], [1400, 420, 1700, 420]],
+    platforms: [[400, 490, 800, 490], [950, 460, 1300, 460], [1400, 420, 1700, 420]],
     ladders: [{ x: 600, topY: 490, bottomY: 600 }, { x: 1500, topY: 420, bottomY: 600 }],
     extraSpawns: [],
     portals: [
@@ -78,7 +78,7 @@ const blueprints: MapBlueprint[] = [
   },
   {
     id: 'mushroom-wood', name: '菌傘深林', width: 2160, themeKey: 'forest', musicKey: 'theme-field', safe: false, boss: false,
-    platforms: [[300, 480, 700, 480], [950, 390, 1300, 390], [1450, 500, 1900, 430]],
+    platforms: [[300, 480, 700, 480], [950, 390, 1300, 390], [1450, 450, 1900, 450]],
     ladders: [{ x: 500, topY: 480, bottomY: 600 }, { x: 1100, topY: 390, bottomY: 600 }],
     extraSpawns: [],
     portals: [
@@ -95,7 +95,7 @@ const blueprints: MapBlueprint[] = [
   },
   {
     id: 'red-ridge', name: '赤岩山徑', width: 2160, themeKey: 'rock', musicKey: 'theme-field', safe: false, boss: false,
-    platforms: [[300, 540, 650, 440], [800, 440, 1200, 440], [1500, 500, 1900, 500]],
+    platforms: [[300, 480, 650, 480], [800, 440, 1200, 440], [1500, 500, 1900, 500]],
     ladders: [{ x: 950, topY: 440, bottomY: 600 }, { x: 1700, topY: 500, bottomY: 600 }],
     extraSpawns: [],
     portals: [

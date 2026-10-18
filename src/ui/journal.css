@@ -1,0 +1,366 @@
+/* Generated journal artwork; dynamic text and gameplay controls remain in the DOM. */
+.maple-ui {
+  --ms-ink: #38291e;
+  --ms-muted: #76634c;
+  --ms-night: #33271f;
+  --ms-panel: #f3e3c4;
+  --ms-panel-2: #ead5b0;
+  --ms-line: #b08b56;
+  --ms-gold: #8b612d;
+  --ms-gold-dark: #654222;
+  --ms-cyan: #477463;
+  --paper: linear-gradient(100deg, #e8cfa6 0%, #f8ebd2 12%, #f4e4c7 80%, #e4c79d 100%);
+  --leather: repeating-linear-gradient(0deg, #ffffff04 0 1px, transparent 1px 4px), linear-gradient(#805135, #4c3022);
+  --frame: 0 2px 0 #35241b, 0 4px 10px #241a2433, inset 0 0 0 2px #d1a467, inset 0 0 0 4px #70492e;
+  --edge: clamp(12px, 1.2vw, 26px);
+  container-type: size;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  padding: var(--edge);
+  overflow: hidden;
+  font-family: "Trebuchet MS", "Microsoft JhengHei", "Segoe UI", sans-serif;
+  text-shadow: none;
+  isolation: isolate;
+}
+
+.maple-ui button {
+  border: 2px solid #68472e;
+  border-radius: 4px;
+  color: #3d2b1e;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px #fff4d6, 0 2px 0 #3a281d;
+  transition: filter .12s, transform .12s;
+}
+
+.maple-ui button:hover:not(:disabled) { border-color: #97652e; filter: brightness(1.08); transform: translateY(-2px); }
+.maple-ui button:disabled { color: #8d7b64; border-color: #89735b; background: #d8c7aa; box-shadow: inset 0 0 0 1px #e8d8bd; }
+.maple-ui button:focus-visible { outline: 3px solid #326957; outline-offset: 3px; }
+
+.ms-card,
+.ms-panel,
+.ms-screen-card,
+.ms-key-guide__card {
+  border: 22px solid transparent;
+  border-image: var(--journal-panel) 190 fill / 22px / 0 stretch;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  image-rendering: pixelated;
+}
+
+.ms-hud {
+  grid-row: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+}
+
+.ms-profile {
+  position: relative;
+  flex: 0 1 clamp(360px, 30cqw, 580px);
+  width: clamp(360px, 30cqw, 580px);
+  min-width: 0;
+  min-height: clamp(135px, 10cqw, 190px);
+  gap: clamp(10px, 1cqw, 20px);
+  padding: 0 7px;
+  border: 24px solid transparent;
+  border-image: var(--journal-panel) 190 fill / 24px / 0 stretch;
+  background: none;
+  outline: 0;
+}
+
+.ms-profile::before,
+.ms-profile::after,
+.ms-quest-tracker::before,
+.ms-quest-tracker::after {
+  content: none;
+}
+
+.ms-profile__portrait {
+  position: relative;
+  flex: 0 0 clamp(80px, 6.6cqw, 126px);
+  width: clamp(80px, 6.6cqw, 126px);
+  height: clamp(100px, 8cqw, 152px);
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.ms-profile__hero {
+  position: absolute;
+  width: 125%;
+  max-width: none;
+  height: 115%;
+  left: -12%;
+  bottom: -5%;
+  top: auto;
+  transform: none;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+}
+
+.ms-profile__main { gap: clamp(6px, .6cqw, 11px); }
+.ms-profile__heading { flex-wrap: nowrap; gap: 6px; }
+.ms-profile__heading strong { flex: 1; min-width: 0; font-size: clamp(16px, 1.4cqw, 26px); color: #37271b; }
+.ms-badge { border-radius: 3px; border-color: #b49568; color: #614c31; background: #e0cea9; text-shadow: none; }
+.ms-badge--level, .ms-badge--category { color: #fff0bd; border-color: #b38a4d; background: #76522d; }
+.ms-badge--job, .ms-badge--success { color: #fff3d2; border-color: #92a17a; background: #4c6b50; }
+.ms-badge--warning, .ms-badge--missing { color: #7b4023; border-color: #b98a54; background: #f0d4a4; }
+.ms-badge--neutral { color: #625239; background: #e5d4b5; }
+.ms-profile__heading .ms-badge { flex-shrink: 0; min-height: 25px; padding: 2px 8px; font-size: clamp(10px, .85cqw, 16px); }
+
+.ms-meter { position: relative; display: block; padding: 0 clamp(70px, 5.8cqw, 108px) 0 35px; height: clamp(17px, 1.3cqw, 23px); }
+.ms-meter__label { position: absolute; inset: 0; align-items: center; font-size: clamp(11px, .9cqw, 17px); color: #4f3b29; }
+.ms-meter__label strong { color: #4f3b29; font-size: inherit; }
+.ms-meter__track { height: 100%; border: 3px solid #6b5038; border-radius: 4px; background: #b6a383; box-shadow: 0 1px 0 #fff5d5; }
+.ms-meter__fill { box-shadow: inset 0 2px 0 #ffffff4d, inset 0 -2px 0 #0000001c; border-radius: 0; }
+.ms-meter--hp .ms-meter__fill { background: #d8584b; }
+.ms-meter--mp .ms-meter__fill { background: #4399bd; }
+.ms-meter--exp .ms-meter__fill { background: #d7a346; }
+
+.ms-region { display: grid; justify-items: end; gap: 8px; flex: 0 1 clamp(320px, 24cqw, 460px); min-width: 0; padding-right: 42px; }
+.ms-header { align-items: start; justify-content: end; gap: 9px; width: 100%; }
+.ms-map-indicator {
+  position: relative;
+  display: grid;
+  min-width: 150px;
+  flex: 1;
+  padding: 17px 25px 12px;
+  gap: 2px;
+  border: 0;
+  border-image: none;
+  background: var(--journal-sign) center / 100% 100% no-repeat;
+  color: #f3ddb3;
+  text-align: center;
+  text-shadow: 0 2px #3b291e;
+}
+.ms-map-indicator strong { color: #ffebc8; font-size: clamp(16px, 1.3cqw, 24px); letter-spacing: .08em; overflow-wrap: anywhere; }
+.ms-map-indicator__coins { color: #f3cf82; font-size: 11px; }
+.ms-system-controls { display: flex; align-items: start; gap: 5px; pointer-events: auto; }
+.maple-ui .ms-system-button {
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 2.7cqw, 52px);
+  min-width: 36px;
+  height: clamp(36px, 2.7cqw, 52px);
+  min-height: 36px !important;
+  padding: 6px !important;
+  border: 0;
+  color: #f6dfb8;
+  background: var(--journal-button) center / 100% 100% no-repeat;
+  box-shadow: none;
+  font-size: clamp(20px, 1.8cqw, 32px);
+  font-weight: 800;
+}
+.ms-system-button > span:not(.ms-journal-icon) { display: none; }
+.ms-system-button .ms-journal-icon { width: 24px; height: 24px; font-size: 24px; line-height: 1; }
+.ms-key-guide { z-index: 42; }
+.ms-key-guide__card { top: 45px; width: min(330px, 85cqw); max-height: calc(100cqh - 110px); color: #4d3a28; }
+.ms-key-guide__header h4, .ms-key-guide__action { color: #4d3a28; }
+.ms-key-guide__section-title { color: #6d5738; }
+.ms-key-guide__header { border-color: #b99b70; }
+.ms-key-guide__badge { background: #6a5037; border-color: #b69158; }
+
+.maple-ui .ms-quest-tracker {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  width: min(310px, 100%);
+  padding: 3px 7px;
+  border: 18px solid transparent;
+  border-image: var(--journal-panel) 190 fill / 18px / 0 stretch;
+  border-radius: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  image-rendering: pixelated;
+  text-align: left;
+  pointer-events: auto;
+}
+.ms-quest-tracker__heading { display: flex; align-items: center; gap: 7px; color: #71583a; font-size: 13px; padding-bottom: 4px; border-bottom: 1px solid #c5a879; }
+.ms-quest-tracker__heading .ms-journal-icon { width: 26px; height: 26px; }
+.ms-quest-tracker > strong { font-size: 15px; }
+.ms-quest-tracker__detail { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: #766044; font-size: 13px; line-height: 1.5; }
+
+.ms-bottom-bar { grid-row: 3; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, clamp(420px, 36cqw, 690px)) minmax(0, 1fr); align-items: end; gap: 14px; min-width: 0; }
+.ms-action-bar { position: static; display: flex; justify-content: start; align-content: end; align-items: end; max-width: 245px; gap: 6px; }
+.ms-action-bar .ms-button { padding: 5px 8px; min-height: 30px; font-size: 11px; }
+.ms-context-button { display: inline-flex; align-items: center; gap: 5px; }
+.ms-context-button .ms-journal-icon { width: 16px; height: 16px; }
+
+.ms-quickbar {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: 100%;
+  padding: 18px 30px;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+}
+.ms-quickbar::before { content: ""; position: absolute; z-index: -1; inset: -80% 0; background: var(--journal-tray) center / 100% auto no-repeat; image-rendering: pixelated; pointer-events: none; }
+.ms-quickbar__slots { gap: 7px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.maple-ui .ms-quick-slot {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  place-items: center;
+  height: clamp(62px, 4.9cqw, 94px);
+  min-height: 62px !important;
+  padding: 5px !important;
+  border: 0;
+  border-radius: 0;
+  color: #fff0c9;
+  background: var(--journal-slot) center / 100% 100% no-repeat;
+  box-shadow: none;
+  image-rendering: pixelated;
+}
+.ms-quick-slot__key { top: -8px; left: -2px; z-index: 1; min-width: 27px; width: auto; padding: 0 6px; height: 27px; border: 0; border-radius: 0; background: var(--journal-button) center / 100% 100% no-repeat; font-size: 12px; }
+.ms-quick-slot__icon { grid-area: 1 / 1; width: clamp(38px, 3.3cqw, 64px); height: clamp(38px, 3.3cqw, 64px); overflow: visible; }
+.ms-quick-slot__icon-image { width: 100%; height: 100%; }
+.ms-quick-slot__label, .ms-quick-slot__state { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ms-quick-slot--item .ms-quick-slot__state { width: auto; height: auto; right: 3px; bottom: 1px; max-width: calc(100% - 4px); clip-path: none; font-size: 9px; color: #f9e7bd; text-shadow: 1px 1px #231d19; }
+.maple-ui .ms-quick-slot:disabled { background: var(--journal-slot) center / 100% 100% no-repeat; border: 0; color: #d7c5a6; box-shadow: none; }
+.ms-quick-slot:disabled .ms-quick-slot__icon { opacity: .48; filter: saturate(.4); }
+.ms-quick-slot.is-unavailable .ms-quick-slot__state { width: auto; height: auto; max-width: 100%; bottom: 1px; clip-path: none; color: #e8d9b9; background: #30291fdd; padding: 0 2px; font-size: 9px; }
+
+.ms-controls { display: flex; flex-wrap: nowrap; justify-content: end; justify-self: end; align-items: end; gap: 4px; min-width: 0; max-width: 100%; }
+.maple-ui .ms-journal-tab {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: end;
+  gap: 5px;
+  width: clamp(48px, 4.4cqw, 85px);
+  min-width: 0;
+  min-height: clamp(82px, 6.8cqw, 130px);
+  padding: 18px 0 4px;
+  border: 10px solid transparent;
+  border-image: var(--journal-panel) 190 fill / 10px / 0 stretch;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-size: clamp(12px, .95cqw, 18px);
+  font-weight: 700;
+}
+.ms-journal-tab::before { content: ""; position: absolute; left: -5px; right: -5px; top: -15px; height: 15px; width: auto; border: 2px solid #39462d; border-radius: 2px; background: #70784e; box-shadow: inset 0 2px #a4a474, 0 2px #3a2a1d; }
+.ms-journal-icon { display: inline-grid; place-items: center; width: clamp(30px, 2.8cqw, 54px); height: clamp(30px, 2.8cqw, 54px); flex-shrink: 0; }
+.ms-journal-icon__image { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.maple-ui .ms-journal-tab.is-active { background: none !important; color: #594021 !important; filter: brightness(1.12); outline: 2px solid #efc969; outline-offset: -5px; }
+.ms-button.is-active, .ms-chip.is-active { border-color: #6d5938 !important; color: #fff1cb !important; background: #63704b !important; }
+
+.ms-panel-host { z-index: 40; top: 50%; right: auto; left: 50%; bottom: auto; transform: translate(-50%, -50%); width: min(740px, calc(100% - 36px)); height: min(570px, calc(100% - 100px)); max-height: none; min-height: 0; }
+.ms-panel { border-width: 22px; }
+.ms-panel__header { padding: 12px 16px; border-bottom: 2px solid #947247; background: var(--leather); color: #f6e4bf; }
+.ms-panel__title h2 { color: #f8e6bf; font-size: 17px; }
+.ms-panel__body { padding: 18px; scrollbar-color: #9d7d50 #e8d2ac; }
+.ms-panel__body :is(h3, h4, strong), .ms-section-title h3 { color: #513b24; }
+.ms-panel__header .ms-button { color: #432c1d; }
+.ms-panel-note, .ms-detail-copy, .ms-reward-line, .ms-wallet, .ms-detail-quantity { color: #6f5739; }
+.ms-shop-card__price, .ms-shop-card__total { color: #795123; }
+.ms-warning, .ms-disabled-reason { color: #974c30; }
+.ms-empty-state { border-color: #b79668; border-radius: 3px; }
+:is(.ms-item-detail, .ms-equipment-slot, .ms-stat-card, .ms-skill-card, .ms-quest-card, .ms-shop-card, .ms-dialogue-quest, .ms-volume-control) { border-color: #bfa27a; border-radius: 3px; color: #54432c; background: #ead7b5; box-shadow: inset 0 0 0 1px #f9edcf; }
+:is(.ms-map-row, .ms-portal-row, .ms-sell-row, .ms-binding-row) { border-color: #bda278; border-radius: 3px; color: #54432c; background: #ead8b9; }
+.ms-map-row.is-current { border-color: #6c7950; background: #d9d4ae; }
+.ms-objectives, .ms-help-list, .ms-binding-row > span:first-child, .ms-portal-row span:last-child { color: #6a563c; }
+.ms-input { color: #463322; border-color: #a18258; border-radius: 3px; background: #fff0d5; }
+.ms-volume-control { color: #54432c; }
+.ms-dialogue-lines { border-color: #7b8b5b; background: #e8d4af; }
+.ms-dialogue-lines p { color: #584329; }
+.ms-bag-slot { border-color: #a2855d !important; border-radius: 3px !important; background: #e3cfaa !important; }
+.ms-bag-slot--empty { border-color: #b49b76; border-radius: 3px; background: #e4d2b4; }
+.ms-bag-slot__number { color: #aa9371; }
+.ms-bag-slot__name { color: #59452c; }
+.ms-bag-slot__quantity { color: #805e28; }
+.ms-bag-slot.is-selected { border-color: #62764e !important; box-shadow: inset 0 0 0 2px #889765 !important; }
+.ms-button--primary, .ms-button--secondary { border-color: #7b6841 !important; color: #fff0cb !important; background: linear-gradient(#72805b, #4c6148) !important; }
+.ms-button--danger { border-color: #794d32 !important; color: #ffebc9 !important; background: linear-gradient(#a56641, #78452d) !important; }
+.ms-screen-layer { position: absolute; background: #25271d66; }
+.ms-screen-card { outline: 0; padding: 20px; }
+.ms-screen-card h1 { color: #65482b; }
+.ms-screen-card__description { color: #786145; }
+.ms-screen-card__status { color: #776537; }
+.ms-toast { bottom: 150px; color: #f8e8c7; border: 2px solid #c49c62; border-radius: 4px; background: #4c6046; box-shadow: 0 3px 0 #382b20; }
+.ms-footer { position: static; grid-row: 4; display: flex; align-items: center; flex-wrap: wrap; justify-content: start; gap: 8px; font-size: 10px; color: #f5e6c8; text-shadow: 0 1px #35281e; }
+.ms-footer__save { padding: 3px 8px; border: 1px solid #ab8d5c; border-radius: 3px; background: #43392cdb; }
+.ms-footer__error { color: #ffe0b8; margin-left: auto; max-width: 55%; }
+.ms-footer__actions { display: flex; gap: 6px; pointer-events: auto; }
+
+@container (max-width: 1100px) {
+  .ms-bottom-bar { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .ms-action-bar { grid-column: 1 / -1; max-width: none; }
+  .ms-quickbar { max-width: 420px; }
+  .ms-controls { align-self: end; }
+  .ms-profile { flex-basis: 330px; }
+  .ms-region { flex-basis: 300px; }
+  .ms-journal-tab { width: 44px; }
+  .ms-toast { bottom: 185px; }
+}
+
+@container (max-width: 720px) {
+  .ms-hud { gap: 12px; }
+  .ms-profile { flex-basis: 285px; padding: 12px; gap: 7px; min-height: 105px; }
+  .ms-profile__portrait { flex-basis: 48px; width: 48px; height: 64px; }
+  .ms-profile__hero { top: -19px; }
+  .ms-profile__heading strong { font-size: 12px; }
+  .ms-profile__heading { gap: 3px; }
+  .ms-profile__heading .ms-badge { font-size: 9px; padding-inline: 3px; }
+  .ms-region { flex-basis: 190px; padding-right: 32px; }
+  .ms-header { flex-wrap: wrap; gap: 7px; }
+  .ms-map-indicator { flex-basis: 100%; padding: 6px 9px; }
+  .ms-map-indicator strong { font-size: 13px; }
+  .ms-system-controls { justify-content: end; }
+  .ms-quest-tracker { display: none !important; }
+  .ms-bottom-bar { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 12px; }
+  .ms-action-bar { justify-content: center; }
+  .ms-controls { justify-self: center; }
+  .ms-journal-tab { width: 44px; min-height: 53px !important; padding-top: 5px !important; gap: 2px !important; }
+  .ms-journal-tab .ms-journal-icon { width: 20px; height: 20px; }
+  .ms-panel-host { width: calc(100% - 20px); height: calc(100% - 36px); }
+  .ms-toast { bottom: 240px; }
+}
+
+@container (max-width: 460px) {
+  .ms-hud { flex-wrap: wrap; gap: 8px; }
+  .ms-profile { flex-basis: 100%; width: 100%; margin-right: 38px; }
+  .ms-region { flex-basis: 100%; padding: 0; }
+  .ms-header { flex-wrap: nowrap; }
+  .ms-map-indicator { flex-basis: auto; display: flex; align-items: center; justify-content: space-between; }
+  .ms-profile__portrait { flex-basis: 50px; }
+  .ms-action-bar .ms-button { min-height: 28px; }
+}
+
+@container (max-height: 520px) {
+  .ms-profile { min-height: 92px; padding-block: 9px; }
+  .ms-profile__portrait { height: 65px; flex-basis: 52px; }
+  .ms-profile__main { gap: 3px; }
+  .ms-quest-tracker { display: none !important; }
+  .ms-quickbar { padding: 9px 9px 6px; }
+  .ms-quick-slot { height: 45px !important; min-height: 45px !important; }
+  .ms-quick-slot__icon, .ms-quick-slot__icon-image { width: 32px; height: 32px; }
+  .ms-journal-tab { min-height: 52px !important; padding-top: 4px !important; gap: 2px !important; }
+  .ms-journal-tab .ms-journal-icon { width: 18px; height: 18px; }
+  .ms-bottom-bar { gap: 8px; }
+  .ms-panel-host { height: calc(100% - 24px); }
+  .ms-toast { bottom: 142px; }
+}
+
+@container (max-width: 720px) and (max-height: 520px) {
+  .ms-bottom-bar { grid-template-columns: minmax(0, 1fr) auto; }
+  .ms-action-bar { justify-content: start; justify-self: start; }
+  .ms-controls { justify-self: end; gap: 2px; }
+  .ms-journal-tab { width: 31px; font-size: 9px !important; }
+  .ms-quickbar { padding-inline: 6px; }
+  .ms-quickbar__slots { gap: 3px; }
+  .ms-quick-slot__key { min-width: 19px; font-size: 8px; }
+  .ms-quick-slot__icon, .ms-quick-slot__icon-image { width: 26px; height: 26px; }
+}

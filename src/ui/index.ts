@@ -1,4 +1,6 @@
 import './styles.css';
+import './journal.css';
+import { DEFAULT_KEY_BINDINGS, type GameAction } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import type { UiController, UiSnapshot } from '../contracts/ports.js';
 import type { Settings } from '../contracts/types.js';
@@ -47,7 +49,78 @@ type UiAction =
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'use-item' | 'select-bag'
   | 'inventory-filter'
   | 'equip-bag' | 'sell-bag' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
-  | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version';
+  | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
+  | 'toggle-key-guide';
+
+type KeyGuideItem = {
+  label: string;
+  action: GameAction;
+};
+
+const KEY_GUIDE_SECTIONS: {
+  category: string;
+  items: KeyGuideItem[];
+}[] = [
+  {
+    category: '移動與探索',
+    items: [
+      { label: '向左 / 向右移動', action: 'moveLeft' },
+      { label: '向上 / 向下爬梯', action: 'climbUp' },
+      { label: '跳躍', action: 'jump' },
+      { label: '互動 / NPC 對話', action: 'interact' },
+      { label: '拾取掉落物', action: 'pickup' },
+    ],
+  },
+  {
+    category: '戰鬥與技能',
+    items: [
+      { label: '普通攻擊', action: 'attack' },
+      { label: '重斬（技能 1）', action: 'skill1' },
+      { label: '橫掃（技能 2）', action: 'skill2' },
+      { label: '堅韌守護（技能 3）', action: 'skill3' },
+    ],
+  },
+  {
+    category: '快捷藥水',
+    items: [
+      { label: 'HP 藥水（紅藥水）', action: 'potionHp' },
+      { label: 'MP 藥水（藍藥水）', action: 'potionMp' },
+    ],
+  },
+  {
+    category: '介面面板',
+    items: [
+      { label: '道具背包', action: 'inventory' },
+      { label: '裝備欄', action: 'equipment' },
+      { label: '技能清單', action: 'skills' },
+      { label: '能力值屬性', action: 'stats' },
+      { label: '任務日誌', action: 'quests' },
+      { label: '大地圖', action: 'map' },
+      { label: '關閉最上層面板', action: 'escape' },
+    ],
+  },
+];
+
+function getKeyBadgeText(bindings: Partial<Record<GameAction, string>>, item: KeyGuideItem): string {
+  if (item.action === 'moveLeft') {
+    const left = codeLabel(bindings.moveLeft ?? DEFAULT_KEY_BINDINGS.moveLeft);
+    const right = codeLabel(bindings.moveRight ?? DEFAULT_KEY_BINDINGS.moveRight);
+    return left === '←' && right === '→' ? '← / →' : `${left} / ${right}`;
+  }
+  if (item.action === 'climbUp') {
+    const up = codeLabel(bindings.climbUp ?? DEFAULT_KEY_BINDINGS.climbUp);
+    const down = codeLabel(bindings.climbDown ?? DEFAULT_KEY_BINDINGS.climbDown);
+    return up === '↑' && down === '↓' ? '↑ / ↓' : `${up} / ${down}`;
+  }
+  const code = bindings[item.action] ?? DEFAULT_KEY_BINDINGS[item.action];
+  if (item.action === 'jump' && (!code || code === 'AltLeft' || code === 'AltRight')) {
+    return 'Alt';
+  }
+  if (item.action === 'attack' && (!code || code === 'ControlLeft' || code === 'ControlRight')) {
+    return 'Ctrl';
+  }
+  return codeLabel(code);
+}
 
 function makeElement<K extends keyof HTMLElementTagNameMap>(
   document: Document,
@@ -78,6 +151,25 @@ function makeButton(
 
 function makeBadge(document: Document, text: string, tone = ''): HTMLElement {
   return makeElement(document, 'span', 'ms-badge' + (tone ? ' ms-badge--' + tone : ''), text);
+}
+
+function makeJournalIcon(document: Document, name: string): HTMLElement {
+  const assets: Record<string, string> = {
+    inventory: 'icon-backpack', equipment: 'icon-tunic', skills: 'icon-skillbook',
+    stats: 'icon-compass', quests: 'icon-scroll', map: 'icon-map',
+    shop: 'icon-backpack', dialogue: 'icon-scroll',
+  };
+  const icon = makeElement(document, 'span', 'ms-journal-icon');
+  icon.setAttribute('aria-hidden', 'true');
+  const asset = assets[name];
+  if (asset) {
+    const image = makeElement(document, 'img', 'ms-journal-icon__image');
+    image.src = new URL('assets/interface/journal/' + asset + '.png', document.baseURI).href;
+    image.alt = '';
+    image.draggable = false;
+    icon.append(image);
+  } else icon.textContent = '⚙';
+  return icon;
 }
 
 function makeInterfaceIcon(
@@ -249,43 +341,75 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const document = root.ownerDocument;
   const shell = makeElement(document, 'section', 'maple-ui');
   shell.setAttribute('aria-label', '楓之故事遊戲介面');
+  // Resolve public artwork from the entry URL so version/preview subdirectories work.
+  for (const [name, file] of Object.entries({
+    panel: 'parchment-panel', tray: 'leather-tray', sign: 'wooden-sign',
+    button: 'system-button', slot: 'quick-slot',
+  })) {
+    shell.style.setProperty('--journal-' + name, 'url("' + new URL('assets/interface/journal/' + file + '.png', document.baseURI).href + '")');
+  }
 
   const header = makeElement(document, 'header', 'ms-header');
-  const brand = makeElement(document, 'div', 'ms-brand');
-  brand.append(
-    makeElement(document, 'span', 'ms-brand__mark', '楓'),
-    makeElement(document, 'div', 'ms-brand__copy'),
-  );
-  brand.querySelector('.ms-brand__copy')?.append(
-    makeElement(document, 'strong', '', '楓之故事'),
-    makeElement(document, 'span', '', '桌面冒險介面'),
-  );
-  header.append(brand);
+  const keyGuide = makeElement(document, 'div', 'ms-key-guide');
+  const keyGuideToggle = makeButton(document, '?', 'toggle-key-guide', {
+    className: 'ms-button ms-system-button ms-key-guide__toggle',
+    title: '點擊展開或收起按鍵提示',
+  });
+  keyGuideToggle.setAttribute('aria-expanded', 'false');
+  keyGuideToggle.setAttribute('aria-controls', 'ms-key-guide-card');
+  keyGuideToggle.setAttribute('aria-label', '按鍵提示');
+
+  const keyGuideCard = makeElement(document, 'div', 'ms-card ms-key-guide__card');
+  keyGuideCard.id = 'ms-key-guide-card';
+  keyGuideCard.hidden = true;
+  keyGuide.append(keyGuideToggle, keyGuideCard);
 
   const hud = makeElement(document, 'div', 'ms-hud');
   const profile = makeElement(document, 'section', 'ms-card ms-profile');
   const quickbar = makeElement(document, 'section', 'ms-quickbar');
   const mapCard = makeElement(document, 'section', 'ms-card ms-map-indicator');
+  const region = makeElement(document, 'aside', 'ms-region');
+  const systemControls = makeElement(document, 'nav', 'ms-system-controls');
+  systemControls.setAttribute('aria-label', '遊戲系統');
+  const questTracker = makeElement(document, 'button', 'ms-quest-tracker');
+  questTracker.type = 'button';
+  questTracker.dataset.uiAction = 'open-panel';
+  questTracker.dataset.panel = 'quests';
+  questTracker.setAttribute('aria-label', '開啟任務日誌');
+  const bottomBar = makeElement(document, 'div', 'ms-bottom-bar');
+  const actionBar = makeElement(document, 'div', 'ms-action-bar');
   const controls = makeElement(document, 'nav', 'ms-controls');
   controls.setAttribute('aria-label', '遊戲面板');
   const panelButtons = new Map<PanelId, HTMLButtonElement>();
   for (const panel of PANEL_ORDER) {
     const button = makeButton(document, PANEL_LABELS[panel], 'open-panel', {
-      className: 'ms-button ms-button--compact',
+      className: 'ms-button ms-journal-tab',
       data: { panel },
     });
     button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
-    controls.append(button);
+    button.title = PANEL_LABELS[panel];
+    button.replaceChildren(makeJournalIcon(document, panel), makeElement(document, 'span', '', PANEL_LABELS[panel]));
+    if (panel === 'settings') {
+      button.className = 'ms-button ms-system-button';
+      systemControls.append(button);
+    } else if (panel === 'shop' || panel === 'dialogue') {
+      button.className = 'ms-button ms-context-button';
+      actionBar.append(button);
+    } else controls.append(button);
     panelButtons.set(panel, button);
   }
-  hud.append(profile, mapCard, controls);
-
-  const actionBar = makeElement(document, 'div', 'ms-action-bar');
   const pickupButton = makeButton(document, '拾取', 'pickup', { className: 'ms-button ms-button--secondary' });
   const interactButton = makeButton(document, '互動', 'interact', { className: 'ms-button ms-button--secondary' });
-  const pauseButton = makeButton(document, '暫停', 'toggle-pause', { className: 'ms-button ms-button--secondary' });
+  const pauseButton = makeButton(document, 'Ⅱ', 'toggle-pause', { className: 'ms-button ms-system-button', title: '暫停遊戲' });
+  pauseButton.setAttribute('aria-label', '暫停遊戲');
   const returnTownButton = makeButton(document, '返回城鎮', 'return-town', { className: 'ms-button ms-button--secondary' });
-  actionBar.append(pickupButton, interactButton, pauseButton, returnTownButton);
+  actionBar.prepend(pickupButton, interactButton);
+  actionBar.append(returnTownButton);
+  systemControls.append(keyGuide, pauseButton);
+  header.append(mapCard, systemControls);
+  region.append(header, questTracker);
+  hud.append(profile, region);
+  bottomBar.append(actionBar, quickbar, controls);
 
   const quickSlots = makeElement(document, 'div', 'ms-quickbar__slots');
   const quickDefinitions = [
@@ -306,11 +430,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const icon = makeElement(document, 'span', 'ms-quick-slot__icon');
     const label = makeElement(document, 'strong', 'ms-quick-slot__label', slot.label);
     const state = makeElement(document, 'span', 'ms-quick-slot__state', '');
+    button.setAttribute('aria-label', slot.label);
+    if (slot.kind === 'item') button.classList.add('ms-quick-slot--item');
     button.append(keyHint, icon, label, state);
     quickSlots.append(button);
     quickButtons.set(slot.id, button);
   }
-  quickbar.append(makeSectionTitle(document, '快捷操作'), quickSlots);
+  quickbar.setAttribute('aria-label', '戰鬥與藥水快捷列');
+  quickbar.append(quickSlots);
 
   const panelHost = makeElement(document, 'div', 'ms-panel-host');
   panelHost.hidden = true;
@@ -325,13 +452,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const footerActions = makeElement(document, 'div', 'ms-footer__actions');
   footer.append(saveState, footerActions, errorText);
 
-  shell.append(header, hud, actionBar, quickbar, panelHost, screenLayer, toast, footer);
+  shell.append(hud, bottomBar, panelHost, screenLayer, toast, footer);
   root.append(shell);
 
   let currentView: UiSnapshot | null = null;
   let lastScreenSignature = '';
   let lastProfileSignature = '';
   let lastMapSignature = '';
+  let lastQuestSignature = '';
   let lastPanelSignature = '';
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
   let selectedBagIndex: number | null = null;
@@ -343,10 +471,56 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let sellQuantities = new Map<number, number>();
   let pendingBinding: string | null = null;
   let bindingMessage = '';
+  let keyGuideExpanded = false;
+  let lastKeyGuideSignature = '';
   let disposed = false;
 
   const dispatchDraft = (command: CommandDraft): void => {
     if (!disposed) dispatch(command);
+  };
+
+  const renderKeyGuide = (view: UiSnapshot | null): void => {
+    keyGuideToggle.textContent = '?';
+    keyGuideToggle.classList.toggle('is-active', keyGuideExpanded);
+    keyGuideToggle.setAttribute('aria-expanded', String(keyGuideExpanded));
+    keyGuideCard.hidden = !keyGuideExpanded;
+    if (!keyGuideExpanded) return;
+
+    const bindings = (view?.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS) as Partial<Record<GameAction, string>>;
+    const signature = JSON.stringify(bindings);
+    if (signature === lastKeyGuideSignature && keyGuideCard.hasChildNodes()) return;
+    lastKeyGuideSignature = signature;
+
+    keyGuideCard.replaceChildren();
+
+    const headerRow = makeElement(document, 'div', 'ms-key-guide__header');
+    headerRow.append(
+      makeElement(document, 'h4', '', '操作按鍵提示'),
+      makeButton(document, '✕ 收起', 'toggle-key-guide', {
+        className: 'ms-button ms-button--close',
+        title: '收起按鍵提示',
+      }),
+    );
+    keyGuideCard.append(headerRow);
+
+    for (const section of KEY_GUIDE_SECTIONS) {
+      const secEl = makeElement(document, 'div', 'ms-key-guide__section');
+      secEl.append(makeElement(document, 'div', 'ms-key-guide__section-title', section.category));
+      const grid = makeElement(document, 'div', 'ms-key-guide__grid');
+      for (const item of section.items) {
+        const row = makeElement(document, 'div', 'ms-key-guide__row');
+        row.append(
+          makeElement(document, 'span', 'ms-key-guide__action', item.label),
+          makeElement(document, 'span', 'ms-key-guide__badge', getKeyBadgeText(bindings, item)),
+        );
+        grid.append(row);
+      }
+      secEl.append(grid);
+      keyGuideCard.append(secEl);
+    }
+
+    const tip = makeElement(document, 'p', 'ms-key-guide__tip', '💡 可在「設定」面板中自訂快捷鍵位');
+    keyGuideCard.append(tip);
   };
 
   const captureNameInput = (): HTMLInputElement => {
@@ -378,8 +552,13 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     }
 
     const portrait = makeElement(document, 'div', 'ms-profile__portrait');
-    portrait.append(makeInterfaceIcon(document, view, 'marker:player', '玩家標記', 'ms-profile__marker'));
-    portrait.setAttribute('aria-label', '玩家標記');
+    const hero = makeElement(document, 'img', 'ms-profile__hero');
+    hero.src = new URL('assets/interface/journal/hero-portrait-chibi.png', document.baseURI).href;
+    hero.alt = '';
+    hero.draggable = false;
+    portrait.append(hero);
+    portrait.setAttribute('role', 'img');
+    portrait.setAttribute('aria-label', player.name + '的角色頭像');
     const main = makeElement(document, 'div', 'ms-profile__main');
     const heading = makeElement(document, 'div', 'ms-profile__heading');
     heading.append(
@@ -401,7 +580,6 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     if (signature === lastMapSignature) return;
     lastMapSignature = signature;
     mapCard.replaceChildren();
-    mapCard.append(makeElement(document, 'span', 'ms-eyebrow', '目前地區'));
     if (!data) {
       mapCard.append(makeElement(document, 'strong', '', '尚未開始'));
       return;
@@ -409,9 +587,30 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const map = view.catalog.world.maps[data.location.mapId];
     mapCard.append(
       makeElement(document, 'strong', '', map?.name ?? data.location.mapId),
-      makeElement(document, 'span', 'ms-map-indicator__spawn', '出生點 ' + data.location.spawnId),
       makeElement(document, 'span', 'ms-map-indicator__coins', '楓幣 ' + formatNumber(data.player.coins)),
     );
+  };
+
+  const renderQuestTracker = (view: UiSnapshot): void => {
+    const signature = JSON.stringify({ quests: view.questViews, map: view.saveData?.location.mapId });
+    if (signature === lastQuestSignature) return;
+    lastQuestSignature = signature;
+    const quest = view.questViews.find((entry) => entry.status === 'ready')
+      ?? view.questViews.find((entry) => entry.status === 'active')
+      ?? view.questViews.find((entry) => entry.status === 'available');
+    questTracker.replaceChildren();
+    const heading = makeElement(document, 'span', 'ms-quest-tracker__heading', '任務手帳');
+    heading.prepend(makeJournalIcon(document, 'quests'));
+    const title = quest?.title ?? '自由探索';
+    const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
+    const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
+    const recipient = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '任務委託人';
+    const detail = !quest ? '探索世界，尋找新的故事。'
+      : quest.status === 'available' ? '與' + giver + '交談'
+      : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
+      : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
+    questTracker.append(heading, makeElement(document, 'strong', '', title), makeElement(document, 'span', 'ms-quest-tracker__detail', detail));
+    questTracker.title = title + '｜' + detail;
   };
 
   const updateQuickButtons = (view: UiSnapshot): void => {
@@ -428,16 +627,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     for (const [skillId, button] of quickButtons) {
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
       if (key) {
-        key.textContent = view.saveData
-          ? codeLabel(view.saveData.settings.bindings[keyForSkill[skillId]])
-          : '—';
+        const action = keyForSkill[skillId] as GameAction;
+        key.textContent = codeLabel(view.saveData?.settings.bindings[action] ?? DEFAULT_KEY_BINDINGS[action]);
       }
       const definition = quickDefinitions.find((slot) => slot.id === skillId);
       const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
       if (iconHost) {
         const iconKey = definition?.kind === 'item'
           ? view.catalog.rules.items[skillId]?.iconKey
-          : definition?.kind === 'skill' ? 'skill:' + skillId : null;
+          : definition?.kind === 'skill' ? 'skill:' + skillId : view.catalog.rules.items['starter-sword']?.iconKey;
         iconHost.replaceChildren(iconKey
           ? makeInterfaceIcon(document, view, iconKey, definition?.label ?? skillId, 'ms-quick-slot__icon-image')
           : makeBadge(document, '普攻', 'neutral'));
@@ -458,8 +656,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         continue;
       }
       const rank = player.skillRanks[skillId] ?? 0;
+      button.classList.toggle('is-unlearned', rank === 0);
       const cooldown = Math.max(0, (view.skillReadyAtMs[skillId] ?? 0) - view.nowMs);
       const reason = rank === 0 ? '未學習' : player.mp < skill.mpCost ? 'MP 不足' : cooldown > 0 ? '冷卻中' : '';
+      button.classList.toggle('is-unavailable', Boolean(reason));
       button.disabled = !playing || Boolean(reason);
       if (state) state.textContent = reason || ('Rank ' + rank + '・MP ' + skill.mpCost);
       button.title = skill.name + '｜' + skillDetails(skill, rank) + (reason ? '｜' + reason : '');
@@ -477,6 +677,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     }
     pickupButton.disabled = !playing;
     interactButton.disabled = !playing;
+    const bindings = view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS;
+    pickupButton.textContent = codeLabel(bindings.pickup ?? DEFAULT_KEY_BINDINGS.pickup) + ' 拾取';
+    interactButton.textContent = codeLabel(bindings.interact ?? DEFAULT_KEY_BINDINGS.interact) + ' 互動';
     pauseButton.hidden = !playing;
     pauseButton.disabled = !playing;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
@@ -490,9 +693,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const mapPanelButton = panelButtons.get('map');
     if (mapPanelButton) mapPanelButton.disabled = !player;
     const dialogueButton = panelButtons.get('dialogue');
-    if (dialogueButton) dialogueButton.disabled = !view.interaction;
+    if (dialogueButton) {
+      dialogueButton.disabled = !view.interaction;
+      dialogueButton.hidden = !view.interaction;
+    }
     const shopButton = panelButtons.get('shop');
-    if (shopButton) shopButton.disabled = view.interaction?.npcId !== 'merchant';
+    if (shopButton) {
+      shopButton.disabled = view.interaction?.npcId !== 'merchant';
+      shopButton.hidden = shopButton.disabled;
+    }
   };
 
   const renderScreen = (view: UiSnapshot): void => {
@@ -839,6 +1048,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         renderPanel(view, true);
         return;
       }
+      case 'toggle-key-guide': {
+        keyGuideExpanded = !keyGuideExpanded;
+        renderKeyGuide(currentView);
+        button.blur();
+        const canvas = shell.ownerDocument.querySelector<HTMLCanvasElement>('#game-root canvas');
+        canvas?.focus();
+        return;
+      }
     }
   };
 
@@ -851,6 +1068,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderScreen(view);
     renderFooter(view);
     renderPanel(view);
+    renderKeyGuide(view);
+    renderQuestTracker(view);
     for (const [panel, button] of panelButtons) {
       const top = view.panels.at(-1) === panel;
       button.classList.toggle('is-active', top);

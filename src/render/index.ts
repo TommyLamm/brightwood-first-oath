@@ -223,9 +223,9 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog): Set<string> {
     ...BACKGROUND_LAYERS.map(({ name }) => `env:${map.themeKey}:${name}`),
     ...HERO_IMAGE_KEYS,
   ]);
-  if (map.footholds.some((foothold) => foothold.y1 !== foothold.y2)) keys.add('env:tile-slope');
-  if (map.footholds.some((foothold) => foothold.y1 === foothold.y2 && foothold.dropThrough)) keys.add('env:tile-platform');
-  if (map.footholds.some((foothold) => foothold.y1 === foothold.y2 && !foothold.dropThrough)) keys.add('env:tile-ground');
+  if (map.footholds.some((foothold) => !foothold.dropThrough && foothold.y1 !== foothold.y2)) keys.add('env:tile-slope');
+  if (map.footholds.some((foothold) => foothold.dropThrough)) keys.add('env:tile-platform');
+  if (map.footholds.some((foothold) => !foothold.dropThrough && foothold.y1 === foothold.y2)) keys.add('env:tile-ground');
   if (map.ladders.length > 0) keys.add('env:ladder');
   if (map.portals.length > 0) keys.add('env:portal');
   for (const key of VFX_IMAGE_KEYS) keys.add(key);
@@ -622,9 +622,9 @@ export function createWorldRenderer(
 
     for (const foothold of map.footholds) {
       const isSlope = foothold.y1 !== foothold.y2;
-      const key = isSlope
-        ? 'env:tile-slope'
-        : foothold.dropThrough ? 'env:tile-platform' : 'env:tile-ground';
+      const key = foothold.dropThrough
+        ? 'env:tile-platform'
+        : isSlope ? 'env:tile-slope' : 'env:tile-ground';
       const image = assets.images.get(key)!;
       if (key === 'env:tile-ground') {
         if (image.displayWidth <= GROUND_TILE_OVERLAP) {

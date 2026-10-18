@@ -137,6 +137,118 @@
   font-size: 10px;
 }
 
+.ms-key-guide {
+  position: relative;
+  pointer-events: auto;
+}
+
+.ms-key-guide__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.ms-key-guide__card {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 45;
+  width: min(340px, calc(100vw - 28px));
+  max-height: min(440px, calc(100vh - 110px));
+  overflow-y: auto;
+  padding: 12px 14px;
+  border: 1px solid rgba(247, 218, 143, .44);
+  border-radius: 12px;
+  background: var(--ms-panel);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .09);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-color: rgba(229, 199, 122, .55) rgba(15, 25, 35, .4);
+  scrollbar-width: thin;
+}
+
+.ms-key-guide__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(229, 199, 122, .22);
+}
+
+.ms-key-guide__header h4 {
+  margin: 0;
+  color: #ffebb5;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+.ms-key-guide__section {
+  display: grid;
+  gap: 4px;
+}
+
+.ms-key-guide__section-title {
+  color: var(--ms-gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.ms-key-guide__grid {
+  display: grid;
+  gap: 4px;
+}
+
+.ms-key-guide__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.ms-key-guide__action {
+  color: #e2ddd0;
+}
+
+.ms-key-guide__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid rgba(255, 225, 148, .5);
+  border-radius: 5px;
+  background: #2a2318;
+  color: #fff0b8;
+  font-size: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+  white-space: nowrap;
+}
+
+.ms-key-guide__tip {
+  margin: 4px 0 0;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(229, 199, 122, .18);
+  color: var(--ms-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
 .ms-badge {
   display: inline-flex;
   align-items: center;
