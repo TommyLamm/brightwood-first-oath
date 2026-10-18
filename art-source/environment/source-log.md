@@ -402,3 +402,48 @@ Constraints: true transparent background outside the terrain if present, preserv
 - Tool: built-in ImageGen, `transparent_background=true`. References in order: `art-source/environment/env-tile-slope-t11-06-fresh-candidate-20261018-v2.png` (the exact local edit target), `art-source/environment/forest-style-reference-v1.png`, and `public/assets/environment/env-tile-ground-v1.png`.
 - Generated correction: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-90141abb-5767-435a-8baf-05884694ee4b.png`, generated 2026-10-18 04:58:26 UTC. Unmodified source copy: `art-source/environment/env-tile-slope-t11-06-fresh-correction-20261018-v2.png`; 1254×1254 RGBA, 1,655,252 bytes, SHA-256 `D4FD8B1D125476A84252714545A2754C3775DD94F592276FA0BB95F88C2774EF`. Alpha bounds `(0,0,1238,1254)`, corners transparent. The top row covered 21/1254 columns; left/right edges mismatched on 60/1254 rows (RGBA delta sum 60). Visual review still shows a wavy top edge and bright red/yellow fringe. Reject both images; keep them source-only. No crop, resize, or pixel repair was applied. No runtime PNG or manifest row was added.
 - Unverified: rotated rendering, texture seams after the T07 rotation, and in-game visuals. No build, typecheck, tests, browser, or full-pack check was run.
+
+## T11-06 minimal hard-edge one-shot attempt — 2026-10-18
+
+After the previously recorded platform/slope candidate rounds, one additional low-complexity composition was generated for each remaining key. There was no follow-up correction call. Both originals were copied unchanged into this source directory; both fail geometry or seam acceptance and remain source-only. The call explicitly used the built-in ImageGen tool with `transparent_background=true` and local references inspected with `view_image` first.
+
+### `env:tile-platform` — rejected, source-only
+
+- Full generation prompt:
+
+```text
+Use case: stylized-concept.
+Asset type: production 2D side-scroller terrain sprite env:tile-platform, displayed at exactly 128x32.
+Primary request: make a low-complexity, hard-edge pixel-art floating platform with a perfectly flat stone walking top and simple muted earth below.
+Input images: Image 1 is only the accepted ground tile's warm soil and muted sage/stone palette reference; Image 2 is only the forest pixel-cluster style reference. Do not copy their compositions.
+Canvas and silhouette: exact 4:1 aspect ratio, intended 128x32 canvas. True transparent background. The centered active platform occupies precisely x=8..119 inclusive; both full-height side gutters x=0..7 and x=120..127 are alpha zero. Keep a flat unbroken top surface at y=0 across all 112 active columns. Keep the active tile's first and last columns identical row-by-row in RGBA for a clean repeat when placed at 112px pitch.
+Material: one thin, calm, level, pale gray-sage stone slab at the top, with a compact solid warm gray-brown earth/stone body below. Use simple broad horizontal bands and only a few quiet blocky mineral marks near the center. No grass or foliage.
+Style: very simple crisp pixel clusters with hard, clean pixel edges; low saturation; small gameplay readability; no gradient or blur.
+Constraints: zero alpha in both full-height gutters, no RGB matte/bleed in transparent pixels, no edge outline, colored fringe, halo, glow, red or yellow accent, shine, shadow, spikes, dangling pixels, supports, posts, rails, ropes, background scene, people, creatures, text, symbols, logo, or watermark.
+```
+
+- References in call order: `public/assets/environment/env-tile-ground-v1.png` (accepted material palette only), then `art-source/environment/forest-style-reference-v1.png` (pixel-cluster style only). Both exact local paths were passed as references.
+- Generated original: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-ad000f68-5747-4878-a121-7350bba847a7.png`, generated 2026-10-18 05:13:07 UTC. Unmodified project copy: `art-source/environment/env-tile-platform-t11-06-minimal-attempt-20261018.png`.
+- Source copy verification: 2172×724 RGBA, 600,032 bytes; SHA-256 `7B7E779F3B109D1BB1041754D80AAC822AFCF61E5C6FACB28ADE300140264344`. Its hash matches the generated original. Raw alpha bounds are `(81,9,2104,724)`; all four corner samples are transparent.
+- Target checks: the source is 3:1 rather than the required 4:1 (128×32) canvas. Its nominal 6.25% side gutters (x=0..135 and x=2036..2171) contain 9 nontransparent pixels combined. No artwork is present in source row 0. The nominal inner edge columns x=136 and x=2035 match on all 724 compared rows, but this does not establish the requested 128×32 geometry or transparent gutters. Visual inspection shows a conspicuous thin yellow top fringe, red side fringe, and an irregular lower silhouette. Rejected; no runtime image or manifest row added.
+
+### `env:tile-slope` — rejected, source-only
+
+- Full generation prompt:
+
+```text
+Use case: stylized-concept.
+Asset type: production 2D side-scroller terrain sprite env:tile-slope, displayed at 128x128.
+Primary request: one low-complexity pixel-art wedge of stone and soil with a single crisp 16-degree slope rising from lower-left to upper-right.
+Input images: Image 1 is only the accepted ground tile's warm soil and muted stone palette reference; Image 2 is only the forest pixel-cluster style reference. Do not copy either composition.
+Canvas and geometry: exact square 1:1 target canvas, intended 128x128 display. The terrain is a compact diagonal wedge on true transparent background. Its straight walkable top surface is one clean 4-pixel-thick pale gray-sage stone cap, with a perfectly straight line rising right by 36px over 128px horizontal distance (about 16 degrees): at the left canvas edge it meets y=92, at the right edge y=56. The solid low-saturation earth body fills directly beneath that cap down to the bottom edge. The area above the diagonal and outside the terrain silhouette is fully transparent with genuine alpha zero and clean natural pixel edges. Keep the broad left/right boundary bands calm and simple so repeated slope tiles can join when the next tile is placed 128px to the right and 36px higher.
+Material and style: a flat muted gray-sage stone top over simple warm taupe/ochre-brown earth strata, only a few blocky dark-teal-gray stone details well inside the tile. Hard-edged pixel clusters, broad forms, minimal detail, no gradients, blur, or painterly softness.
+Constraints: preserve the single straight diagonal top and true transparent exterior. No grass, leaves, vines, glowing seams, colored outlines, halo, red/yellow accents, sparkles, detached pixels, jagged surface, stairs, spikes, supports, posts, background scene, people, creatures, text, symbols, logo, or watermark.
+```
+
+- References in call order: `public/assets/environment/env-tile-ground-v1.png` (accepted material palette only), then `art-source/environment/forest-style-reference-v1.png` (pixel-cluster style only). Both exact local paths were passed as references.
+- Generated original: `D:\dev-data\codex-home\generated_images\01a14d56-626a-79a2-816e-3f850203b5f7\exec-3d7196c3-e97f-4310-b01a-3502475a5d9e.png`, generated 2026-10-18 05:16:14 UTC. Unmodified project copy: `art-source/environment/env-tile-slope-t11-06-minimal-attempt-20261018.png`.
+- Source copy verification: 1254×1254 RGBA, 824,110 bytes; SHA-256 `8EC4BB69999E45A9DE4A92E9E0F2BFE9D841ECB28991EDFA5A563A3D7F983555`. Its hash matches the generated original. Raw alpha bounds are `(0,19,1254,1254)`; the bottom-left and bottom-right corner samples are opaque earth.
+- Geometry/seam checks: the alpha≥32 surface endpoints at x=0 and x=1253 are y=979 and y=564, a measured 18.33° rise rather than the specified ~16°. The expected source-scale join offset for 36px rise per 128px tile is about 353 rows; comparing the right edge to the left edge shifted by that offset mismatches on 338 of 901 compared rows (summed RGBA difference 50,454). Visual inspection shows a bright green/yellow fringe along the slope. Rejected; no runtime image or manifest row added.
+
+Neither attempt was cropped, resized, pixel-repaired, or followed by another generation. `public/assets/environment/manifest.json` remains unchanged at 18/20 keys; both missing keys remain absent. These local source metadata, alpha, edge-join, and visual checks do not verify renderer integration or in-game appearance. No build, typecheck, tests, browser, or full-pack check was run.
