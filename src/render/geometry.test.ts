@@ -10,6 +10,7 @@ import {
   PLATFORM_TILE_SIDE_GUTTER,
   platformTilePositions,
   portalFootAnchor,
+  rendererViewportGeometry,
   segmentTileGeometry,
 } from './geometry.js';
 
@@ -82,7 +83,7 @@ describe('renderer terrain geometry', () => {
   });
 
   it('anchors portals and NPC labels to map foot positions', () => {
-    expect(portalFootAnchor({ x: 420, y: 360, id: 'portal-1', targetMapId: 'town', targetSpawnId: 'in', requiredQuestId: null, minLevel: 1 })).toEqual({
+    expect(portalFootAnchor({ x: 420, y: 360 })).toEqual({
       x: 420,
       y: 360,
       originX: 0.5,
@@ -94,5 +95,22 @@ describe('renderer terrain geometry', () => {
       originX: 0.5,
       originY: 1,
     });
+  });
+
+  it('resizes the camera uniformly from the baseline and adapts the visible world extent', () => {
+    expect(rendererViewportGeometry(960, 540)).toEqual({ zoom: 1, worldWidth: 960, worldHeight: 540 });
+    expect(rendererViewportGeometry(1920, 1080)).toEqual({ zoom: 2, worldWidth: 960, worldHeight: 540 });
+
+    const wide = rendererViewportGeometry(1440, 800);
+    expect(wide?.zoom).toBeCloseTo(800 / 540);
+    expect(wide?.worldHeight).toBeCloseTo(540);
+    expect(wide?.worldWidth).toBeGreaterThan(960);
+
+    const tall = rendererViewportGeometry(640, 800);
+    expect(tall?.zoom).toBeCloseTo(640 / 960);
+    expect(tall?.worldWidth).toBeCloseTo(960);
+    expect(tall?.worldHeight).toBeGreaterThan(540);
+    expect(rendererViewportGeometry(0, 540)).toBeNull();
+    expect(rendererViewportGeometry(Number.NaN, 540)).toBeNull();
   });
 });

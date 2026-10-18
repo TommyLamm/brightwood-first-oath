@@ -30,6 +30,28 @@ export const PLATFORM_TILE_SIDE_GUTTER = 8;
 export const PLATFORM_TILE_ACTIVE_PITCH =
   PLATFORM_TILE_DISPLAY_WIDTH - PLATFORM_TILE_SIDE_GUTTER * 2;
 
+export type RendererViewportGeometry = {
+  zoom: number;
+  worldWidth: number;
+  worldHeight: number;
+};
+
+/** Fits the 960x540 baseline without distorting world units or losing visible area. */
+export function rendererViewportGeometry(
+  width: number,
+  height: number,
+  baseWidth = 960,
+  baseHeight = 540,
+): RendererViewportGeometry | null {
+  if (![width, height, baseWidth, baseHeight].every(Number.isFinite)
+    || width <= 0 || height <= 0 || baseWidth <= 0 || baseHeight <= 0) {
+    return null;
+  }
+
+  const zoom = Math.min(width / baseWidth, height / baseHeight);
+  return { zoom, worldWidth: width / zoom, worldHeight: height / zoom };
+}
+
 /** Places overlapping ground tiles from the foothold's left endpoint. */
 export function groundTilePositions(
   foothold: Foothold,

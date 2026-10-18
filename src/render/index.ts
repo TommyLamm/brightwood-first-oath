@@ -26,6 +26,7 @@ import {
   PLATFORM_TILE_DISPLAY_WIDTH,
   platformTilePositions,
   portalFootAnchor,
+  rendererViewportGeometry,
   segmentTileGeometry,
 } from './geometry.js';
 
@@ -953,10 +954,11 @@ export function createWorldRenderer(
       drawSnapshot(snapshot);
     },
     resize(width, height): void {
-      if (disposed || width <= 0 || height <= 0) return;
+      const viewport = rendererViewportGeometry(width, height, BASE_WIDTH, BASE_HEIGHT);
+      if (disposed || !viewport) return;
       const camera = scene.cameras.main;
       camera.setViewport(0, 0, width, height);
-      camera.setZoom(Math.min(width / BASE_WIDTH, height / BASE_HEIGHT));
+      camera.setZoom(viewport.zoom);
       updateBackgroundPositions();
     },
     dispose(): void {
