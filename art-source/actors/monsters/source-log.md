@@ -239,3 +239,77 @@ Boar repair prompt:
 ```text
 Use case: precise-object-edit. Asset type: transparent enemy sprite atlas edge cleanup. Input image 1 is the exact 6x5 red-backed boar atlas. Change only the visible red/colored fringe and stray edge pixels outside boar silhouettes, replacing those pixels with clean transparency or natural antialiased outline consistent with the existing sprite. Preserve every boar, pose, cell position, grid, frame order, baseline, colors and art details; keep exact image dimensions and transparent background. Do not redraw, crop, resize, shift, or add anything. No background, shadows, labels, watermark, props, or extra character.
 ```
+
+### 2026-10-18 T10-06 reattempt — `actor:mushroom` (one new composition)
+
+Before this attempt, at 2026-10-18 01:40:10 UTC, I completed live reads of the following Playroom development/release specifications:
+
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game-agent-template.md
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/game-development.md
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/command-contracts.md
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game.schema.json
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game-release.yml
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/examples/starter/playroom-sdk.js
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/sdk-versioning.md
+- https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/save-compatibility.md
+
+Applicable requirements for this asset-only work: resource paths stay relative; the project remains accurately desktop-only; the game must adapt to iframe sizing and must not navigate out, open popups, submit forms, call account/admin APIs, or be published as part of this task. Scope is limited to the mushroom atlas, this source log, the T10 task status, the T10 and T10-creatures reports, and (only if accepted) its existing creature-subset metadata entry. Acceptance checks are the actual 6×5 image grid and renderer frame/timing convention, per-cell containment and transparent safety margin, coherent sprite silhouette and baseline, readable motion/state poses, alpha/edge cleanliness, and source/runtime hash plus matching metadata if promoted.
+
+Requirements read before implementation: root `AGENTS.md`; `plan/09-parallel-dispatch.md`; `plan/01-game-design.md`; `plan/07-shared-contracts.md`; `plan/08-content-spec.md`; `plan/10-asset-spec.md`; `plan/tasks/T10-actor-assets.md`; `plan/reports/T10.md`; `plan/reports/T10-creatures.md`; this monster source log; `src/contracts/asset-manifest.ts`; the actual renderer animation validator in `src/render/index.ts`; and the existing accepted slime/sentinel subset metadata. The ImageGen skill was read in full. The required local references were viewed before being passed to ImageGen.
+
+Status before generation: previous mushroom attempts 01–04 remain rejected/source-only because visible red edge contamination persisted after the earlier repair. This is a separate new composition, limited to one ImageGen generation and at most one targeted repair; a failed repair will stop this asset attempt.
+
+Generation prompt (full text):
+
+```text
+Use case: stylized-concept.
+Asset type: production enemy animation atlas for an original side-view pixel-art adventure game.
+Input images: Image 1 is the local short-haired traveler style reference, used only for warm palette, outline character, and pixel-art presentation. Image 2 is the accepted forest slime atlas, used only as a guide to sprite scale, compact silhouette, and clean alpha edges. Image 3 is the accepted iron sentinel atlas, used only as a guide to readable stepped contours and animation-cell clarity. Do not copy or include any reference character, prop, background, or design.
+Primary request: create one new original forest mushroom monster, the same recognizable character in every pose. It is a squat cream-colored stalk creature with short root-like olive-green feet, tiny dark expressive eyes, and a broad deep coral-red / warm russet mushroom cap with a few pale cream spots. Keep the cap, face, proportions, spots, and color placement consistent across every frame. The cap is part of the monster, not a hat or a separate object. It should read as a small game enemy with a mildly fierce but charming expression.
+Scene/backdrop: completely transparent canvas, with no scenery or ground plane.
+Style/medium: crisp hand-authored-looking pixel sprite art with stepped pixel-cluster contours, a restrained dark warm outline, compact layered shading, and the same friendly 2D game scale as the references. No 3D rendering, painterly blur, gradients, glow, bloom, or soft antialiasing.
+Composition/framing: one exact 1374×1145 pixel transparent atlas, strict six columns by five rows, each of the 30 cells exactly 229×229 pixels, no gutters, padding between cells, dividers, grid marks, or outer frame. One whole mushroom creature centered in each cell. Keep every silhouette at least 16 fully transparent pixels inside all four edges of its own cell; never crop, touch, overlap, or cross a cell boundary. Keep the feet on one consistent baseline at local cell y=208 in every row, including the dead poses. Keep a compact in-game size, approximately 135 pixels wide and 155 pixels high at most inside each 229-pixel cell.
+Row order, top to bottom: idle, walk, attack, hurt, dead. Use these poses and repeat the final useful pose exactly in unused cells: idle has two subtle breathing/weight-shift poses in columns 1–2, then repeat pose 2 in columns 3–6; walk has six distinct readable waddling steps with alternating feet and a small cap bounce in all six columns; attack has four clear poses (lowered anticipation, brace, cap-first forward headbutt lunge, recoil/recovery), then repeat pose 4 in columns 5–6; hurt has two readable flinch/recoil poses, then repeat pose 2 in columns 3–6; dead has four progressive topple/slump poses ending in a low still heap, then repeat pose 4 in columns 5–6. Keep all actions legible at the small runtime display size.
+Color palette: deep muted coral/russet cap, pale cream spots and stalk face, olive-moss feet, dark umber outline, a few warm brown shadows. Keep red and green tones entirely inside the natural character silhouette; no colored pixels or halos outside it.
+Materials/textures: simple cap shading and sparse crisp spots; no noisy speckles or isolated particles.
+Text (verbatim): none.
+Constraints: preserve the exact 6×5 equal-cell atlas, row order, frame counts and repeated final poses; true alpha outside each sprite; consistent design, scale, and baseline; no name or lettering in the image.
+Avoid: red/yellow/green fringe, matte, halo, detached color specks, soft edge, blur, antialiasing, cast shadow, floor, background, checkerboard, cell borders, captions, labels, logos, watermark, extra monsters, humans, weapons, props, or effects.
+```
+
+Planned single targeted-repair prompt (use only if the generated candidate is structurally usable but needs a focused correction; actual repair wording and result will be recorded before any repair call):
+
+```text
+Use case: precise-object-edit.
+Asset type: transparent sprite atlas repair.
+Input image 1 is the new mushroom atlas to repair. The remaining attached local references are style/alpha references only; do not add or copy their subjects.
+Primary request: make one narrowly scoped correction to the mushroom atlas while preserving the same design and all animation poses. First priority is to clean visible detached colored fringe and soft colored halos outside the natural mushroom silhouettes so those external pixels are fully transparent; use only neighboring natural cap/body/outline colors where an edge pixel belongs to the silhouette. Keep the mushroom itself unchanged.
+Composition/framing: preserve the exact existing 1374×1145 canvas and strict 6×5 grid of 229×229 cells, all cell positions and row order. Keep every sprite fully contained with at least a 16-pixel transparent margin inside its cell and preserve the common local foot baseline at y=208. If the image is not already this exact size/grid, fit the existing frames into that grid without cropping any pose.
+Constraints: preserve the cap, spots, face, colors inside the silhouette, all poses, exact repeated final frames, frame sequence, transparent canvas, and hard pixel-cluster style. Change only the specific defect identified for this repair. No redesign, new pose, extra prop, background, floor, text, grid marks, glow, blur, or watermark.
+```
+
+Generation result:
+- Built-in ImageGen output: `D:\dev-data\codex-home\generated_images\01a14ca6-f044-72d0-9804-f51582846b03\exec-e6ed49f8-5a2d-4e88-bcfc-e0785c02edb6.png` (created 2026-10-18 09:42:16 Asia/Hong_Kong).
+- Unmodified source copy: `art-source/actors/monsters/mushroom/mushroom-atlas-attempt-05.png`.
+- SHA-256 for output and source copy: `AB6682DE0C27EB3E065FFA10489D8D8C7F41FE936728727D009683E8BD8B1DC6` (equal).
+- Dimensions 1374×1145 RGBA; divisible into 6×5 cells of 229×229; all four canvas corners alpha 0. Full-image alpha counts: 823,027 zero; 749,544 partial; 659 fully opaque. Red-dominant nontransparent pixels: 412,520 (mostly cap color; the visual rejection is based on the exterior fringe, not this whole-image count).
+- Full-sheet view: all five action rows are present and recognizable, but visible red edge halos remain around the silhouettes. The per-cell alpha>8 bounds check found unsafe contact with cell edges: several attack poses touch left/right cell boundaries, and rows 1–4 touch cell top or bottom edges; required 16-pixel safe margins are not met. The composition is therefore not eligible for runtime as-is.
+
+Executed one targeted-repair prompt (full text):
+
+```text
+Use case: precise-object-edit.
+Asset type: transparent sprite atlas repair.
+Input images: Image 1 is the local mushroom-atlas-attempt-05 target. Images 2–4 are the accepted slime, sentinel, and traveler style references only; do not add or copy their subjects.
+Primary request: perform one focused correction to the existing mushroom sprites: remove the visible red fringe, colored halo, and detached edge pixels outside each natural silhouette, and make the affected external pixels fully transparent. Preserve the natural red/russet color inside each mushroom cap. Also fit any pose that touches or crosses a cell edge fully inside its own existing cell by uniformly reducing that pose only as much as needed and recentering it. Do not redraw the atlas or invent new poses.
+Composition/framing: keep the exact 1374×1145 canvas and strict 6-column by 5-row grid of 229×229 cells; preserve all current cell positions and row order. Every sprite must have at least 16 pixels of fully transparent safety margin on all four sides inside its own cell. Keep the standing foot baseline consistent at local y=208 for idle, walk, attack, and hurt poses; align the lowest point of each dead pose to the same baseline. Keep each sprite's proportions and contained within its original cell.
+Constraints: preserve the mushroom design, cap, spots, face, palette inside the silhouette, all five action sequences, frame order, and final-pose repeats in unused cells. Keep true alpha outside sprites, crisp stepped pixel contours, and legible poses. Change only external fringe/edge pixels and the scale/placement needed for cell containment. No background, floor, cast shadow, glow, soft blur, antialiasing, grid marks, text, labels, watermark, props, extra character, or redesign.
+```
+
+Repair result:
+- Built-in ImageGen output: `D:\dev-data\codex-home\generated_images\01a14ca6-f044-72d0-9804-f51582846b03\exec-dcc1a23d-49d4-4847-9ec0-d47929484c78.png` (created 2026-10-18 09:47:25 Asia/Hong_Kong).
+- Unmodified source copy: `art-source/actors/monsters/mushroom/mushroom-atlas-attempt-06.png`.
+- SHA-256 for output and source copy: `81B0A3037584B0C70E9B273D4E89244F46434421064FE15692615C9EF4472B89` (equal).
+- Dimensions remain 1374×1145 RGBA, divisible into 6×5 cells of 229×229; all four corners alpha 0. Full-image alpha counts: 824,771 zero; 748,221 partial; 238 fully opaque. Red-dominant nontransparent pixels: 391,376.
+- Full-sheet view still shows conspicuous bright red edge halos and detached red pixels; the repair made the visible fringe worse. Alpha>8 per-cell bounds still have less than 16 pixels of safety margin in every cell: rows 1–3 touch cell bottoms/tops, row 4 touches the cell tops and leaves only 7 pixels at the bottom, and the dead-row poses have only 2–17 pixels of horizontal margin. The required containment and edge checks fail despite correct total dimensions and grid divisibility.
+- Decision: `UNFINISHED`, source-only. The single allowed repair is exhausted. No copy was placed under `public/assets/actors/`, and no `actor:mushroom` image/animation entry was added to `creature-subset-manifest-v1.json`. Attempts 05 and 06 are both preserved unchanged; no further generation or repair will be made for this task.
