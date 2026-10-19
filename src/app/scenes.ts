@@ -87,7 +87,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       const catalog = state.catalog;
       const gameplay = state.gameplay;
       const explicitRetry = state.worldRevision !== this.loadedWorldRevision;
-      if (catalog && gameplay && this.worldRenderer && !gameplay.pendingTransition && explicitRetry) {
+      if (catalog && gameplay && this.worldRenderer && !gameplay.pendingTransition && !this.transitionKey && explicitRetry) {
         this.loadedWorldRevision = state.worldRevision;
         const map = catalog.world.maps[gameplay.saveData.location.mapId];
         if (map && shouldAttemptMapVisualLoad(map.id, this.activeMapId, this.failedMapIds, true)) {
@@ -113,8 +113,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
           }).catch((error: unknown) => {
             if (!this.sys.isActive() || this.transitionKey !== key) return;
             const message = error instanceof Error ? error.message : String(error);
+            this.failedMapIds.add(map.id);
             app.failMapTransition(message);
-            app.reportRuntimeIssue(`地圖載入失敗：${message}`);
             this.statusText?.setText(`地圖載入失敗\n${message}`);
             reportStatus('地圖載入失敗', message);
             this.transitionKey = null;

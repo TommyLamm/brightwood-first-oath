@@ -226,5 +226,62 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   }
   if (reachableMaps.size !== expectedMapIds.length) return failure('All seven maps must be reachable from camp');
 
+  const claimedQuests = new Set<Id>();
+  const rewardedItems = new Set<Id>();
+  for (const questId of expectedQuestIds) {
+    const quest = world.quests[questId]!;
+    const unlockedMaps = new Set<Id>(['camp']);
+    const queue: Id[] = ['camp'];
+    while (queue.length) {
+      const currentId = queue.shift()!;
+      for (const portal of world.maps[currentId]?.portals ?? []) {
+        if ((portal.requiredQuestId === null || claimedQuests.has(portal.requiredQuestId))
+          && !unlockedMaps.has(portal.targetMapId)) {
+          unlockedMaps.add(portal.targetMapId);
+          queue.push(portal.targetMapId);
+        }
+      }
+    }
+    const giverMapId = expectedNpcPlacements[quest.giverNpcId];
+    const turnInMapId = expectedNpcPlacements[quest.turnInNpcId];
+    if (!giverMapId || !unlockedMaps.has(giverMapId)) {
+      return failure(`Quest ${questId} giver NPC is on a locked map: ${giverMapId}`);
+    }
+    if (!turnInMapId || !unlockedMaps.has(turnInMapId)) {
+      return failure(`Quest ${questId} turn-in NPC is on a locked map: ${turnInMapId}`);
+    }
+    for (const objective of quest.objectives) {
+      if (objective.type === 'reach' && !unlockedMaps.has(objective.targetId)) {
+        return failure(`Quest ${questId} reach target is locked at quest stage: ${objective.targetId}`);
+      }
+      if (objective.type === 'kill') {
+        const canKill = [...unlockedMaps].some((mapId) =>
+          world.maps[mapId]?.monsters.some((spawn) => spawn.monsterId === objective.targetId));
+        if (!canKill) return failure(`Quest ${questId} kill target is not in unlocked maps: ${objective.targetId}`);
+      }
+      if (objective.type === 'collect') {
+        const conditionalSource = questDropByQuest[questId];
+        const canCollectConditional = conditionalSource?.itemId === objective.targetId
+          && [...unlockedMaps].some((mapId) =>
+            world.maps[mapId]?.monsters.some((spawn) => spawn.monsterId === conditionalSource.monsterId));
+        const canCollectNormal = [...unlockedMaps].some((mapId) =>
+          world.maps[mapId]?.monsters.some((spawn) =>
+            rules.monsters[spawn.monsterId]?.drops.some((drop) => drop.itemId === objective.targetId && drop.chance > 0)));
+        if (!canCollectConditional && !canCollectNormal && !rewardedItems.has(objective.targetId)) {
+          return failure(`Quest ${questId} collect target is not obtainable in unlocked maps: ${objective.targetId}`);
+        }
+      }
+      if (objective.type === 'equip') {
+        const merchantUnlocked = unlockedMaps.has(expectedNpcPlacements.merchant!);
+        const canBuy = merchantUnlocked && (rules.items[objective.targetId]?.buyPrice ?? 0) > 0;
+        if (!rewardedItems.has(objective.targetId) && !canBuy) {
+          return failure(`Quest ${questId} equip target is not obtainable at quest stage: ${objective.targetId}`);
+        }
+      }
+    }
+    claimedQuests.add(questId);
+    for (const rewardItem of quest.reward.items) rewardedItems.add(rewardItem.itemId);
+  }
+
   return { ok: true, value: world };
 }

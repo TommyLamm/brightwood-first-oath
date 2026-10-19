@@ -463,4 +463,119 @@ describe('app gameplay vertical slice', () => {
     expect(respawned.gameplay?.saveData.player.hp).toBeGreaterThan(0);
     expect(respawned.gameplay?.guardUntilMs).toBe(0);
   });
+
+  it('auto-collects guardian boss drops on death so q08 and chapterComplete can be claimed', () => {
+    const nextEntityId = createNextEntityId('guardian-clear');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.quests = {
+      q01: { status: 'claimed', counters: {} },
+      q02: { status: 'claimed', counters: {} },
+      q03: { status: 'claimed', counters: {} },
+      q04: { status: 'claimed', counters: {} },
+      q05: { status: 'claimed', counters: {} },
+      q06: { status: 'claimed', counters: {} },
+      q07: { status: 'claimed', counters: {} },
+      q08: { status: 'active', counters: { guardian: 0 } },
+    };
+    gameplay.pendingTransition = { mapId: 'guardian-arena', spawnId: 'entry', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+
+    const guardian = gameplay.monsters.find(({ monsterId }) => monsterId === 'guardian')!;
+    gameplay.monsters[0] = {
+      ...guardian,
+      hp: 1,
+      mode: 'idle',
+      movement: {
+        ...guardian.movement,
+        position: { x: gameplay.movement.position.x + 40, y: 600 },
+      },
+    };
+
+    let nowMs = 2000;
+    let screen: ReturnType<typeof stepGameplay>['screen'] = 'playing';
+    for (let tick = 0; tick < 30; tick += 1) {
+      nowMs += 1000 / 60;
+      const step = stepGameplay(gameplay, {
+        catalog,
+        commands: tick === 0 ? [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }] : [],
+        input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+        dtSeconds: 1 / 60,
+        nowMs,
+        random: createSeededRandom(77),
+        nextEntityId,
+      });
+      gameplay = step.gameplay!;
+      screen = step.screen;
+      if (screen === 'result') break;
+    }
+
+    expect(screen).toBe('result');
+    expect(gameplay.bossResult).toBe(true);
+    expect(gameplay.saveData.flags.bossDefeated).toBe(true);
+    expect(gameplay.saveData.quests.q08?.counters.guardian).toBe(1);
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'guardian-core')?.quantity).toBe(1);
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'guardian-sword')?.quantity).toBe(1);
+
+    // Move to keeper in red-ridge and claim q08
+    gameplay.pendingTransition = { mapId: 'red-ridge', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    const keeper = catalog.world.maps['red-ridge']!.npcs.find(({ npcId }) => npcId === 'keeper')!;
+    gameplay.movement.position = { x: keeper.x, y: keeper.y };
+
+    const claimed = stepGameplay(gameplay, {
+      catalog,
+      commands: [{ seq: 2, type: 'claimQuest', payload: { questId: 'q08' } }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs: nowMs + 200,
+      random: createSeededRandom(78),
+      nextEntityId,
+    }).gameplay!;
+
+    expect(claimed.saveData.quests.q08?.status).toBe('claimed');
+    expect(claimed.saveData.flags.chapterComplete).toBe(true);
+    expect(claimed.saveData.player.level).toBe(30);
+    expect(claimed.saveData.player.bag.find(({ itemId }) => itemId === 'guardian-core')).toBeUndefined();
+  });
+
+  it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
+    const nextEntityId = createNextEntityId('sell-and-potions');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
+    gameplay.movement.position = { x: 960, y: 600 };
+    gameplay.saveData.player = {
+      ...gameplay.saveData.player,
+      hp: 10,
+      bag: [
+        { itemId: 'snail-shell', quantity: 2 },
+        { itemId: 'large-red', quantity: 2 },
+      ],
+    };
+
+    const run = (state: typeof gameplay, commands: GameCommand[], nowMs: number) => stepGameplay(state, {
+      catalog,
+      commands,
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs,
+      random: createSeededRandom(12),
+      nextEntityId,
+    }).gameplay!;
+
+    const withoutMerchant = run(gameplay, [{ seq: 1, type: 'sell', payload: { bagIndex: 0, quantity: 1 } }], 1000);
+    expect(withoutMerchant.saveData.player.bag.find(({ itemId }) => itemId === 'snail-shell')?.quantity).toBe(2);
+    expect(withoutMerchant.toast).toContain('木葉商人');
+
+    gameplay.interaction = { npcId: 'merchant', dialogue: [] };
+    const withMerchant = run(gameplay, [{ seq: 2, type: 'sell', payload: { bagIndex: 0, quantity: 1 } }], 2000);
+    expect(withMerchant.saveData.player.bag.find(({ itemId }) => itemId === 'snail-shell')?.quantity).toBe(1);
+
+    const usedFallback = run(withMerchant, [{ seq: 3, type: 'useItem', payload: { itemId: 'small-red' } }], 3000);
+    expect(usedFallback.saveData.player.hp).toBeGreaterThan(10);
+    expect(usedFallback.saveData.player.bag.find(({ itemId }) => itemId === 'large-red')?.quantity).toBe(1);
+  });
 });

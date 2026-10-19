@@ -333,7 +333,9 @@ export function stepGameplay(
   if (screen === 'dead') gameplay.movement = { ...gameplay.movement, mode: 'dead', velocity: { x: 0, y: 0 } };
   if (screen === 'dead' && gameplay.deathAtMs === null) gameplay.deathAtMs = input.nowMs;
   if (gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
-  if (gameplay.bossResult && screen === 'playing') screen = 'result';
+  if (gameplay.bossResult && screen === 'playing' && !gameplay.drops.some(({ itemId }) => itemId === 'guardian-core')) {
+    screen = 'result';
+  }
   return { gameplay, screen, ...(openPanel ? { openPanel } : {}) };
 }
 
@@ -462,6 +464,10 @@ function processCommand(
         : withToast(gameplay, result.message);
     }
     case 'sell': {
+      if (gameplay.interaction?.npcId !== 'merchant'
+        || !nearNpc(gameplay, catalog, 'merchant', INTERACTION_RANGE_PX)) {
+        return withToast(gameplay, '請靠近木葉商人並先與他互動再出售物品。');
+      }
       const result = applyProgressAction(player, { type: 'sell', bagIndex: command.payload.bagIndex, quantity: command.payload.quantity }, catalog.rules);
       return result.ok
         ? { gameplay: withPlayer(gameplay, result.value, null) }
@@ -479,7 +485,15 @@ function processCommand(
     }
     case 'useItem': {
       if (context.nowMs < gameplay.potionReadyAtMs) return withToast(gameplay, '藥水還在冷卻中。');
-      const result = applyProgressAction(player, { type: 'useItem', itemId: command.payload.itemId }, catalog.rules);
+      let itemId = command.payload.itemId;
+      if (itemId === 'small-red' && !player.bag.some((stack) => stack.itemId === 'small-red' && stack.quantity > 0)
+        && player.bag.some((stack) => stack.itemId === 'large-red' && stack.quantity > 0)) {
+        itemId = 'large-red';
+      } else if (itemId === 'small-blue' && !player.bag.some((stack) => stack.itemId === 'small-blue' && stack.quantity > 0)
+        && player.bag.some((stack) => stack.itemId === 'large-blue' && stack.quantity > 0)) {
+        itemId = 'large-blue';
+      }
+      const result = applyProgressAction(player, { type: 'useItem', itemId }, catalog.rules);
       if (!result.ok) return withToast(gameplay, result.message);
       gameplay.potionReadyAtMs = context.nowMs + 1000;
       return { gameplay: withPlayer(gameplay, result.value, null) };
@@ -541,15 +555,22 @@ function processCommand(
       }
       updated = applyProgressAction(claimedPlayer, { type: 'gainReward', reward: { ...claim.value.reward, minLevel: undefined, job: undefined } }, catalog.rules);
       if (!updated.ok) return withToast(gameplay, updated.message);
+      const isChapterComplete = command.payload.questId === 'q08';
       const saveData = {
         ...gameplay.saveData,
         player: updated.value,
         quests: claim.value.nextQuests,
-        flags: command.payload.questId === 'q08'
+        flags: isChapterComplete
           ? { ...gameplay.saveData.flags, chapterComplete: true }
           : gameplay.saveData.flags,
       };
-      return { gameplay: { ...gameplay, saveData, toast: null } };
+      return {
+        gameplay: {
+          ...gameplay,
+          saveData,
+          toast: isChapterComplete ? '已完成第一章「守衛的誓約」，可繼續自由探索木葉世界。' : null,
+        },
+      };
     }
     case 'returnTown':
       if (gameplay.saveData.location.mapId === 'guardian-arena' && !gameplay.bossResult) {
@@ -787,22 +808,60 @@ function applyDeathEvent(
   }
   for (const [questId, conditional] of Object.entries(questDropByQuest)) {
     if (conditional.monsterId === monster.monsterId && gameplay.saveData.quests[questId]?.status === 'active') {
-      drops.push({ itemId: conditional.itemId, quantity: 1, coins: 0 });
+      const quest = catalog.world.quests[questId];
+      const required = quest?.objectives
+        .filter((objective) => objective.type === 'collect' && objective.targetId === conditional.itemId)
+        .reduce((sum, objective) => sum + objective.count, 0) ?? 1;
+      const inBag = gameplay.saveData.player.bag
+        .filter((stack) => stack.itemId === conditional.itemId)
+        .reduce((sum, stack) => sum + stack.quantity, 0);
+      const onGround = gameplay.drops
+        .filter((drop) => drop.itemId === conditional.itemId)
+        .reduce((sum, drop) => sum + drop.quantity, 0);
+      if (inBag + onGround < required) {
+        drops.push({ itemId: conditional.itemId, quantity: 1, coins: 0 });
+      }
     }
   }
 
-  gameplay.drops.push(...drops.map((drop) => ({
-    id: nextEntityId(),
-    ...drop,
-    position: { ...monster.movement.position },
-    expiresAtMs: nowMs + 120_000,
-  })));
   if (monster.monsterId === 'guardian') {
+    const orderedDrops = [...drops].sort((a, b) => {
+      const priority = (entry: typeof drops[number]) =>
+        entry.itemId === null ? 0 : catalog.rules.items[entry.itemId]?.kind === 'quest' ? 1 : 2;
+      return priority(a) - priority(b);
+    });
+    const remainingDrops: typeof drops = [];
+    for (const drop of orderedDrops) {
+      const collected = drop.itemId === null
+        ? applyProgressAction(gameplay.saveData.player, { type: 'gainReward', reward: { exp: 0, coins: drop.coins, items: [] } }, catalog.rules)
+        : applyProgressAction(gameplay.saveData.player, { type: 'addItem', stack: { itemId: drop.itemId, quantity: drop.quantity } }, catalog.rules);
+      if (collected.ok) {
+        gameplay.saveData = { ...gameplay.saveData, player: collected.value };
+      } else {
+        remainingDrops.push(drop);
+      }
+    }
+    gameplay.drops.push(...remainingDrops.map((drop) => ({
+      id: nextEntityId(),
+      ...drop,
+      position: { ...monster.movement.position },
+      expiresAtMs: nowMs + 120_000,
+    })));
     gameplay.saveData = {
       ...gameplay.saveData,
       flags: { ...gameplay.saveData.flags, bossDefeated: true },
     };
     gameplay.bossResult = true;
+    if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
+      gameplay.toast = '背包空間不足，請先整理背包並拾取守衛核心。';
+    }
+  } else {
+    gameplay.drops.push(...drops.map((drop) => ({
+      id: nextEntityId(),
+      ...drop,
+      position: { ...monster.movement.position },
+      expiresAtMs: nowMs + 120_000,
+    })));
   }
   addEffect(gameplay, monster.id, 'damage', definition.exp, nowMs, nextEntityId);
 }

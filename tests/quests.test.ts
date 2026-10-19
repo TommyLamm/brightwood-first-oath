@@ -138,4 +138,21 @@ describe('world and quest content', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.message).toContain('Portal target or spawn');
   });
+
+  it('rejects quests whose objectives require maps that are still locked at that quest stage', () => {
+    const deadlocked = {
+      ...worldCatalog,
+      maps: {
+        ...worldCatalog.maps,
+        town: {
+          ...worldCatalog.maps.town,
+          portals: worldCatalog.maps.town.portals.map((portal) =>
+            portal.targetMapId === 'forest-edge' ? { ...portal, requiredQuestId: 'q03' } : portal),
+        },
+      },
+    };
+    const result = validateWorld(deadlocked, rulesCatalog);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.message).toContain('Quest q03 collect target is not obtainable in unlocked maps: forest-seed');
+  });
 });

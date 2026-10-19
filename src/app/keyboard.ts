@@ -272,14 +272,25 @@ export class KeyboardControls {
   }
 
   private isGameInputFocused(target: EventTarget | null): boolean {
-    const active = this.options.gameRoot.ownerDocument.activeElement;
+    const doc = this.options.gameRoot.ownerDocument;
+    const active = doc.activeElement;
     const targetNode = target !== null && typeof target === 'object' && 'nodeType' in target
       ? target as Node
       : null;
-    return this.options.gameRoot.contains(active)
+    const isBodyOrGameActive = this.options.gameRoot.contains(active)
+      || active === doc.body
+      || active === doc.documentElement
+      || active === null;
+    const isBodyOrGameTarget = targetNode !== null && (
+      this.options.gameRoot.contains(targetNode)
+      || targetNode === doc.body
+      || targetNode === doc.documentElement
+      || targetNode === doc
+    );
+    return isBodyOrGameActive
       && !this.options.uiRoot.contains(active)
-      && targetNode !== null
-      && this.options.gameRoot.contains(targetNode)
+      && isBodyOrGameTarget
+      && !this.options.uiRoot.contains(targetNode)
       && !isTextEntryTarget(active)
       && !isTextEntryTarget(target);
   }

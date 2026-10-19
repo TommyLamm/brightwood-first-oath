@@ -177,7 +177,8 @@ export class GameApp {
         random: this.stateValue.random,
         nextEntityId: this.stateValue.nextEntityId,
       });
-      this.setState({ ...this.stateValue, gameplay: lifecycle.gameplay, screen: lifecycle.screen });
+      const nextPanels = lifecycle.screen !== 'playing' ? [] : this.stateValue.panels;
+      this.setState({ ...this.stateValue, gameplay: lifecycle.gameplay, screen: lifecycle.screen, panels: nextPanels });
     }
     const lifecycleSequences = new Set(lifecycleCommands.map(({ seq }) => seq));
     const commandsWithoutStart = gameplayCommands.filter((command) => !lifecycleSequences.has(command.seq));
@@ -221,7 +222,8 @@ export class GameApp {
         nextEntityId: this.stateValue.nextEntityId,
       });
       const previousGameplay = this.stateValue.gameplay;
-      this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen });
+      const nextPanels = result.screen !== 'playing' ? [] : this.stateValue.panels;
+      this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen, panels: nextPanels });
       if (input.jumpPressed && previousGameplay && result.gameplay
         && ['grounded', 'climbing'].includes(previousGameplay.movement.mode)
         && result.gameplay.movement.mode === 'airborne'
@@ -261,7 +263,7 @@ export class GameApp {
     const { gameplay, catalog, nextEntityId, gameTimeMs } = this.stateValue;
     if (!gameplay || !catalog) return;
     const result = completeMapTransition(gameplay, catalog, nextEntityId, gameTimeMs);
-    this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen });
+    this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen, panels: [] });
     this.checkpointIfChanged(result.gameplay?.saveData ?? null);
   }
 

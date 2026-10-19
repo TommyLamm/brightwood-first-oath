@@ -592,7 +592,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   };
 
   const renderQuestTracker = (view: UiSnapshot): void => {
-    const signature = JSON.stringify({ quests: view.questViews, map: view.saveData?.location.mapId });
+    const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
+    const signature = JSON.stringify({ quests: view.questViews, map: view.saveData?.location.mapId, chapterComplete });
     if (signature === lastQuestSignature) return;
     lastQuestSignature = signature;
     const quest = view.questViews.find((entry) => entry.status === 'ready')
@@ -601,11 +602,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     questTracker.replaceChildren();
     const heading = makeElement(document, 'span', 'ms-quest-tracker__heading', '任務手帳');
     heading.prepend(makeJournalIcon(document, 'quests'));
-    const title = quest?.title ?? '自由探索';
+    const title = quest?.title ?? (chapterComplete ? '第一章完成' : '自由探索');
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
     const recipient = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '任務委託人';
-    const detail = !quest ? '探索世界，尋找新的故事。'
+    const detail = !quest
+      ? (chapterComplete ? '已完成守衛的安息，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
@@ -664,16 +666,31 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (state) state.textContent = reason || ('Rank ' + rank + '・MP ' + skill.mpCost);
       button.title = skill.name + '｜' + skillDetails(skill, rank) + (reason ? '｜' + reason : '');
     }
-    for (const itemId of ['small-red', 'small-blue']) {
-      const button = quickButtons.get(itemId);
+    for (const slotId of ['small-red', 'small-blue'] as const) {
+      const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';
+      const button = quickButtons.get(slotId);
       const state = button?.querySelector<HTMLElement>('.ms-quick-slot__state');
-      const item = view.catalog.rules.items[itemId];
-      const count = player?.bag.find((stack) => stack.itemId === itemId)?.quantity ?? 0;
+      const label = button?.querySelector<HTMLElement>('.ms-quick-slot__label');
+      const iconHost = button?.querySelector<HTMLElement>('.ms-quick-slot__icon');
+      const smallCount = player?.bag
+        .filter((stack) => stack.itemId === slotId)
+        .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
+      const largeCount = player?.bag
+        .filter((stack) => stack.itemId === fallbackId)
+        .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
+      const activeItemId = smallCount > 0 || largeCount === 0 ? slotId : fallbackId;
+      const count = activeItemId === slotId ? smallCount : largeCount;
+      const item = view.catalog.rules.items[activeItemId];
+      if (button) button.dataset.itemId = activeItemId;
+      if (label && item) label.textContent = item.name;
+      if (iconHost && item?.iconKey) {
+        iconHost.replaceChildren(makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-quick-slot__icon-image'));
+      }
       const cooldown = Math.max(0, view.potionReadyAtMs - view.nowMs);
       const reason = count === 0 ? '沒有藥水' : cooldown > 0 ? '冷卻中' : '';
       if (button) button.disabled = !playing || Boolean(reason);
       if (state) state.textContent = reason || ('×' + count);
-      if (button) button.title = (item?.name ?? itemId) + (reason ? '｜' + reason : '');
+      if (button) button.title = (item?.name ?? activeItemId) + (reason ? '｜' + reason : '');
     }
     pickupButton.disabled = !playing;
     interactButton.disabled = !playing;
@@ -846,11 +863,23 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     }
   };
 
+  const focusGameCanvas = (button?: HTMLButtonElement): void => {
+    button?.blur();
+    const active = shell.ownerDocument.activeElement;
+    if (active instanceof HTMLElement && shell.contains(active)) active.blur();
+    const canvas = shell.ownerDocument.querySelector<HTMLCanvasElement>('#game-root canvas');
+    canvas?.focus();
+  };
+
   const renderPanel = (view: UiSnapshot, force = false): void => {
     const panel = view.panels.at(-1) ?? null;
     panelHost.hidden = panel === null;
     if (!panel) {
-      lastPanelSignature = '';
+      if (lastPanelSignature !== '') {
+        lastPanelSignature = '';
+        panelHost.replaceChildren();
+        if (view.screen === 'playing') focusGameCanvas();
+      }
       return;
     }
     const signature = JSON.stringify({
@@ -904,16 +933,20 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       case 'open-panel': {
         const panel = PANEL_ORDER.find((entry) => entry === button.dataset.panel);
         if (!panel) return;
-        dispatchDraft(view.panels.at(-1) === panel
+        const closing = view.panels.at(-1) === panel;
+        dispatchDraft(closing
           ? { type: 'closePanel', payload: {} }
           : { type: 'setPanel', payload: { panel } });
+        focusGameCanvas(button);
         return;
       }
       case 'close-panel':
         dispatchDraft({ type: 'closePanel', payload: {} });
+        if (view.panels.length <= 1) focusGameCanvas(button);
         return;
       case 'continue':
         dispatchDraft({ type: 'continue', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'new-role':
         createRequested = true;
@@ -933,6 +966,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         createRequested = false;
         replaceConfirmed = false;
         dispatchDraft({ type: 'newGame', payload: { name: nameDraft.trim() } });
+        focusGameCanvas(button);
         return;
       case 'create-cancel':
         createRequested = false;
@@ -946,37 +980,46 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       case 'play-temporary':
         dispatchDraft({ type: 'playTemporary', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'toggle-pause':
         dispatchDraft({ type: 'togglePause', payload: {} });
+        if (view.screen === 'paused') focusGameCanvas(button);
         return;
       case 'return-title':
         dispatchDraft({ type: 'returnTitle', payload: {} });
         return;
       case 'respawn':
         dispatchDraft({ type: 'respawn', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'retry-boss':
         dispatchDraft({ type: 'retryBoss', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'return-town':
         if (!view.canReturnTown) return;
         dispatchDraft({ type: 'returnTown', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'attack': {
         const skillId = button.dataset.skillId;
         if (skillId) dispatchDraft({ type: 'attack', payload: { skillId } });
+        focusGameCanvas(button);
         return;
       }
       case 'pickup':
         dispatchDraft({ type: 'pickup', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'interact':
         dispatchDraft({ type: 'interact', payload: {} });
+        focusGameCanvas(button);
         return;
       case 'use-item': {
         const itemId = button.dataset.itemId;
         if (itemId) dispatchDraft({ type: 'useItem', payload: { itemId } });
+        if (view.panels.length === 0) focusGameCanvas(button);
         return;
       }
       case 'select-bag':
@@ -995,8 +1038,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       case 'sell-bag': {
         const bagIndex = Number(button.dataset.bagIndex);
-        const quantity = Number(button.dataset.quantity ?? sellQuantities.get(bagIndex) ?? 1);
-        if (Number.isInteger(bagIndex) && Number.isInteger(quantity) && quantity > 0) {
+        const maxQuantity = view.saveData?.player.bag[bagIndex]?.quantity ?? 1;
+        const rawQuantity = Number(button.dataset.quantity ?? sellQuantities.get(bagIndex) ?? 1);
+        const quantity = clampInteger(rawQuantity, 1, maxQuantity);
+        if (Number.isInteger(bagIndex) && quantity > 0) {
+          sellQuantities.delete(bagIndex);
           dispatchDraft({ type: 'sell', payload: { bagIndex, quantity } });
         }
         return;
@@ -1051,9 +1097,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       case 'toggle-key-guide': {
         keyGuideExpanded = !keyGuideExpanded;
         renderKeyGuide(currentView);
-        button.blur();
-        const canvas = shell.ownerDocument.querySelector<HTMLCanvasElement>('#game-root canvas');
-        canvas?.focus();
+        focusGameCanvas(button);
         return;
       }
     }
@@ -1368,17 +1412,20 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
       }));
     }
     if (item && item.kind !== 'quest' && item.sellPrice > 0) {
+      const atMerchant = view.interaction?.npcId === 'merchant';
       const quantity = makeElement(document, 'input', 'ms-input ms-input--quantity');
       quantity.type = 'number';
       quantity.min = '1';
       quantity.max = String(stack.quantity);
       quantity.step = '1';
-      quantity.value = String(state.sellQuantities.get(bagIndex) ?? 1);
+      quantity.value = String(clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity));
       quantity.dataset.sellQuantity = String(bagIndex);
       quantity.dataset.focus = 'sell-quantity-' + bagIndex;
       quantity.setAttribute('aria-label', '出售數量');
       detail.append(quantity, makeButton(document, '出售選取數量', 'sell-bag', {
         className: 'ms-button ms-button--secondary',
+        disabled: !atMerchant,
+        title: atMerchant ? '出售所選數量' : '需在商人互動中出售',
         data: { bagIndex: String(bagIndex) },
       }));
     }
