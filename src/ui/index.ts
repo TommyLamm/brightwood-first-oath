@@ -568,8 +568,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     );
     const hp = makeMeter(document, 'HP', player.hp, view.stats?.maxHp ?? player.hp, 'hp');
     const mp = makeMeter(document, 'MP', player.mp, view.stats?.maxMp ?? player.mp, 'mp');
+    const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
     const nextExp = view.catalog.rules.progression.expToNext[player.level] ?? 0;
-    const exp = makeMeter(document, 'EXP', player.exp, nextExp, 'exp');
+    const exp = atMaxLevel
+      ? makeMeter(document, 'EXP', 1, 1, 'exp', 'MAX')
+      : makeMeter(document, 'EXP', player.exp, nextExp, 'exp');
     main.append(heading, hp, mp, exp);
     profile.append(portrait, main);
   };
@@ -1238,11 +1241,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   };
 }
 
-function makeMeter(document: Document, label: string, value: number, maximum: number, tone: string): HTMLElement {
+function makeMeter(
+  document: Document,
+  label: string,
+  value: number,
+  maximum: number,
+  tone: string,
+  valueText = formatNumber(value) + ' / ' + formatNumber(maximum),
+): HTMLElement {
   const meter = makeElement(document, 'div', 'ms-meter ms-meter--' + tone);
   const heading = makeElement(document, 'div', 'ms-meter__label');
   heading.append(makeElement(document, 'span', '', label));
-  heading.append(makeElement(document, 'strong', '', formatNumber(value) + ' / ' + formatNumber(maximum)));
+  heading.append(makeElement(document, 'strong', '', valueText));
   const track = makeElement(document, 'div', 'ms-meter__track');
   const fill = makeElement(document, 'span', 'ms-meter__fill');
   fill.style.width = percent(value, maximum) + '%';
