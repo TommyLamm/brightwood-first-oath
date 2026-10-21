@@ -1549,7 +1549,7 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可查看技能。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '可學技能共五種。基本攻擊不可學；敵人招式不會出現在清單。快捷 1／2／3 對應重斬、橫掃、堅韌守護。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '可學技能共五種，升級獲得的 SP 可在這裡分配。快捷 1／2／3 對應重斬、橫掃、堅韌守護。'));
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const skills = Object.values(view.catalog.rules.skills)
     .filter((skill) => skill.requiredJob !== 'enemy' && skill.id !== 'basic')
@@ -1880,7 +1880,8 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   parent.append(volumeGrid, makeSectionTitle(document, '桌面操作說明'));
   const help = makeElement(document, 'ul', 'ms-help-list');
   const helpText = [
-    '移動與跳躍由遊戲畫面取得鍵盤輸入；滑鼠按鈕也可觸發可用操作。',
+    '用鍵盤移動、跳躍與戰鬥；畫面上的按鈕也可以用滑鼠點擊。',
+    '按住拾取鍵可以連續撿起附近的掉落物。',
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
     '技能快捷 1／2／3 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
