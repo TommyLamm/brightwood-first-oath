@@ -139,6 +139,11 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.saveData.quests.q01?.counters.snail).toBe(1);
     expect(gameplay.drops.some(({ coins }) => coins === 5)).toBe(true);
     expect(gameplay.drops.some(({ itemId }) => itemId === 'snail-shell')).toBe(true);
+    // The kill shows its EXP as a reward popup, not as a 'damage' number in the hero's hurt colour.
+    const killEffects = gameplay.effects.filter(({ position }) => position.x === gameplay.monsters.find(({ id }) => id === target.id)?.movement.position.x);
+    expect(killEffects.some(({ kind, value }) => kind === 'exp' && value === 20)).toBe(true);
+    expect(gameplay.effects.some(({ kind }) => kind === 'damage')).toBe(false);
+    expect(gameplay.effects.some(({ kind }) => kind === 'levelup')).toBe(false);
 
     for (let tick = 0; tick < 5; tick += 1) {
       nowMs += 1000 / 60;
@@ -377,6 +382,7 @@ describe('app gameplay vertical slice', () => {
     });
     expect(result.gameplay?.saveData.quests.q04?.status).toBe('claimed');
     expect(result.gameplay?.toast).toBe('完成「菌林調查」：獲得 EXP 1,000、350 金幣、皮帽 ×1，升至 Lv.17。');
+    expect(result.gameplay?.effects.filter(({ kind }) => kind === 'levelup').map(({ value }) => value)).toEqual([17]);
     // The open dialogue no longer tells the player to hand in the quest they just finished.
     expect(result.gameplay?.interaction?.dialogue).not.toContain(worldCatalog.quests.q04!.completeText);
   });

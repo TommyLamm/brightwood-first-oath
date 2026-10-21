@@ -100,7 +100,8 @@ export type SaveValidator = (
 
 export type VisualEvent = {
   id: EntityId;
-  kind: 'damage' | 'levelup' | 'pickup' | 'hit' | 'buff';
+  /** 'exp' is the reward popup over a defeated monster; 'damage' is only damage the hero takes. */
+  kind: 'damage' | 'levelup' | 'pickup' | 'hit' | 'buff' | 'exp';
   position: Vec2;
   value?: number;
   key?: Id;

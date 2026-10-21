@@ -64,7 +64,7 @@ type TextEffect = {
   /** Unstacked x of the event, used to decide which numbers share a spot. */
   anchorX: number;
   startedAtMs: number;
-  kind: 'damage' | 'hit' | 'levelup';
+  kind: 'damage' | 'hit' | 'levelup' | 'exp';
 };
 
 type SpriteEffect = {
@@ -1162,8 +1162,23 @@ export function createWorldRenderer(
         startedAtMs: event.atMs,
         kind: event.kind,
       });
+    } else if (event.kind === 'exp') {
+      // Sits above the killing blow's number and floats with it, in a colour no damage number uses.
+      const position = { x: event.position.x, y: event.position.y - 26 };
+      const object = scene.add.text(position.x, position.y - 20, 'EXP +' + formatDamageNumber(event.value), {
+        color: '#d8f39a', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
+        stroke: '#2c3a1d', strokeThickness: 3,
+      }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
+      eventTexts.set(event.id, {
+        object,
+        expiresAtMs: event.atMs + textLifetimeMs,
+        position,
+        anchorX: event.position.x,
+        startedAtMs: event.atMs,
+        kind: event.kind,
+      });
     } else if (event.kind === 'levelup') {
-      const object = scene.add.text(event.position.x, event.position.y - 55, 'LEVEL UP!', {
+      const object = scene.add.text(event.position.x, event.position.y - 92, 'LEVEL UP!', {
         color: '#fff4a8', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontStyle: 'bold',
         stroke: '#523c2b', strokeThickness: 4,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
@@ -1192,7 +1207,7 @@ export function createWorldRenderer(
         eventTexts.delete(id);
         continue;
       }
-      if (isDamageNumberEvent(entry.kind)) {
+      if (isDamageNumberEvent(entry.kind) || entry.kind === 'exp') {
         const geometry = damageNumberGeometry(entry.position, entry.startedAtMs, nowMs);
         if (geometry) {
           entry.object.setPosition(geometry.x, geometry.y).setAlpha(geometry.alpha).setScale(geometry.scale);

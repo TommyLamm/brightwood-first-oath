@@ -595,6 +595,9 @@ function processCommand(
       updated = applyProgressAction(claimedPlayer, { type: 'gainReward', reward: { ...claim.value.reward, minLevel: undefined, job: undefined } }, catalog.rules);
       if (!updated.ok) return withToast(gameplay, updated.message);
       const isChapterComplete = command.payload.questId === 'q08';
+      if (updated.value.level > player.level) {
+        addEffect(gameplay, gameplay.playerEntityId, 'levelup', updated.value.level, context.nowMs, context.nextEntityId);
+      }
       const saveData = {
         ...gameplay.saveData,
         player: updated.value,
@@ -865,6 +868,7 @@ function applyDeathEvent(
     type: 'gainReward',
     reward: { exp: definition.exp, coins: 0, items: [] },
   }, catalog.rules);
+  const levelBefore = gameplay.saveData.player.level;
   if (rewarded.ok) gameplay.saveData = { ...gameplay.saveData, player: rewarded.value };
   gameplay.saveData = {
     ...gameplay.saveData,
@@ -939,7 +943,11 @@ function applyDeathEvent(
       expiresAtMs: nowMs + 120_000,
     })));
   }
-  addEffect(gameplay, monster.id, 'damage', definition.exp, nowMs, nextEntityId);
+  // The reward used to be emitted as 'damage', so a kill printed its EXP in the hero's hurt colour.
+  if (rewarded.ok && definition.exp > 0) addEffect(gameplay, monster.id, 'exp', definition.exp, nowMs, nextEntityId);
+  if (gameplay.saveData.player.level > levelBefore) {
+    addEffect(gameplay, gameplay.playerEntityId, 'levelup', gameplay.saveData.player.level, nowMs, nextEntityId);
+  }
 }
 
 function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): CombatActor[] {
