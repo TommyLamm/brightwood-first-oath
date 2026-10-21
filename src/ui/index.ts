@@ -280,6 +280,19 @@ function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): str
   ].join('\n');
 }
 
+/** Gear the hero can wear now that beats the equipped piece on some stat and loses on none. */
+function isWearableUpgrade(
+  view: UiSnapshot,
+  player: NonNullable<UiSnapshot['saveData']>['player'],
+  item: UiSnapshot['catalog']['rules']['items'][string],
+): boolean {
+  if (!item.slot || player.level < item.minLevel) return false;
+  const currentId = player.equipment[item.slot];
+  const current = currentId ? view.catalog.rules.items[currentId] : undefined;
+  const deltas = (['attack', 'defense', 'hpBonus'] as const).map((key) => (item[key] ?? 0) - (current?.[key] ?? 0));
+  return deltas.some((delta) => delta > 0) && deltas.every((delta) => delta >= 0);
+}
+
 function targetName(view: UiSnapshot, id: string, type: string): string {
   if (type === 'kill') return view.catalog.rules.monsters[id]?.name ?? id;
   if (type === 'reach') return view.catalog.world.maps[id]?.name ?? id;
@@ -1535,6 +1548,12 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     );
     // A lone item (gear, quest pieces) needs no count; only stacks get the corner badge.
     if (stack.quantity > 1) slot.append(makeElement(document, 'span', 'ms-bag-slot__quantity', '×' + stack.quantity));
+    if (item && isWearableUpgrade(view, player, item)) {
+      const upgrade = makeElement(document, 'span', 'ms-bag-slot__upgrade', '▲');
+      upgrade.title = '比目前裝備更好';
+      slot.append(upgrade);
+      slot.setAttribute('aria-label', slot.getAttribute('aria-label') + '，可升級裝備');
+    }
     grid.append(slot);
   }
   layout.append(grid);
