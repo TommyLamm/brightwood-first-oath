@@ -292,6 +292,36 @@ describe('app gameplay vertical slice', () => {
     expect(result.gameplay?.combat.attacks).toHaveLength(0);
   });
 
+  it('announces a finished quest and keeps the notice through the next swing', () => {
+    const nextEntityId = createNextEntityId('quest-ready');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    const accepted = acceptQuest(gameplay.saveData, 'q01', catalog);
+    if (!accepted.ok) throw new Error(accepted.message);
+    gameplay.saveData = { ...accepted.value, quests: { ...accepted.value.quests, q01: { status: 'active', counters: { snail: 2 } } } };
+    const target = gameplay.monsters[0]!;
+    gameplay.monsters[0] = {
+      ...target, hp: 1, mode: 'patrol',
+      movement: { ...target.movement, position: { x: gameplay.movement.position.x + 45, y: 600 }, velocity: { x: 0, y: 0 }, mode: 'grounded', footholdId: 'camp:ground' },
+    };
+    const random = createSeededRandom(77);
+    const idle = { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false };
+    let nowMs = 1000;
+    const step = (commands: GameCommand[]) => {
+      gameplay = stepGameplay(gameplay, { catalog, commands, input: idle, dtSeconds: 1 / 60, nowMs, random, nextEntityId }).gameplay!;
+      nowMs += 1000 / 60;
+    };
+    step([{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }]);
+    for (let tick = 0; tick < 40 && gameplay.saveData.quests.q01?.counters.snail !== 3; tick += 1) step([]);
+    expect(gameplay.saveData.quests.q01?.counters.snail).toBe(3);
+    const notice = '「第一次出發」的目標已完成！回到晨光營地向森芽回報。';
+    expect(gameplay.toast).toBe(notice);
+    nowMs += 1000;
+    step([{ seq: 2, type: 'attack', payload: { skillId: 'basic' } }]);
+    expect(gameplay.toast).toBe(notice);
+  });
+
   it('names the skill and the next step when a locked skill is pressed', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('locked-skill'));
     if ('error' in started) throw new Error(started.error);
