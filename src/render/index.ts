@@ -106,6 +106,16 @@ const HERO_ANCHOR_FRAME_COUNTS: Record<HeroAnchorPose, number> = {
 };
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
+/**
+ * Maps that share a background theme get a light colour wash over the parallax layers so they
+ * do not look identical: three maps use 'rock' and two use 'forest'. Terrain and actors stay
+ * untouched. A rectangle overlay is used because the CANVAS renderer does not support tint.
+ */
+const MAP_ATMOSPHERE: Readonly<Record<string, { color: number; alpha: number }>> = {
+  'mushroom-wood': { color: 0x1d3a2c, alpha: 0.22 },
+  'mine-gate': { color: 0x1c2233, alpha: 0.26 },
+  'guardian-arena': { color: 0x3b1222, alpha: 0.3 },
+};
 const BACKGROUND_LAYERS = [
   { name: 'sky', factor: 0, depth: WORLD_DEPTH.sky },
   { name: 'far', factor: 0.2, depth: WORLD_DEPTH.far },
@@ -641,6 +651,12 @@ export function createWorldRenderer(
       background.setTileScale(scale.x, scale.y);
       backgrounds.push(background);
       environmentTextureKeys.add(key);
+    }
+    const atmosphere = MAP_ATMOSPHERE[map.id];
+    if (atmosphere) {
+      const wash = scene.add.container(0, 0).setDepth(WORLD_DEPTH.mid + 0.5).setScrollFactor(0);
+      wash.add(scene.add.rectangle(-BASE_WIDTH, -BASE_HEIGHT, BASE_WIDTH * 3, BASE_HEIGHT * 3, atmosphere.color, atmosphere.alpha).setOrigin(0, 0));
+      layers.push(wash);
     }
 
     for (const foothold of map.footholds) {
