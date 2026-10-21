@@ -286,6 +286,8 @@
 .ms-button--primary, .ms-button--secondary { border-color: #7b6841 !important; color: #fff0cb !important; background: linear-gradient(#72805b, #4c6148) !important; }
 .ms-button--danger { border-color: #794d32 !important; color: #ffebc9 !important; background: linear-gradient(#a56641, #78452d) !important; }
 .ms-screen-layer { position: absolute; background: #25271d66; }
+.maple-ui.is-pregame .ms-screen-layer { background: linear-gradient(#1b1d15a6, #1b1d15d9), var(--title-backdrop) center / cover no-repeat, #25271d; }
+.maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
 .ms-screen-card { outline: 0; padding: 20px; }
 .ms-screen-card h1 { color: #65482b; }
 .ms-screen-card__description { color: #786145; }

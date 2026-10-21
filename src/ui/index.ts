@@ -348,6 +348,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   })) {
     shell.style.setProperty('--journal-' + name, 'url("' + new URL('assets/interface/journal/' + file + '.png', document.baseURI).href + '")');
   }
+  shell.style.setProperty('--title-backdrop', 'url("' + new URL('cover.png', document.baseURI).href + '")');
 
   const header = makeElement(document, 'header', 'ms-header');
   const keyGuide = makeElement(document, 'div', 'ms-key-guide');
@@ -778,7 +779,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
         const card = makeScreenCard(document, 'Brightwood: First Oath', '使用鍵盤與滑鼠探索地區、完成任務並管理角色。');
-        const status = makeElement(document, 'p', 'ms-screen-card__status', statusLabel(view.saveStatus));
+        const status = makeElement(document, 'p', 'ms-screen-card__status', '存檔狀態：' + statusLabel(view.saveStatus));
         card.append(status);
         if (view.saveStatus === 'loadError') {
           card.append(
@@ -1130,6 +1131,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const render = (view: UiSnapshot): void => {
     if (disposed) return;
     currentView = view;
+    // Before a character is in the world, hide the empty in-game HUD and show the cover art instead.
+    shell.classList.toggle('is-pregame', createRequested
+      || view.screen === 'title' || view.screen === 'create' || view.screen === 'loading' || view.screen === 'error');
     renderProfile(view);
     renderMapIndicator(view);
     updateQuickButtons(view);
