@@ -283,6 +283,28 @@ describe('app gameplay vertical slice', () => {
     expect(result.gameplay?.combat.attacks).toHaveLength(0);
   });
 
+  it('ignores a skill pressed mid-swing without a toast', () => {
+    const started = startNewGame('旅人', catalog, createNextEntityId('mid-swing'));
+    if ('error' in started) throw new Error(started.error);
+    const gameplay = started.gameplay;
+    gameplay.saveData.player = {
+      ...gameplay.saveData.player, job: 'swordsman', level: 10, exp: 0, sp: 0, mp: 50,
+      skillRanks: { 'heavy-strike': 1 },
+    };
+    const input = { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false };
+    const swung = stepGameplay(gameplay, {
+      catalog, commands: [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }], input,
+      dtSeconds: 0, nowMs: 1000, random: createSeededRandom(1), nextEntityId: createNextEntityId('mid-swing-a'),
+    }).gameplay!;
+    expect(swung.combat.attacks).toHaveLength(1);
+    const pressed = stepGameplay(swung, {
+      catalog, commands: [{ seq: 2, type: 'attack', payload: { skillId: 'heavy-strike' } }], input,
+      dtSeconds: 1 / 60, nowMs: 1016, random: createSeededRandom(2), nextEntityId: createNextEntityId('mid-swing-b'),
+    }).gameplay!;
+    expect(pressed.toast).toBeNull();
+    expect(pressed.saveData.player.mp).toBe(50);
+  });
+
   it('keeps quest items and quest state when a full bag cannot accept the reward', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('claim-full'));
     if ('error' in started) throw new Error(started.error);

@@ -438,8 +438,9 @@ function processCommand(
         skillId: skill.id,
       }, actors, catalog.rules, context.nowMs, context.nextEntityId);
       if (!proposal.ok) {
-        // Mashing the basic attack during its own animation/cooldown is normal input, not an error.
-        if (skill.id === 'basic' && (proposal.code === 'COOLDOWN' || proposal.code === 'NOT_READY')) return { gameplay };
+        // Mashing keys while a swing is still playing is normal input, not an error; neither is
+        // mashing the basic attack during its own cooldown. Skill cooldowns still explain themselves.
+        if (proposal.code === 'NOT_READY' || (skill.id === 'basic' && proposal.code === 'COOLDOWN')) return { gameplay };
         return withToast(gameplay, attackFailureMessage(proposal.code));
       }
       const mp = skill.mpCost > 0
