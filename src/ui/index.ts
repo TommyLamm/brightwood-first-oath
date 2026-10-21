@@ -924,6 +924,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const renderPanel = (view: UiSnapshot, force = false): void => {
     const panel = view.panels.at(-1) ?? null;
+    // Leaving settings mid-rebind used to keep 「按鍵中…」 armed (and old feedback) for the next visit.
+    if (panel !== 'settings' && (pendingBinding !== null || bindingMessage !== '')) {
+      pendingBinding = null;
+      bindingMessage = '';
+      bindingMessageAction = null;
+    }
     panelHost.hidden = panel === null;
     if (!panel) {
       if (lastPanelSignature !== '') {
