@@ -42,7 +42,7 @@
 .ms-screen-card,
 .ms-key-guide__card {
   border: 22px solid transparent;
-  border-image: var(--journal-panel) 190 fill / 22px / 0 stretch;
+  border-image: var(--journal-panel) 95 fill / 22px / 0 stretch;
   border-radius: 0;
   background: none;
   box-shadow: none;
@@ -68,7 +68,7 @@
   gap: clamp(10px, 1cqw, 20px);
   padding: 0 7px;
   border: 24px solid transparent;
-  border-image: var(--journal-panel) 190 fill / 24px / 0 stretch;
+  border-image: var(--journal-panel) 95 fill / 24px / 0 stretch;
   background: none;
   outline: 0;
 }
@@ -175,7 +175,7 @@
   width: min(310px, 100%);
   padding: 3px 7px;
   border: 18px solid transparent;
-  border-image: var(--journal-panel) 190 fill / 18px / 0 stretch;
+  border-image: var(--journal-panel) 95 fill / 18px / 0 stretch;
   border-radius: 0;
   outline: 0;
   background: none;
@@ -247,7 +247,7 @@
   min-height: clamp(82px, 6.8cqw, 130px);
   padding: 18px 0 4px;
   border: 10px solid transparent;
-  border-image: var(--journal-panel) 190 fill / 10px / 0 stretch;
+  border-image: var(--journal-panel) 95 fill / 10px / 0 stretch;
   border-radius: 0;
   background: none;
   box-shadow: none;
