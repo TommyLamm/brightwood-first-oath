@@ -227,6 +227,9 @@ export function stepGameplay(
   // AI intent and monster movement precede player movement; T06 emits attack
   // requests here but T03 resolves them only after both sides have moved.
   const playerBeforeMove = playerCombatActor(gameplay, catalog, input.nowMs);
+  // stepActors omits monsters whose respawn is due, so keep the pre-step list
+  // to resolve each respawn request back to its spawn placement.
+  const monstersBeforeStep = gameplay.monsters;
   const actorStep = stepActors(
     gameplay.monsters,
     playerBeforeMove,
@@ -321,7 +324,7 @@ export function stepGameplay(
 
   if (actorStep.respawnRequests.length > 0) {
     const replacements = actorStep.respawnRequests.map((oldId) => {
-      const old = gameplay!.monsters.find(({ id }) => id === oldId);
+      const old = monstersBeforeStep.find(({ id }) => id === oldId);
       const spawn = old && map.monsters.find(({ spawnId }) => spawnId === old.spawnId);
       return spawn ? createMonster(input.nextEntityId(), spawn, map, catalog.rules) : null;
     }).filter((monster): monster is MonsterState => monster !== null);
