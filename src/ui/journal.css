@@ -106,7 +106,8 @@
   image-rendering: pixelated;
 }
 
-.ms-profile__main { gap: clamp(6px, .6cqw, 11px); }
+/* minmax(0, 1fr): a long hero name used to widen the grid column and push the meter values out of the frame. */
+.ms-profile__main { gap: clamp(6px, .6cqw, 11px); grid-template-columns: minmax(0, 1fr); }
 .ms-profile__heading { flex-wrap: nowrap; gap: 6px; }
 .ms-profile__heading strong { flex: 1; min-width: 0; font-size: clamp(16px, 1.4cqw, 26px); color: #37271b; }
 .ms-badge { border-radius: 3px; border-color: #b49568; color: #614c31; background: #e0cea9; text-shadow: none; }
