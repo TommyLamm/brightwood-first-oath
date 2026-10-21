@@ -1649,18 +1649,18 @@ function buildQuestsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
           missing.length ? '完成' + missing.join('、') + '後解鎖' : '',
           levelShort ? '需要 Lv.' + definition.minLevel : '',
         ].filter(Boolean).join('・') || '尚未解鎖';
-        card.append(makeElement(document, 'h4', '', quest.title), makeBadge(document, group.label, 'category'), makeElement(document, 'p', 'ms-detail-copy', hint));
+        card.append(makeElement(document, 'h4', '', quest.title), makeElement(document, 'p', 'ms-detail-copy', hint));
         section.append(card);
         continue;
       }
-      card.append(
-        makeElement(document, 'div', 'ms-quest-card__head'),
+      // Title first with the NPC badges beside it; the section heading already names the status.
+      const head = makeElement(document, 'div', 'ms-quest-card__head');
+      head.append(
         makeElement(document, 'h4', '', quest.title),
-        makeBadge(document, group.label, 'category'),
-        makeElement(document, 'p', 'ms-detail-copy', definition?.summary ?? '任務說明目前無法載入。'),
+        makeBadge(document, '接取：' + giver, 'neutral'),
+        makeBadge(document, '回報：' + turnIn, 'neutral'),
       );
-      const head = card.querySelector('.ms-quest-card__head');
-      head?.append(makeBadge(document, '接取：' + giver, 'neutral'), makeBadge(document, '回報：' + turnIn, 'neutral'));
+      card.append(head, makeElement(document, 'p', 'ms-detail-copy', definition?.summary ?? '任務說明目前無法載入。'));
       const objectives = makeElement(document, 'ul', 'ms-objectives');
       for (const objective of quest.objectives) objectives.append(makeElement(document, 'li', '', objectiveText(view, objective)));
       card.append(objectives, makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
