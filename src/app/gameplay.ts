@@ -691,7 +691,7 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
   if (portal) {
     if (gameplay.saveData.player.level < portal.minLevel) return withToast(gameplay, `需要等級 ${portal.minLevel} 才能通過。`);
     if (portal.requiredQuestId && gameplay.saveData.quests[portal.requiredQuestId]?.status !== 'claimed') {
-      return withToast(gameplay, '尚未完成通往前方道路的任務。');
+      return withToast(gameplay, lockedPortalMessage(gameplay.saveData, portal.requiredQuestId, portal.targetMapId, catalog));
     }
     return requestTransition(gameplay, portal.targetMapId, portal.targetSpawnId, 'travel', catalog);
   }
@@ -1063,6 +1063,18 @@ function skillLockedMessage(
   if (player.job !== 'swordsman') return '轉職為劍士後才能使用「' + skill.name + '」。';
   if (player.level < skill.requiredLevel) return '「' + skill.name + '」需要 Lv.' + skill.requiredLevel + ' 才能學習。';
   return '尚未學會「' + skill.name + '」，請在技能面板用 SP 學習。';
+}
+
+// Names the quest that opens the road, the destination, and the next step for its current state.
+function lockedPortalMessage(saveData: SaveData, questId: string, targetMapId: string, catalog: ContentCatalog): string {
+  const quest = catalog.world.quests[questId];
+  const place = catalog.world.maps[targetMapId]?.name ?? '前方';
+  if (!quest) return '尚未完成通往' + place + '的任務。';
+  const npcName = (id: string) => catalog.world.npcs[id]?.name ?? '委託人';
+  const status = getQuestView(saveData, questId, catalog).status;
+  if (status === 'ready') return '向' + npcName(quest.turnInNpcId) + '回報「' + quest.name + '」後才能前往' + place + '。';
+  if (status === 'active') return '完成任務「' + quest.name + '」後才能前往' + place + '。';
+  return '向' + npcName(quest.giverNpcId) + '接取並完成「' + quest.name + '」後才能前往' + place + '。';
 }
 
 // The progression layer only says "MP 不足。"; say how much the skill needs and what the hero has.
