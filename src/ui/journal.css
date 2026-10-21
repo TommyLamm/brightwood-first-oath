@@ -388,3 +388,20 @@
 .ms-toast.ms-toast--top { top: 10px; bottom: auto; }
 
 .ms-quest-tracker__place { display: inline-block; white-space: nowrap; }
+
+/* On 1080p and larger screens the profile and quickbar scale up with the viewport, but the quest
+   tracker, context buttons and save status kept their 11–13 px laptop sizes and looked like fine print. */
+@container (min-width: 1800px) and (min-height: 950px) {
+  .maple-ui .ms-quest-tracker { width: min(400px, 100%); }
+  .ms-quest-tracker__heading { font-size: 16px; }
+  .ms-quest-tracker__heading .ms-journal-icon { width: 32px; height: 32px; }
+  .ms-quest-tracker > strong { font-size: 19px; }
+  .ms-quest-tracker__detail { font-size: 16px; }
+  .ms-action-bar { max-width: 340px; gap: 8px; }
+  .ms-action-bar .ms-button { padding: 7px 12px; min-height: 38px; font-size: 14px; }
+  .ms-footer { font-size: 13px; }
+  .ms-map-indicator__coins { font-size: 14px; }
+  .ms-quick-slot__key { min-width: 32px; height: 30px; font-size: 14px; }
+  .ms-quick-slot--item .ms-quick-slot__state { right: 10px; bottom: 8px; font-size: 13px; line-height: 17px; }
+  .ms-quick-slot.is-unavailable .ms-quick-slot__state { font-size: 12px; line-height: 16px; }
+}
