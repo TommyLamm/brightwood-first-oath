@@ -419,7 +419,7 @@ function processCommand(
       if (skill.kind === 'buff') {
         const rank = player.skillRanks[skill.id] ?? 0;
         if (rank < 1 || player.job !== 'swordsman' || player.level < skill.requiredLevel) {
-          return withToast(gameplay, '尚未學會或符合施放此技能的條件。');
+          return withToast(gameplay, skillLockedMessage(skill, player));
         }
         const readyAt = gameplay.combat.cooldowns[gameplay.playerEntityId]?.[skill.id] ?? 0;
         if (context.nowMs < readyAt) return withToast(gameplay, '技能還在冷卻中。');
@@ -459,6 +459,7 @@ function processCommand(
         // Mashing keys while a swing is still playing is normal input, not an error; neither is
         // mashing the basic attack during its own cooldown. Skill cooldowns still explain themselves.
         if (proposal.code === 'NOT_READY' || (skill.id === 'basic' && proposal.code === 'COOLDOWN')) return { gameplay };
+        if (proposal.code === 'REQUIREMENT') return withToast(gameplay, skillLockedMessage(skill, player));
         return withToast(gameplay, attackFailureMessage(proposal.code));
       }
       delete gameplay.bufferedAttack;
@@ -1052,6 +1053,16 @@ function questRewardToast(
   const levelUp = levelAfter > levelBefore ? '，升至 Lv.' + levelAfter : '';
   const job = reward.job === 'swordsman' ? '，正式成為劍士' : '';
   return '完成「' + questName + '」：獲得 ' + parts.join('、') + levelUp + job + '。';
+}
+
+// Names the skill and the next step instead of a generic "not learned or not allowed".
+function skillLockedMessage(
+  skill: { name: string; requiredLevel: number },
+  player: { job: string; level: number },
+): string {
+  if (player.job !== 'swordsman') return '轉職為劍士後才能使用「' + skill.name + '」。';
+  if (player.level < skill.requiredLevel) return '「' + skill.name + '」需要 Lv.' + skill.requiredLevel + ' 才能學習。';
+  return '尚未學會「' + skill.name + '」，請在技能面板用 SP 學習。';
 }
 
 function attackFailureMessage(code: string): string {
