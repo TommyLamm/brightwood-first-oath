@@ -1714,7 +1714,9 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const skills = Object.values(view.catalog.rules.skills)
     .filter((skill) => skill.requiredJob !== 'enemy' && skill.id !== 'basic')
-    .sort((a, b) => a.requiredLevel - b.requiredLevel || a.id.localeCompare(b.id));
+    // Castable skills first, in quickbar order (1 重斬, 2 橫掃, 3 堅韌守護), then passives.
+    .sort((a, b) => Number(a.kind === 'passive') - Number(b.kind === 'passive')
+      || a.requiredLevel - b.requiredLevel || a.id.localeCompare(b.id));
   for (const skill of skills) {
     const rank = player.skillRanks[skill.id] ?? 0;
     const learned = rank > 0;
@@ -1739,7 +1741,8 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
       title: reason || '消耗 1 SP 學習或提升技能',
       data: { skillId: skill.id },
     }));
-    if (reason) card.append(makeElement(document, 'span', 'ms-disabled-reason', reason));
+    // The 已滿級 button already says it; only explain blockers the player can act on.
+    if (reason && rankReady) card.append(makeElement(document, 'span', 'ms-disabled-reason', reason));
     grid.append(card);
   }
   parent.append(grid);
