@@ -400,6 +400,7 @@ export function makeWorldSnapshot(
       maxHp: stats.maxHp,
       animationKey,
       visual: { ...gameplay.saveData.player.equipment },
+      invulnerableUntilMs: gameplay.invulnerableUntilMs,
     },
     monsters: gameplay.monsters,
     drops: gameplay.drops,

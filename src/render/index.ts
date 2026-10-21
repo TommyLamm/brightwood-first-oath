@@ -914,6 +914,11 @@ export function createWorldRenderer(
       );
       drawEquipment('hat', snapshot.player.visual.hat, head, snapshot.player.movement.facing, playerSprite.depth);
     }
+    // Flicker through the post-hit grace period so the player can see they can't be hit again yet.
+    const graceLeftMs = (snapshot.player.invulnerableUntilMs ?? 0) - snapshot.nowMs;
+    const heroAlpha = snapshot.player.hp > 0 && graceLeftMs > 0 && Math.floor(graceLeftMs / 100) % 2 === 0 ? 0.35 : 1;
+    playerSprite.setAlpha(heroAlpha);
+    for (const sprite of gearSprites.values()) sprite.setAlpha(heroAlpha);
     const questNpcIds = questMarkerNpcIds(snapshot.questViews, catalog.world.quests);
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];

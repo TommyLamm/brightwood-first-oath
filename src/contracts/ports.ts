@@ -128,6 +128,8 @@ export type WorldSnapshot = {
     maxHp: number;
     animationKey: string;
     visual: { weapon: Id | null; body: Id | null; hat: Id | null };
+    /** Hit or respawn grace period; the renderer flickers the hero until then. */
+    invulnerableUntilMs?: number;
   };
   monsters: MonsterState[];
   drops: DropState[];
