@@ -309,6 +309,22 @@ describe('app gameplay vertical slice', () => {
     expect(press('iron-guard', 5)).toMatch(/^MP 不足：「堅韌守護」需要 \d+ MP，目前只有 3。$/);
   });
 
+  it('plays the hero buff pose briefly after casting 堅韌守護', () => {
+    const started = startNewGame('旅人', catalog, createNextEntityId('buff-pose'));
+    if ('error' in started) throw new Error(started.error);
+    started.gameplay.saveData.player = {
+      ...started.gameplay.saveData.player, job: 'swordsman', level: 14, mp: 50, skillRanks: { 'iron-guard': 1 },
+    };
+    const cast = stepGameplay(started.gameplay, {
+      catalog, commands: [{ seq: 1, type: 'attack', payload: { skillId: 'iron-guard' } }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0, nowMs: 5000, random: createSeededRandom(1), nextEntityId: createNextEntityId('buff-pose-a'),
+    }).gameplay!;
+    cast.movement = { ...cast.movement, mode: 'grounded', velocity: { x: 0, y: 0 } };
+    expect(makeWorldSnapshot(cast, catalog, 5100).player.animationKey).toBe('buff');
+    expect(makeWorldSnapshot(cast, catalog, 5500).player.animationKey).toBe('idle');
+  });
+
   it('buffers a skill pressed mid-swing without a toast', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('mid-swing'));
     if ('error' in started) throw new Error(started.error);

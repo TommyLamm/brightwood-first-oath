@@ -44,6 +44,8 @@ export type GameplayState = {
   toastShown?: { text: string; atMs: number };
   /** A skill pressed while the previous swing was still playing; it fires as soon as the swing ends. */
   bufferedAttack?: { skillId: Id; expiresAtMs: number };
+  /** When 堅韌守護 was last cast, so the hero plays the buff pose for a moment (runtime only). */
+  buffCastAtMs?: number;
   interaction: { npcId: Id; dialogue: string[] } | null;
   pendingTransition: { mapId: Id; spawnId: Id; after: 'travel' | 'respawn' | 'retryBoss' } | null;
 };
@@ -381,7 +383,10 @@ export function makeWorldSnapshot(
     ? 'climb'
     : movement.mode === 'airborne'
       ? movement.velocity.y < 0 ? 'jump' : 'fall'
-      : Math.abs(movement.velocity.x) > 0.1 ? 'walk' : 'idle';
+      : Math.abs(movement.velocity.x) > 0.1
+        ? 'walk'
+        // The hero's buff pose was loaded but never requested, so casting 堅韌守護 showed no motion.
+        : gameplay.buffCastAtMs !== undefined && nowMs >= gameplay.buffCastAtMs && nowMs - gameplay.buffCastAtMs < BUFF_POSE_MS ? 'buff' : 'idle';
   const questViews = Object.keys(catalog.world.quests)
     .map((questId) => getQuestView(gameplay.saveData, questId, catalog));
   return {
@@ -438,6 +443,7 @@ function processCommand(
         };
         gameplay.guardUntilMs = context.nowMs + skill.durationMs;
         gameplay.attackOrDamageAtMs = context.nowMs;
+        gameplay.buffCastAtMs = context.nowMs;
         gameplay.toast = null;
         addEffect(gameplay, gameplay.playerEntityId, 'buff', rank, context.nowMs, context.nextEntityId);
         return { gameplay };
@@ -827,6 +833,7 @@ export function failMapTransition(current: GameplayState, message: string): Game
 const TOAST_DURATION_MS = 6000;
 /** How long a skill pressed mid-swing waits for the swing to finish before it is dropped. */
 const ATTACK_BUFFER_MS = 600;
+const BUFF_POSE_MS = 400;
 
 function expireToast(gameplay: GameplayState, nowMs: number): void {
   if (gameplay.toast === null) {
