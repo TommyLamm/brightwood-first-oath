@@ -152,6 +152,8 @@ export type UiSnapshot = {
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;
+  /** Actor sheets, used for NPC dialogue portraits. */
+  actorManifest?: AssetManifest | null;
   saveStatus: SaveStatus;
   /** Human-readable detail for the current save status, when the app has one. */
   saveMessage?: string | null;

@@ -2069,9 +2069,18 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     return;
   }
   const npc = view.catalog.world.npcs[interaction.npcId];
-  parent.append(
-    makeElement(document, 'h3', '', npc?.name ?? interaction.npcId),
-  );
+  // A bust cut from the NPC's idle sheet (first frame, top half) so the panel shows who is talking.
+  const head = makeElement(document, 'div', 'ms-dialogue-head');
+  const sheet = npc ? view.actorManifest?.images.find((image) => image.key === npc.actorKey) : undefined;
+  if (sheet) {
+    const portrait = makeElement(document, 'div', 'ms-dialogue-portrait');
+    portrait.style.backgroundImage = 'url("' + new URL(sheet.url, document.baseURI).href + '")';
+    portrait.style.backgroundSize = (sheet.columns * 200) + '% ' + (sheet.rows * 200) + '%';
+    portrait.setAttribute('aria-hidden', 'true');
+    head.append(portrait);
+  }
+  head.append(makeElement(document, 'h3', '', npc?.name ?? interaction.npcId));
+  parent.append(head);
   const relevant = view.questViews.filter((quest) => {
     const definition = view.catalog.world.quests[quest.questId];
     if (!definition) return false;
