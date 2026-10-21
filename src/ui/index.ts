@@ -1188,7 +1188,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
     const bindings = currentView.saveData.settings.bindings;
-    const duplicate = Object.entries(bindings).find(([action, boundCode]) => action !== pendingBinding && boundCode === code);
+    // Compare against the effective bindings (defaults + saved overrides) so a new key
+    // cannot silently steal a default binding from another action.
+    const effective: Record<string, string> = { ...DEFAULT_KEY_BINDINGS, ...bindings };
+    const duplicate = Object.entries(effective).find(([action, boundCode]) => action !== pendingBinding && boundCode === code);
     if (duplicate) {
       const action = KEY_ACTIONS.find((entry) => entry.id === duplicate[0])?.label ?? duplicate[0];
       bindingMessage = codeLabel(code) + ' 已綁定「' + action + '」，請選擇另一個按鍵。';
@@ -1833,7 +1836,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   const bindingList = makeElement(document, 'div', 'ms-binding-list');
   for (const action of KEY_ACTIONS) {
     const row = makeElement(document, 'div', 'ms-binding-row');
-    const value = codeLabel(settings.bindings[action.id]);
+    const value = codeLabel(settings.bindings[action.id] ?? DEFAULT_KEY_BINDINGS[action.id as GameAction]);
     const rebindButton = makeButton(document, state.pendingBinding === action.id ? '按鍵中…' : '更改按鍵', 'settings-rebind', {
       className: 'ms-button ms-button--small',
       data: { actionId: action.id },
