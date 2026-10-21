@@ -95,6 +95,8 @@ const DAMAGE_STACK_RADIUS = 48;
 const DAMAGE_STACK_STEP = 18;
 const DAMAGE_STACK_DEPTH = 4;
 const DROP_DRAW_LIMIT = 60;
+/** Ordinary monsters show a name plate only within this horizontal distance of the hero, to avoid clutter. */
+const MONSTER_NAME_RANGE_PX = 360;
 const PARTICLE_LIMIT = 100;
 const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
 const registeredTextures = new WeakMap<Phaser.Textures.TextureManager, Map<string, TextureRegistration>>();
@@ -393,6 +395,23 @@ export function createWorldRenderer(
     color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
     stroke: '#2a1d22', strokeThickness: 4,
   }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health).setVisible(false);
+  /** Small name plates for ordinary monsters near the hero, so quest targets like 赤背野豬 are recognisable. */
+  const monsterNameTexts = new Map<string, Phaser.GameObjects.Text>();
+  const monsterNameText = (key: string): Phaser.GameObjects.Text => {
+    let text = monsterNameTexts.get(key);
+    if (!text) {
+      text = scene.add.text(0, 0, '', {
+        color: '#fff2cf', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontStyle: 'bold',
+        stroke: '#231a1d', strokeThickness: 3,
+      }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health);
+      monsterNameTexts.set(key, text);
+    }
+    return text;
+  };
+  const destroyMonsterNames = (): void => {
+    for (const text of monsterNameTexts.values()) text.destroy();
+    monsterNameTexts.clear();
+  };
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
   const attackGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.attack);
   let activeVisual: MapVisual | null = null;
@@ -834,6 +853,7 @@ export function createWorldRenderer(
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     bossNameText.setVisible(false);
+    for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
     for (const label of dropLabels.values()) label.setVisible(false);
@@ -952,6 +972,11 @@ export function createWorldRenderer(
           bossNameText.setText(`${definition.name}  Lv.${definition.level}`)
             .setPosition(bar.x + bar.width / 2, bar.y - 3)
             .setVisible(true);
+        } else if (Math.abs(monster.movement.position.x - snapshot.player.movement.position.x) <= MONSTER_NAME_RANGE_PX) {
+          const label = `${definition.name} Lv.${definition.level}`;
+          const nameText = monsterNameText(monster.spawnId);
+          if (nameText.text !== label) nameText.setText(label);
+          nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
       }
     }
@@ -1229,6 +1254,7 @@ export function createWorldRenderer(
         dropSprites.clear();
         for (const label of dropLabels.values()) label.destroy();
         dropLabels.clear();
+        destroyMonsterNames();
         for (const effect of eventTexts.values()) effect.object.destroy();
         eventTexts.clear();
         for (const effect of eventSprites.values()) effect.object.destroy();
@@ -1283,6 +1309,7 @@ export function createWorldRenderer(
       eventTexts.clear();
       hpGraphics.destroy();
       bossNameText.destroy();
+      destroyMonsterNames();
       telegraphGraphics.destroy();
       attackGraphics.destroy();
       scene.cameras.main.stopFollow();
