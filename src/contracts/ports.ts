@@ -88,6 +88,8 @@ export type Persistence = {
   checkpoint(data: SaveData): void;
   retry(): Promise<void>;
   invalidate(): void;
+  /** Moves an unreadable local save aside (kept under a backup key) so a new character can be created. */
+  discardUnreadableLocalSave?(): boolean;
   dispose(): void;
 };
 
@@ -150,6 +152,8 @@ export type UiSnapshot = {
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;
   saveStatus: SaveStatus;
+  /** Human-readable detail for the current save status, when the app has one. */
+  saveMessage?: string | null;
   toast: string | null;
   panels: PanelId[];
   interaction: { npcId: Id; dialogue: string[] } | null;

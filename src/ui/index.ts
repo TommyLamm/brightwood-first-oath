@@ -45,7 +45,7 @@ const KEY_ACTIONS: { id: string; label: string }[] = [
 
 type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
-  | 'retry-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
+  | 'retry-save' | 'discard-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'use-item' | 'select-bag'
   | 'inventory-filter'
   | 'equip-bag' | 'sell-bag' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
@@ -471,6 +471,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let inventoryFilter = 'all';
   let createRequested = false;
   let replaceConfirmed = false;
+  let discardConfirmed = false;
   let nameDraft = '旅人';
   let shopQuantities = new Map<string, number>();
   let sellQuantities = new Map<number, number>();
@@ -744,6 +745,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       canReturnTown: view.canReturnTown,
       createRequested,
       replaceConfirmed,
+      discardConfirmed,
+      saveMessage: view.saveStatus === 'loadError' ? view.saveMessage : null,
       nameDraft,
     });
     if (signature === lastScreenSignature) return;
@@ -793,8 +796,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         card.append(status);
         if (view.saveStatus === 'loadError') {
           card.append(
-            makeElement(document, 'p', 'ms-warning', '存檔讀取失敗；請重試讀取，或選擇不寫入正式存檔的暫時遊玩。'),
+            makeElement(document, 'p', 'ms-warning', (view.saveMessage ? view.saveMessage + ' ' : '') + '請重試讀取；若存檔已無法修復，可另存備份後重新開始，或選擇不寫入正式存檔的暫時遊玩。'),
             makeButton(document, '重試讀取存檔', 'retry-save', { className: 'ms-button ms-button--primary' }),
+            makeButton(document, discardConfirmed ? '再按一次確認：備份並重新開始' : '備份損毀存檔並重新開始', 'discard-save', { className: 'ms-button ms-button--secondary' }),
             makeButton(document, '暫時遊玩', 'play-temporary', { className: 'ms-button ms-button--secondary' }),
           );
         } else if (view.saveStatus === 'incompatible') {
@@ -1009,7 +1013,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         else renderScreen(view);
         return;
       case 'retry-save':
+        discardConfirmed = false;
         dispatchDraft({ type: 'retrySave', payload: {} });
+        return;
+      case 'discard-save':
+        if (!discardConfirmed) {
+          discardConfirmed = true;
+          lastScreenSignature = '';
+          renderScreen(view);
+          return;
+        }
+        discardConfirmed = false;
+        dispatchDraft({ type: 'discardUnreadableSave', payload: {} });
         return;
       case 'play-temporary':
         dispatchDraft({ type: 'playTemporary', payload: {} });

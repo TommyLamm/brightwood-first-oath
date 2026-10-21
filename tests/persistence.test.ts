@@ -60,6 +60,30 @@ describe('persistence', () => {
     persistence.dispose();
   });
 
+  it('moves an unreadable local save to a backup key only on request', async () => {
+    const storage = new MemoryStorage();
+    const key = localSaveKeyForGame('maplewood-swordsman');
+    storage.entries.set(key, '{not json');
+    const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
+    expect((await persistence.initialize()).status).toBe('loadError');
+    expect(storage.entries.get(key)).toBe('{not json');
+    expect(persistence.discardUnreadableLocalSave?.()).toBe(true);
+    expect(storage.entries.has(key)).toBe(false);
+    expect(storage.entries.get(`${key}:unreadable-backup`)).toBe('{not json');
+    persistence.invalidate();
+    expect((await persistence.initialize()).status).toBe('ready');
+    expect(persistence.discardUnreadableLocalSave?.()).toBe(false);
+    persistence.dispose();
+  });
+
+  it('refuses to discard a save that loaded or failed for non-local reasons', async () => {
+    const cloud = cloudPort({ loadProgress: vi.fn(async () => { throw new Error('network down'); }) });
+    const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage: new MemoryStorage(), cloud, catalog });
+    expect((await persistence.initialize()).status).toBe('loadError');
+    expect(persistence.discardUnreadableLocalSave?.()).toBe(false);
+    persistence.dispose();
+  });
+
   it('does not create or upload an initial save after cloud load failure', async () => {
     const cloud = cloudPort({ loadProgress: vi.fn(async () => { throw new Error('network down'); }) });
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage: new MemoryStorage(), cloud, catalog });

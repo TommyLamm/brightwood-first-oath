@@ -35,6 +35,7 @@ export type CommandDraft =
   | { type: 'setSettings'; payload: { settings: Settings } }
   | { type: 'retrySave'; payload: Record<string, never> }
   | { type: 'useCloudVersion'; payload: Record<string, never> }
+  | { type: 'discardUnreadableSave'; payload: Record<string, never> }
   | { type: 'playTemporary'; payload: Record<string, never> }
   | { type: 'returnTitle'; payload: Record<string, never> };
 

@@ -404,6 +404,15 @@ export class GameApp {
       case 'retrySave':
         this.retryPersistence();
         return true;
+      case 'discardUnreadableSave':
+        if (this.stateValue.screen !== 'title' || this.stateValue.saveStatus !== 'loadError') {
+          this.setToast('目前沒有需要清除的損毀存檔。');
+        } else if (!this.persistence?.discardUnreadableLocalSave?.()) {
+          this.setToast('無法清除這份存檔；請重試讀取，或改用暫時遊玩。');
+        } else {
+          void this.reloadPersistence('已將無法讀取的存檔另存為備份，現在可以建立新角色。');
+        }
+        return true;
       case 'useCloudVersion':
         if (this.stateValue.saveStatus !== 'conflict') this.setToast('目前沒有待處理的雲端版本衝突。');
         else if (!this.options.cloud) this.setToast('此版本沒有可用的雲端存檔介面。');

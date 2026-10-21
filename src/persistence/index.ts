@@ -50,6 +50,8 @@ type Runtime = {
   timer: ReturnType<typeof setTimeout> | null;
   status: SaveStatus;
   retryRequested: boolean;
+  /** The last local read found a save that exists but cannot be parsed or validated. */
+  unreadableLocal: boolean;
 };
 
 export function localSaveKeyForGame(gameId: string, development = import.meta.env.DEV): string {
@@ -141,6 +143,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     timer: null,
     status: 'unavailable',
     retryRequested: false,
+    unreadableLocal: false,
   };
 
   const setStatus = (status: SaveStatus, message?: string): void => {
@@ -168,6 +171,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
   const localOutcome = (generation: number): LoadOutcome => {
     runtime.mode = 'local';
+    runtime.unreadableLocal = false;
     if (!options.storage) {
       runtime.mode = 'memory';
       runtime.initialized = false;
@@ -196,6 +200,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     } catch {
       runtime.mode = 'memory';
       runtime.initialized = false;
+      runtime.unreadableLocal = true;
       setStatus('loadError', '本機存檔格式損壞；原始資料已保留。');
       return { mode: 'memory', status: 'loadError', data: null };
     }
@@ -203,6 +208,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       || !Number.isSafeInteger(envelope.formatVersion)) {
       runtime.mode = 'memory';
       runtime.initialized = false;
+      runtime.unreadableLocal = true;
       setStatus('loadError', '本機存檔封套結構無效；原始資料已保留。');
       return { mode: 'memory', status: 'loadError', data: null };
     }
@@ -215,6 +221,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (!hasExactKeys(envelope, ['formatVersion', 'data', 'savedAt']) || typeof envelope.savedAt !== 'string') {
       runtime.mode = 'memory';
       runtime.initialized = false;
+      runtime.unreadableLocal = true;
       setStatus('loadError', '本機存檔封套結構無效；原始資料已保留。');
       return { mode: 'memory', status: 'loadError', data: null };
     }
@@ -222,6 +229,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (!prepared.ok) {
       runtime.mode = 'memory';
       runtime.initialized = false;
+      runtime.unreadableLocal = true;
       setStatus('loadError', `${prepared.message} 原始資料已保留。`);
       return { mode: 'memory', status: 'loadError', data: null };
     }
@@ -542,12 +550,27 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.status = 'unavailable';
   };
 
+  const discardUnreadableLocalSave = (): boolean => {
+    if (runtime.disposed || !runtime.unreadableLocal || !options.storage) return false;
+    try {
+      const rawText = options.storage.getItem(key);
+      if (rawText !== null) {
+        options.storage.setItem(`${key}:unreadable-backup`, rawText);
+        options.storage.removeItem(key);
+      }
+    } catch {
+      return false;
+    }
+    runtime.unreadableLocal = false;
+    return true;
+  };
+
   const dispose = (): void => {
     invalidate();
     runtime.disposed = true;
   };
 
-  return { initialize, checkpoint, retry, invalidate, dispose };
+  return { initialize, checkpoint, retry, invalidate, discardUnreadableLocalSave, dispose };
 }
 
 export { validateSave } from './validate.js';

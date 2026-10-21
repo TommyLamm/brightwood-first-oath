@@ -99,6 +99,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     catalog,
     interfaceManifest: state.assetManifests?.find((manifest) => manifest.pack === 'interface') ?? null,
     saveStatus: state.saveStatus,
+    saveMessage: state.saveMessage,
     toast: gameplay?.toast ?? state.saveMessage,
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
