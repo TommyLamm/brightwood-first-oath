@@ -40,6 +40,8 @@ export type GameplayState = {
   bossResult: boolean;
   deathAtMs: number | null;
   toast: string | null;
+  /** A toast that a successful swing must not wipe (it still expires normally), e.g. "quest ready". */
+  stickyToast?: string;
   /** When the current toast text first appeared; used to auto-dismiss it. */
   toastShown?: { text: string; atMs: number };
   /** A skill pressed while the previous swing was still playing; it fires as soon as the swing ends. */
@@ -445,7 +447,7 @@ function processCommand(
         gameplay.guardUntilMs = context.nowMs + skill.durationMs;
         gameplay.attackOrDamageAtMs = context.nowMs;
         gameplay.buffCastAtMs = context.nowMs;
-        gameplay.toast = null;
+        if (gameplay.toast !== gameplay.stickyToast) gameplay.toast = null;
         addEffect(gameplay, gameplay.playerEntityId, 'buff', rank, context.nowMs, context.nextEntityId);
         return { gameplay };
       }
@@ -476,7 +478,7 @@ function processCommand(
       if (!mp.ok) return withToast(gameplay, mpShortMessage(skill, player.mp, mp.message));
       gameplay.combat = proposal.value.state;
       gameplay.saveData = { ...gameplay.saveData, player: mp.value };
-      gameplay.toast = null;
+      if (gameplay.toast !== gameplay.stickyToast) gameplay.toast = null;
       gameplay.attackOrDamageAtMs = context.nowMs;
       return { gameplay };
     }
@@ -744,10 +746,13 @@ function pickupNearest(gameplay: GameplayState, context: GameplayStepInput): { g
     ? applyProgressAction(gameplay.saveData.player, { type: 'gainReward', reward: { exp: 0, coins: drop.coins, items: [] } }, context.catalog.rules)
     : applyProgressAction(gameplay.saveData.player, { type: 'addItem', stack: { itemId: drop.itemId, quantity: drop.quantity } }, context.catalog.rules);
   if (!result.ok) return withToast(gameplay, result.message);
+  const beforePickup = gameplay.saveData;
   gameplay.saveData = { ...gameplay.saveData, player: result.value };
   gameplay.drops = gameplay.drops.filter(({ id }) => id !== drop.id);
   gameplay.nextPickupAtMs = context.nowMs + 150;
-  gameplay.toast = drop.itemId === null ? `取得 ${drop.coins} 金幣。` : `取得 ${context.catalog.rules.items[drop.itemId]?.name ?? drop.itemId} × ${drop.quantity}。`;
+  // Don't let the loot line bury a "quest ready" notice that is still on screen.
+  if (!gameplay.stickyToast || gameplay.toast !== gameplay.stickyToast) gameplay.toast = drop.itemId === null ? `取得 ${drop.coins} 金幣。` : `取得 ${context.catalog.rules.items[drop.itemId]?.name ?? drop.itemId} × ${drop.quantity}。`;
+  announceReadyQuests(gameplay, beforePickup, context.catalog);
   addEffect(gameplay, gameplay.playerEntityId, 'pickup', drop.quantity || drop.coins, context.nowMs, context.nextEntityId);
   return { gameplay };
 }
@@ -840,6 +845,7 @@ const ATTACK_BUFFER_MS = 600;
 const BUFF_POSE_MS = 400;
 
 function expireToast(gameplay: GameplayState, nowMs: number): void {
+  if (gameplay.toast !== gameplay.stickyToast) delete gameplay.stickyToast;
   if (gameplay.toast === null) {
     delete gameplay.toastShown;
   } else if (gameplay.toastShown?.text !== gameplay.toast) {
@@ -882,10 +888,12 @@ function applyDeathEvent(
   }, catalog.rules);
   const levelBefore = gameplay.saveData.player.level;
   if (rewarded.ok) gameplay.saveData = { ...gameplay.saveData, player: rewarded.value };
+  const beforeKill = gameplay.saveData;
   gameplay.saveData = {
     ...gameplay.saveData,
     quests: recordQuestEvent(gameplay.saveData.quests, { type: 'killed', monsterId: monster.monsterId }, catalog.world),
   };
+  announceReadyQuests(gameplay, beforeKill, catalog);
 
   const drops: { itemId: string | null; quantity: number; coins: number }[] = [
     { itemId: null, quantity: 0, coins: definition.coins },
@@ -1074,6 +1082,21 @@ function skillLockedMessage(
   if (player.job !== 'swordsman') return '轉職為劍士後才能使用「' + skill.name + '」。';
   if (player.level < skill.requiredLevel) return '「' + skill.name + '」需要 Lv.' + skill.requiredLevel + ' 才能學習。';
   return '尚未學會「' + skill.name + '」，請在技能面板用 SP 學習。';
+}
+
+/** When a kill or pickup finishes a quest's objectives, say so and where to turn it in. */
+function announceReadyQuests(gameplay: GameplayState, before: SaveData, catalog: ContentCatalog): void {
+  for (const [questId, state] of Object.entries(gameplay.saveData.quests)) {
+    if (state.status !== 'active' || before.quests[questId]?.status !== 'active') continue;
+    if (getQuestView(before, questId, catalog).status === 'ready') continue;
+    if (getQuestView(gameplay.saveData, questId, catalog).status !== 'ready') continue;
+    const quest = catalog.world.quests[questId];
+    if (!quest) continue;
+    const npcName = catalog.world.npcs[quest.turnInNpcId]?.name ?? '委託人';
+    const npcMap = Object.values(catalog.world.maps).find((map) => map.npcs.some((npc) => npc.npcId === quest.turnInNpcId));
+    gameplay.toast = '「' + quest.name + '」的目標已完成！回到' + (npcMap ? npcMap.name : '委託人身邊') + '向' + npcName + '回報。';
+    gameplay.stickyToast = gameplay.toast;
+  }
 }
 
 // Names the quest that opens the road, the destination, and the next step for its current state.
