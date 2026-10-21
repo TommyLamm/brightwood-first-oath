@@ -667,7 +667,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const reason = rank === 0 ? '未學習' : player.mp < skill.mpCost ? 'MP 不足' : cooldown > 0 ? '冷卻中' : '';
       button.classList.toggle('is-unavailable', Boolean(reason));
       button.disabled = !playing || Boolean(reason);
-      if (state) state.textContent = reason || ('Rank ' + rank + '・MP ' + skill.mpCost);
+      if (state) state.textContent = reason || ('等級 ' + rank + '・MP ' + skill.mpCost);
       button.title = skill.name + '｜' + skillDetails(skill, rank) + (reason ? '｜' + reason : '');
     }
     for (const slotId of ['small-red', 'small-blue'] as const) {
@@ -1309,11 +1309,11 @@ function makeScreenCard(document: Document, title: string, description: string):
 
 function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], rank: number): string {
   const parts = [
-    'Rank ' + rank + '/' + skill.maxRank,
+    '等級 ' + rank + '/' + skill.maxRank,
     '需求 Lv.' + skill.requiredLevel + ' ' + (skill.requiredJob === 'swordsman' ? '劍士' : '初心者'),
-    'MP ' + skill.mpCost,
-    '冷卻 ' + skill.cooldownMs + 'ms',
   ];
+  // Passives have no cost or cooldown; "MP 0｜冷卻 0ms" only added noise.
+  if (skill.kind !== 'passive') parts.push('MP ' + skill.mpCost, '冷卻 ' + (skill.cooldownMs / 1000) + ' 秒');
   // Must match domain/combat calculateDamage: multiplierBase + multiplierPerRank × (rank − 1).
   if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (Math.max(1, rank) - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('持續 ' + Math.round(skill.durationMs / 1000) + ' 秒・防禦 +' + skill.defensePerRank * Math.max(1, rank));
@@ -1564,19 +1564,19 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     const levelReady = player.level >= skill.requiredLevel;
     const jobReady = skill.requiredJob === 'any' || player.job === skill.requiredJob;
     const rankReady = rank < skill.maxRank;
-    const reason = !rankReady ? '已達最高 Rank' : !levelReady ? '需要 Lv.' + skill.requiredLevel : !jobReady ? '需轉職為劍士' : player.sp < 1 ? '需要 1 SP' : '';
+    const reason = !rankReady ? '已達最高等級' : !levelReady ? '需要 Lv.' + skill.requiredLevel : !jobReady ? '需轉職為劍士' : player.sp < 1 ? '需要 1 SP' : '';
     const card = makeElement(document, 'article', 'ms-skill-card');
     const head = makeElement(document, 'div', 'ms-skill-card__head');
     head.append(
       makeInterfaceIcon(document, view, 'skill:' + skill.id, skill.name, 'ms-skill-card__icon'),
       makeElement(document, 'h3', '', skill.name),
-      makeBadge(document, 'Rank ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
+      makeBadge(document, '等級 ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
     );
     card.append(head, makeElement(document, 'p', 'ms-detail-copy', skillDetails(skill, rank)));
     if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
     if (skill.id === 'vitality') card.append(makeElement(document, 'p', 'ms-panel-note', '提升最大 HP；不會自動恢復生命。'));
     if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '停止攻擊或受傷後恢復生命。'));
-    card.append(makeButton(document, learned ? '提升至 Rank ' + (rank + 1) : '學習技能', 'learn-skill', {
+    card.append(makeButton(document, !rankReady ? '已滿級' : learned ? '提升至等級 ' + (rank + 1) : '學習技能', 'learn-skill', {
       className: 'ms-button ms-button--primary',
       disabled: Boolean(reason),
       title: reason || '消耗 1 SP 學習或提升技能',
