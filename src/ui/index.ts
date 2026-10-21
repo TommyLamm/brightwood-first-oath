@@ -1076,7 +1076,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       case 'allocate-ap': {
         const stat = button.dataset.stat;
-        if (stat === 'str' || stat === 'dex') dispatchDraft({ type: 'allocateAp', payload: { stat, amount: 1 } });
+        const available = view.saveData?.player.ap ?? 0;
+        const amount = clampInteger(Number(button.dataset.amount ?? 1), 1, Math.max(1, available));
+        if (stat === 'str' || stat === 'dex') dispatchDraft({ type: 'allocateAp', payload: { stat, amount } });
         return;
       }
       case 'learn-skill': {
@@ -1523,18 +1525,21 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
     stats.append(card);
   }
   parent.append(stats);
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '建議先提升 STR。加點只在你按下 +1 時送出，不會因開啟面板自動消耗 AP。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '建議先提升 STR。加點只在你按下按鈕時送出，不會因開啟面板自動消耗 AP。'));
   const actions = makeElement(document, 'div', 'ms-inline-actions');
-  actions.append(
-    makeButton(document, 'STR +1', 'allocate-ap', {
+  const bulk = Math.min(5, player.ap);
+  for (const [stat, label] of [['str', 'STR'], ['dex', 'DEX']] as const) {
+    actions.append(makeButton(document, label + ' +1', 'allocate-ap', {
       className: 'ms-button ms-button--primary', disabled: player.ap < 1,
-      title: player.ap > 0 ? '消耗 1 AP 提升 STR' : '目前沒有 AP', data: { stat: 'str' },
-    }),
-    makeButton(document, 'DEX +1', 'allocate-ap', {
-      className: 'ms-button ms-button--primary', disabled: player.ap < 1,
-      title: player.ap > 0 ? '消耗 1 AP 提升 DEX' : '目前沒有 AP', data: { stat: 'dex' },
-    }),
-  );
+      title: player.ap > 0 ? '消耗 1 AP 提升 ' + label : '目前沒有 AP', data: { stat },
+    }));
+    if (player.ap > 1) {
+      actions.append(makeButton(document, label + ' +' + bulk, 'allocate-ap', {
+        className: 'ms-button ms-button--secondary',
+        title: '消耗 ' + bulk + ' AP 提升 ' + label, data: { stat, amount: String(bulk) },
+      }));
+    }
+  }
   parent.append(actions);
 }
 
