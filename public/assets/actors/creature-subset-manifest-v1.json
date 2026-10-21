@@ -4,7 +4,7 @@
   "images": [
     {
       "key": "actor:slime",
-      "url": "assets/actors/monsters/slime-atlas-v1.png",
+      "url": "assets/actors/monsters/slime-atlas-v2.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -14,7 +14,7 @@
     },
     {
       "key": "actor:sentinel",
-      "url": "assets/actors/monsters/sentinel-atlas-v1.png",
+      "url": "assets/actors/monsters/sentinel-atlas-v2.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
