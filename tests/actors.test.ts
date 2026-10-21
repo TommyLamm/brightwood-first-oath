@@ -172,6 +172,20 @@ describe('actor domain', () => {
     expect(retry.deathReported).toBe(false);
   });
 
+  it('makes the guardian retaliate against a player hitting it from outside its roam bounds', () => {
+    const map = worldCatalog.maps['guardian-arena'];
+    const spawn = map.monsters[0]!;
+    const guardian = createMonster('guardian-edge', spawn, map, rulesCatalog);
+    guardian.movement = { ...guardian.movement, position: { x: spawn.roamLeft, y: 600 } };
+    // Just past roamLeft: close enough for the player's sweep (reach 110) to land.
+    const result = advance(guardian, player('player-1', spawn.roamLeft - 90), map, 240, 3000);
+    expect(result.requests.length).toBeGreaterThan(0);
+
+    const safe = createMonster('guardian-entry', spawn, map, rulesCatalog);
+    const atEntry = advance(safe, player('player-1', 160), map, 240, 3000);
+    expect(atEntry.requests).toEqual([]);
+  });
+
   it('applies normal monster knockback but keeps the guardian immune and does not respawn it', () => {
     const field = worldCatalog.maps['forest-edge'];
     const snail = createMonster('snail-hit', field.monsters[0]!, field, rulesCatalog);

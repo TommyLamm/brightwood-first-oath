@@ -20,6 +20,10 @@ const IDLE_DURATION_MS = 600;
 const GUARDIAN_PHASE_ONE_DELAY_MS = 2500;
 const GUARDIAN_PHASE_TWO_DELAY_MS = 1800;
 const EPSILON = 0.0001;
+// A boss engages anyone this far outside its roam bounds. Without it a player could stand just
+// past roamLeft and hit the guardian with 橫掃 (reach 110) while it never retaliated.
+// The arena entry/exit (x <= 160) stays a safe spot.
+const BOSS_ENGAGE_MARGIN_PX = 300;
 
 /** Creates one actor for a placement already registered on the supplied map. */
 export function createMonster(
@@ -107,8 +111,9 @@ export function stepActors(
     }
 
     const playerIsAlive = player.hp > 0;
-    const playerInsideActivity = player.position.x >= spawn.roamLeft - EPSILON
-      && player.position.x <= spawn.roamRight + EPSILON;
+    const engageMargin = map.boss ? BOSS_ENGAGE_MARGIN_PX : 0;
+    const playerInsideActivity = player.position.x >= spawn.roamLeft - engageMargin - EPSILON
+      && player.position.x <= spawn.roamRight + engageMargin + EPSILON;
     const distanceX = player.position.x - monster.movement.position.x;
     const distanceY = player.position.y - monster.movement.position.y;
     const isAggro = playerIsAlive
