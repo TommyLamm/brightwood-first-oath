@@ -1702,6 +1702,12 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
     }));
   }
   parent.append(actions);
+  // Greyed-out buttons with no explanation read as a bug; say when the next AP arrives.
+  if (player.ap < 1) {
+    const atCap = player.level >= view.catalog.rules.progression.maxLevel;
+    parent.append(makeElement(document, 'span', 'ms-disabled-reason',
+      atCap ? '目前沒有可用 AP；已達等級上限。' : '目前沒有可用 AP；每次升級可獲得 5 AP。'));
+  }
 }
 
 function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
