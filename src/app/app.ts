@@ -152,6 +152,7 @@ export class GameApp {
   }
 
   update(deltaMs: number): void {
+    this.enqueueHeldPickup();
     const wasFrozen = worldIsFrozen(this.stateValue);
     const queued = this.commands.drain();
     const gameplayCommands: GameCommand[] = [];
@@ -249,6 +250,16 @@ export class GameApp {
       });
       if (index === 0) this.pendingGameplayCommands = [];
     }
+  }
+
+  /** Holding the pickup key collects one nearby drop per gameplay pickup interval (150ms). */
+  private enqueueHeldPickup(): void {
+    const { gameplay, screen, gameTimeMs } = this.stateValue;
+    if (screen !== 'playing' || !gameplay || !this.isActionHeld('pickup')) return;
+    if (gameTimeMs < gameplay.nextPickupAtMs) return;
+    const { x, y } = gameplay.movement.position;
+    if (!gameplay.drops.some(({ position }) => Math.hypot(position.x - x, position.y - y) <= 90)) return;
+    this.commands.enqueue({ type: 'pickup', payload: {} });
   }
 
   reportRuntimeIssue(message: string): void {
