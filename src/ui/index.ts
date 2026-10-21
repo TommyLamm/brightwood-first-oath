@@ -1489,8 +1489,9 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     slot.append(
       makeInterfaceIcon(document, view, item?.iconKey ?? '', item?.name ?? stack.itemId, 'ms-bag-slot__icon'),
       makeElement(document, 'span', 'ms-bag-slot__name', item?.name ?? stack.itemId),
-      makeElement(document, 'span', 'ms-bag-slot__quantity', '×' + stack.quantity),
     );
+    // A lone item (gear, quest pieces) needs no count; only stacks get the corner badge.
+    if (stack.quantity > 1) slot.append(makeElement(document, 'span', 'ms-bag-slot__quantity', '×' + stack.quantity));
     grid.append(slot);
   }
   layout.append(grid);

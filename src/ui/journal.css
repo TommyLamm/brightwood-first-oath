@@ -290,7 +290,8 @@
 .ms-bag-slot:not(.ms-bag-slot--empty) { position: relative; }
 .ms-bag-slot__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .ms-bag-slot .ms-bag-slot__icon { width: 38px; height: 38px; }
-.ms-bag-slot__quantity { position: absolute; right: 3px; bottom: 1px; text-shadow: 0 1px 0 #fff6dc, 1px 0 0 #fff6dc, -1px 0 0 #fff6dc; }
+/* The 9 px tan count faded into the parchment slot; use a dark pill that reads over any icon. */
+.ms-bag-slot__quantity { position: absolute; right: 2px; bottom: 2px; padding: 0 3px; border-radius: 3px; color: #fff3d2; background: rgba(58, 38, 20, .82); font-size: 10px; line-height: 14px; text-shadow: none; }
 .ms-bag-slot--empty .ms-bag-slot__number { visibility: hidden; }
 .ms-button--primary, .ms-button--secondary { border-color: #7b6841 !important; color: #fff0cb !important; background: linear-gradient(#72805b, #4c6148) !important; }
 /* Secondary actions (cancel, temporary play, bulk +5…) were the same green as the main action; give them a leather brown. */
