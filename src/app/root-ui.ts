@@ -117,7 +117,7 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
       hud.append(label);
     } else {
       const label = document.createElement('span');
-      label.textContent = view.screen === 'error' ? '遊戲內容尚未完成' : '楓之故事';
+      label.textContent = view.screen === 'error' ? '遊戲內容尚未完成' : 'Brightwood: First Oath';
       hud.append(label);
     }
 
@@ -262,7 +262,7 @@ function renderPanel(
     }
   } else if (panel === 'stats' && view.stats && view.saveData) {
     const player = view.saveData.player;
-    content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜楓幣 ${player.coins}`;
+    content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜金幣 ${player.coins}`;
     content.textContent += `｜可用 AP ${player.ap}｜SP ${player.sp}`;
     if (player.ap > 0) {
       appendButton(details, 'STR +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'str', amount: 1 } }));
@@ -302,10 +302,10 @@ function renderPanel(
     content.textContent += `｜已探索：${view.saveData.visitedMaps.map((mapId) => view.catalog.world.maps[mapId]?.name ?? mapId).join('、')}`;
     appendButton(details, '返回城鎮', () => dispatch({ type: 'returnTown', payload: {} }));
   } else if (panel === 'shop' && view.saveData) {
-    content.textContent = `${view.interaction?.dialogue.join(' ') ?? '選擇要購買的物品。'}｜楓幣 ${view.saveData.player.coins}`;
+    content.textContent = `${view.interaction?.dialogue.join(' ') ?? '選擇要購買的物品。'}｜金幣 ${view.saveData.player.coins}`;
     for (const item of Object.values(view.catalog.rules.items).filter((entry) => entry.buyPrice > 0 && entry.kind !== 'quest')) {
       const line = document.createElement('span');
-      line.textContent = `${item.name}｜${item.buyPrice} 楓幣`;
+      line.textContent = `${item.name}｜${item.buyPrice} 金幣`;
       details.append(line);
       appendButton(details, '購買 1 個', () => dispatch({ type: 'buy', payload: { itemId: item.id, quantity: 1 } }));
     }

@@ -923,7 +923,7 @@ export function createWorldRenderer(
         if (!isInViewport(drop.position)) sprite.setVisible(false).setActive(false);
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
-        const label = getDropText(drop.id, `${drop.coins} 楓幣`, drop.position, snapshot.nowMs);
+        const label = getDropText(drop.id, `${drop.coins} 金幣`, drop.position, snapshot.nowMs);
         label.setVisible(true).setPosition(drop.position.x, drop.position.y - 8);
       }
     }

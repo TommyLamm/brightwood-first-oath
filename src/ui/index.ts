@@ -283,7 +283,7 @@ function targetName(view: UiSnapshot, id: string, type: string): string {
 }
 
 function rewardText(view: UiSnapshot, reward: UiSnapshot['questViews'][number]['reward']): string {
-  const parts = ['EXP ' + formatNumber(reward.exp), '楓幣 ' + formatNumber(reward.coins)];
+  const parts = ['EXP ' + formatNumber(reward.exp), '金幣 ' + formatNumber(reward.coins)];
   for (const stack of reward.items) {
     const item = view.catalog.rules.items[stack.itemId];
     parts.push((item?.name ?? stack.itemId) + ' ×' + stack.quantity);
@@ -340,7 +340,7 @@ function preserveFocus(container: HTMLElement, renderContent: () => void): void 
 export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) => void): UiController {
   const document = root.ownerDocument;
   const shell = makeElement(document, 'section', 'maple-ui');
-  shell.setAttribute('aria-label', '楓之故事遊戲介面');
+  shell.setAttribute('aria-label', 'Brightwood: First Oath 遊戲介面');
   // Resolve public artwork from the entry URL so version/preview subdirectories work.
   for (const [name, file] of Object.entries({
     panel: 'parchment-panel', tray: 'leather-tray', sign: 'wooden-sign',
@@ -545,7 +545,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     profile.replaceChildren();
     if (!player) {
       profile.append(
-        makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--empty', '楓'),
+        makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--empty', '劍'),
         makeElement(document, 'div', 'ms-profile__main', '登入或建立角色後開始冒險'),
       );
       return;
@@ -587,7 +587,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const map = view.catalog.world.maps[data.location.mapId];
     mapCard.append(
       makeElement(document, 'strong', '', map?.name ?? data.location.mapId),
-      makeElement(document, 'span', 'ms-map-indicator__coins', '楓幣 ' + formatNumber(data.player.coins)),
+      makeElement(document, 'span', 'ms-map-indicator__coins', '金幣 ' + formatNumber(data.player.coins)),
     );
   };
 
@@ -774,7 +774,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         screenLayer.append(card);
         return;
       }
-        const card = makeScreenCard(document, '楓之故事', '使用鍵盤與滑鼠探索地區、完成任務並管理角色。');
+        const card = makeScreenCard(document, 'Brightwood: First Oath', '使用鍵盤與滑鼠探索地區、完成任務並管理角色。');
         const status = makeElement(document, 'p', 'ms-screen-card__status', statusLabel(view.saveStatus));
         card.append(status);
         if (view.saveStatus === 'loadError') {
@@ -1655,7 +1655,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   parent.append(makeElement(document, 'p', 'ms-panel-note', atMerchant
     ? '木葉商人・可購買物品只包含有售價的裝備與藥水。'
     : '請靠近木葉商人並互動後再購買；app 會再次驗證交易。'));
-  parent.append(makeElement(document, 'p', 'ms-wallet', '持有楓幣：' + formatNumber(player.coins)));
+  parent.append(makeElement(document, 'p', 'ms-wallet', '持有金幣：' + formatNumber(player.coins)));
   const offers = Object.values(view.catalog.rules.items)
     .filter((item) => item.buyPrice > 0 && item.kind !== 'quest')
     .sort((a, b) => a.kind.localeCompare(b.kind) || a.minLevel - b.minLevel || a.name.localeCompare(b.name));
@@ -1669,7 +1669,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       makeBadge(document, kindLabel(item.kind), 'category'),
       makeElement(document, 'h4', '', item.name),
       makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item)),
-      makeElement(document, 'span', 'ms-shop-card__price', '單價 ' + formatNumber(item.buyPrice) + ' 楓幣'),
+      makeElement(document, 'span', 'ms-shop-card__price', '單價 ' + formatNumber(item.buyPrice) + ' 金幣'),
     );
     const quantityRow = makeElement(document, 'label', 'ms-quantity-row');
     quantityRow.append(makeElement(document, 'span', '', '數量 1–99'));
@@ -1683,12 +1683,12 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     input.dataset.focus = 'shop-quantity-' + item.id;
     input.setAttribute('aria-label', item.name + ' 購買數量');
     quantityRow.append(input);
-    card.append(quantityRow, makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(total) + ' 楓幣'));
-    const reason = !atMerchant ? '需在商人互動中購買' : total > player.coins ? '楓幣不足' : '';
+    card.append(quantityRow, makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(total) + ' 金幣'));
+    const reason = !atMerchant ? '需在商人互動中購買' : total > player.coins ? '金幣不足' : '';
     card.append(makeButton(document, '購買', 'buy', {
       className: 'ms-button ms-button--primary',
       disabled: Boolean(reason),
-      title: reason || '購買 ' + quantity + ' 個，總價 ' + total + ' 楓幣',
+      title: reason || '購買 ' + quantity + ' 個，總價 ' + total + ' 金幣',
       data: { itemId: item.id },
     }));
     if (reason) card.append(makeElement(document, 'span', 'ms-disabled-reason', reason));
