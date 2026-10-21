@@ -204,6 +204,11 @@ describe('progression and inventory', () => {
     const ineffectivePotion = applyProgressAction(questItem, { type: 'useItem', itemId: 'small-red' }, rulesCatalog);
     expectFailure(ineffectivePotion, 'REQUIREMENT');
     expect(countItem(questItem, 'small-red')).toBe(12);
+    // A red potion only heals HP, so with HP full it must not claim MP is full too.
+    const lowMp = apply(questItem, { type: 'spendMp', amount: 5 });
+    const redAtFullHp = applyProgressAction(lowMp, { type: 'useItem', itemId: 'small-red' }, rulesCatalog);
+    expectFailure(redAtFullHp, 'REQUIREMENT');
+    if (!redAtFullHp.ok) expect(redAtFullHp.message).toBe(`HP 已滿，現在使用${rulesCatalog.items['small-red']!.name}不會有效果。`);
 
     const hurt = apply(questItem, { type: 'damage', amount: 50 });
     const healed = apply(hurt, { type: 'useItem', itemId: 'small-red' });

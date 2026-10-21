@@ -431,7 +431,9 @@ export function applyProgressAction(
       const nextHp = Math.min(stats.maxHp, draft.hp + item.restoreHp);
       const nextMp = Math.min(stats.maxMp, draft.mp + item.restoreMp);
       if (nextHp === draft.hp && nextMp === draft.mp) {
-        return failure('REQUIREMENT', '目前 HP 與 MP 已滿，藥水沒有恢復效果。');
+        // Name only the bar this potion actually fills; a red potion at full HP says nothing about MP.
+        const full = item.restoreHp > 0 && item.restoreMp > 0 ? 'HP 與 MP 都' : item.restoreMp > 0 ? 'MP ' : 'HP ';
+        return failure('REQUIREMENT', `${full}已滿，現在使用${item.name}不會有效果。`);
       }
       const removed = removeStacksFromDraft(draft, [{ itemId: item.id, quantity: 1 }], rules);
       if (!removed.ok) return removed;
