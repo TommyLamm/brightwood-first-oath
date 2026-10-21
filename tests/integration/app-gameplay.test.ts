@@ -581,6 +581,26 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.toast).toContain('守衛的掉落物');
   });
 
+  it('dismisses a toast six seconds after it appears', () => {
+    const nextEntityId = createNextEntityId('toast-expiry');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.toast = '測試訊息';
+    const step = (nowMs: number) => stepGameplay(gameplay, {
+      catalog, commands: [], input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 1 / 60, nowMs, random: createSeededRandom(5), nextEntityId,
+    }).gameplay!;
+    gameplay = step(1000);
+    gameplay = step(6900);
+    expect(gameplay.toast).toBe('測試訊息');
+    gameplay = step(7000);
+    expect(gameplay.toast).toBeNull();
+    gameplay.toast = '測試訊息';
+    gameplay = step(7100);
+    expect(gameplay.toast).toBe('測試訊息');
+  });
+
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
     const nextEntityId = createNextEntityId('sell-and-potions');
     const started = startNewGame('旅人', catalog, nextEntityId);

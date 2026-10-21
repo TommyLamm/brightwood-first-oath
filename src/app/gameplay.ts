@@ -40,6 +40,8 @@ export type GameplayState = {
   bossResult: boolean;
   deathAtMs: number | null;
   toast: string | null;
+  /** When the current toast text first appeared; used to auto-dismiss it. */
+  toastShown?: { text: string; atMs: number };
   interaction: { npcId: Id; dialogue: string[] } | null;
   pendingTransition: { mapId: Id; spawnId: Id; after: 'travel' | 'respawn' | 'retryBoss' } | null;
 };
@@ -336,6 +338,7 @@ export function stepGameplay(
   if (screen === 'dead') gameplay.movement = { ...gameplay.movement, mode: 'dead', velocity: { x: 0, y: 0 } };
   if (screen === 'dead' && gameplay.deathAtMs === null) gameplay.deathAtMs = input.nowMs;
   if (gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
+  expireToast(gameplay, input.nowMs);
   // Hold the result screen until every guardian item (core and 守衛之刃) is picked up or has expired;
   // its 返回城鎮 button leaves the arena and would silently discard anything still on the floor.
   if (gameplay.bossResult && screen === 'playing' && !gameplay.drops.some(({ itemId }) => itemId !== null)) {
@@ -770,6 +773,21 @@ export function failMapTransition(current: GameplayState, message: string): Game
     gameplay: { ...current, pendingTransition: null, toast: `地圖載入失敗：${message}` },
     screen: after === 'respawn' ? 'dead' : after === 'retryBoss' ? 'result' : 'playing',
   };
+}
+
+// Toasts used to stay up until some later action cleared them, so e.g. the chapter-complete
+// message sat over every panel for the rest of the session.
+const TOAST_DURATION_MS = 6000;
+
+function expireToast(gameplay: GameplayState, nowMs: number): void {
+  if (gameplay.toast === null) {
+    delete gameplay.toastShown;
+  } else if (gameplay.toastShown?.text !== gameplay.toast) {
+    gameplay.toastShown = { text: gameplay.toast, atMs: nowMs };
+  } else if (nowMs - gameplay.toastShown.atMs >= TOAST_DURATION_MS) {
+    gameplay.toast = null;
+    delete gameplay.toastShown;
+  }
 }
 
 function recoverWhileResting(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): void {
