@@ -405,3 +405,6 @@
   .ms-quick-slot--item .ms-quick-slot__state { right: 10px; bottom: 8px; font-size: 13px; line-height: 17px; }
   .ms-quick-slot.is-unavailable .ms-quick-slot__state { font-size: 12px; line-height: 16px; }
 }
+
+/* Reset sits under the 鍵位設定 heading; keep it compact rather than a full-width bar like 靜音. */
+.ms-binding-reset { justify-self: start; align-self: start; width: auto !important; margin-bottom: 8px; }

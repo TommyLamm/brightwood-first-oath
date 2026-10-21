@@ -50,7 +50,7 @@ type UiAction =
   | 'inventory-filter'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
-  | 'toggle-key-guide';
+  | 'toggle-key-guide' | 'settings-reset-bindings';
 
 type KeyGuideItem = {
   label: string;
@@ -1169,6 +1169,16 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         renderPanel(view, true);
         return;
       }
+      case 'settings-reset-bindings': {
+        if (!view.saveData || Object.keys(view.saveData.settings.bindings).length === 0) return;
+        pendingBinding = null;
+        bindingMessage = '';
+        dispatchDraft({ type: 'setSettings', payload: { settings: { ...view.saveData.settings, bindings: {} } } });
+        renderPanel(view, true);
+        // The reset button is now disabled and cannot keep focus; hold the scroll position on the list.
+        panelHost.querySelector<HTMLElement>('.ms-binding-list [data-focus]')?.focus();
+        return;
+      }
       case 'toggle-key-guide': {
         keyGuideExpanded = !keyGuideExpanded;
         renderKeyGuide(currentView);
@@ -2047,7 +2057,15 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   const escapeRow = makeElement(document, 'div', 'ms-binding-row');
   escapeRow.append(makeElement(document, 'span', '', '關閉面板／暫停'), makeBadge(document, 'Esc 固定', 'warning'));
   bindingList.append(escapeRow);
-  parent.append(bindingList);
+  // Without this, a player who rebound keys into a mess had to fix each row by hand.
+  const customised = Object.keys(settings.bindings).length > 0;
+  const resetButton = makeButton(document, customised ? '恢復預設按鍵' : '目前為預設按鍵', 'settings-reset-bindings', {
+    className: 'ms-button ms-button--secondary ms-binding-reset',
+    disabled: !customised,
+    title: customised ? '清除所有自訂按鍵，改回預設配置' : '目前使用的就是預設按鍵',
+  });
+  resetButton.dataset.focus = 'binding-reset';
+  parent.append(resetButton, bindingList);
   if (state.bindingMessage) parent.append(makeElement(document, 'p', 'ms-panel-note', state.bindingMessage));
 }
 
