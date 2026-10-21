@@ -887,6 +887,7 @@ function applyDeathEvent(
     reward: { exp: definition.exp, coins: 0, items: [] },
   }, catalog.rules);
   const levelBefore = gameplay.saveData.player.level;
+  const toastBeforeKill = gameplay.toast;
   if (rewarded.ok) gameplay.saveData = { ...gameplay.saveData, player: rewarded.value };
   const beforeKill = gameplay.saveData;
   gameplay.saveData = {
@@ -967,6 +968,16 @@ function applyDeathEvent(
   if (rewarded.ok && definition.exp > 0) addEffect(gameplay, monster.id, 'exp', definition.exp, nowMs, nextEntityId);
   if (gameplay.saveData.player.level > levelBefore) {
     addEffect(gameplay, gameplay.playerEntityId, 'levelup', gameplay.saveData.player.level, nowMs, nextEntityId);
+    // Say what the level bought and where to spend it, unless this kill already raised a notice
+    // (quest ready, bag full) or a quest-ready notice is still showing.
+    if (gameplay.toast === toastBeforeKill && (!gameplay.stickyToast || gameplay.toast !== gameplay.stickyToast)) {
+      const player = gameplay.saveData.player;
+      const gained = player.level - levelBefore;
+      const atCap = player.level >= catalog.rules.progression.maxLevel;
+      gameplay.toast = '升到 Lv.' + player.level + (atCap ? '（已達上限）' : '') + '！獲得 ' + gained * 5 + ' AP'
+        + (player.job === 'swordsman' ? '、' + gained + ' SP，可在能力與技能面板分配。' : '，可在能力面板分配。');
+      gameplay.stickyToast = gameplay.toast;
+    }
   }
 }
 
