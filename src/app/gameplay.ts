@@ -336,7 +336,9 @@ export function stepGameplay(
   if (screen === 'dead') gameplay.movement = { ...gameplay.movement, mode: 'dead', velocity: { x: 0, y: 0 } };
   if (screen === 'dead' && gameplay.deathAtMs === null) gameplay.deathAtMs = input.nowMs;
   if (gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
-  if (gameplay.bossResult && screen === 'playing' && !gameplay.drops.some(({ itemId }) => itemId === 'guardian-core')) {
+  // Hold the result screen until every guardian item (core and 守衛之刃) is picked up or has expired;
+  // its 返回城鎮 button leaves the arena and would silently discard anything still on the floor.
+  if (gameplay.bossResult && screen === 'playing' && !gameplay.drops.some(({ itemId }) => itemId !== null)) {
     screen = 'result';
   }
   return { gameplay, screen, ...(openPanel ? { openPanel } : {}) };
@@ -863,6 +865,8 @@ function applyDeathEvent(
     gameplay.bossResult = true;
     if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
       gameplay.toast = '背包空間不足，請先整理背包並拾取守衛核心。';
+    } else if (remainingDrops.some(({ itemId }) => itemId !== null)) {
+      gameplay.toast = '背包空間不足，守衛的掉落物留在地上，整理背包後再拾取。';
     }
   } else {
     gameplay.drops.push(...drops.map((drop) => ({

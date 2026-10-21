@@ -540,6 +540,47 @@ describe('app gameplay vertical slice', () => {
     expect(claimed.saveData.player.bag.find(({ itemId }) => itemId === 'guardian-core')).toBeUndefined();
   });
 
+  it('keeps the guardian sword on the floor and delays the result screen when the bag is full', () => {
+    const nextEntityId = createNextEntityId('guardian-full-bag');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.quests.q08 = { status: 'active', counters: { guardian: 0 } };
+    gameplay.pendingTransition = { mapId: 'guardian-arena', spawnId: 'entry', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+    // 31 occupied slots: the core still fits, the sword does not.
+    const fillers = ['iron-sword', 'steel-sword', 'leather-vest', 'iron-mail', 'leather-cap', 'iron-helm'];
+    gameplay.saveData.player.bag = [...gameplay.saveData.player.bag];
+    while (gameplay.saveData.player.bag.length < 31) {
+      gameplay.saveData.player.bag.push({ itemId: fillers[gameplay.saveData.player.bag.length % fillers.length]!, quantity: 1 });
+    }
+    const guardian = gameplay.monsters.find(({ monsterId }) => monsterId === 'guardian')!;
+    gameplay.monsters[0] = {
+      ...guardian, hp: 1, mode: 'idle',
+      movement: { ...guardian.movement, position: { x: gameplay.movement.position.x + 40, y: 600 } },
+    };
+
+    let nowMs = 2000;
+    const screens: string[] = [];
+    for (let tick = 0; tick < 30; tick += 1) {
+      nowMs += 1000 / 60;
+      const step = stepGameplay(gameplay, {
+        catalog,
+        commands: tick === 0 ? [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }] : [],
+        input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+        dtSeconds: 1 / 60, nowMs, random: createSeededRandom(77), nextEntityId,
+      });
+      gameplay = step.gameplay!;
+      screens.push(step.screen);
+    }
+
+    expect(gameplay.bossResult).toBe(true);
+    expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'guardian-core')).toBe(true);
+    expect(gameplay.drops.some(({ itemId }) => itemId === 'guardian-sword')).toBe(true);
+    expect(screens).not.toContain('result');
+    expect(gameplay.toast).toContain('守衛的掉落物');
+  });
+
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
     const nextEntityId = createNextEntityId('sell-and-potions');
     const started = startNewGame('旅人', catalog, nextEntityId);
