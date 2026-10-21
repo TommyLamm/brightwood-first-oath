@@ -1269,7 +1269,8 @@ function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], r
     'MP ' + skill.mpCost,
     '冷卻 ' + skill.cooldownMs + 'ms',
   ];
-  if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * Math.max(1, rank)).toFixed(2));
+  // Must match domain/combat calculateDamage: multiplierBase + multiplierPerRank × (rank − 1).
+  if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (Math.max(1, rank) - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('持續 ' + Math.round(skill.durationMs / 1000) + ' 秒・防禦 +' + skill.defensePerRank * Math.max(1, rank));
   if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * Math.max(1, rank));
   if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * Math.max(1, rank) + ' HP');
