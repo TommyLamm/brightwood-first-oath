@@ -1313,10 +1313,22 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderPanel(currentView, true);
   };
 
+  // The key guide floats above every panel, so Esc should fold it away first instead of
+  // pausing the game (or closing the panel underneath) while the card stays open.
+  const onEscapeKeyGuide = (event: Event): void => {
+    if (!(event instanceof KeyboardEvent) || event.code !== 'Escape' || !keyGuideExpanded || pendingBinding) return;
+    event.preventDefault();
+    event.stopPropagation();
+    keyGuideExpanded = false;
+    renderKeyGuide(currentView);
+  };
+  const keyWindow = shell.ownerDocument.defaultView;
+
   shell.addEventListener('click', onClick);
   shell.addEventListener('input', onInput);
   shell.addEventListener('change', onChange);
   shell.addEventListener('keydown', onKeyDown);
+  keyWindow?.addEventListener('keydown', onEscapeKeyGuide, true);
 
   return {
     render,
@@ -1340,6 +1352,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       shell.removeEventListener('input', onInput);
       shell.removeEventListener('change', onChange);
       shell.removeEventListener('keydown', onKeyDown);
+      keyWindow?.removeEventListener('keydown', onEscapeKeyGuide, true);
       shell.remove();
       currentView = null;
     },
