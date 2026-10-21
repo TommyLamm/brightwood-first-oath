@@ -144,6 +144,10 @@ describe('app gameplay vertical slice', () => {
     expect(killEffects.some(({ kind, value }) => kind === 'exp' && value === 20)).toBe(true);
     expect(gameplay.effects.some(({ kind }) => kind === 'damage')).toBe(false);
     expect(gameplay.effects.some(({ kind }) => kind === 'levelup')).toBe(false);
+    // Coins and the shell fan out instead of hiding under one another, and stay within pickup reach.
+    const dropXs = gameplay.drops.map(({ position }) => position.x);
+    expect(new Set(dropXs).size).toBe(dropXs.length);
+    expect(Math.max(...dropXs) - Math.min(...dropXs)).toBeLessThanOrEqual(34 * (dropXs.length - 1));
 
     for (let tick = 0; tick < 5; tick += 1) {
       nowMs += 1000 / 60;

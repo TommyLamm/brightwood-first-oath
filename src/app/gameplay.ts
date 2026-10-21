@@ -919,10 +919,10 @@ function applyDeathEvent(
         remainingDrops.push(drop);
       }
     }
-    gameplay.drops.push(...remainingDrops.map((drop) => ({
+    gameplay.drops.push(...remainingDrops.map((drop, index) => ({
       id: nextEntityId(),
       ...drop,
-      position: { ...monster.movement.position },
+      position: scatterDropPosition(monster, index, remainingDrops.length, gameplay, catalog),
       expiresAtMs: nowMs + 120_000,
     })));
     gameplay.saveData = {
@@ -936,10 +936,10 @@ function applyDeathEvent(
       gameplay.toast = '背包空間不足，守衛的掉落物留在地上，整理背包後再拾取。';
     }
   } else {
-    gameplay.drops.push(...drops.map((drop) => ({
+    gameplay.drops.push(...drops.map((drop, index) => ({
       id: nextEntityId(),
       ...drop,
-      position: { ...monster.movement.position },
+      position: scatterDropPosition(monster, index, drops.length, gameplay, catalog),
       expiresAtMs: nowMs + 120_000,
     })));
   }
@@ -948,6 +948,35 @@ function applyDeathEvent(
   if (gameplay.saveData.player.level > levelBefore) {
     addEffect(gameplay, gameplay.playerEntityId, 'levelup', gameplay.saveData.player.level, nowMs, nextEntityId);
   }
+}
+
+const DROP_SPREAD_PX = 34;
+
+/**
+ * A kill's coins and items used to land on the exact same pixel, so only the top label was
+ * readable. Fan them out along the monster's foothold (following slopes, never past its ends).
+ */
+function scatterDropPosition(
+  monster: GameplayState['monsters'][number],
+  index: number,
+  count: number,
+  gameplay: GameplayState,
+  catalog: ContentCatalog,
+): { x: number; y: number } {
+  const origin = monster.movement.position;
+  if (count <= 1) return { ...origin };
+  const foothold = catalog.world.maps[gameplay.saveData.location.mapId]?.footholds
+    .find(({ id }) => id === monster.movement.footholdId);
+  const wanted = origin.x + (index - (count - 1) / 2) * DROP_SPREAD_PX;
+  if (!foothold) return { x: wanted, y: origin.y };
+  const left = Math.min(foothold.x1, foothold.x2) + 8;
+  const right = Math.max(foothold.x1, foothold.x2) - 8;
+  const x = left <= right ? Math.min(right, Math.max(left, wanted)) : origin.x;
+  const span = foothold.x2 - foothold.x1;
+  const footY = span === 0 ? foothold.y1 : foothold.y1 + ((x - foothold.x1) / span) * (foothold.y2 - foothold.y1);
+  // Keep the monster's own offset from the foothold line (its feet may sit a pixel above it).
+  const originFootY = span === 0 ? foothold.y1 : foothold.y1 + ((origin.x - foothold.x1) / span) * (foothold.y2 - foothold.y1);
+  return { x, y: origin.y + (footY - originFootY) };
 }
 
 function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): CombatActor[] {
