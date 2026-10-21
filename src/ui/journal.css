@@ -378,3 +378,6 @@
   .ms-quick-slot__key { min-width: 19px; font-size: 8px; }
   .ms-quick-slot__icon, .ms-quick-slot__icon-image { width: 26px; height: 26px; }
 }
+
+/* While a panel is open the toast sits at the top edge instead of over the panel body. */
+.ms-toast.ms-toast--top { top: 10px; bottom: auto; }

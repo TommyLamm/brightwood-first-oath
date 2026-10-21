@@ -888,6 +888,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     errorText.textContent = view.error ?? '';
     toast.textContent = view.toast ?? '';
     toast.hidden = !view.toast;
+    // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
+    toast.classList.toggle('ms-toast--top', view.panels.length > 0);
     if (lastFooterActionStatus === view.saveStatus) return;
     lastFooterActionStatus = view.saveStatus;
     footerActions.replaceChildren();
