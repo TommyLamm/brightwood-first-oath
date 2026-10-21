@@ -1595,6 +1595,13 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
       }));
     }
   }
+  // Players who skipped levelling their stats can bank dozens of AP; one click spends it all on STR.
+  if (player.ap > 5) {
+    actions.append(makeButton(document, '全部加到 STR（' + player.ap + '）', 'allocate-ap', {
+      className: 'ms-button ms-button--secondary',
+      title: '一次消耗全部 ' + player.ap + ' AP 提升 STR', data: { stat: 'str', amount: String(player.ap) },
+    }));
+  }
   parent.append(actions);
 }
 
