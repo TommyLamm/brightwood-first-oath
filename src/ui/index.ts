@@ -1184,6 +1184,20 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const label = target.dataset.settingsLabel;
       const output = target.closest('label')?.querySelector('span');
       if (label && output) output.textContent = label + ' ' + value;
+      return;
+    }
+    // Store quantities while typing. Rebuilding the panel later, on the blur that precedes a
+    // click on 購買／出售, replaced the button between mousedown and mouseup and ate that click.
+    if (target instanceof HTMLInputElement && (target.dataset.shopQuantity || target.dataset.sellQuantity !== undefined)) {
+      const value = Number(target.value);
+      if (!Number.isInteger(value) || value < 1) return;
+      if (target.dataset.shopQuantity) shopQuantities.set(target.dataset.shopQuantity, clampInteger(value, 1, 99));
+      else {
+        const bagIndex = Number(target.dataset.sellQuantity);
+        const max = currentView?.saveData?.player.bag[bagIndex]?.quantity ?? 1;
+        sellQuantities.set(bagIndex, clampInteger(value, 1, max));
+      }
+      if (currentView) renderPanel(currentView);
     }
   };
 
@@ -1197,15 +1211,21 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
     if (target instanceof HTMLInputElement && target.dataset.shopQuantity) {
-      shopQuantities.set(target.dataset.shopQuantity, clampInteger(Number(target.value), 1, 99));
-      if (currentView) renderPanel(currentView, true);
+      const quantity = clampInteger(Number(target.value), 1, 99);
+      const unchanged = shopQuantities.get(target.dataset.shopQuantity) === quantity;
+      shopQuantities.set(target.dataset.shopQuantity, quantity);
+      if (unchanged) target.value = String(quantity);
+      else if (currentView) renderPanel(currentView, true);
       return;
     }
     if (target instanceof HTMLInputElement && target.dataset.sellQuantity !== undefined) {
       const bagIndex = Number(target.dataset.sellQuantity);
       const max = currentView.saveData?.player.bag[bagIndex]?.quantity ?? 1;
-      sellQuantities.set(bagIndex, clampInteger(Number(target.value), 1, max));
-      if (currentView) renderPanel(currentView, true);
+      const quantity = clampInteger(Number(target.value), 1, max);
+      const unchanged = sellQuantities.get(bagIndex) === quantity;
+      sellQuantities.set(bagIndex, quantity);
+      if (unchanged) target.value = String(quantity);
+      else if (currentView) renderPanel(currentView, true);
     }
   };
 
