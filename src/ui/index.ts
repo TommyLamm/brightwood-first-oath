@@ -48,7 +48,7 @@ type UiAction =
   | 'retry-save' | 'discard-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'use-item' | 'select-bag'
   | 'inventory-filter'
-  | 'equip-bag' | 'sell-bag' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
+  | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide';
 
@@ -1089,6 +1089,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         if (Number.isInteger(bagIndex)) dispatchDraft({ type: 'equip', payload: { bagIndex } });
         return;
       }
+      case 'sell-materials': {
+        const bag = view.saveData?.player.bag ?? [];
+        // Highest index first so earlier stacks keep their positions while emptied ones are removed.
+        for (let bagIndex = bag.length - 1; bagIndex >= 0; bagIndex -= 1) {
+          const stack = bag[bagIndex]!;
+          const item = view.catalog.rules.items[stack.itemId];
+          if (item?.kind !== 'material' || item.sellPrice <= 0) continue;
+          sellQuantities.delete(bagIndex);
+          dispatchDraft({ type: 'sell', payload: { bagIndex, quantity: stack.quantity } });
+        }
+        return;
+      }
       case 'sell-bag': {
         const bagIndex = Number(button.dataset.bagIndex);
         const maxQuantity = view.saveData?.player.bag[bagIndex]?.quantity ?? 1;
@@ -1844,6 +1856,15 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     .filter(({ item }) => item && item.kind !== 'quest' && item.sellPrice > 0);
   const sellSection = makeElement(document, 'section', 'ms-sell-section');
   sellSection.append(makeSectionTitle(document, '出售背包物品'));
+  // Monster materials have no other use; selling them stack by stack was tedious.
+  const materials = sellable.filter(({ item }) => item?.kind === 'material');
+  if (materials.length > 0) {
+    const total = materials.reduce((sum, { stack, item }) => sum + (item?.sellPrice ?? 0) * stack.quantity, 0);
+    sellSection.append(makeButton(document, '出售全部素材（+' + formatNumber(total) + ' 金幣）', 'sell-materials', {
+      className: 'ms-button ms-button--primary', disabled: !atMerchant,
+      title: atMerchant ? '一次出售背包中所有怪物素材' : '需在商人互動中出售',
+    }));
+  }
   if (sellable.length === 0) sellSection.append(makeElement(document, 'p', 'ms-empty-state', '目前沒有可出售物品。'));
   for (const { stack, bagIndex, item } of sellable) {
     if (!item) continue;
