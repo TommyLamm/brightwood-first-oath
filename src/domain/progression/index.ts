@@ -318,11 +318,11 @@ function applyReward(player: PlayerProgress, reward: Reward, rules: RulesCatalog
     !Number.isSafeInteger(reward.coins) || reward.coins < 0 ||
     !Number.isSafeInteger(reward.exp) || reward.exp < 0
   ) {
-    return failure('INVALID', '獎勵金錢與經驗必須是非負整數。');
+    return failure('INVALID', '獎勵金幣與經驗必須是非負整數。');
   }
   const nextCoins = player.coins + reward.coins;
   if (!Number.isSafeInteger(nextCoins) || nextCoins > COIN_CAP) {
-    return failure('INVALID', '獎勵會使金錢超過上限。');
+    return failure('INVALID', '獎勵會使金幣超過上限。');
   }
   const addResult = addStacksToDraft(player, reward.items, rules);
   if (!addResult.ok) return addResult;
@@ -363,7 +363,7 @@ export function applyProgressAction(
       }
       const total = item.buyPrice * action.quantity;
       if (!Number.isSafeInteger(total)) return failure('INVALID', '購買金額無效。');
-      if (draft.coins < total) return failure('INSUFFICIENT_COINS', '金錢不足。');
+      if (draft.coins < total) return failure('INSUFFICIENT_COINS', `金幣不足：需要 ${total.toLocaleString('en-US')}，目前持有 ${draft.coins.toLocaleString('en-US')}。`);
       const added = addStacksToDraft(draft, [{ itemId: item.id, quantity: action.quantity }], rules);
       if (!added.ok) return added;
       draft.coins -= total;
@@ -383,7 +383,7 @@ export function applyProgressAction(
       const proceeds = item.sellPrice * action.quantity;
       const nextCoins = draft.coins + proceeds;
       if (!Number.isSafeInteger(nextCoins) || nextCoins > COIN_CAP) {
-        return failure('INVALID', '出售後金錢會超過上限。');
+        return failure('INVALID', '出售後金幣會超過上限。');
       }
       stack.quantity -= action.quantity;
       if (stack.quantity === 0) draft.bag.splice(action.bagIndex, 1);
