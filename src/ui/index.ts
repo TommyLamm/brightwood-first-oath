@@ -50,7 +50,7 @@ type UiAction =
   | 'inventory-filter'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
-  | 'toggle-key-guide' | 'settings-reset-bindings';
+  | 'toggle-key-guide' | 'settings-reset-bindings' | 'reload-page';
 
 type KeyGuideItem = {
   label: string;
@@ -908,7 +908,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       if (view.screen === 'error' || (view.screen === 'title' && view.error)) {
-        const card = makeScreenCard(document, '冒險無法開始', view.error ?? '目前無法載入遊戲內容。');
+        // The raw loader error ("GET … failed: Failed to fetch") means nothing to a player; lead with what
+        // to do and keep the technical line folded away for bug reports.
+        const card = makeScreenCard(document, '冒險無法開始', '有些遊戲檔案沒有下載成功，通常是網路暫時不穩。請重新載入頁面再試一次。');
+        if (view.error) {
+          const details = makeElement(document, 'details', 'ms-screen-card__details');
+          details.append(makeElement(document, 'summary', '', '技術細節'), makeElement(document, 'code', '', view.error));
+          card.append(details);
+        }
+        card.append(makeButton(document, '重新載入', 'reload-page', { className: 'ms-button ms-button--primary' }));
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);
@@ -1082,6 +1090,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       case 'return-title':
         dispatchDraft({ type: 'returnTitle', payload: {} });
+        return;
+      case 'reload-page':
+        document.defaultView?.location.reload();
         return;
       case 'respawn':
         dispatchDraft({ type: 'respawn', payload: {} });

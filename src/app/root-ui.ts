@@ -385,7 +385,7 @@ export function createRootStatusView(root: HTMLElement): RootStatusView {
         panel.hidden = true;
         return;
       } else if (state.startupStatus === 'incomplete') {
-        heading.textContent = '開發中：目前內容尚未完成';
+        heading.textContent = '遊戲檔案載入失敗';
         body.textContent = state.startupIssues.join('\n');
       } else {
         panel.hidden = true;

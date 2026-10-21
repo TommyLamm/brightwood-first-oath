@@ -30,8 +30,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
         if (!this.sys.isActive()) return;
         if (!result.ready) {
           const details = result.issues.join('\n');
-          this.statusText?.setText(`開發中：內容尚未完成\n${details}`);
-          reportStatus('資產或內容尚未完成', details);
+          this.statusText?.setText(`遊戲檔案載入失敗\n${details}`);
+          reportStatus('遊戲檔案載入失敗', details);
           return;
         }
         this.scene.start('world');
@@ -66,8 +66,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       this.loadedWorldRevision = app.state.worldRevision;
       if (!catalog || !manifests || !heroAnchors) {
         app.reportRuntimeIssue('World Scene 缺少已驗證的 catalog、manifest、hero anchors 或 camp map。');
-        this.statusText.setText('開發中：遊戲內容尚未完成');
-        reportStatus('遊戲內容尚未完成', 'World Scene 缺少 catalog、manifest 或 hero anchors。');
+        this.statusText.setText('遊戲檔案載入失敗');
+        reportStatus('遊戲檔案載入失敗', 'World Scene 缺少 catalog、manifest 或 hero anchors。');
         return;
       }
 

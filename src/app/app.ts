@@ -354,7 +354,7 @@ export class GameApp {
         : [errorMessage(error, '遊戲資產載入失敗。')]));
     }
     if (anchorsResult.status === 'rejected') {
-      startupIssues.push(errorMessage(anchorsResult.reason, '主角正式裝備 anchors 載入失敗。'));
+      startupIssues.push(errorMessage(anchorsResult.reason, '主角裝備定位資料載入失敗。'));
     }
     if (startupIssues.length > 0 || assetsResult.status !== 'fulfilled' || anchorsResult.status !== 'fulfilled') {
       return this.failStartup(startupIssues, catalog);

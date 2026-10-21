@@ -311,6 +311,9 @@
 .maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
 .ms-screen-card { outline: 0; padding: 20px; }
 .ms-screen-card h1 { color: #65482b; }
+.ms-screen-card__details { color: #7a5d3f; font-size: 12px; }
+.ms-screen-card__details summary { cursor: pointer; }
+.ms-screen-card__details code { display: block; margin-top: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
 .ms-screen-card__description { color: #786145; white-space: pre-line; }
 .ms-screen-card__status { color: #776537; }
 .ms-toast { bottom: 150px; color: #f8e8c7; border: 2px solid #c49c62; border-radius: 4px; background: #4c6046; box-shadow: 0 3px 0 #382b20; }
