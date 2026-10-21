@@ -283,7 +283,7 @@ describe('app gameplay vertical slice', () => {
     expect(result.gameplay?.combat.attacks).toHaveLength(0);
   });
 
-  it('ignores a skill pressed mid-swing without a toast', () => {
+  it('buffers a skill pressed mid-swing without a toast', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('mid-swing'));
     if ('error' in started) throw new Error(started.error);
     const gameplay = started.gameplay;
@@ -303,6 +303,21 @@ describe('app gameplay vertical slice', () => {
     }).gameplay!;
     expect(pressed.toast).toBeNull();
     expect(pressed.saveData.player.mp).toBe(50);
+    // The buffered skill fires on its own once the basic swing has finished...
+    const chained = stepGameplay(pressed, {
+      catalog, commands: [], input,
+      dtSeconds: 1 / 60, nowMs: 1000 + 550 + 1, random: createSeededRandom(3), nextEntityId: createNextEntityId('mid-swing-c'),
+    }).gameplay!;
+    expect(chained.combat.attacks.some((attack) => attack.skillId === 'heavy-strike')).toBe(true);
+    expect(chained.saveData.player.mp).toBe(44);
+    expect(chained.bufferedAttack).toBeUndefined();
+    // ...but a press that is too early to chain is dropped rather than firing late.
+    const late = stepGameplay({ ...swung, bufferedAttack: { skillId: 'heavy-strike', expiresAtMs: 1100 } }, {
+      catalog, commands: [], input,
+      dtSeconds: 1 / 60, nowMs: 1600, random: createSeededRandom(4), nextEntityId: createNextEntityId('mid-swing-d'),
+    }).gameplay!;
+    expect(late.combat.attacks.some((attack) => attack.skillId === 'heavy-strike')).toBe(false);
+    expect(late.bufferedAttack).toBeUndefined();
   });
 
   it('keeps quest items and quest state when a full bag cannot accept the reward', () => {

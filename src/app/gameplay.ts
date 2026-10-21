@@ -42,6 +42,8 @@ export type GameplayState = {
   toast: string | null;
   /** When the current toast text first appeared; used to auto-dismiss it. */
   toastShown?: { text: string; atMs: number };
+  /** A skill pressed while the previous swing was still playing; it fires as soon as the swing ends. */
+  bufferedAttack?: { skillId: Id; expiresAtMs: number };
   interaction: { npcId: Id; dialogue: string[] } | null;
   pendingTransition: { mapId: Id; spawnId: Id; after: 'travel' | 'respawn' | 'retryBoss' } | null;
 };
@@ -213,6 +215,14 @@ export function stepGameplay(
     gameplay = processed.gameplay;
     if (processed.screen) screen = processed.screen;
     if (processed.openPanel) openPanel = processed.openPanel;
+  }
+  const buffered = gameplay.bufferedAttack;
+  if (buffered) {
+    if (input.nowMs > buffered.expiresAtMs || gameplay.saveData.player.hp <= 0) {
+      delete gameplay.bufferedAttack;
+    } else if (!commands.some((command) => command.type === 'attack')) {
+      gameplay = processCommand(gameplay, { seq: -1, type: 'attack', payload: { skillId: buffered.skillId } }, input).gameplay;
+    }
   }
 
   if (gameplay.pendingTransition || screen !== 'playing' || gameplay.saveData.player.hp <= 0) {
@@ -438,11 +448,20 @@ function processCommand(
         skillId: skill.id,
       }, actors, catalog.rules, context.nowMs, context.nextEntityId);
       if (!proposal.ok) {
+        // A skill pressed mid-swing is buffered briefly so it chains off the swing instead of being lost.
+        if (proposal.code === 'NOT_READY' && skill.id !== 'basic') {
+          if (gameplay.bufferedAttack?.skillId !== skill.id) {
+            gameplay.bufferedAttack = { skillId: skill.id, expiresAtMs: context.nowMs + ATTACK_BUFFER_MS };
+          }
+          return { gameplay };
+        }
+        delete gameplay.bufferedAttack;
         // Mashing keys while a swing is still playing is normal input, not an error; neither is
         // mashing the basic attack during its own cooldown. Skill cooldowns still explain themselves.
         if (proposal.code === 'NOT_READY' || (skill.id === 'basic' && proposal.code === 'COOLDOWN')) return { gameplay };
         return withToast(gameplay, attackFailureMessage(proposal.code));
       }
+      delete gameplay.bufferedAttack;
       const mp = skill.mpCost > 0
         ? applyProgressAction(player, { type: 'spendMp', amount: skill.mpCost }, catalog.rules)
         : { ok: true as const, value: player };
@@ -780,6 +799,8 @@ export function failMapTransition(current: GameplayState, message: string): Game
 // Toasts used to stay up until some later action cleared them, so e.g. the chapter-complete
 // message sat over every panel for the rest of the session.
 const TOAST_DURATION_MS = 6000;
+/** How long a skill pressed mid-swing waits for the swing to finish before it is dropped. */
+const ATTACK_BUFFER_MS = 600;
 
 function expireToast(gameplay: GameplayState, nowMs: number): void {
   if (gameplay.toast === null) {
