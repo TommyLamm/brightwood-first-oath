@@ -172,7 +172,7 @@ describe('progression and inventory', () => {
 
     const noRoomToUnequip = applyProgressAction(exchanged.value, { type: 'unequip', slot: 'weapon' }, rulesCatalog);
     expectFailure(noRoomToUnequip, 'BAG_FULL');
-    if (!noRoomToUnequip.ok) expect(noRoomToUnequip.message).toContain('空間');
+    if (!noRoomToUnequip.ok) expect(noRoomToUnequip.message).toContain('背包已滿');
     expect(exchanged.value.equipment.weapon).toBe('iron-sword');
 
     const rewardFailure = applyProgressAction(fullBagPlayer, {

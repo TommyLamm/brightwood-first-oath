@@ -220,7 +220,7 @@ function addStacksToDraft(
       if (remaining === 0) break;
     }
     while (remaining > 0) {
-      if (player.bag.length >= BAG_CAPACITY) return failure('BAG_FULL', '背包空間不足。');
+      if (player.bag.length >= BAG_CAPACITY) return failure('BAG_FULL', '背包已滿（32 格）；請先出售或使用物品騰出空位。');
       const amount = Math.min(remaining, entry.value.item.stackLimit);
       player.bag.push({ itemId: entry.value.item.id, quantity: amount });
       remaining -= amount;
