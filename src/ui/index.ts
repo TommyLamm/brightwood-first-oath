@@ -1638,6 +1638,21 @@ function buildQuestsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
       const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '未知 NPC';
       const turnIn = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '未知 NPC';
       const card = makeElement(document, 'article', 'ms-quest-card ms-quest-card--' + quest.status);
+      if (quest.status === 'locked') {
+        // Locked quests used to print their full story, objectives and rewards (spoilers, and
+        // seven long cards at the start). Show only the title and what unlocks it.
+        const missing = (definition?.prerequisiteIds ?? [])
+          .filter((id) => view.saveData?.quests[id]?.status !== 'claimed')
+          .map((id) => '「' + (view.catalog.world.quests[id]?.name ?? id) + '」');
+        const levelShort = definition && view.saveData && definition.minLevel > view.saveData.player.level;
+        const hint = [
+          missing.length ? '完成' + missing.join('、') + '後解鎖' : '',
+          levelShort ? '需要 Lv.' + definition.minLevel : '',
+        ].filter(Boolean).join('・') || '尚未解鎖';
+        card.append(makeElement(document, 'h4', '', quest.title), makeBadge(document, group.label, 'category'), makeElement(document, 'p', 'ms-detail-copy', hint));
+        section.append(card);
+        continue;
+      }
       card.append(
         makeElement(document, 'div', 'ms-quest-card__head'),
         makeElement(document, 'h4', '', quest.title),
