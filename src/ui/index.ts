@@ -96,7 +96,7 @@ const KEY_GUIDE_SECTIONS: {
       { label: '能力值屬性', action: 'stats' },
       { label: '任務日誌', action: 'quests' },
       { label: '大地圖', action: 'map' },
-      { label: '關閉最上層面板', action: 'escape' },
+      { label: '關閉面板／暫停', action: 'escape' },
     ],
   },
 ];
@@ -820,7 +820,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       if (view.screen === 'paused') {
-        const card = makeScreenCard(document, '冒險已暫停', '角色進度會在恢復後繼續。');
+        const card = makeScreenCard(document, '冒險已暫停', '怪物與時間都已停止。按 Esc 或「繼續遊戲」回到冒險。');
         card.append(
           makeButton(document, '繼續遊戲', 'toggle-pause', { className: 'ms-button ms-button--primary' }),
           makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }),
@@ -1929,7 +1929,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可調整設定。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', 'Esc 固定用來關閉最上層面板，因此不能重新綁定。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', 'Esc 固定用來關閉最上層面板，沒有面板時則暫停遊戲，因此不能重新綁定。'));
   parent.append(makeButton(document, settings.muted ? '開啟音效' : '靜音', 'settings-mute', {
     className: 'ms-button ms-button--secondary',
     title: settings.muted ? '開啟遊戲音效' : '靜音所有遊戲音效',
@@ -1962,7 +1962,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   const helpText = [
     '用鍵盤移動、跳躍與戰鬥；畫面上的按鈕也可以用滑鼠點擊。',
     '按住拾取鍵可以連續撿起附近的掉落物。',
-    '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板。',
+    '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板，沒有面板時暫停遊戲。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
     '技能快捷 1／2／3 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
   ];
@@ -1985,7 +1985,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     bindingList.append(row);
   }
   const escapeRow = makeElement(document, 'div', 'ms-binding-row');
-  escapeRow.append(makeElement(document, 'span', '', '關閉最上層面板'), makeBadge(document, 'Esc 固定', 'warning'));
+  escapeRow.append(makeElement(document, 'span', '', '關閉面板／暫停'), makeBadge(document, 'Esc 固定', 'warning'));
   bindingList.append(escapeRow);
   parent.append(bindingList);
   if (state.bindingMessage) parent.append(makeElement(document, 'p', 'ms-panel-note', state.bindingMessage));
