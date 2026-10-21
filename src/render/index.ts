@@ -1027,11 +1027,22 @@ export function createWorldRenderer(
 
   const drawAttackCue = (attack: AttackInstance, nowMs: number, graphics: Phaser.GameObjects.Graphics): void => {
     const skill = catalog.rules.skills[attack.skillId];
-    if (!skill || nowMs < attack.startedAtMs + skill.windupMs || nowMs >= attack.startedAtMs + skill.windupMs + skill.activeMs) return;
-    const x = attack.origin.x + (attack.facing > 0 ? 0 : -skill.reach);
-    const y = attack.origin.y - skill.height;
-    graphics.fillStyle(0xf8e6a2, 0.16).fillRect(x, y, skill.reach, skill.height);
-    graphics.lineStyle(1, 0xf8e6a2, 0.7).strokeRect(x, y, skill.reach, skill.height);
+    const visibleMs = Math.max(skill?.activeMs ?? 0, 140);
+    if (!skill || nowMs < attack.startedAtMs + skill.windupMs || nowMs >= attack.startedAtMs + skill.windupMs + visibleMs) return;
+    // Skills with their own VFX strip already show the hit; drawing the hit box on top looked like a debug overlay.
+    if (skill.effectKey && assets.images.has(skill.effectKey)) return;
+    // Otherwise draw a short slash arc across the reach instead of a raw rectangle.
+    const progress = (nowMs - attack.startedAtMs - skill.windupMs) / visibleMs;
+    const radius = Math.max(18, skill.reach * 0.75);
+    const centerX = attack.origin.x;
+    const centerY = attack.origin.y - skill.height * 0.5;
+    const sweep = Phaser.Math.DegToRad(100);
+    const start = attack.facing > 0 ? -sweep / 2 : Math.PI - sweep / 2;
+    const alpha = 0.85 * (1 - progress * 0.6);
+    graphics.lineStyle(5, 0xfff1c2, alpha * 0.45).beginPath()
+      .arc(centerX, centerY, radius, start, start + sweep, false).strokePath();
+    graphics.lineStyle(2, 0xffffff, alpha).beginPath()
+      .arc(centerX, centerY, radius, start, start + sweep, false).strokePath();
   };
 
   const drawSkillEffect = (attack: AttackInstance, nowMs: number): void => {
