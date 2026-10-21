@@ -291,6 +291,8 @@
 .ms-bag-slot--empty .ms-bag-slot__number { visibility: hidden; }
 .ms-button--primary, .ms-button--secondary { border-color: #7b6841 !important; color: #fff0cb !important; background: linear-gradient(#72805b, #4c6148) !important; }
 .ms-button--danger { border-color: #794d32 !important; color: #ffebc9 !important; background: linear-gradient(#a56641, #78452d) !important; }
+/* The !important skins above also hit disabled buttons, so maxed skills, STR +1 at 0 AP or unaffordable purchases looked clickable. */
+.maple-ui .ms-button--primary:disabled, .maple-ui .ms-button--secondary:disabled, .maple-ui .ms-button--danger:disabled { border-color: #a08b6c !important; color: #8d7b64 !important; background: #d8c7aa !important; box-shadow: inset 0 0 0 1px #e8d8bd; cursor: not-allowed; }
 .ms-screen-layer { position: absolute; background: #25271d66; }
 .maple-ui.is-pregame .ms-screen-layer { background: linear-gradient(#1b1d15a6, #1b1d15d9), var(--title-backdrop) center / cover no-repeat, #25271d; }
 .maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
