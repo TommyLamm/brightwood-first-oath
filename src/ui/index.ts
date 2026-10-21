@@ -626,7 +626,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       : quest.status === 'ready' ? where(definition?.turnInNpcId)
       : '';
     const detail = !quest
-      ? (chapterComplete ? '已完成守衛的安息，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
+      ? (chapterComplete ? '古礦已重歸寧靜，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
