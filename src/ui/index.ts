@@ -260,6 +260,10 @@ function kindLabel(kind: string): string {
   }[kind] ?? kind;
 }
 
+function shopKindOrder(kind: string): number {
+  return ['consumable', 'weapon', 'body', 'hat'].indexOf(kind) >>> 0;
+}
+
 function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): string {
   const effects: string[] = [];
   if (item.attack) effects.push('攻擊 +' + item.attack);
@@ -270,7 +274,7 @@ function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): str
   return [
     '需求 Lv.' + item.minLevel,
     effects.length ? effects.join('・') : '沒有直接能力效果',
-    '可堆疊 ' + item.stackLimit,
+    ...(item.stackLimit > 1 ? ['每格最多 ' + item.stackLimit + ' 個'] : []),
     '買價 ' + (item.buyPrice > 0 ? formatNumber(item.buyPrice) : '不可購買'),
     '賣價 ' + formatNumber(item.sellPrice),
   ].join('\n');
@@ -1099,7 +1103,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       case 'buy': {
         const itemId = button.dataset.itemId;
-        if (itemId) dispatchDraft({ type: 'buy', payload: { itemId, quantity: shopQuantities.get(itemId) ?? 1 } });
+        const stackable = (currentView?.catalog.rules.items[itemId ?? '']?.stackLimit ?? 1) > 1;
+        if (itemId) dispatchDraft({ type: 'buy', payload: { itemId, quantity: stackable ? shopQuantities.get(itemId) ?? 1 : 1 } });
         return;
       }
       case 'settings-mute': {
@@ -1721,15 +1726,16 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   }
   const atMerchant = view.interaction?.npcId === 'merchant';
   parent.append(makeElement(document, 'p', 'ms-panel-note', atMerchant
-    ? '木葉商人・可購買物品只包含有售價的裝備與藥水。'
+    ? '歡迎光臨！需要藥水或新裝備嗎？'
     : '請先靠近木葉商人並互動，再進行購買。'));
   parent.append(makeElement(document, 'p', 'ms-wallet', '持有金幣：' + formatNumber(player.coins)));
   const offers = Object.values(view.catalog.rules.items)
     .filter((item) => item.buyPrice > 0 && item.kind !== 'quest')
-    .sort((a, b) => a.kind.localeCompare(b.kind) || a.minLevel - b.minLevel || a.name.localeCompare(b.name));
+    .sort((a, b) => shopKindOrder(a.kind) - shopKindOrder(b.kind) || a.minLevel - b.minLevel || a.buyPrice - b.buyPrice);
   const grid = makeElement(document, 'div', 'ms-shop-grid');
   for (const item of offers) {
-    const quantity = clampInteger(state.shopQuantities.get(item.id) ?? 1, 1, 99);
+    const stackable = item.stackLimit > 1;
+    const quantity = stackable ? clampInteger(state.shopQuantities.get(item.id) ?? 1, 1, 99) : 1;
     const total = quantity * item.buyPrice;
     const card = makeElement(document, 'article', 'ms-shop-card');
     card.append(
@@ -1739,19 +1745,23 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item)),
       makeElement(document, 'span', 'ms-shop-card__price', '單價 ' + formatNumber(item.buyPrice) + ' 金幣'),
     );
-    const quantityRow = makeElement(document, 'label', 'ms-quantity-row');
-    quantityRow.append(makeElement(document, 'span', '', '數量 1–99'));
-    const input = makeElement(document, 'input', 'ms-input ms-input--quantity');
-    input.type = 'number';
-    input.min = '1';
-    input.max = '99';
-    input.step = '1';
-    input.value = String(quantity);
-    input.dataset.shopQuantity = item.id;
-    input.dataset.focus = 'shop-quantity-' + item.id;
-    input.setAttribute('aria-label', item.name + ' 購買數量');
-    quantityRow.append(input);
-    card.append(quantityRow, makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(total) + ' 金幣'));
+    // Equipment does not stack (each piece takes a bag slot), so only consumables get a quantity box.
+    if (stackable) {
+      const quantityRow = makeElement(document, 'label', 'ms-quantity-row');
+      quantityRow.append(makeElement(document, 'span', '', '數量 1–99'));
+      const input = makeElement(document, 'input', 'ms-input ms-input--quantity');
+      input.type = 'number';
+      input.min = '1';
+      input.max = '99';
+      input.step = '1';
+      input.value = String(quantity);
+      input.dataset.shopQuantity = item.id;
+      input.dataset.focus = 'shop-quantity-' + item.id;
+      input.setAttribute('aria-label', item.name + ' 購買數量');
+      quantityRow.append(input);
+      card.append(quantityRow);
+    }
+    card.append(makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(total) + ' 金幣'));
     const reason = !atMerchant ? '需在商人互動中購買' : total > player.coins ? '金幣不足' : '';
     card.append(makeButton(document, '購買', 'buy', {
       className: 'ms-button ms-button--primary',
