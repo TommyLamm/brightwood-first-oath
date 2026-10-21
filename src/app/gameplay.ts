@@ -431,7 +431,11 @@ function processCommand(
         sourceId: gameplay.playerEntityId,
         skillId: skill.id,
       }, actors, catalog.rules, context.nowMs, context.nextEntityId);
-      if (!proposal.ok) return withToast(gameplay, proposal.message);
+      if (!proposal.ok) {
+        // Mashing the basic attack during its own animation/cooldown is normal input, not an error.
+        if (skill.id === 'basic' && (proposal.code === 'COOLDOWN' || proposal.code === 'NOT_READY')) return { gameplay };
+        return withToast(gameplay, attackFailureMessage(proposal.code));
+      }
       const mp = skill.mpCost > 0
         ? applyProgressAction(player, { type: 'spendMp', amount: skill.mpCost }, catalog.rules)
         : { ok: true as const, value: player };
@@ -924,6 +928,16 @@ function addEffect(
     atMs,
   });
   if (gameplay.effects.length > 80) gameplay.effects.splice(0, gameplay.effects.length - 80);
+}
+
+function attackFailureMessage(code: string): string {
+  switch (code) {
+    case 'COOLDOWN': return '技能還在冷卻中。';
+    case 'NOT_READY': return '上一個攻擊動作尚未結束。';
+    case 'REQUIREMENT': return '尚未學會此技能或不符合施放條件。';
+    case 'DEAD': return '倒下時無法攻擊。';
+    default: return '目前無法施放這個技能。';
+  }
 }
 
 function withToast(gameplay: GameplayState, toast: string): { gameplay: GameplayState } {
