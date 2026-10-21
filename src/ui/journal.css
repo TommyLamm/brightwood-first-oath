@@ -207,6 +207,9 @@
   background: none;
   box-shadow: none;
 }
+/* The decorative tray below extends past the bottom of the UI, which made .maple-ui scrollable by about 30 px.
+   Any focus(), Tab or wheel over a button then shifted the whole HUD up. Clip it where the layout fits. */
+@media (min-height: 480px) { .maple-ui { overflow: clip; } }
 .ms-quickbar::before { content: ""; position: absolute; z-index: -1; inset: -80% 0; background: var(--journal-tray) center / 100% auto no-repeat; image-rendering: pixelated; pointer-events: none; }
 .ms-quickbar__slots { gap: 7px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .maple-ui .ms-quick-slot {
