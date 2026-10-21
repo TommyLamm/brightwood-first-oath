@@ -840,6 +840,13 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
             makeButton(document, '暫時遊玩', 'play-temporary', { className: 'ms-button ms-button--secondary' }),
           );
         } else if (view.saveData) {
+          // Say whose adventure 繼續冒險 resumes before the player picks it over 建立新角色.
+          const saved = view.saveData.player;
+          // An arena save resumes at the mine entrance (see restoreGame), so name that instead.
+          const savedMap = view.catalog?.world.maps[view.saveData.location.mapId];
+          const place = savedMap?.boss ? view.catalog?.world.maps['mine-gate']?.name : savedMap?.name;
+          card.append(makeElement(document, 'p', 'ms-screen-card__save',
+            '上次進度：' + saved.name + '・Lv.' + saved.level + ' ' + jobLabel(saved.job) + (place ? '・' + place : '')));
           card.append(
             makeButton(document, '繼續冒險', 'continue', { className: 'ms-button ms-button--primary' }),
             makeButton(document, '建立新角色', 'new-role', { className: 'ms-button ms-button--secondary' }),

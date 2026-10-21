@@ -317,6 +317,7 @@
 .ms-screen-card__details code { display: block; margin-top: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
 .ms-screen-card__description { color: #786145; white-space: pre-line; }
 .ms-screen-card__status { color: #776537; }
+.ms-screen-card__save { margin: 0; color: #4f3b29; font-weight: 700; overflow-wrap: anywhere; }
 .ms-toast { bottom: 150px; color: #f8e8c7; border: 2px solid #c49c62; border-radius: 4px; background: #4c6046; box-shadow: 0 3px 0 #382b20; }
 .ms-footer { position: static; grid-row: 4; display: flex; align-items: center; flex-wrap: wrap; justify-content: start; gap: 8px; font-size: 10px; color: #f5e6c8; text-shadow: 0 1px #35281e; }
 .ms-footer__save { padding: 3px 8px; border: 1px solid #ab8d5c; border-radius: 3px; background: #43392cdb; }
