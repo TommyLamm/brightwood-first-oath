@@ -1140,6 +1140,16 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const top = view.panels.at(-1) === panel;
       button.classList.toggle('is-active', top);
       button.setAttribute('aria-expanded', String(top));
+      // Unspent AP/SP badges: new players otherwise rarely discover the stats/skills panels.
+      const unspent = panel === 'stats' ? view.saveData?.player.ap ?? 0
+        : panel === 'skills' ? view.saveData?.player.sp ?? 0 : 0;
+      if (unspent > 0) {
+        button.dataset.badge = String(unspent);
+        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel] + '（可分配 ' + unspent + (panel === 'stats' ? ' AP' : ' SP') + '）');
+      } else if (button.dataset.badge !== undefined) {
+        delete button.dataset.badge;
+        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+      }
     }
   };
 

@@ -252,6 +252,7 @@
   font-weight: 700;
 }
 .ms-journal-tab::before { content: ""; position: absolute; left: -5px; right: -5px; top: -15px; height: 15px; width: auto; border: 2px solid #39462d; border-radius: 2px; background: #70784e; box-shadow: inset 0 2px #a4a474, 0 2px #3a2a1d; }
+.ms-journal-tab[data-badge]::after { content: attr(data-badge); position: absolute; top: -24px; right: -10px; z-index: 2; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border: 2px solid #3a2a1d; border-radius: 10px; background: #c8463f; color: #fff6dc; font-size: 12px; font-weight: 700; line-height: 16px; text-align: center; box-shadow: 0 1px 2px rgba(0, 0, 0, .4); }
 .ms-journal-icon { display: inline-grid; place-items: center; width: clamp(30px, 2.8cqw, 54px); height: clamp(30px, 2.8cqw, 54px); flex-shrink: 0; }
 .ms-journal-icon__image { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 .maple-ui .ms-journal-tab.is-active { background: none !important; color: #594021 !important; filter: brightness(1.12); outline: 2px solid #efc969; outline-offset: -5px; }
