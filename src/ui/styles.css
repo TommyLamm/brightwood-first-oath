@@ -882,6 +882,7 @@
 .ms-sell-row strong { color: #f0e2bd; }
 .ms-map-row.is-current { border-color: rgba(234, 202, 121, .5); background: rgba(91, 71, 37, .38); }
 .ms-map-row .ms-badge { margin-left: auto; }
+.ms-map-row__level { color: var(--ms-muted); font-size: 11px; }
 .ms-portal-row span:last-child { flex: 1 1 100%; color: var(--ms-muted); font-size: 11px; }
 
 .ms-shop-grid {

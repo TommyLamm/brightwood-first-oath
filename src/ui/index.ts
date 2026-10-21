@@ -1688,8 +1688,14 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
     const seen = visited.has(map.id);
     const row = makeElement(document, 'div', 'ms-map-row' + (map.id === data.location.mapId ? ' is-current' : ''));
     // Name first: the stylesheet pushes the badge to the right edge (margin-left: auto).
+    // Monster level range tells players where they can safely train.
+    const levels = map.monsters.map((spawn) => view.catalog.rules.monsters[spawn.monsterId]?.level).filter((level): level is number => typeof level === 'number');
+    const low = Math.min(...levels);
+    const high = Math.max(...levels);
+    const range = levels.length === 0 ? (map.safe ? '安全區' : '') : (map.boss ? '首領 ' : '怪物 ') + 'Lv.' + low + (high > low ? '–' + high : '');
     row.append(
       makeElement(document, 'strong', '', map.name),
+      makeElement(document, 'span', 'ms-map-row__level', range),
       makeBadge(document, map.id === data.location.mapId ? '目前' : seen ? '已探索' : '未探索', map.id === data.location.mapId ? 'level' : seen ? 'success' : 'neutral'),
     );
     mapList.append(row);
