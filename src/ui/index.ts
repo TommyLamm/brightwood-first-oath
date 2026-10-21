@@ -1460,9 +1460,9 @@ function makeScreenCard(document: Document, title: string, description: string):
   return card;
 }
 
-function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], rank: number): string {
+function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], rank: number, includeRank = true): string {
   const parts = [
-    '等級 ' + rank + '/' + skill.maxRank,
+    ...(includeRank ? ['等級 ' + rank + '/' + skill.maxRank] : []),
     '需求 Lv.' + skill.requiredLevel + ' ' + (skill.requiredJob === 'swordsman' ? '劍士' : '初心者'),
   ];
   // Passives have no cost or cooldown; "MP 0｜冷卻 0ms" only added noise.
@@ -1473,6 +1473,18 @@ function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], r
   if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * Math.max(1, rank));
   if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * Math.max(1, rank) + ' HP');
   return parts.join('｜');
+}
+
+/** What one more SP buys, so 提升至等級 N says what it changes. Empty when unlearned or maxed. */
+function skillNextRankPreview(skill: UiSnapshot['catalog']['rules']['skills'][string], rank: number): string {
+  if (rank < 1 || rank >= skill.maxRank) return '';
+  const next = rank + 1;
+  const parts: string[] = [];
+  if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (next - 1)).toFixed(2));
+  if (skill.kind === 'buff') parts.push('防禦 +' + skill.defensePerRank * next);
+  if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * next);
+  if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * next + ' HP');
+  return parts.length ? '下一級：' + parts.join('｜') : '';
 }
 
 type PanelBuildState = {
@@ -1772,7 +1784,10 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
       makeElement(document, 'h3', '', skill.name),
       makeBadge(document, '等級 ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
     );
-    card.append(head, makeElement(document, 'p', 'ms-detail-copy', skillDetails(skill, rank)));
+    // The badge above already shows 等級 N/M, so the detail line leaves it out.
+    card.append(head, makeElement(document, 'p', 'ms-detail-copy', skillDetails(skill, rank, false)));
+    const preview = skillNextRankPreview(skill, rank);
+    if (preview) card.append(makeElement(document, 'p', 'ms-skill-card__next', preview));
     if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
     if (skill.id === 'vitality') card.append(makeElement(document, 'p', 'ms-panel-note', '提升最大 HP；不會自動恢復生命。'));
     if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '連續 3 秒沒有攻擊或受傷時，開始逐步恢復生命。'));

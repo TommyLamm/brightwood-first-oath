@@ -429,3 +429,4 @@
 
 .ms-bag-usage { color: #5d4428; }
 .ms-bag-usage.is-near-full { color: #a52d22; }
+.ms-skill-card__next { margin: 0; color: #3f6a45; font-size: 12px; font-weight: 700; }
