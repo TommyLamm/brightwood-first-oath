@@ -477,6 +477,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let sellQuantities = new Map<number, number>();
   let pendingBinding: string | null = null;
   let bindingMessage = '';
+  // Which row the message is about, so it shows next to that row instead of below all 17 bindings.
+  let bindingMessageAction: string | null = null;
   let keyGuideExpanded = false;
   let lastKeyGuideSignature = '';
   let disposed = false;
@@ -944,6 +946,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       sellQuantities: Array.from(sellQuantities.entries()),
       pendingBinding,
       bindingMessage,
+      bindingMessageAction,
     });
     if (!force && signature === lastPanelSignature) return;
     lastPanelSignature = signature;
@@ -969,6 +972,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         sellQuantities,
         pendingBinding,
         bindingMessage,
+        bindingMessageAction,
       }));
       card.append(heading, body);
       panelHost.replaceChildren(card);
@@ -1165,6 +1169,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         const actionId = button.dataset.actionId;
         if (!actionId || !KEY_ACTIONS.some(({ id }) => id === actionId)) return;
         pendingBinding = actionId;
+        bindingMessageAction = actionId;
         bindingMessage = '按一下新按鍵；Esc 保留關閉最上層面板。';
         renderPanel(view, true);
         return;
@@ -1173,6 +1178,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         if (!view.saveData || Object.keys(view.saveData.settings.bindings).length === 0) return;
         pendingBinding = null;
         bindingMessage = '';
+        bindingMessageAction = null;
         dispatchDraft({ type: 'setSettings', payload: { settings: { ...view.saveData.settings, bindings: {} } } });
         renderPanel(view, true);
         // The reset button is now disabled and cannot keep focus; hold the scroll position on the list.
@@ -1422,6 +1428,7 @@ type PanelBuildState = {
   sellQuantities: Map<number, number>;
   pendingBinding: string | null;
   bindingMessage: string;
+  bindingMessageAction: string | null;
 };
 
 function buildPanelContent(
@@ -2053,6 +2060,11 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
       rebindButton,
     );
     bindingList.append(row);
+    if (state.bindingMessage && state.bindingMessageAction === action.id) {
+      const note = makeElement(document, 'p', 'ms-panel-note ms-binding-note', state.bindingMessage);
+      note.setAttribute('role', 'status');
+      bindingList.append(note);
+    }
   }
   const escapeRow = makeElement(document, 'div', 'ms-binding-row');
   escapeRow.append(makeElement(document, 'span', '', '關閉面板／暫停'), makeBadge(document, 'Esc 固定', 'warning'));
@@ -2066,7 +2078,9 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   });
   resetButton.dataset.focus = 'binding-reset';
   parent.append(resetButton, bindingList);
-  if (state.bindingMessage) parent.append(makeElement(document, 'p', 'ms-panel-note', state.bindingMessage));
+  if (state.bindingMessage && !KEY_ACTIONS.some(({ id }) => id === state.bindingMessageAction)) {
+    parent.append(makeElement(document, 'p', 'ms-panel-note', state.bindingMessage));
+  }
 }
 
 function clamp(value: number, min: number, max: number): number {
