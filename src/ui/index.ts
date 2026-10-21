@@ -251,12 +251,12 @@ function statusLabel(status: UiSnapshot['saveStatus']): string {
 }
 
 function slotLabel(slot: 'weapon' | 'body' | 'hat'): string {
-  return { weapon: '武器', body: '身體', hat: '帽子' }[slot];
+  return { weapon: '武器', body: '護甲', hat: '帽子' }[slot];
 }
 
 function kindLabel(kind: string): string {
   return {
-    weapon: '武器', body: '衣服', hat: '帽子', consumable: '消耗品', material: '材料', quest: '任務物品',
+    weapon: '武器', body: '護甲', hat: '帽子', consumable: '消耗品', material: '材料', quest: '任務物品',
   }[kind] ?? kind;
 }
 
