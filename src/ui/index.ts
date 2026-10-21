@@ -1376,7 +1376,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可使用背包。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '32 格背包・選取物品查看能力與價格；不支援拖曳交易。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '共 32 格。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
   const categories = [
     { id: 'all', label: '全部' },
     { id: 'equipment', label: '裝備' },

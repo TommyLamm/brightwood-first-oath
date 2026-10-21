@@ -283,6 +283,12 @@
 .ms-bag-slot__name { color: #59452c; }
 .ms-bag-slot__quantity { color: #805e28; }
 .ms-bag-slot.is-selected { border-color: #62764e !important; box-shadow: inset 0 0 0 2px #889765 !important; }
+/* Slots are ~50 px wide: an ellipsised 8 px name was unreadable, so show a larger icon with a corner count (name stays in title/aria-label and the detail pane). */
+.ms-bag-slot:not(.ms-bag-slot--empty) { position: relative; }
+.ms-bag-slot__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ms-bag-slot .ms-bag-slot__icon { width: 38px; height: 38px; }
+.ms-bag-slot__quantity { position: absolute; right: 3px; bottom: 1px; text-shadow: 0 1px 0 #fff6dc, 1px 0 0 #fff6dc, -1px 0 0 #fff6dc; }
+.ms-bag-slot--empty .ms-bag-slot__number { visibility: hidden; }
 .ms-button--primary, .ms-button--secondary { border-color: #7b6841 !important; color: #fff0cb !important; background: linear-gradient(#72805b, #4c6148) !important; }
 .ms-button--danger { border-color: #794d32 !important; color: #ffebc9 !important; background: linear-gradient(#a56641, #78452d) !important; }
 .ms-screen-layer { position: absolute; background: #25271d66; }
