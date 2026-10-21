@@ -3,7 +3,7 @@
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
   "version": "1.0.0-beta.3",
-  "description": "桌面單機遊戲候選版：操作劍士探索地圖、戰鬥並推進任務。",
+  "description": "踏上劍士之路：探索木葉世界的七張地圖、完成八個任務，擊敗古礦守衛，立下你的第一個誓約。",
   "author": "獨立製作",
   "entry": "index.html",
   "cover": "cover.png",
