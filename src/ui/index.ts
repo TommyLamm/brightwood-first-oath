@@ -614,10 +614,16 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
     const recipient = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '任務委託人';
+    // Name the NPC's map too: after dying (respawn is always 木葉鎮) players otherwise had to
+    // remember that 礦道守望者 waits three maps away.
+    const where = (npcId: string | undefined): string => {
+      const map = npcId ? Object.values(view.catalog.world.maps).find((entry) => entry.npcs.some((npc) => npc.npcId === npcId)) : undefined;
+      return map ? '（' + map.name + '）' : '';
+    };
     const detail = !quest
       ? (chapterComplete ? '已完成守衛的安息，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
-      : quest.status === 'available' ? '與' + giver + '交談'
-      : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
+      : quest.status === 'available' ? '與' + giver + '交談' + where(definition?.giverNpcId)
+      : quest.status === 'ready' ? '任務完成，向' + recipient + '回報' + where(definition?.turnInNpcId)
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
     questTracker.append(heading, makeElement(document, 'strong', '', title), makeElement(document, 'span', 'ms-quest-tracker__detail', detail));
     questTracker.title = title + '｜' + detail;
