@@ -569,7 +569,8 @@ function processCommand(
             quests: recordQuestEvent(accepted.value.quests, { type: 'reached', mapId: accepted.value.location.mapId }, catalog.world),
           }
         : accepted.value;
-      return { gameplay: { ...gameplay, saveData, toast: null } };
+      const acceptedState = { ...gameplay, saveData, toast: null };
+      return { gameplay: { ...acceptedState, interaction: refreshInteraction(acceptedState, catalog) } };
     }
     case 'claimQuest': {
       const quest = catalog.world.quests[command.payload.questId];
@@ -606,7 +607,10 @@ function processCommand(
         gameplay: {
           ...gameplay,
           saveData,
-          toast: isChapterComplete ? '已完成第一章「守衛的誓約」，可繼續自由探索木葉世界。' : null,
+          interaction: refreshInteraction({ ...gameplay, saveData }, catalog),
+          toast: isChapterComplete
+            ? '已完成第一章「守衛的誓約」，可繼續自由探索木葉世界。'
+            : questRewardToast(quest.name, claim.value.reward, player.level, updated.value.level, catalog),
         },
         // Spec: claiming q08 shows the chapter settlement (world frozen until dismissed).
         ...(isChapterComplete ? { screen: 'chapter' as const } : {}),
@@ -669,18 +673,7 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
         player: { ...gameplay.saveData.player, hp: stats.maxHp, mp: stats.maxMp },
       };
     }
-    const dialogue = (catalog.world.dialogues[definition.dialogueId] ?? []).map(({ text }) => text);
-    const relevantQuest = Object.values(catalog.world.quests).find((quest) => {
-      const view = getQuestView(gameplay.saveData, quest.id, catalog);
-      return (quest.giverNpcId === definition.id && view.status === 'available')
-        || (quest.turnInNpcId === definition.id && (view.status === 'active' || view.status === 'ready'));
-    });
-    if (relevantQuest) {
-      const view = getQuestView(gameplay.saveData, relevantQuest.id, catalog);
-      dialogue.push(view.status === 'ready' ? relevantQuest.completeText : view.status === 'available'
-        ? relevantQuest.acceptText : relevantQuest.progressText);
-    }
-    gameplay.interaction = { npcId: definition.id, dialogue };
+    gameplay.interaction = { npcId: definition.id, dialogue: npcDialogue(gameplay.saveData, definition.id, catalog) };
     gameplay.toast = definition.role === 'healer' ? '體力與魔力已恢復。' : null;
     return { gameplay, ...(definition.role === 'merchant' ? { openPanel: 'shop' as const } : { openPanel: 'dialogue' as const }) };
   }
@@ -699,6 +692,30 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
     return requestTransition(gameplay, portal.targetMapId, portal.targetSpawnId, 'travel', catalog);
   }
   return withToast(gameplay, '附近沒有可以互動的對象或出入口。');
+}
+
+function npcDialogue(saveData: SaveData, npcId: string, catalog: ContentCatalog): string[] {
+  const definition = catalog.world.npcs[npcId];
+  if (!definition) return [];
+  const dialogue = (catalog.world.dialogues[definition.dialogueId] ?? []).map(({ text }) => text);
+  const relevantQuest = Object.values(catalog.world.quests).find((quest) => {
+    const view = getQuestView(saveData, quest.id, catalog);
+    return (quest.giverNpcId === definition.id && view.status === 'available')
+      || (quest.turnInNpcId === definition.id && (view.status === 'active' || view.status === 'ready'));
+  });
+  if (relevantQuest) {
+    const view = getQuestView(saveData, relevantQuest.id, catalog);
+    dialogue.push(view.status === 'ready' ? relevantQuest.completeText : view.status === 'available'
+      ? relevantQuest.acceptText : relevantQuest.progressText);
+  }
+  return dialogue;
+}
+
+/** Accepting or claiming changes which quest line the NPC should be speaking; refresh the open dialogue. */
+function refreshInteraction(gameplay: GameplayState, catalog: ContentCatalog): GameplayState['interaction'] {
+  const interaction = gameplay.interaction;
+  if (!interaction) return interaction;
+  return { ...interaction, dialogue: npcDialogue(gameplay.saveData, interaction.npcId, catalog) };
 }
 
 function pickupNearest(gameplay: GameplayState, context: GameplayStepInput): { gameplay: GameplayState } {
@@ -980,6 +997,24 @@ function addEffect(
     atMs,
   });
   if (gameplay.effects.length > 80) gameplay.effects.splice(0, gameplay.effects.length - 80);
+}
+
+/** Claiming used to change EXP, coins and the bag silently; spell out what the hero just received. */
+function questRewardToast(
+  questName: string,
+  reward: { exp: number; coins: number; items: readonly { itemId: string; quantity: number }[]; job?: string },
+  levelBefore: number,
+  levelAfter: number,
+  catalog: ContentCatalog,
+): string {
+  const parts = [
+    ...(reward.exp > 0 ? ['EXP ' + reward.exp.toLocaleString('en-US')] : []),
+    ...(reward.coins > 0 ? [reward.coins.toLocaleString('en-US') + ' 金幣'] : []),
+    ...reward.items.map(({ itemId, quantity }) => (catalog.rules.items[itemId]?.name ?? itemId) + ' ×' + quantity),
+  ];
+  const levelUp = levelAfter > levelBefore ? '，升至 Lv.' + levelAfter : '';
+  const job = reward.job === 'swordsman' ? '，正式成為劍士' : '';
+  return '完成「' + questName + '」：獲得 ' + parts.join('、') + levelUp + job + '。';
 }
 
 function attackFailureMessage(code: string): string {

@@ -351,6 +351,36 @@ describe('app gameplay vertical slice', () => {
     expect(result.gameplay?.saveData.player.bag).toHaveLength(32);
   });
 
+  it('summarises the reward in a toast when a quest is claimed', () => {
+    const started = startNewGame('旅人', catalog, createNextEntityId('claim-toast'));
+    if ('error' in started) throw new Error(started.error);
+    const gameplay = started.gameplay;
+    gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
+    gameplay.movement.position = { x: 700, y: 600 };
+    gameplay.saveData.quests = {
+      q01: { status: 'claimed', counters: {} },
+      q02: { status: 'claimed', counters: {} },
+      q03: { status: 'claimed', counters: {} },
+      q04: { status: 'active', counters: { mushroom: 6 } },
+    };
+    gameplay.saveData.player.bag = [{ itemId: 'spore-sample', quantity: 4 }];
+    gameplay.interaction = { npcId: 'mentor', dialogue: ['greeting', worldCatalog.quests.q04!.completeText] };
+
+    const result = stepGameplay(gameplay, {
+      catalog,
+      commands: [{ seq: 1, type: 'claimQuest', payload: { questId: 'q04' } }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs: 1000,
+      random: createSeededRandom(2),
+      nextEntityId: createNextEntityId('claim-toast-next'),
+    });
+    expect(result.gameplay?.saveData.quests.q04?.status).toBe('claimed');
+    expect(result.gameplay?.toast).toBe('完成「菌林調查」：獲得 EXP 1,000、350 金幣、皮帽 ×1，升至 Lv.17。');
+    // The open dialogue no longer tells the player to hand in the quest they just finished.
+    expect(result.gameplay?.interaction?.dialogue).not.toContain(worldCatalog.quests.q04!.completeText);
+  });
+
   it('does not commit location or progress when a map load fails', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('load-error'));
     if ('error' in started) throw new Error(started.error);
