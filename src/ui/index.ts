@@ -1753,8 +1753,25 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
   parent.append(
     makeElement(document, 'h3', '', npc?.name ?? interaction.npcId),
   );
+  const relevant = view.questViews.filter((quest) => {
+    const definition = view.catalog.world.quests[quest.questId];
+    if (!definition) return false;
+    return (quest.status === 'available' && definition.giverNpcId === interaction.npcId)
+      || (quest.status === 'ready' && definition.turnInNpcId === interaction.npcId)
+      || (quest.status === 'active' && definition.giverNpcId === interaction.npcId);
+  });
+  const questNpcText = (quest: UiSnapshot['questViews'][number]): string => {
+    const definition = view.catalog.world.quests[quest.questId]!;
+    return quest.status === 'ready' ? definition.completeText
+      : quest.status === 'active' ? definition.progressText
+        : definition.acceptText;
+  };
+  // The quest card below already quotes the NPC's quest line; don't print it twice.
+  const shownInCards = new Set(relevant.map(questNpcText));
   const lines = makeElement(document, 'div', 'ms-dialogue-lines');
-  for (const line of interaction.dialogue) lines.append(makeElement(document, 'p', '', line));
+  for (const line of interaction.dialogue) {
+    if (!shownInCards.has(line)) lines.append(makeElement(document, 'p', '', line));
+  }
   parent.append(lines);
   if (interaction.npcId === 'merchant') parent.append(makeButton(document, '開啟商店', 'open-panel', {
     className: 'ms-button ms-button--primary', data: { panel: 'shop' },
@@ -1763,22 +1780,13 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     parent.append(makeElement(document, 'p', 'ms-panel-note', '與晨露互動可在城鎮免費恢復 HP／MP。'));
   }
 
-  const relevant = view.questViews.filter((quest) => {
-    const definition = view.catalog.world.quests[quest.questId];
-    if (!definition) return false;
-    return (quest.status === 'available' && definition.giverNpcId === interaction.npcId)
-      || (quest.status === 'ready' && definition.turnInNpcId === interaction.npcId)
-      || (quest.status === 'active' && definition.giverNpcId === interaction.npcId);
-  });
   if (relevant.length === 0) return;
   parent.append(makeSectionTitle(document, '任務對話'));
   for (const quest of relevant) {
     const definition = view.catalog.world.quests[quest.questId];
     if (!definition) continue;
     const card = makeElement(document, 'article', 'ms-dialogue-quest');
-    const npcText = quest.status === 'ready' ? definition.completeText
-      : quest.status === 'active' ? definition.progressText
-        : definition.acceptText;
+    const npcText = questNpcText(quest);
     card.append(
       makeElement(document, 'h4', '', quest.title),
       makeElement(document, 'p', 'ms-detail-copy', npcText),
