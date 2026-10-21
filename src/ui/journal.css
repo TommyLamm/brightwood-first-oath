@@ -409,3 +409,5 @@
 /* Reset sits under the 鍵位設定 heading; keep it compact rather than a full-width bar like 靜音. */
 .ms-binding-reset { justify-self: start; align-self: start; width: auto !important; margin-bottom: 8px; }
 .ms-binding-note { margin: -2px 0 4px; padding: 4px 10px; border-left: 3px solid #8a6a3c; background: #f3e3c2; color: #5a4128; }
+.ms-shop-card__badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.ms-shop-card .ms-shop-card__icon { width: 44px; height: 44px; }

@@ -1858,11 +1858,20 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     const quantity = stackable ? clampInteger(state.shopQuantities.get(item.id) ?? 1, 1, 99) : 1;
     const total = quantity * item.buyPrice;
     const card = makeElement(document, 'article', 'ms-shop-card');
+    // Flag gear the hero cannot wear yet or already owns, so nobody spends 1,800 金幣 on a duplicate.
+    const badges = makeElement(document, 'div', 'ms-shop-card__badges');
+    badges.append(makeBadge(document, kindLabel(item.kind), 'category'));
+    if (item.slot) {
+      const owned = Object.values(player.equipment).includes(item.id) || player.bag.some((stack) => stack.itemId === item.id);
+      if (player.level < item.minLevel) badges.append(makeBadge(document, 'Lv.' + item.minLevel + ' 才能裝備', 'warning'));
+      if (owned) badges.append(makeBadge(document, '已擁有', 'neutral'));
+    }
     card.append(
       makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-shop-card__icon'),
-      makeBadge(document, kindLabel(item.kind), 'category'),
+      badges,
       makeElement(document, 'h4', '', item.name),
-      makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item)),
+      // The card already shows 單價 below, so drop the duplicate 買價 line from the shared details.
+      makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item).split('\n').filter((line) => !line.startsWith('買價')).join('\n')),
       makeElement(document, 'span', 'ms-shop-card__price', '單價 ' + formatNumber(item.buyPrice) + ' 金幣'),
     );
     // Equipment does not stack (each piece takes a bag slot), so only consumables get a quantity box.
