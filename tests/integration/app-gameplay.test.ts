@@ -675,5 +675,10 @@ describe('app gameplay vertical slice', () => {
     const usedFallback = run(withMerchant, [{ seq: 3, type: 'useItem', payload: { itemId: 'small-red' } }], 3000);
     expect(usedFallback.saveData.player.hp).toBeGreaterThan(10);
     expect(usedFallback.saveData.player.bag.find(({ itemId }) => itemId === 'large-red')?.quantity).toBe(1);
+    // Out of both blue potions: explain where to restock instead of a bookkeeping error.
+    const noMana = run(withMerchant, [{ seq: 4, type: 'useItem', payload: { itemId: 'small-blue' } }], 4000);
+    expect(noMana.saveData.player.bag).toEqual(withMerchant.saveData.player.bag);
+    expect(noMana.toast).toContain('已經用完了');
+    expect(noMana.toast).toContain('木葉商人');
   });
 });

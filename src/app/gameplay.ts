@@ -526,6 +526,11 @@ function processCommand(
         && player.bag.some((stack) => stack.itemId === 'large-blue' && stack.quantity > 0)) {
         itemId = 'large-blue';
       }
+      const item = catalog.rules.items[itemId];
+      if (item?.kind === 'consumable' && !player.bag.some((stack) => stack.itemId === itemId && stack.quantity > 0)) {
+        // The domain's generic 「數量不足」 read like a bookkeeping error mid-fight; say what to do instead.
+        return withToast(gameplay, `${item.name}已經用完了，可向木葉鎮的木葉商人補貨。`);
+      }
       const result = applyProgressAction(player, { type: 'useItem', itemId }, catalog.rules);
       if (!result.ok) return withToast(gameplay, result.message);
       gameplay.potionReadyAtMs = context.nowMs + 1000;
