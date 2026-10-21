@@ -1952,6 +1952,10 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       const owned = Object.values(player.equipment).includes(item.id) || player.bag.some((stack) => stack.itemId === item.id);
       if (player.level < item.minLevel) badges.append(makeBadge(document, 'Lv.' + item.minLevel + ' 才能裝備', 'warning'));
       if (owned) badges.append(makeBadge(document, '已擁有', 'neutral'));
+    } else if (stackable) {
+      // Show the potions already carried so restocking doesn't need a trip to the bag panel.
+      const carried = player.bag.reduce((sum, stack) => sum + (stack.itemId === item.id ? stack.quantity : 0), 0);
+      badges.append(makeBadge(document, '持有 ×' + carried, 'neutral'));
     }
     card.append(
       makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-shop-card__icon'),
