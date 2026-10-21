@@ -1575,7 +1575,7 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
     stats.append(card);
   }
   parent.append(stats);
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '建議先提升 STR。加點只在你按下按鈕時送出，不會因開啟面板自動消耗 AP。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', 'STR：每點攻擊力 +2。DEX：每 5 點防禦力 +1。劍士建議優先提升 STR。'));
   const actions = makeElement(document, 'div', 'ms-inline-actions');
   const bulk = Math.min(5, player.ap);
   for (const [stat, label] of [['str', 'STR'], ['dex', 'DEX']] as const) {
