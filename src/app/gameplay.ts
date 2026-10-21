@@ -424,7 +424,7 @@ function processCommand(
         const readyAt = gameplay.combat.cooldowns[gameplay.playerEntityId]?.[skill.id] ?? 0;
         if (context.nowMs < readyAt) return withToast(gameplay, '技能還在冷卻中。');
         const mp = applyProgressAction(player, { type: 'spendMp', amount: skill.mpCost }, catalog.rules);
-        if (!mp.ok) return withToast(gameplay, mp.message);
+        if (!mp.ok) return withToast(gameplay, mpShortMessage(skill, player.mp, mp.message));
         gameplay.saveData = { ...gameplay.saveData, player: mp.value };
         gameplay.combat = {
           ...gameplay.combat,
@@ -466,7 +466,7 @@ function processCommand(
       const mp = skill.mpCost > 0
         ? applyProgressAction(player, { type: 'spendMp', amount: skill.mpCost }, catalog.rules)
         : { ok: true as const, value: player };
-      if (!mp.ok) return withToast(gameplay, mp.message);
+      if (!mp.ok) return withToast(gameplay, mpShortMessage(skill, player.mp, mp.message));
       gameplay.combat = proposal.value.state;
       gameplay.saveData = { ...gameplay.saveData, player: mp.value };
       gameplay.toast = null;
@@ -1063,6 +1063,12 @@ function skillLockedMessage(
   if (player.job !== 'swordsman') return '轉職為劍士後才能使用「' + skill.name + '」。';
   if (player.level < skill.requiredLevel) return '「' + skill.name + '」需要 Lv.' + skill.requiredLevel + ' 才能學習。';
   return '尚未學會「' + skill.name + '」，請在技能面板用 SP 學習。';
+}
+
+// The progression layer only says "MP 不足。"; say how much the skill needs and what the hero has.
+function mpShortMessage(skill: { name: string; mpCost: number }, mp: number, fallback: string): string {
+  if (!(mp < skill.mpCost)) return fallback;
+  return 'MP 不足：「' + skill.name + '」需要 ' + skill.mpCost + ' MP，目前只有 ' + Math.floor(mp) + '。';
 }
 
 function attackFailureMessage(code: string): string {

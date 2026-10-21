@@ -304,6 +304,9 @@ describe('app gameplay vertical slice', () => {
     started.gameplay.saveData.player = { ...started.gameplay.saveData.player, job: 'swordsman', level: 10, sp: 3, skillRanks: {} };
     expect(press('heavy-strike', 2)).toBe('尚未學會「重斬」，請在技能面板用 SP 學習。');
     expect(press('iron-guard', 3)).toBe('「堅韌守護」需要 Lv.14 才能學習。');
+    started.gameplay.saveData.player = { ...started.gameplay.saveData.player, level: 14, mp: 3, skillRanks: { 'heavy-strike': 1, 'iron-guard': 1 } };
+    expect(press('heavy-strike', 4)).toMatch(/^MP 不足：「重斬」需要 \d+ MP，目前只有 3。$/);
+    expect(press('iron-guard', 5)).toMatch(/^MP 不足：「堅韌守護」需要 \d+ MP，目前只有 3。$/);
   });
 
   it('buffers a skill pressed mid-swing without a toast', () => {
