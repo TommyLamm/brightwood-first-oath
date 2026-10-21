@@ -42,6 +42,13 @@ describe('world and quest content', () => {
     expect(completeText).toContain('森芽');
   });
 
+  it('reports a claimed quest as fully met even after its items were handed in', () => {
+    const data = makeSave({ quests: { q01: state('claimed'), q02: state('claimed'), q03: state('claimed') } });
+    const view = getQuestView(data, 'q03', { rules: rulesCatalog, world: worldCatalog });
+    expect(view.status).toBe('claimed');
+    expect(view.objectives).toEqual([{ type: 'collect', targetId: 'forest-seed', current: 5, required: 5 }]);
+  });
+
   it('keeps quests locked until prerequisites are claimed', () => {
     const data = makeSave();
     expect(getQuestView(data, 'q02', { rules: rulesCatalog, world: worldCatalog }).status).toBe('locked');

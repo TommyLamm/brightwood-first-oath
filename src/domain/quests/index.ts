@@ -87,7 +87,12 @@ export function getQuestView(data: SaveData, questId: Id, catalog: ContentCatalo
     questId,
     title: quest.name,
     status,
-    objectives: objectivesFor(data, questId, quest, catalog),
+    // Claimed quests consumed their items and may have unequipped gear since; report them as met.
+    objectives: status === 'claimed'
+      ? quest.objectives.map((objective) => ({
+        type: objective.type, targetId: objective.targetId, current: objective.count, required: objective.count,
+      }))
+      : objectivesFor(data, questId, quest, catalog),
     reward: cloneReward(quest.reward),
   };
 }
