@@ -411,3 +411,6 @@
 .ms-binding-note { margin: -2px 0 4px; padding: 4px 10px; border-left: 3px solid #8a6a3c; background: #f3e3c2; color: #5a4128; }
 .ms-shop-card__badges { display: flex; flex-wrap: wrap; gap: 6px; }
 .ms-shop-card .ms-shop-card__icon { width: 44px; height: 44px; }
+.ms-compare { margin: 0; color: #5f4a30; font-size: 12px; }
+.ms-compare__up { color: #3f6b3a; font-weight: 700; }
+.ms-compare__down { color: #9a3f2a; font-weight: 700; }

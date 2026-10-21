@@ -1562,10 +1562,29 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
       }));
     }
     if (item?.slot) {
+      // Compare against what is worn now so players can tell an upgrade without opening 裝備.
+      const currentId = player.equipment[item.slot];
+      const current = currentId ? view.catalog.rules.items[currentId] : undefined;
+      const compare = makeElement(document, 'p', 'ms-compare', '對比' + (current ? '「' + current.name + '」' : '空的' + slotLabel(item.slot) + '欄') + '：');
+      const stats = [['攻擊', 'attack'], ['防禦', 'defense'], ['最大 HP', 'hpBonus']] as const;
+      let changed = false;
+      for (const [label, key] of stats) {
+        const delta = (item[key] ?? 0) - (current?.[key] ?? 0);
+        if (delta === 0) continue;
+        if (changed) compare.append('・');
+        changed = true;
+        compare.append(makeElement(document, 'span', delta > 0 ? 'ms-compare__up' : 'ms-compare__down', label + (delta > 0 ? ' ▲' : ' ▼') + Math.abs(delta)));
+      }
+      if (!changed) compare.append('能力相同');
+      detail.append(compare);
+      const tooLow = player.level < item.minLevel;
       detail.append(makeButton(document, '裝備', 'equip-bag', {
         className: 'ms-button ms-button--primary',
+        disabled: tooLow,
+        title: tooLow ? '需要等級 ' + item.minLevel + ' 才能裝備' : '裝備' + item.name,
         data: { bagIndex: String(bagIndex) },
       }));
+      if (tooLow) detail.append(makeElement(document, 'span', 'ms-disabled-reason', '需要 Lv.' + item.minLevel + ' 才能裝備（目前 Lv.' + player.level + '）'));
     }
     if (item && item.kind !== 'quest' && item.sellPrice > 0) {
       const atMerchant = view.interaction?.npcId === 'merchant';
