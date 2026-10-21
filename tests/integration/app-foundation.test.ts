@@ -167,11 +167,13 @@ describe('T14-a app foundation', () => {
     expect(snapshot?.questViews).toHaveLength(8);
     expect(snapshot?.stats?.maxHp).toBeGreaterThan(0);
     expect(snapshot?.panels).toEqual([]);
-    expect(snapshot?.canReturnTown).toBe(true);
+    // A fresh hero has not reached 木葉鎮 yet, so 返回城鎮 must not skip camp's q01 gate.
+    expect(snapshot?.canReturnTown).toBe(false);
     expect(snapshot?.interfaceManifest).toBe(interfaceManifest);
 
     const arenaGameplay = structuredClone(started.gameplay);
     arenaGameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
+    arenaGameplay.saveData.visitedMaps.push('town');
     const arenaSnapshot = createUiSnapshot({
       ...createInitialAppState(2, 'ui-test'),
       catalog: catalog.value,

@@ -216,6 +216,13 @@ describe('T14-c persistence wiring', () => {
     app.dispatch({ type: 'newGame', payload: { name: '回城測試' } });
     app.update(0);
     expect(app.state.screen).toBe('playing');
+    // Before the hero has reached 木葉鎮, returning there would skip camp's q01 gate.
+    expect(app.uiSnapshot?.canReturnTown).toBe(false);
+    app.dispatch({ type: 'returnTown', payload: {} });
+    app.update(0);
+    expect(app.state.screen).toBe('playing');
+    expect(app.state.gameplay?.pendingTransition).toBeNull();
+    app.state.gameplay!.saveData.visitedMaps.push('town');
     expect(app.uiSnapshot?.canReturnTown).toBe(true);
 
     app.dispatch({ type: 'returnTown', payload: {} });

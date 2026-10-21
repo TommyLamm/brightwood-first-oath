@@ -748,10 +748,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     pauseButton.hidden = !playing;
     pauseButton.disabled = !playing;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
-    returnTownButton.hidden = !player || atTown || !playing;
+    returnTownButton.hidden = !player || atTown || !playing || !view.saveData?.visitedMaps.includes('town');
     returnTownButton.disabled = !view.canReturnTown;
     returnTownButton.title = view.canReturnTown
-      ? '使用目前已解鎖的回城操作'
+      ? '立即返回木葉鎮'
       : view.saveData?.location.mapId === 'guardian-arena'
         ? '首領戰尚未結束，暫時不能返回城鎮。'
         : '目前狀態不允許回城。';

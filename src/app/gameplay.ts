@@ -630,6 +630,9 @@ function processCommand(
       if (gameplay.saveData.location.mapId === 'guardian-arena' && !gameplay.bossResult) {
         return withToast(gameplay, '首領戰尚未結束，暫時不能返回城鎮。');
       }
+      if (!gameplay.saveData.visitedMaps.includes('town')) {
+        return withToast(gameplay, '還沒到過木葉鎮；完成森芽的委託後，從營地東側出口前往。');
+      }
       return requestTransition(gameplay, 'town', 'center', 'travel', catalog);
     case 'retryBoss': {
       if (gameplay.saveData.location.mapId !== 'guardian-arena' || !gameplay.bossResult) {
