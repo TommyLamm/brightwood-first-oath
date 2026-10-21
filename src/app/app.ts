@@ -710,6 +710,12 @@ export class GameApp {
     if (player.hp < previousPlayer.hp) {
       this.playAudioOnce(`hurt:${gameplay.playerEntityId}:${next.gameTimeMs}:${player.hp}`, 'hurt');
     }
+    // The jump sound was loaded but never played. A take-off is leaving the ground or a ladder upwards;
+    // knockback also launches the hero, so ignore frames where the hero was just hit.
+    if (before.movement.mode !== 'airborne' && gameplay.movement.mode === 'airborne'
+      && gameplay.movement.velocity.y < 0 && player.hp >= previousPlayer.hp) {
+      this.playAudioOnce(`jump:${gameplay.playerEntityId}:${next.gameTimeMs}`, 'jump');
+    }
     if (previousPlayer.hp > 0 && player.hp <= 0) {
       this.playAudioOnce(`death:${gameplay.playerEntityId}:${gameplay.deathAtMs ?? next.gameTimeMs}`, 'death');
     }
