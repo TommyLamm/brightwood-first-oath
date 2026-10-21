@@ -1,6 +1,6 @@
 {
-  "name": "maplestory-playroom",
-  "version": "0.1.0",
+  "name": "brightwood-first-oath",
+  "version": "1.0.0-beta.3",
   "private": true,
   "type": "module",
   "packageManager": "npm@11.12.1",
