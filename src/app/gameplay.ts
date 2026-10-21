@@ -108,7 +108,8 @@ export function startNewGame(
       nextPickupAtMs: 0,
       bossResult: false,
       deathAtMs: null,
-      toast: null,
+      // First-run hint: the footer only lists Z / Space, so new players had no on-screen cue for movement, jump or attack.
+      toast: '方向鍵移動、Alt 跳躍、Ctrl 攻擊、Space 交談；右上角「?」可查看全部操作。',
       interaction: null,
       pendingTransition: null,
     },
