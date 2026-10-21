@@ -436,7 +436,8 @@ export class GameApp {
       return;
     }
     if (state.screen !== 'title' && state.screen !== 'create') return;
-    if (state.screen === 'title') {
+    // Ask for a second confirmation only when an existing (or unknown) save could be replaced.
+    if (state.screen === 'title' && (state.gameplay || (!this.temporaryPlay && !this.canWriteProgress()))) {
       this.setState({ ...state, screen: 'create', saveMessage: '再次確認即可建立角色；現有角色的進度將被取代。' });
       return;
     }
