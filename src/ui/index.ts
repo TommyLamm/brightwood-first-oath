@@ -1523,7 +1523,12 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可使用背包。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '共 32 格。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
+  // Say how full the bag is, so a "bag full" refusal never comes as a surprise.
+  const used = player.bag.length;
+  const note = makeElement(document, 'p', 'ms-panel-note', '');
+  const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／32 格');
+  note.append(usage, document.createTextNode('。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
+  parent.append(note);
   const categories = [
     { id: 'all', label: '全部' },
     { id: 'equipment', label: '裝備' },
