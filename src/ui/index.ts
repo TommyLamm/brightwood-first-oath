@@ -1763,7 +1763,15 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可查看技能。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '可學技能共五種，升級獲得的 SP 可在這裡分配。快捷 1／2／3 對應重斬、橫掃、堅韌守護。'));
+  // Name the player's own skill keys (they may be rebound) and how much SP is left to spend.
+  const bindings = view.saveData?.settings.bindings ?? {};
+  const key = (action: 'skill1' | 'skill2' | 'skill3') => codeLabel(bindings[action] ?? DEFAULT_KEY_BINDINGS[action]);
+  const note = makeElement(document, 'p', 'ms-panel-note', '');
+  note.append(
+    makeElement(document, 'strong', '', '可用 SP：' + player.sp),
+    document.createTextNode((player.job === 'swordsman' ? '。每次升級獲得 1 SP。' : '。轉職為劍士後，每次升級獲得 1 SP。') + '快捷鍵 ' + key('skill1') + '／' + key('skill2') + '／' + key('skill3') + ' 對應重斬、橫掃、堅韌守護。'),
+  );
+  parent.append(note);
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const skills = Object.values(view.catalog.rules.skills)
     .filter((skill) => skill.requiredJob !== 'enemy' && skill.id !== 'basic')
