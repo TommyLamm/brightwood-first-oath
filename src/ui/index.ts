@@ -1621,7 +1621,7 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     card.append(head, makeElement(document, 'p', 'ms-detail-copy', skillDetails(skill, rank)));
     if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
     if (skill.id === 'vitality') card.append(makeElement(document, 'p', 'ms-panel-note', '提升最大 HP；不會自動恢復生命。'));
-    if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '停止攻擊或受傷後恢復生命。'));
+    if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '連續 3 秒沒有攻擊或受傷時，開始逐步恢復生命。'));
     card.append(makeButton(document, !rankReady ? '已滿級' : learned ? '提升至等級 ' + (rank + 1) : '學習技能', 'learn-skill', {
       className: 'ms-button ms-button--primary',
       disabled: Boolean(reason),
