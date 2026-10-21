@@ -1666,9 +1666,10 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
   for (const map of maps) {
     const seen = visited.has(map.id);
     const row = makeElement(document, 'div', 'ms-map-row' + (map.id === data.location.mapId ? ' is-current' : ''));
+    // Name first: the stylesheet pushes the badge to the right edge (margin-left: auto).
     row.append(
-      makeBadge(document, map.id === data.location.mapId ? '目前' : seen ? '已探索' : '未探索', map.id === data.location.mapId ? 'level' : seen ? 'success' : 'neutral'),
       makeElement(document, 'strong', '', map.name),
+      makeBadge(document, map.id === data.location.mapId ? '目前' : seen ? '已探索' : '未探索', map.id === data.location.mapId ? 'level' : seen ? 'success' : 'neutral'),
     );
     mapList.append(row);
   }
