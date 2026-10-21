@@ -380,8 +380,10 @@ export function createRootStatusView(root: HTMLElement): RootStatusView {
         return;
       }
       if (state.startupStatus === 'loading') {
-        heading.textContent = '正在載入開發內容';
-        body.textContent = '檢查規則、世界資料與四個正式資產包。';
+        // The main UI already shows a centred 正在準備冒險 card; a second banner here
+        // only overlapped the footer buttons.
+        panel.hidden = true;
+        return;
       } else if (state.startupStatus === 'incomplete') {
         heading.textContent = '開發中：目前內容尚未完成';
         body.textContent = state.startupIssues.join('\n');

@@ -759,7 +759,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if ((view.screen === 'title' && !view.error) || showCreate) {
       if (showCreate) {
         const card = makeScreenCard(document, '建立角色', view.saveData
-          ? (replaceConfirmed ? '第二次確認：既有角色進度將被取代。此操作會交由遊戲存檔流程處理。' : '建立新角色會取代目前角色，請先確認後再送出。')
+          ? (replaceConfirmed ? '第二次確認：既有角色進度將被取代，且無法復原。' : '建立新角色會取代目前角色，請先確認後再送出。')
           : '輸入角色名稱，確認後開始冒險。');
         card.append(captureNameInput());
         if (view.saveData && !replaceConfirmed) {
@@ -1187,7 +1187,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
     if (!/^[A-Za-z][A-Za-z0-9]*$/.test(code)) {
-      bindingMessage = '這個按鍵沒有可保存的 KeyboardEvent.code，請再選一次。';
+      bindingMessage = '這個按鍵無法綁定，請改用其他按鍵。';
       renderPanel(currentView, true);
       return;
     }
@@ -1203,7 +1203,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
     const settings: Settings = { ...currentView.saveData.settings, bindings: { ...bindings, [pendingBinding]: code } };
-    bindingMessage = '已送出 ' + codeLabel(code) + '；app 套用結果會在畫面更新。';
+    bindingMessage = '已將按鍵設為 ' + codeLabel(code) + '。';
     pendingBinding = null;
     dispatchDraft({ type: 'setSettings', payload: { settings } });
     renderPanel(currentView, true);
@@ -1455,7 +1455,7 @@ function buildEquipmentPanel(document: Document, view: UiSnapshot, parent: HTMLE
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可管理裝備。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '裝備不佔背包格；卸下時若背包無空間，app 會回報失敗原因。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '裝備不佔背包格；卸下裝備時背包需要有空位。'));
   const grid = makeElement(document, 'div', 'ms-equipment-grid');
   for (const slot of ['weapon', 'body', 'hat'] as const) {
     const itemId = player.equipment[slot];
@@ -1552,7 +1552,7 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
 }
 
 function buildQuestsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '任務需在指定 NPC 對話中接取或領獎；交易結果以 app toast 為準。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '任務需在指定 NPC 對話中接取或領獎。'));
   const groups: { status: UiSnapshot['questViews'][number]['status']; label: string }[] = [
     { status: 'active', label: '進行中' },
     { status: 'ready', label: '可回報' },
@@ -1595,7 +1595,7 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
     return;
   }
   const currentMap = view.catalog.world.maps[data.location.mapId];
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '目前位置：' + (currentMap?.name ?? data.location.mapId) + '・出生點 ' + data.location.spawnId));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '目前位置：' + (currentMap?.name ?? data.location.mapId)));
   const visited = new Set(data.visitedMaps);
   visited.add(data.location.mapId);
   const mapList = makeElement(document, 'div', 'ms-map-list');
@@ -1665,7 +1665,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   const atMerchant = view.interaction?.npcId === 'merchant';
   parent.append(makeElement(document, 'p', 'ms-panel-note', atMerchant
     ? '木葉商人・可購買物品只包含有售價的裝備與藥水。'
-    : '請靠近木葉商人並互動後再購買；app 會再次驗證交易。'));
+    : '請先靠近木葉商人並互動，再進行購買。'));
   parent.append(makeElement(document, 'p', 'ms-wallet', '持有金幣：' + formatNumber(player.coins)));
   const offers = Object.values(view.catalog.rules.items)
     .filter((item) => item.buyPrice > 0 && item.kind !== 'quest')
@@ -1816,7 +1816,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可調整設定。'));
     return;
   }
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '設定只透過 setSettings 命令交由 app 套用；Esc 保留關閉最上層面板。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', 'Esc 固定用來關閉最上層面板，因此不能重新綁定。'));
   parent.append(makeButton(document, settings.muted ? '開啟音效' : '靜音', 'settings-mute', {
     className: 'ms-button ms-button--secondary',
     title: settings.muted ? '開啟遊戲音效' : '靜音所有遊戲音效',
@@ -1849,7 +1849,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   const helpText = [
     '移動與跳躍由遊戲畫面取得鍵盤輸入；滑鼠按鈕也可觸發可用操作。',
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板。',
-    '點擊「更改按鍵」後輸入 KeyboardEvent.code；重複按鍵會拒絕，Esc 不可重綁。',
+    '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
     '技能快捷 1／2／3 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
   ];
   for (const text of helpText) help.append(makeElement(document, 'li', '', text));
