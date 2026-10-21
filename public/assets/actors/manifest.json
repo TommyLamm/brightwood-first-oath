@@ -214,7 +214,7 @@
     },
     {
       "key": "actor:merchant",
-      "url": "assets/actors/npcs/merchant-idle-v2.png",
+      "url": "assets/actors/npcs/merchant-idle-v3.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
