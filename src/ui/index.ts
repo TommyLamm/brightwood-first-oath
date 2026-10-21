@@ -470,7 +470,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const footerActions = makeElement(document, 'div', 'ms-footer__actions');
   footer.append(saveState, footerActions, errorText);
 
-  shell.append(hud, bottomBar, panelHost, screenLayer, toast, footer);
+  // The world freezes while the page has lost focus (see worldIsFrozen); say so instead of looking hung.
+  const focusBanner = makeElement(document, 'div', 'ms-focus-banner', '遊戲已暫停：畫面失去焦點。點一下遊戲畫面即可繼續。');
+  focusBanner.setAttribute('role', 'status');
+  focusBanner.hidden = true;
+  shell.append(hud, bottomBar, panelHost, screenLayer, toast, focusBanner, footer);
   root.append(shell);
 
   let currentView: UiSnapshot | null = null;
@@ -932,6 +936,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   };
 
   const renderFooter = (view: UiSnapshot): void => {
+    focusBanner.hidden = !(view.windowFocused === false && view.screen === 'playing');
     saveState.textContent = '存檔狀態：' + statusLabel(view.saveStatus);
     errorText.textContent = view.error ?? '';
     toast.textContent = view.toast ?? '';

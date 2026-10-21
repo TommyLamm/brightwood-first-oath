@@ -154,6 +154,8 @@ export type UiSnapshot = {
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;
+  /** False while the page/iframe has lost focus; the world is frozen until it returns. */
+  windowFocused?: boolean;
   /** Actor sheets, used for NPC dialogue portraits. */
   actorManifest?: AssetManifest | null;
   saveStatus: SaveStatus;

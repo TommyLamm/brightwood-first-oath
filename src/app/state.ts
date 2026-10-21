@@ -101,6 +101,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     catalog,
     interfaceManifest: state.assetManifests?.find((manifest) => manifest.pack === 'interface') ?? null,
     actorManifest: state.assetManifests?.find((manifest) => manifest.pack === 'actors') ?? null,
+    windowFocused: state.windowFocused,
     saveStatus: state.saveStatus,
     saveMessage: state.saveMessage,
     toast: gameplay?.toast ?? state.saveMessage,

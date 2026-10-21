@@ -227,6 +227,8 @@ export class KeyboardControls {
   };
   private readonly handlePointerDown = (event: PointerEvent): void => {
     if (event.isTrusted) this.options.onTrustedGesture?.();
+    // A click on the game always means the player is back, even if no window focus event fired.
+    if (this.options.uiRoot.ownerDocument.hasFocus()) this.options.onWindowFocusChange(true);
     const canvas = this.options.gameRoot.querySelector('canvas');
     if (canvas) {
       canvas.tabIndex = 0;
