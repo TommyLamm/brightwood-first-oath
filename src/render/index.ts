@@ -358,6 +358,9 @@ export function createWorldRenderer(
   const loadedImages = new Set<string>();
   const ownedTextureKeys = new Set<string>();
   const actorFootOffsets = new Map<string, number[]>();
+  // Visible (non-transparent) size of each actor sheet, in display pixels, used to
+  // place health bars just above the drawn body instead of above the padded frame.
+  const actorContentSizes = new Map<string, { width: number; height: number }>();
   const actorSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropLabels = new Map<string, Phaser.GameObjects.Text>();
@@ -394,6 +397,7 @@ export function createWorldRenderer(
     loadedImages.delete(key);
     ownedTextureKeys.delete(key);
     actorFootOffsets.delete(key);
+    actorContentSizes.delete(key);
   };
 
   const measureActorFootOffsets = (asset: AssetImage): void => {
@@ -418,6 +422,8 @@ export function createWorldRenderer(
       context.drawImage(source, 0, 0);
       const pixels = context.getImageData(0, 0, source.width, source.height).data;
       const offsets: number[] = [];
+      let contentWidth = 0;
+      let contentHeight = 0;
       for (let frame = 0; frame < asset.columns * asset.rows; frame += 1) {
         const frameX = (frame % asset.columns) * frameWidth;
         const frameY = Math.floor(frame / asset.columns) * frameHeight;
@@ -432,8 +438,25 @@ export function createWorldRenderer(
           }
         }
         offsets.push(actorFootOffset(asset.displayHeight, asset.pivotY, frameHeight, lastOpaqueRow));
+        if (lastOpaqueRow >= 0) {
+          let firstOpaqueRow = 0;
+          let minX = frameWidth;
+          let maxX = -1;
+          for (let y = 0; y <= lastOpaqueRow; y += 1) {
+            for (let x = 0; x < frameWidth; x += 1) {
+              if (pixels[((frameY + y) * source.width + frameX + x) * 4 + 3]! > 0) {
+                if (maxX < 0) firstOpaqueRow = y;
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+              }
+            }
+          }
+          contentHeight = Math.max(contentHeight, (lastOpaqueRow - firstOpaqueRow + 1) * asset.displayHeight / frameHeight);
+          contentWidth = Math.max(contentWidth, (maxX - minX + 1) * asset.displayWidth / frameWidth);
+        }
       }
       actorFootOffsets.set(asset.key, offsets);
+      if (contentHeight > 0) actorContentSizes.set(asset.key, { width: contentWidth, height: contentHeight });
     } catch (error) {
       throw new RendererAssetError(
         `無法讀取角色透明腳底：${asset.key}。確認圖片同源且可讀後重試。`,
@@ -880,12 +903,13 @@ export function createWorldRenderer(
       if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
       if (!dead && isInViewport(monster.movement.position)) {
         const image = assets.images.get(definition.actorKey);
+        const content = actorContentSizes.get(definition.actorKey);
         const bar = monsterHealthBarGeometry(
           monster.movement.position,
           monster.hp,
           definition.maxHp,
-          image?.displayWidth ?? Math.max(monster.width, definition.width),
-          image?.displayHeight ?? Math.max(monster.height, definition.height),
+          content?.width ?? image?.displayWidth ?? Math.max(monster.width, definition.width),
+          content?.height ?? image?.displayHeight ?? Math.max(monster.height, definition.height),
           activeVisual.map.boss,
         );
         hpGraphics.fillStyle(0x261f2a, 0.88).fillRect(bar.x - 1, bar.y - 1, bar.width + 2, bar.height + 2);
