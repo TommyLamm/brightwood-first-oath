@@ -1673,6 +1673,15 @@ function buildQuestsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
         section.append(card);
         continue;
       }
+      if (quest.status === 'claimed') {
+        // Finished quests are history: keep them compact so the active ones stay in view.
+        card.append(
+          makeElement(document, 'h4', '', '✓ ' + quest.title),
+          makeElement(document, 'p', 'ms-detail-copy', definition?.summary ?? ''),
+        );
+        section.append(card);
+        continue;
+      }
       // Title first with the NPC badges beside it; the section heading already names the status.
       const head = makeElement(document, 'div', 'ms-quest-card__head');
       head.append(
