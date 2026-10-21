@@ -1588,7 +1588,8 @@ function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement
   const visited = new Set(data.visitedMaps);
   visited.add(data.location.mapId);
   const mapList = makeElement(document, 'div', 'ms-map-list');
-  const maps = Object.values(view.catalog.world.maps).sort((a, b) => a.name.localeCompare(b.name));
+  // Keep world (progression) order; localeCompare on CJK names produces an arbitrary order.
+  const maps = Object.values(view.catalog.world.maps);
   for (const map of maps) {
     const seen = visited.has(map.id);
     const row = makeElement(document, 'div', 'ms-map-row' + (map.id === data.location.mapId ? ' is-current' : ''));
