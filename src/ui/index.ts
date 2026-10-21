@@ -791,7 +791,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         screenLayer.append(card);
         return;
       }
-        const card = makeScreenCard(document, 'Brightwood: First Oath', '使用鍵盤與滑鼠探索地區、完成任務並管理角色。');
+        const card = makeScreenCard(document, 'Brightwood: First Oath', '森林的怪物躁動不安，古礦深處似乎有東西正在甦醒。\n從晨光營地出發，立下你的第一個誓約。');
         const status = makeElement(document, 'p', 'ms-screen-card__status', '存檔狀態：' + statusLabel(view.saveStatus));
         card.append(status);
         if (view.saveStatus === 'loadError') {
