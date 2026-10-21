@@ -103,10 +103,10 @@ function error<T>(code: 'INVALID' | 'LOCKED' | 'NOT_FOUND' | 'REQUIREMENT' | 'NO
 
 export function acceptQuest(data: SaveData, questId: Id, catalog: ContentCatalog): Result<SaveData> {
   const quest = catalog.world.quests[questId];
-  if (!quest) return error('NOT_FOUND', `Unknown quest ID: ${questId}`);
-  if (data.quests[questId]) return error('REQUIREMENT', `Quest ${questId} is already active or claimed`);
-  if (!allPrerequisitesClaimed(data, quest)) return error('LOCKED', `Quest ${questId} prerequisites are not claimed`);
-  if (data.player.level < quest.minLevel) return error('LOCKED', `Quest ${questId} requires level ${quest.minLevel}`);
+  if (!quest) return error('NOT_FOUND', `找不到任務資料（${questId}）。`);
+  if (data.quests[questId]) return error('REQUIREMENT', `「${quest.name}」已經接取過了。`);
+  if (!allPrerequisitesClaimed(data, quest)) return error('LOCKED', `請先完成前置任務，才能接取「${quest.name}」。`);
+  if (data.player.level < quest.minLevel) return error('LOCKED', `「${quest.name}」需要達到 Lv.${quest.minLevel} 才能接取。`);
 
   const nextQuests = cloneQuests(data.quests);
   const counters: Record<Id, number> = {};
@@ -141,16 +141,16 @@ export function recordQuestEvent(
 
 export function planQuestClaim(data: SaveData, questId: Id, catalog: ContentCatalog): Result<QuestClaimPlan> {
   const quest = catalog.world.quests[questId];
-  if (!quest) return error('NOT_FOUND', `Unknown quest ID: ${questId}`);
+  if (!quest) return error('NOT_FOUND', `找不到任務資料（${questId}）。`);
   if (data.quests[questId]?.status !== 'active' || !isReady(data, questId, quest, catalog)) {
-    return error('NOT_READY', `Quest ${questId} is not ready to claim`);
+    return error('NOT_READY', `「${quest.name}」的目標尚未完成。`);
   }
   const requiredForRemoval = new Map<Id, number>();
   for (const stack of quest.consumeItems) {
     requiredForRemoval.set(stack.itemId, (requiredForRemoval.get(stack.itemId) ?? 0) + stack.quantity);
   }
   for (const [itemId, quantity] of requiredForRemoval) {
-    if (countItem(data, itemId) < quantity) return error('NOT_READY', `Quest ${questId} no longer has enough ${itemId} to turn in`);
+    if (countItem(data, itemId) < quantity) return error('NOT_READY', `交付「${quest.name}」需要 ${catalog.rules.items[itemId]?.name ?? itemId} ×${quantity}，背包裡的數量不足。`);
   }
 
   const nextQuests = cloneQuests(data.quests);

@@ -54,7 +54,10 @@ describe('world and quest content', () => {
     expect(getQuestView(data, 'q02', { rules: rulesCatalog, world: worldCatalog }).status).toBe('locked');
     const result = acceptQuest(data, 'q02', { rules: rulesCatalog, world: worldCatalog });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.code).toBe('LOCKED');
+    if (!result.ok) {
+      expect(result.code).toBe('LOCKED');
+      expect(result.message).toBe('請先完成前置任務，才能接取「劍士的選擇」。');
+    }
   });
 
   it('completes the town objective when the player visited before accepting q02', () => {
@@ -118,7 +121,10 @@ describe('world and quest content', () => {
       const claimed = makeSave({ ...original, quests: result.value.nextQuests });
       const again = planQuestClaim(claimed, 'q01', { rules: rulesCatalog, world: worldCatalog });
       expect(again.ok).toBe(false);
-      if (!again.ok) expect(again.code).toBe('NOT_READY');
+      if (!again.ok) {
+        expect(again.code).toBe('NOT_READY');
+        expect(again.message).toMatch(/^「.+」的目標尚未完成。$/);
+      }
     }
   });
 
