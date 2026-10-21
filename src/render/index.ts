@@ -61,6 +61,8 @@ type TextEffect = {
   object: Phaser.GameObjects.Text;
   expiresAtMs: number;
   position: Vec2;
+  /** Unstacked x of the event, used to decide which numbers share a spot. */
+  anchorX: number;
   startedAtMs: number;
   kind: 'damage' | 'hit' | 'levelup';
 };
@@ -88,6 +90,10 @@ type DrawnActor = {
 const BASE_WIDTH = 960;
 const BASE_HEIGHT = 540;
 const DAMAGE_TEXT_LIMIT = 30;
+const DAMAGE_STACK_WINDOW_MS = 700;
+const DAMAGE_STACK_RADIUS = 48;
+const DAMAGE_STACK_STEP = 18;
+const DAMAGE_STACK_DEPTH = 4;
 const DROP_DRAW_LIMIT = 60;
 const PARTICLE_LIMIT = 100;
 const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
@@ -1088,7 +1094,15 @@ export function createWorldRenderer(
         oldestDamage[1].object.destroy();
         eventTexts.delete(oldestDamage[0]);
       }
-      const object = scene.add.text(event.position.x, event.position.y - 20, formatDamageNumber(event.value), {
+      // Hits that land on the same spot in quick succession stack upwards instead of overprinting.
+      const stackIndex = [...eventTexts.values()].filter((entry) => isDamageNumberEvent(entry.kind)
+        && event.atMs - entry.startedAtMs < DAMAGE_STACK_WINDOW_MS
+        && Math.abs(entry.anchorX - event.position.x) < DAMAGE_STACK_RADIUS).length % DAMAGE_STACK_DEPTH;
+      const position = {
+        x: event.position.x + (stackIndex % 2 === 0 ? 0 : stackIndex % 4 === 1 ? 10 : -10),
+        y: event.position.y - stackIndex * DAMAGE_STACK_STEP,
+      };
+      const object = scene.add.text(position.x, position.y - 20, formatDamageNumber(event.value), {
         color: event.kind === 'damage' ? '#ffaaa3' : '#fff0be',
         fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontStyle: 'bold',
         stroke: '#502c35', strokeThickness: 4,
@@ -1096,7 +1110,8 @@ export function createWorldRenderer(
       eventTexts.set(event.id, {
         object,
         expiresAtMs: event.atMs + textLifetimeMs,
-        position: { ...event.position },
+        position,
+        anchorX: event.position.x,
         startedAtMs: event.atMs,
         kind: event.kind,
       });
@@ -1109,6 +1124,7 @@ export function createWorldRenderer(
         object,
         expiresAtMs: event.atMs + textLifetimeMs,
         position: { ...event.position },
+        anchorX: event.position.x,
         startedAtMs: event.atMs,
         kind: event.kind,
       });
