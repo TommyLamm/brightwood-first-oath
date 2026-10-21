@@ -830,9 +830,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       if (view.screen === 'dead') {
-        const card = makeScreenCard(document, '角色倒下了', '返回安全地點後會恢復冒險。');
+        // Mirrors the respawn rule in gameplay: town once visited, otherwise the starting camp.
+        const safeMapId = view.saveData?.visitedMaps.includes('town') ? 'town' : 'camp';
+        const safeMapName = view.catalog.world.maps[safeMapId]?.name ?? '安全地點';
+        const card = makeScreenCard(document, '角色倒下了', '你將在' + safeMapName + '醒來，HP 與 MP 全滿；任務進度、背包與金幣都會保留。');
         card.append(
-          makeButton(document, '返回安全地點', 'respawn', { className: 'ms-button ms-button--primary' }),
+          makeButton(document, '返回' + safeMapName, 'respawn', { className: 'ms-button ms-button--primary' }),
           makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }),
         );
         screenLayer.hidden = false;
