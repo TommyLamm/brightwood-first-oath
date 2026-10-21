@@ -782,7 +782,9 @@ export function createWorldRenderer(
     }
     sprite.setTexture(image.key, frameKey(image.key, 0))
       .setDisplaySize(image.displayWidth, image.displayHeight)
-      .setOrigin(image.pivotX, image.pivotY)
+      // flipX mirrors the texture inside its frame but keeps the origin, so mirror the
+      // pivot too; otherwise off-centre grips (swords) detach from the hand facing left.
+      .setOrigin(facing < 0 ? 1 - image.pivotX : image.pivotX, image.pivotY)
       .setPosition(position.x, position.y)
       .setFlipX(facing < 0)
       .setRotation(rotation)
