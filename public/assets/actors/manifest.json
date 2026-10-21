@@ -50,7 +50,7 @@
       "displayWidth": 48,
       "displayHeight": 32,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 0.7
     },
     {
       "key": "equip:leather-cap",
@@ -60,7 +60,7 @@
       "displayWidth": 48,
       "displayHeight": 32,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 0.78
     },
     {
       "key": "equip:iron-helm",
@@ -70,7 +70,7 @@
       "displayWidth": 48,
       "displayHeight": 32,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 0.66
     },
     {
       "key": "actor:slime",
