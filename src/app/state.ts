@@ -109,5 +109,6 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
       ? { ...(gameplay.combat.cooldowns[playerId] ?? {}) }
       : {},
     potionReadyAtMs: gameplay?.potionReadyAtMs ?? 0,
+    guardUntilMs: gameplay?.guardUntilMs ?? 0,
   };
 }

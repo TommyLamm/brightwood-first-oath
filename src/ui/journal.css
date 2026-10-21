@@ -235,6 +235,9 @@
 .maple-ui .ms-quick-slot:disabled { background: var(--journal-slot) center / 100% 100% no-repeat; border: 0; color: #d7c5a6; box-shadow: none; }
 .ms-quick-slot:disabled .ms-quick-slot__icon { opacity: .48; filter: saturate(.4); }
 .ms-quick-slot.is-unavailable .ms-quick-slot__state { width: auto; height: auto; max-width: 100%; bottom: 4px; clip-path: none; color: #f3e4c4; background: #30291fe6; padding: 0 3px; border-radius: 3px; font-size: 10px; line-height: 14px; }
+.maple-ui .ms-quick-slot.is-buff-active { box-shadow: 0 0 0 2px #8fd16a, 0 0 10px rgba(143, 209, 106, .7); }
+.ms-quick-slot.is-buff-active .ms-quick-slot__state { width: auto; height: auto; max-width: 100%; bottom: 4px; clip-path: none; color: #10240b; background: #9bd873; padding: 0 3px; border-radius: 3px; font-size: 10px; font-weight: 800; line-height: 14px; }
+.ms-quick-slot.is-buff-active:disabled .ms-quick-slot__icon { opacity: 1; filter: none; }
 
 .ms-controls { display: flex; flex-wrap: nowrap; justify-content: end; justify-self: end; align-items: end; gap: 4px; min-width: 0; max-width: 100%; }
 .maple-ui .ms-journal-tab {
@@ -403,7 +406,7 @@
   .ms-map-indicator__coins { font-size: 14px; }
   .ms-quick-slot__key { min-width: 32px; height: 30px; font-size: 14px; }
   .ms-quick-slot--item .ms-quick-slot__state { right: 10px; bottom: 8px; font-size: 13px; line-height: 17px; }
-  .ms-quick-slot.is-unavailable .ms-quick-slot__state { font-size: 12px; line-height: 16px; }
+  .ms-quick-slot.is-unavailable .ms-quick-slot__state, .ms-quick-slot.is-buff-active .ms-quick-slot__state { font-size: 12px; line-height: 16px; }
 }
 
 /* Reset sits under the 鍵位設定 heading; keep it compact rather than a full-width bar like 靜音. */

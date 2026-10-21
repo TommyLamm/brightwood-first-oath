@@ -698,10 +698,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       button.classList.toggle('is-unlearned', rank === 0);
       const cooldown = Math.max(0, (view.skillReadyAtMs[skillId] ?? 0) - view.nowMs);
       const reason = rank === 0 ? '未學習' : player.mp < skill.mpCost ? 'MP 不足' : cooldown > 0 ? '冷卻中' : '';
-      button.classList.toggle('is-unavailable', Boolean(reason));
+      // A running buff matters more than why it can't be recast right now.
+      const buffLeftSec = skill.kind === 'buff' && rank > 0
+        ? Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
+      button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
+      button.classList.toggle('is-buff-active', buffLeftSec > 0);
       button.disabled = !playing || Boolean(reason);
-      if (state) state.textContent = reason || ('等級 ' + rank + '・MP ' + skill.mpCost);
-      button.title = skill.name + '｜' + skillDetails(skill, rank) + (reason ? '｜' + reason : '');
+      if (state) state.textContent = buffLeftSec > 0 ? buffLeftSec + ' 秒' : reason || ('等級 ' + rank + '・MP ' + skill.mpCost);
+      button.title = skill.name + '｜' + skillDetails(skill, rank)
+        + (buffLeftSec > 0 ? '｜效果剩餘 ' + buffLeftSec + ' 秒' : '') + (reason ? '｜' + reason : '');
     }
     for (const slotId of ['small-red', 'small-blue'] as const) {
       const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';

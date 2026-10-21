@@ -161,6 +161,8 @@ export type UiSnapshot = {
   nowMs: number;
   skillReadyAtMs: Record<Id, number>;
   potionReadyAtMs: number;
+  /** Game time when 堅韌守護's defence bonus wears off; 0 or past means inactive. */
+  guardUntilMs?: number;
 };
 
 export type UiController = {
