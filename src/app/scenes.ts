@@ -164,8 +164,9 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
         this.failedMapIds.delete(map.id);
         this.rendererReady = true;
         this.transitionKey = null;
-        this.statusText?.setText('地圖資產已載入。');
-        report('地圖資產已載入', '目前地圖資產已接入 renderer。');
+        // Success needs no banner; the old report flashed a developer note
+        // ('目前地圖資產已接入 renderer。') in the status panel.
+        this.statusText?.setText('');
       }).catch((error: unknown) => {
         if (!this.sys.isActive() || this.transitionKey !== key) return;
         const message = error instanceof Error ? error.message : String(error);
