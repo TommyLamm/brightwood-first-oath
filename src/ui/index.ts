@@ -825,13 +825,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       if (view.screen === 'result') {
-        const card = makeScreenCard(document, '守衛戰鬥結束', '可重新挑戰，或在回城條件允許時返回城鎮。');
-        card.append(makeButton(document, '再次挑戰', 'retry-boss', { className: 'ms-button ms-button--primary' }));
+        // This screen only appears after the guardian is defeated and its core collected.
+        const card = makeScreenCard(document, '古礦守衛已被擊敗！', '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。');
         card.append(makeButton(document, '返回城鎮', 'return-town', {
-          className: 'ms-button ms-button--secondary',
+          className: 'ms-button ms-button--primary',
           disabled: !view.canReturnTown,
           title: view.canReturnTown ? '返回木葉鎮' : '目前不可回城',
         }));
+        card.append(makeButton(document, '再次挑戰守衛', 'retry-boss', { className: 'ms-button ms-button--secondary' }));
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);
