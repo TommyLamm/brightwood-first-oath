@@ -56,7 +56,7 @@ export type GameplayStepInput = {
 
 export type GameplayStepResult = {
   gameplay: GameplayState | null;
-  screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'error';
+  screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'chapter' | 'error';
   openPanel?: PanelId;
 };
 
@@ -577,6 +577,8 @@ function processCommand(
           saveData,
           toast: isChapterComplete ? '已完成第一章「守衛的誓約」，可繼續自由探索木葉世界。' : null,
         },
+        // Spec: claiming q08 shows the chapter settlement (world frozen until dismissed).
+        ...(isChapterComplete ? { screen: 'chapter' as const } : {}),
       };
     }
     case 'returnTown':

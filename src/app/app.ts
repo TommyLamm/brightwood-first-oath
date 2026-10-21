@@ -389,7 +389,9 @@ export class GameApp {
         this.handleNewGame(command.payload.name);
         return true;
       case 'continue':
-        if (this.stateValue.screen !== 'title' || !this.stateValue.gameplay) {
+        if (this.stateValue.screen === 'chapter' && this.stateValue.gameplay) {
+          this.setState({ ...this.stateValue, screen: 'playing', saveMessage: null });
+        } else if (this.stateValue.screen !== 'title' || !this.stateValue.gameplay) {
           this.setToast('目前沒有可繼續的角色。');
         } else {
           const dead = this.stateValue.gameplay.saveData.player.hp <= 0;

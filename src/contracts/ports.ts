@@ -142,7 +142,7 @@ export type WorldRenderer = {
 };
 
 export type UiSnapshot = {
-  screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'error';
+  screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'chapter' | 'error';
   error?: string;
   saveData: SaveData | null;
   stats: import('./types.js').DerivedStats | null;

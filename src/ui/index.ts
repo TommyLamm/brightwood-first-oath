@@ -824,6 +824,24 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         screenLayer.append(card);
         return;
       }
+      if (view.screen === 'chapter' && view.saveData) {
+        const player = view.saveData.player;
+        const questIds = Object.keys(view.catalog.world.quests);
+        const claimed = questIds.filter((id) => view.saveData!.quests[id]?.status === 'claimed').length;
+        const card = makeScreenCard(document, '第一章「守衛的誓約」完成', '古礦守衛已平息，礦道守望者收下了守衛核心。木葉地區重歸寧靜，你的冒險仍可繼續。');
+        const summary = makeElement(document, 'ul', 'ms-help-list');
+        for (const line of [
+          '角色：' + player.name + '・Lv.' + player.level + '・' + jobLabel(player.job),
+          '完成任務：' + claimed + ' / ' + questIds.length,
+          '持有金幣：' + formatNumber(player.coins),
+        ]) summary.append(makeElement(document, 'li', '', line));
+        card.append(summary);
+        card.append(makeButton(document, '繼續自由探索', 'continue', { className: 'ms-button ms-button--primary' }));
+        card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
+        screenLayer.hidden = false;
+        screenLayer.append(card);
+        return;
+      }
       if (view.screen === 'result') {
         // This screen only appears after the guardian is defeated and its core collected.
         const card = makeScreenCard(document, '古礦守衛已被擊敗！', '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。');
