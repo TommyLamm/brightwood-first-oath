@@ -208,6 +208,11 @@ export class KeyboardControls {
   };
   private readonly handleKeyUp = (event: KeyboardEvent): void => {
     this.input.keyUp(event.code);
+    // Releasing Alt on its own activates the browser menu bar on Windows (Firefox, and the Chrome/Edge
+    // app menu), which steals keyboard focus mid-fight. Alt is the default jump key, so swallow it.
+    if ((event.code === 'AltLeft' || event.code === 'AltRight')
+      && this.isGameInputFocused(event.target)
+      && !isTextEntryTarget(event.target)) event.preventDefault();
   };
   private readonly handleBlur = (): void => {
     this.input.releaseAll();
