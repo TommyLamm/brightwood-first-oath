@@ -388,6 +388,11 @@ export function createWorldRenderer(
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
+  /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
+  const bossNameText = scene.add.text(0, 0, '', {
+    color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
+    stroke: '#2a1d22', strokeThickness: 4,
+  }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health).setVisible(false);
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
   const attackGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.attack);
   let activeVisual: MapVisual | null = null;
@@ -828,6 +833,7 @@ export function createWorldRenderer(
     for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
+    bossNameText.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
     for (const label of dropLabels.values()) label.setVisible(false);
@@ -942,6 +948,11 @@ export function createWorldRenderer(
           .fillRect(bar.fillX, bar.fillY, bar.fillWidth, bar.fillHeight);
         hpGraphics.lineStyle(activeVisual.map.boss ? 2 : 1, activeVisual.map.boss ? 0xffd884 : 0x17151b, 0.95)
           .strokeRect(bar.x, bar.y, bar.width, bar.height);
+        if (activeVisual.map.boss) {
+          bossNameText.setText(`${definition.name}  Lv.${definition.level}`)
+            .setPosition(bar.x + bar.width / 2, bar.y - 3)
+            .setVisible(true);
+        }
       }
     }
 
@@ -1260,6 +1271,7 @@ export function createWorldRenderer(
       for (const effect of eventTexts.values()) effect.object.destroy();
       eventTexts.clear();
       hpGraphics.destroy();
+      bossNameText.destroy();
       telegraphGraphics.destroy();
       attackGraphics.destroy();
       scene.cameras.main.stopFollow();
