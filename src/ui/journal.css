@@ -124,6 +124,9 @@
 .ms-meter--hp .ms-meter__fill { background: #d8584b; }
 .ms-meter--mp .ms-meter__fill { background: #4399bd; }
 .ms-meter--exp .ms-meter__fill { background: #d7a346; }
+.ms-meter--hp.is-low .ms-meter__track { border-color: #a52d22; box-shadow: 0 0 0 1px #f06a55, 0 0 8px rgba(226, 70, 50, .65); }
+.ms-meter--hp.is-low .ms-meter__fill { background: #e8483a; }
+.ms-meter--hp.is-low .ms-meter__label strong { color: #9b1f15; }
 
 .ms-region { display: grid; justify-items: end; gap: 8px; flex: 0 1 clamp(320px, 24cqw, 460px); min-width: 0; padding-right: 42px; }
 .ms-header { align-items: start; justify-content: end; gap: 9px; width: 100%; }

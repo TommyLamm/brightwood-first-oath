@@ -588,6 +588,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       makeBadge(document, jobLabel(player.job), 'job'),
     );
     const hp = makeMeter(document, 'HP', player.hp, view.stats?.maxHp ?? player.hp, 'hp');
+    // Static (not pulsing): the profile is rebuilt on every HP change, which would restart an animation.
+    const maxHp = view.stats?.maxHp ?? player.hp;
+    if (player.hp > 0 && player.hp <= maxHp * 0.3) {
+      hp.classList.add('is-low');
+      hp.title = 'HP 偏低，記得按 ' + codeLabel(view.saveData?.settings.bindings.potionHp ?? DEFAULT_KEY_BINDINGS.potionHp) + ' 喝紅色藥水';
+    }
     const mp = makeMeter(document, 'MP', player.mp, view.stats?.maxMp ?? player.mp, 'mp');
     const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
     const nextExp = view.catalog.rules.progression.expToNext[player.level] ?? 0;
@@ -1416,6 +1422,12 @@ function makeMeter(
   fill.style.width = percent(value, maximum) + '%';
   track.append(fill);
   meter.append(heading, track);
+  meter.setAttribute('role', 'meter');
+  meter.setAttribute('aria-label', label);
+  meter.setAttribute('aria-valuemin', '0');
+  meter.setAttribute('aria-valuemax', String(maximum));
+  meter.setAttribute('aria-valuenow', String(Math.min(value, maximum)));
+  meter.setAttribute('aria-valuetext', valueText);
   return meter;
 }
 
