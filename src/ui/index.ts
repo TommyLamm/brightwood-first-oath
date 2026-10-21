@@ -621,13 +621,20 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const map = npcId ? Object.values(view.catalog.world.maps).find((entry) => entry.npcs.some((npc) => npc.npcId === npcId)) : undefined;
       return map ? '（' + map.name + '）' : '';
     };
+    const place = !quest ? ''
+      : quest.status === 'available' ? where(definition?.giverNpcId)
+      : quest.status === 'ready' ? where(definition?.turnInNpcId)
+      : '';
     const detail = !quest
       ? (chapterComplete ? '已完成守衛的安息，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
-      : quest.status === 'available' ? '與' + giver + '交談' + where(definition?.giverNpcId)
-      : quest.status === 'ready' ? '任務完成，向' + recipient + '回報' + where(definition?.turnInNpcId)
+      : quest.status === 'available' ? '與' + giver + '交談'
+      : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
-    questTracker.append(heading, makeElement(document, 'strong', '', title), makeElement(document, 'span', 'ms-quest-tracker__detail', detail));
-    questTracker.title = title + '｜' + detail;
+    const detailLine = makeElement(document, 'span', 'ms-quest-tracker__detail', detail);
+    // Keep the map name in one piece: it used to wrap as 「（赤岩山」/「徑）」.
+    if (place) detailLine.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
+    questTracker.append(heading, makeElement(document, 'strong', '', title), detailLine);
+    questTracker.title = title + '｜' + detail + place;
   };
 
   const updateQuickButtons = (view: UiSnapshot): void => {

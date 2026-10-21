@@ -386,3 +386,5 @@
 
 /* While a panel is open the toast sits at the top edge instead of over the panel body. */
 .ms-toast.ms-toast--top { top: 10px; bottom: auto; }
+
+.ms-quest-tracker__place { display: inline-block; white-space: nowrap; }
