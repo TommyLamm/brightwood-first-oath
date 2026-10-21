@@ -65,6 +65,7 @@ export class GameApp {
   private persistence: Persistence | null = null;
   private persistenceMode: 'local' | 'cloud' | 'preview' | 'memory' = 'memory';
   private temporaryPlay = false;
+  private lastUiClickAt = -Infinity;
   private saveFingerprint: string | null = null;
   private operationGeneration = 0;
   private audioController: AudioController | null = null;
@@ -107,7 +108,12 @@ export class GameApp {
   dispatchUi(command: CommandDraft): GameCommand {
     this.unlockAudioFromGesture();
     const queued = this.dispatch(command);
-    this.playAudioOnce(`ui-click:${queued.seq}`, 'ui-click');
+    // One click can dispatch several commands (e.g. selling every material); play a single click for them.
+    const now = Date.now();
+    if (now - this.lastUiClickAt >= 50) {
+      this.lastUiClickAt = now;
+      this.playAudioOnce(`ui-click:${queued.seq}`, 'ui-click');
+    }
     return queued;
   }
 
