@@ -2,9 +2,9 @@
 
 原創桌面單機 2D 劍士冒險遊戲，遊戲 ID：`brightwood-first-oath`。
 
-[公開 Repository](https://github.com/TommyLamm/brightwood-first-oath) · [預發布候選](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.3)
+[公開 Repository](https://github.com/TommyLamm/brightwood-first-oath) · [預發布候選](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.4)
 
-首版內容包含七張地圖、六種普通怪物、一名首領、五名 NPC、八個任務及 24 種物品。現有候選版本為 `1.0.0-beta.3`。
+首版內容包含七張地圖、六種普通怪物、一名首領、五名 NPC、八個任務及 24 種物品。現有候選版本為 `1.0.0-beta.4`。
 
 ## 本機執行
 
