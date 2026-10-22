@@ -34,6 +34,11 @@
 }
 
 .maple-ui button:hover:not(:disabled) { border-color: #97652e; filter: brightness(1.08); transform: translateY(-2px); }
+/* The 2px hover lift moved the button's hit box too: a cursor resting on a button's bottom edge un-hovered it, it
+   dropped back under the cursor, re-hovered, and the button jittered forever (and could not be clicked by automation).
+   A strip under the lifted button keeps the vacated pixels inside it. :where() keeps positioned buttons unchanged. */
+:where(.maple-ui button) { position: relative; }
+.maple-ui button:hover:not(:disabled)::after { content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 5px; }
 .maple-ui button:disabled { color: #8d7b64; border-color: #89735b; background: #d8c7aa; box-shadow: inset 0 0 0 1px #e8d8bd; }
 .maple-ui button:focus-visible { outline: 3px solid #326957; outline-offset: 3px; }
 
