@@ -22,6 +22,8 @@ export type AssetAnimation = {
 export type AssetAudio = {
   key: string;
   url: string;
+  /** Tried when `url` cannot be fetched or decoded (e.g. a browser without Ogg Vorbis support). */
+  fallbackUrl?: string;
   kind: 'music' | 'sfx';
   loop: boolean;
 };

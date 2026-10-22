@@ -6,19 +6,22 @@
   "audio": [
     {
       "key": "theme-town",
-      "url": "assets/audio/theme-town.wav",
+      "url": "assets/audio/theme-town.ogg",
+      "fallbackUrl": "assets/audio/theme-town.m4a",
       "kind": "music",
       "loop": true
     },
     {
       "key": "theme-field",
-      "url": "assets/audio/theme-field.wav",
+      "url": "assets/audio/theme-field.ogg",
+      "fallbackUrl": "assets/audio/theme-field.m4a",
       "kind": "music",
       "loop": true
     },
     {
       "key": "theme-boss",
-      "url": "assets/audio/theme-boss.wav",
+      "url": "assets/audio/theme-boss.ogg",
+      "fallbackUrl": "assets/audio/theme-boss.m4a",
       "kind": "music",
       "loop": true
     },

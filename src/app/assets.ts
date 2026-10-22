@@ -190,7 +190,10 @@ function parseAudio(value: unknown, index: number): AssetAudio {
   validateRelativeAssetUrl(url);
   if (value.kind !== 'music' && value.kind !== 'sfx') throw new Error(`${label}.kind must be music or sfx`);
   if (typeof value.loop !== 'boolean') throw new Error(`${label}.loop must be boolean`);
-  return { key, url, kind: value.kind, loop: value.loop };
+  if (value.fallbackUrl === undefined) return { key, url, kind: value.kind, loop: value.loop };
+  const fallbackUrl = requiredString(value, 'fallbackUrl', label);
+  validateRelativeAssetUrl(fallbackUrl);
+  return { key, url, fallbackUrl, kind: value.kind, loop: value.loop };
 }
 
 /** Validates the runtime manifest shape and its pack's required v1 content keys. */

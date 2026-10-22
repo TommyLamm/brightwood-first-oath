@@ -49,6 +49,7 @@ function createContext(): AudioContext | null {
 export function createAudio(manifest: AssetManifest, initialSettings: Settings): AudioController {
   const audioByKey = new Map(manifest.audio.map((entry) => [entry.key, entry]));
   const decoded = new Map<string, AudioBuffer>();
+  const inflight = new Map<string, { context: AudioContext; promise: Promise<AudioBuffer | null> }>();
   const musicVoices = new Set<MusicVoice>();
   const sfxVoices = new Map<string, SfxVoice[]>();
   let settings = { ...initialSettings };
@@ -94,22 +95,39 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
     }
   }
 
-  async function loadBuffer(entry: AssetAudio, targetContext: AudioContext): Promise<AudioBuffer | null> {
-    const existing = decoded.get(entry.key);
-    if (existing) return existing;
+  async function decodeFrom(url: string, targetContext: AudioContext): Promise<AudioBuffer | null> {
     try {
       const base = typeof document === 'undefined' ? undefined : document.baseURI;
-      const url = base ? new URL(entry.url, base).toString() : entry.url;
-      const response = await fetch(url);
+      const response = await fetch(base ? new URL(url, base).toString() : url);
       if (!response.ok) return null;
       const encoded = await response.arrayBuffer();
-      const buffer = await targetContext.decodeAudioData(encoded);
-      if (disposed || context !== targetContext) return null;
-      decoded.set(entry.key, buffer);
-      return buffer;
+      return await targetContext.decodeAudioData(encoded);
     } catch {
       return null;
     }
+  }
+
+  async function decodeEntry(entry: AssetAudio, targetContext: AudioContext): Promise<AudioBuffer | null> {
+    // Music ships as Ogg Vorbis; browsers that cannot decode it (older Safari) get the AAC copy.
+    const buffer = await decodeFrom(entry.url, targetContext);
+    if (buffer || !entry.fallbackUrl) return buffer;
+    return decodeFrom(entry.fallbackUrl, targetContext);
+  }
+
+  async function loadBuffer(entry: AssetAudio, targetContext: AudioContext): Promise<AudioBuffer | null> {
+    const existing = decoded.get(entry.key);
+    if (existing) return existing;
+    // setMusic() and the unlock preload can ask for the same track at once; share one download.
+    let request = inflight.get(entry.key);
+    if (!request || request.context !== targetContext) {
+      request = { context: targetContext, promise: decodeEntry(entry, targetContext) };
+      inflight.set(entry.key, request);
+      void request.promise.finally(() => { if (inflight.get(entry.key) === request) inflight.delete(entry.key); });
+    }
+    const buffer = await request.promise;
+    if (!buffer || disposed || context !== targetContext) return null;
+    decoded.set(entry.key, buffer);
+    return buffer;
   }
 
   async function loadAllBuffers(targetContext: AudioContext): Promise<void> {

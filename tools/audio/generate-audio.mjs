@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -233,20 +235,54 @@ function encodePcm16(samples) {
   return wav;
 }
 
+// Music is shipped as Ogg Vorbis (≈110–140 KB per 20 s loop instead of 862 KB of PCM) with an
+// AAC/M4A copy for browsers whose Web Audio cannot decode Vorbis (Safari before 18.4).
+// Short SFX stay PCM WAV: they are tiny and decode with no codec delay.
+const MUSIC_ENCODINGS = [
+  { ext: 'ogg', args: ['-c:a', 'libvorbis', '-q:a', '5'] },
+  { ext: 'm4a', args: ['-c:a', 'aac', '-b:a', '64k', '-movflags', '+faststart'] },
+];
+
 const tracks = [
-  { key: 'theme-town', kind: 'music', loop: true, filename: 'theme-town.wav', render: () => musicEvents('town') },
-  { key: 'theme-field', kind: 'music', loop: true, filename: 'theme-field.wav', render: () => musicEvents('field') },
-  { key: 'theme-boss', kind: 'music', loop: true, filename: 'theme-boss.wav', render: () => musicEvents('boss') },
+  ...['town', 'field', 'boss'].map((name) => ({
+    key: `theme-${name}`, kind: 'music', loop: true,
+    filename: `theme-${name}.ogg`, fallbackFilename: `theme-${name}.m4a`, render: () => musicEvents(name),
+  })),
   ...['ui-click', 'jump', 'attack', 'hit', 'hurt', 'pickup', 'potion', 'equip', 'quest', 'levelup', 'portal', 'death', 'boss-win']
     .map((key) => ({ key, kind: 'sfx', loop: false, filename: `${key}.wav`, render: () => sfxEvents(key) })),
 ];
 
-function measurePeak(wav) {
+function ffmpeg(args) {
+  const result = spawnSync('ffmpeg', ['-v', 'error', '-y', ...args], { maxBuffer: 64 * 1024 * 1024 });
+  if (result.error) throw new Error(`ffmpeg is required to encode/verify music (${result.error.message})`);
+  if (result.status !== 0) throw new Error(`ffmpeg failed: ${result.stderr.toString()}`);
+  return result.stdout;
+}
+
+/** Decodes a compressed music file back to mono 22.05 kHz PCM16 so it gets the same checks as a WAV. */
+function decodeToPcm(file) {
+  return ffmpeg(['-i', file, '-f', 's16le', '-acodec', 'pcm_s16le', '-ac', String(CHANNELS), '-ar', String(SAMPLE_RATE), '-']);
+}
+
+function measurePeak(pcm, offset = 44) {
   let peak = 0;
-  for (let offset = 44; offset < wav.length; offset += 2) {
-    peak = Math.max(peak, Math.abs(wav.readInt16LE(offset)) / 32_768);
+  for (; offset + 1 < pcm.length; offset += 2) {
+    peak = Math.max(peak, Math.abs(pcm.readInt16LE(offset)) / 32_768);
   }
   return peak;
+}
+
+function checkMusicPcm(key, pcm, label) {
+  const bytesPerSecond = SAMPLE_RATE * CHANNELS * (BITS_PER_SAMPLE / 8);
+  const duration = pcm.length / bytesPerSecond;
+  // AAC frames pad the end slightly; the encoder delay is trimmed by the container's edit list.
+  assert.ok(Math.abs(duration - 20) < 0.05, `${key} ${label} must be 20 seconds (got ${duration})`);
+  const firstSample = pcm.readInt16LE(0) / 32_768;
+  const lastSample = pcm.readInt16LE(Math.floor(20 * bytesPerSecond) - 2) / 32_768;
+  assert.ok(Math.abs(firstSample) < 0.02 && Math.abs(lastSample) < 0.02,
+    `${key} ${label} loop boundary must fade smoothly to silence`);
+  // Lossy coding can overshoot the 0.82 normalised peak a little; it must still never clip.
+  assert.ok(measurePeak(pcm, 0) <= 0.95, `${key} ${label} must leave headroom`);
 }
 
 async function validate() {
@@ -264,6 +300,19 @@ async function validate() {
     assert.equal(entry.kind, track.kind);
     assert.equal(entry.loop, track.loop);
     assert.ok(!entry.url.startsWith('/') && !entry.url.includes('..'), `${track.key} URL must be entry-relative`);
+    if (track.kind === 'music') {
+      assert.equal(entry.url, `assets/audio/${track.filename}`, `${track.key} URL`);
+      assert.equal(entry.fallbackUrl, `assets/audio/${track.fallbackFilename}`, `${track.key} fallback URL`);
+      const ogg = await readFile(path.join(ROOT, 'public', entry.url));
+      assert.equal(ogg.toString('ascii', 0, 4), 'OggS', `${track.key} must be an Ogg stream`);
+      assert.ok(ogg.includes(Buffer.from('vorbis')), `${track.key} must be Vorbis`);
+      const m4a = await readFile(path.join(ROOT, 'public', entry.fallbackUrl));
+      assert.equal(m4a.toString('ascii', 4, 8), 'ftyp', `${track.key} fallback must be an MP4/M4A file`);
+      checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.url)), 'ogg');
+      checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.fallbackUrl)), 'm4a');
+      continue;
+    }
+    assert.equal(entry.fallbackUrl, undefined, `${track.key} SFX need no fallback`);
     const wav = await readFile(path.join(ROOT, 'public', entry.url));
     assert.equal(wav.toString('ascii', 0, 4), 'RIFF');
     assert.equal(wav.toString('ascii', 8, 12), 'WAVE');
@@ -275,14 +324,7 @@ async function validate() {
     assert.equal(wav.readUInt32LE(40), wav.length - 44, `${track.key} data size`);
     assert.ok(wav.length > 44, `${track.key} must contain samples`);
     const duration = (wav.length - 44) / (SAMPLE_RATE * CHANNELS * (BITS_PER_SAMPLE / 8));
-    if (track.kind === 'music') {
-      assert.equal(duration, 20, `${track.key} must be 20 seconds`);
-      const firstSample = wav.readInt16LE(44) / 32_768;
-      const lastSample = wav.readInt16LE(wav.length - 2) / 32_768;
-      assert.ok(Math.abs(firstSample) < 0.01 && Math.abs(lastSample) < 0.01,
-        `${track.key} loop boundary must fade smoothly to silence`);
-    }
-    else assert.ok(duration >= 0.1 && duration <= 1.2, `${track.key} must be 0.1–1.2 seconds`);
+    assert.ok(duration >= 0.1 && duration <= 1.2, `${track.key} must be 0.1–1.2 seconds`);
     assert.ok(measurePeak(wav) <= 0.9, `${track.key} must leave PCM headroom`);
   }
 }
@@ -293,23 +335,40 @@ if (!process.argv.includes('--check')) {
     pack: 'audio',
     images: [],
     animations: [],
-    audio: tracks.map(({ key, kind, loop, filename }) => ({
+    audio: tracks.map(({ key, kind, loop, filename, fallbackFilename }) => ({
       key,
       url: `assets/audio/${filename}`,
+      ...(fallbackFilename ? { fallbackUrl: `assets/audio/${fallbackFilename}` } : {}),
       kind,
       loop,
     })),
   };
   await writeFile(path.join(AUDIO_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-  for (const track of tracks) {
-    const samples = track.render();
-    if (track.kind === 'music') softenLoopEdges(samples);
-    normalize(samples);
-    await writeFile(path.join(AUDIO_DIR, track.filename), encodePcm16(samples));
+  const scratch = await mkdtemp(path.join(os.tmpdir(), 'bw-audio-'));
+  try {
+    for (const track of tracks) {
+      const samples = track.render();
+      if (track.kind === 'music') softenLoopEdges(samples);
+      normalize(samples);
+      const wav = encodePcm16(samples);
+      if (track.kind !== 'music') {
+        await writeFile(path.join(AUDIO_DIR, track.filename), wav);
+        continue;
+      }
+      const source = path.join(scratch, `${track.key}.wav`);
+      await writeFile(source, wav);
+      for (const { ext, args } of MUSIC_ENCODINGS) {
+        const out = path.join(AUDIO_DIR, ext === 'ogg' ? track.filename : track.fallbackFilename);
+        ffmpeg(['-i', source, ...args, '-map_metadata', '-1', '-fflags', '+bitexact', out]);
+      }
+    }
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
   }
 }
 
 await validate();
-const totalBytes = (await Promise.all(tracks.map(({ filename }) => readFile(path.join(AUDIO_DIR, filename)))))
-  .reduce((total, wav) => total + wav.length, 0);
-process.stdout.write(`${process.argv.includes('--check') ? 'Validated' : 'Generated and validated'} ${tracks.length} original PCM16 WAV files (${totalBytes} bytes)\n`);
+const primaryBytes = (await Promise.all(tracks.map(({ filename }) => readFile(path.join(AUDIO_DIR, filename)))))
+  .reduce((total, file) => total + file.length, 0);
+process.stdout.write(`${process.argv.includes('--check') ? 'Validated' : 'Generated and validated'} ${tracks.length} original tracks `
+  + `(3 Ogg Vorbis music loops with M4A fallbacks, 13 PCM16 WAV effects; ${primaryBytes} bytes loaded per browser)\n`);

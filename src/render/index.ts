@@ -184,6 +184,7 @@ function validateManifests(manifests: AssetManifest[]): RendererAssets {
     for (const audio of manifest.audio) {
       addKey(audio.key, 'audio');
       validateRelativeUrl(audio.url, audio.key);
+      if (audio.fallbackUrl !== undefined) validateRelativeUrl(audio.fallbackUrl, audio.key);
     }
   }
 

@@ -47,7 +47,8 @@ function validManifest(pack: AssetPack): unknown {
       animations: [],
       audio: audioKeys.map((key) => ({
         key,
-        url: `assets/audio/${key}.wav`,
+        url: key.startsWith('theme-') ? `assets/audio/${key}.ogg` : `assets/audio/${key}.wav`,
+        ...(key.startsWith('theme-') ? { fallbackUrl: `assets/audio/${key}.m4a` } : {}),
         kind: key.startsWith('theme-') ? 'music' : 'sfx',
         loop: key.startsWith('theme-'),
       })),
