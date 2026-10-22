@@ -252,6 +252,8 @@ const tracks = [
     .map((key) => ({ key, kind: 'sfx', loop: false, filename: `${key}.wav`, render: () => sfxEvents(key) })),
 ];
 
+const hasFfmpeg = !spawnSync('ffmpeg', ['-version']).error;
+
 function ffmpeg(args) {
   const result = spawnSync('ffmpeg', ['-v', 'error', '-y', ...args], { maxBuffer: 64 * 1024 * 1024 });
   if (result.error) throw new Error(`ffmpeg is required to encode/verify music (${result.error.message})`);
@@ -285,6 +287,8 @@ function checkMusicPcm(key, pcm, label) {
   assert.ok(measurePeak(pcm, 0) <= 0.95, `${key} ${label} must leave headroom`);
 }
 
+const skippedDecode = [];
+
 async function validate() {
   const manifest = JSON.parse(await readFile(path.join(AUDIO_DIR, 'manifest.json'), 'utf8'));
   assert.equal(manifest.version, 1);
@@ -308,8 +312,11 @@ async function validate() {
       assert.ok(ogg.includes(Buffer.from('vorbis')), `${track.key} must be Vorbis`);
       const m4a = await readFile(path.join(ROOT, 'public', entry.fallbackUrl));
       assert.equal(m4a.toString('ascii', 4, 8), 'ftyp', `${track.key} fallback must be an MP4/M4A file`);
-      checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.url)), 'ogg');
-      checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.fallbackUrl)), 'm4a');
+      // Decoding needs ffmpeg; without it --check still verifies the containers and says what it skipped.
+      if (hasFfmpeg) {
+        checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.url)), 'ogg');
+        checkMusicPcm(track.key, decodeToPcm(path.join(ROOT, 'public', entry.fallbackUrl)), 'm4a');
+      } else skippedDecode.push(track.key);
       continue;
     }
     assert.equal(entry.fallbackUrl, undefined, `${track.key} SFX need no fallback`);
@@ -330,6 +337,7 @@ async function validate() {
 }
 
 if (!process.argv.includes('--check')) {
+  if (!hasFfmpeg) throw new Error('ffmpeg is required to encode the music tracks; install it or run with --check');
   const manifest = {
     version: 1,
     pack: 'audio',
@@ -370,5 +378,8 @@ if (!process.argv.includes('--check')) {
 await validate();
 const primaryBytes = (await Promise.all(tracks.map(({ filename }) => readFile(path.join(AUDIO_DIR, filename)))))
   .reduce((total, file) => total + file.length, 0);
+if (skippedDecode.length) {
+  process.stdout.write(`ffmpeg not found: skipped decoding ${skippedDecode.join(', ')} (length, loop edge and headroom checks)\n`);
+}
 process.stdout.write(`${process.argv.includes('--check') ? 'Validated' : 'Generated and validated'} ${tracks.length} original tracks `
   + `(3 Ogg Vorbis music loops with M4A fallbacks, 13 PCM16 WAV effects; ${primaryBytes} bytes loaded per browser)\n`);
