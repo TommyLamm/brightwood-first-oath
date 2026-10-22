@@ -309,6 +309,17 @@
 .maple-ui .ms-button--primary:disabled, .maple-ui .ms-button--secondary:disabled, .maple-ui .ms-button--danger:disabled { border-color: #a08b6c !important; color: #8d7b64 !important; background: #d8c7aa !important; box-shadow: inset 0 0 0 1px #e8d8bd; cursor: not-allowed; }
 .ms-screen-layer { position: absolute; background: #25271d66; }
 .maple-ui.is-pregame .ms-screen-layer { background: linear-gradient(#1b1d15a6, #1b1d15d9), var(--title-backdrop) center / cover no-repeat, #25271d; }
+/* The hero stands in the middle of cover.png, so a centred card hid him. On landscape screens the card sits in the
+   left third (over the empty platform) and the shade lifts over the hero; 30% keeps him clear when 4:3 crops the sides. */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+  .maple-ui.is-pregame .ms-screen-layer {
+    justify-items: start;
+    padding-left: max(32px, 6%);
+    background: linear-gradient(90deg, #1b1d15e6 0%, #1b1d15bf 30%, #1b1d1540 52%, #1b1d1526 70%, #1b1d1559 100%),
+      linear-gradient(#1b1d1500 55%, #1b1d1599), var(--title-backdrop) 30% center / cover no-repeat, #25271d;
+  }
+  .maple-ui.is-pregame .ms-screen-card { width: min(440px, 40%); }
+}
 .maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
 .ms-screen-card { outline: 0; padding: 20px; }
 .ms-screen-card h1 { color: #65482b; }
