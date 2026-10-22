@@ -721,6 +721,35 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.toast).toContain('守衛的掉落物');
   });
 
+  it('refuses to sell the guardian sword and lets a cleared guardian be fought again for it', () => {
+    const nextEntityId = createNextEntityId('guardian-sword-shop');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.player = { ...gameplay.saveData.player, level: 30, coins: 9_999 };
+    gameplay.saveData.flags = { bossDefeated: true, chapterComplete: true };
+    gameplay.pendingTransition = { mapId: 'town', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+    const merchant = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'merchant')!;
+    gameplay.movement.position = { x: merchant.x, y: merchant.y };
+    const step = (commands: GameCommand[], nowMs: number) => stepGameplay(gameplay, {
+      catalog, commands, input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0, nowMs, random: createSeededRandom(5), nextEntityId,
+    }).gameplay!;
+    gameplay = step([{ seq: 1, type: 'interact', payload: {} }], 1100);
+    gameplay = step([{ seq: 2, type: 'buy', payload: { itemId: 'guardian-sword', quantity: 1 } }], 1200);
+    expect(gameplay.saveData.player.coins).toBe(9_999);
+    expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'guardian-sword')).toBe(false);
+    // Same counter, an item the shop does stock: the purchase path itself works.
+    gameplay = step([{ seq: 3, type: 'buy', payload: { itemId: 'steel-sword', quantity: 1 } }], 1250);
+    expect(gameplay.saveData.player.coins).toBe(9_999 - catalog.rules.items['steel-sword']!.buyPrice);
+
+    // After the chapter the arena still holds the guardian, so a sold or lost sword can be won back.
+    gameplay.pendingTransition = { mapId: 'guardian-arena', spawnId: 'entry', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1300).gameplay!;
+    expect(gameplay.monsters.some(({ monsterId, mode }) => monsterId === 'guardian' && mode !== 'dead')).toBe(true);
+  });
+
   it('dismisses a toast six seconds after it appears', () => {
     const nextEntityId = createNextEntityId('toast-expiry');
     const started = startNewGame('旅人', catalog, nextEntityId);

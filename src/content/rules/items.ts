@@ -20,7 +20,8 @@ export const items: Record<Id, ItemDef> = {
   'guardian-sword': {
     id: 'guardian-sword', name: '守衛之刃', kind: 'weapon', slot: 'weapon', stackLimit: 1,
     minLevel: 28, attack: 38, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
-    buyPrice: 1800, sellPrice: 450, iconKey: 'item:guardian-sword', visualKey: 'equip:guardian-sword',
+    // Only the guardian drops it (see monsters.guardian.drops); the shop does not sell the boss prize.
+    buyPrice: 0, sellPrice: 450, iconKey: 'item:guardian-sword', visualKey: 'equip:guardian-sword',
   },
   'cloth-shirt': {
     id: 'cloth-shirt', name: '旅行布衣', kind: 'body', slot: 'body', stackLimit: 1,

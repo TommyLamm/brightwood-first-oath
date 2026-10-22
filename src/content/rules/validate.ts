@@ -54,6 +54,18 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
     }
   }
 
+  // Bosses are the monsters that never respawn (respawnMs 0). Their guaranteed gear drop is the fight's prize,
+  // so the shop must not sell it too.
+  for (const monster of Object.values(catalog.monsters)) {
+    if (monster.respawnMs !== 0) continue;
+    for (const drop of monster.drops) {
+      const item = catalog.items[drop.itemId];
+      if (item && item.slot !== null && drop.chance >= 1 && item.buyPrice !== 0) {
+        return invalid(`首領掉落裝備 ${item.id} 只能從 ${monster.id} 取得，buyPrice 必須為 0`);
+      }
+    }
+  }
+
   for (const skill of Object.values(catalog.skills)) {
     const values = [
       skill.maxRank, skill.requiredLevel, skill.mpCost, skill.cooldownMs, skill.windupMs,

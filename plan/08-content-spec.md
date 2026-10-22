@@ -45,7 +45,7 @@ returnTown 在非戰鬥鎖定／非切圖時可用：停止攻擊後傳 town/cen
 | --- | --- | --- |
 | guide 森芽 | camp x250 | scout，q01 接交、教學 |
 | mentor 岩嶺教官 | town x700 | mentor，q02／q03／q04 接交、一轉 |
-| merchant 木葉商人 | town x1000 | merchant，24物品中只售武器／防具／帽／藥水 |
+| merchant 木葉商人 | town x1000 | merchant，24物品中只售武器／防具／帽／藥水（buyPrice>0 者；首領掉落的 guardian-sword 不販售） |
 | healer 晨露 | town x1300 | healer，免費回滿 HP/MP、簡短補給說明 |
 | keeper 礦道守望者 | red-ridge x250 | keeper，q05–q08 接交、首領劇情 |
 
@@ -70,7 +70,7 @@ maxHp=80+20×(L−1)+12×vitalityRank+裝備hpBonus；maxMp=40+2×(L−1)。atta
 | starter-sword 練習短劍 | weapon/1 | attack4 | 40/10 |
 | iron-sword 鐵製長劍 | weapon/10 | attack12 | 300/75 |
 | steel-sword 精鋼長劍 | weapon/20 | attack24 | 900/225 |
-| guardian-sword 守衛之刃 | weapon/28 | attack38 | 1800/450 |
+| guardian-sword 守衛之刃 | weapon/28 | attack38 | 不可購買（只由 guardian 掉落）/450 |
 | cloth-shirt 旅行布衣 | body/1 | defense2 | 40/10 |
 | leather-vest 輕革甲 | body/10 | defense7 hpBonus20 | 250/60 |
 | iron-mail 鐵環甲 | body/20 | defense14 hpBonus40 | 700/175 |

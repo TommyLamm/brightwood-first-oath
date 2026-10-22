@@ -94,4 +94,18 @@ describe('rules catalog', () => {
     expect(numericResult.ok).toBe(false);
     if (!numericResult.ok) expect(numericResult.message).toContain('非有限或負數欄位');
   });
+
+  it('keeps the guardian sword out of the shop: only the guardian drops it, always', () => {
+    const sword = rulesCatalog.items['guardian-sword'];
+    expect(sword.buyPrice).toBe(0);
+    expect(sword.sellPrice).toBeGreaterThan(0);
+    expect(rulesCatalog.monsters.guardian.drops).toContainEqual({ itemId: 'guardian-sword', chance: 1, min: 1, max: 1 });
+    const shopStock = Object.values(rulesCatalog.items).filter((item) => item.buyPrice > 0 && item.kind !== 'quest').map(({ id }) => id);
+    expect(shopStock).not.toContain('guardian-sword');
+    expect(shopStock).toEqual(expect.arrayContaining(['starter-sword', 'iron-sword', 'steel-sword']));
+
+    const listed = structuredClone(rulesCatalog);
+    listed.items['guardian-sword'].buyPrice = 1800;
+    expect(validateRules(listed)).toMatchObject({ ok: false });
+  });
 });
