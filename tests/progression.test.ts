@@ -49,7 +49,7 @@ describe('progression and inventory', () => {
       { itemId: 'small-red', quantity: 10 },
       { itemId: 'small-blue', quantity: 5 },
     ]);
-    expect(deriveStats(player, rulesCatalog)).toEqual({ maxHp: 80, maxMp: 40, attack: 31, defense: 2 });
+    expect(deriveStats(player, rulesCatalog)).toEqual({ maxHp: 80, maxMp: 40, attack: 31, defense: 3, critChance: 0.016 });
   });
 
   it('applies multi-level experience, caps at level 30, and does not grant beginner SP retroactively', () => {
@@ -244,5 +244,20 @@ describe('progression and inventory', () => {
     expect(restored).toMatchObject({ hp: 80, mp: 40 });
     const allocated = apply({ ...restored, ap: 5 }, { type: 'allocateAp', stat: 'str', amount: 5 });
     expect(allocated).toMatchObject({ str: 17, ap: 0 });
+  });
+
+  it('makes DEX a real alternative: +1 attack, +1 defense per 4 and +0.4% crit (cap 40%) per point', () => {
+    const base = createPlayer('平衡', rulesCatalog);
+    const level30 = { ...base, level: 30, ap: 0, equipment: { weapon: null, body: null, hat: null } };
+    const allStr = deriveStats({ ...level30, str: 12 + 145, dex: 4 }, rulesCatalog);
+    const allDex = deriveStats({ ...level30, str: 12, dex: 4 + 145 }, rulesCatalog);
+    // The starting split keeps the old 3 + 2×STR attack, so STR-only characters are unchanged.
+    expect(allStr.attack).toBe(3 + 2 * 157);
+    expect(allStr).toMatchObject({ defense: 1, critChance: 0.016 });
+    expect(allDex).toMatchObject({ attack: 172, defense: 37, critChance: 0.4 });
+    // Expected damage per swing with crits stays below an all-STR build, so DEX trades damage for defense.
+    const expected = (stats: { attack: number; critChance: number }) => stats.attack * (1 + 0.5 * stats.critChance);
+    expect(expected(allDex) / expected(allStr)).toBeGreaterThan(0.6);
+    expect(expected(allDex) / expected(allStr)).toBeLessThan(0.75);
   });
 });

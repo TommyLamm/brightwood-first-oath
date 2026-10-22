@@ -262,7 +262,7 @@ function renderPanel(
     }
   } else if (panel === 'stats' && view.stats && view.saveData) {
     const player = view.saveData.player;
-    content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜金幣 ${player.coins}`;
+    content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜暴擊率 ${Math.round(view.stats.critChance * 1000) / 10}%｜金幣 ${player.coins}`;
     content.textContent += `｜可用 AP ${player.ap}｜SP ${player.sp}`;
     if (player.ap > 0) {
       appendButton(details, 'STR +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'str', amount: 1 } }));

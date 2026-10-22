@@ -105,6 +105,8 @@ export type VisualEvent = {
   position: Vec2;
   value?: number;
   key?: Id;
+  /** A DEX critical hit; the number is drawn larger and gold. */
+  critical?: boolean;
   atMs: number;
 };
 

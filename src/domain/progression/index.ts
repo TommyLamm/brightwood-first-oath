@@ -92,6 +92,10 @@ export function createPlayer(name: string, rules: RulesCatalog): PlayerProgress 
   return player;
 }
 
+export const DEX_PER_DEFENSE = 4;
+export const CRIT_CHANCE_PER_DEX = 0.004;
+export const CRIT_CHANCE_CAP = 0.4;
+
 export function deriveStats(player: PlayerProgress, rules: RulesCatalog): DerivedStats {
   const vitality = rules.skills.vitality;
   const vitalityRank =
@@ -114,8 +118,11 @@ export function deriveStats(player: PlayerProgress, rules: RulesCatalog): Derive
   return {
     maxHp: 80 + 20 * (player.level - 1) + 12 * vitalityRank + equipmentHp,
     maxMp: 40 + 2 * (player.level - 1),
-    attack: 3 + 2 * player.str + weaponAttack,
-    defense: Math.floor(player.dex / 5) + equipmentDefense,
+    // STR is the swordsman's main stat (+2 attack). DEX is the precise, guarded alternative: +1 attack,
+    // +1 defense per 4 and +0.4% critical chance each. At the starting DEX 4 this equals the old 3 + 2×STR.
+    attack: 2 * player.str + player.dex - 1 + weaponAttack,
+    defense: Math.floor(player.dex / DEX_PER_DEFENSE) + equipmentDefense,
+    critChance: Math.min(CRIT_CHANCE_CAP, player.dex * CRIT_CHANCE_PER_DEX),
   };
 }
 

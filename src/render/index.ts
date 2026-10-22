@@ -1155,10 +1155,11 @@ export function createWorldRenderer(
         x: event.position.x + (stackIndex % 2 === 0 ? 0 : stackIndex % 4 === 1 ? 10 : -10),
         y: event.position.y - stackIndex * DAMAGE_STACK_STEP,
       };
-      const object = scene.add.text(position.x, position.y - 20, formatDamageNumber(event.value), {
-        color: event.kind === 'damage' ? '#ffaaa3' : '#fff0be',
-        fontFamily: 'system-ui, sans-serif', fontSize: '18px', fontStyle: 'bold',
-        stroke: '#502c35', strokeThickness: 4,
+      const critical = event.kind === 'hit' && event.critical === true;
+      const object = scene.add.text(position.x, position.y - 20, (critical ? '暴擊 ' : '') + formatDamageNumber(event.value), {
+        color: event.kind === 'damage' ? '#ffaaa3' : critical ? '#ffc23a' : '#fff0be',
+        fontFamily: 'system-ui, sans-serif', fontSize: critical ? '23px' : '18px', fontStyle: 'bold',
+        stroke: critical ? '#5a2a10' : '#502c35', strokeThickness: critical ? 5 : 4,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
       eventTexts.set(event.id, {
         object,

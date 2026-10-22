@@ -13,7 +13,7 @@ function player(id: string, x: number, y = 600, hp = 100): CombatActor {
     position: { x, y },
     facing: 1,
     hp,
-    stats: { maxHp: 100, maxMp: 40, attack: 10, defense: 0 },
+    stats: { maxHp: 100, maxMp: 40, attack: 10, defense: 0, critChance: 0 },
     faction: 'player',
     body: { width: 24, height: 44 },
     knockbackImmune: false,

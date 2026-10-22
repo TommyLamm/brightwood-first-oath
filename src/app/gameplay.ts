@@ -322,7 +322,7 @@ export function stepGameplay(
     } else {
       gameplay.monsters = applyMonsterHit(gameplay.monsters, hit, input.nowMs);
       gameplay.attackOrDamageAtMs = input.nowMs;
-      addEffect(gameplay, hit.targetId, 'hit', hit.damage, input.nowMs, input.nextEntityId);
+      addEffect(gameplay, hit.targetId, 'hit', hit.damage, input.nowMs, input.nextEntityId, hit.critical);
     }
   }
 
@@ -1020,7 +1020,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         position: monster.attackOrigin ? { ...monster.attackOrigin } : { ...monster.movement.position },
         facing: monster.attackFacing ?? monster.movement.facing,
         hp: monster.hp,
-        stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense },
+        stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense, critChance: 0 },
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
         knockbackImmune: monster.monsterId === 'guardian',
@@ -1055,6 +1055,7 @@ function addEffect(
   value: number,
   atMs: number,
   nextEntityId: () => EntityId,
+  critical = false,
 ): void {
   gameplay.effects.push({
     id: nextEntityId(),
@@ -1062,6 +1063,7 @@ function addEffect(
     position: gameplay.monsters.find(({ id }) => id === sourceId)?.movement.position
       ?? gameplay.movement.position,
     value,
+    ...(critical ? { critical: true } : {}),
     atMs,
   });
   if (gameplay.effects.length > 80) gameplay.effects.splice(0, gameplay.effects.length - 80);

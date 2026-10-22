@@ -131,11 +131,13 @@ export function stepCombat(
       for (const target of candidates) {
         if (added >= maxTargets) break;
         if (attack.hitIds.includes(target.id)) continue;
+        const { damage, critical } = calculateDamage(source, target, skill, attack.rank, rng);
         hits.push({
           attackId: attack.id,
           sourceId: source.id,
           targetId: target.id,
-          damage: calculateDamage(source, target, skill, attack.rank, rng),
+          damage,
+          critical,
           knockback: calculateKnockback(attack, target),
         });
         attack.hitIds.push(target.id);
@@ -202,16 +204,22 @@ function targetLimit(skill: SkillDef): number {
   return Math.max(0, Math.floor(skill.targets));
 }
 
+export const CRITICAL_MULTIPLIER = 1.5;
+
 function calculateDamage(
   source: CombatActor,
   target: CombatActor,
   skill: SkillDef,
   rank: number,
   rng: RandomSource,
-): number {
+): { damage: number; critical: boolean } {
   const multiplier = skill.multiplierBase + skill.multiplierPerRank * (rank - 1);
   const variance = 0.95 + 0.1 * rng.next();
-  return Math.max(1, Math.floor((source.stats.attack * multiplier - target.stats.defense * 0.5) * variance));
+  // Only actors that can crit draw a second number, so monster hits keep their old random sequence.
+  const chance = Number.isFinite(source.stats.critChance) ? Math.min(1, Math.max(0, source.stats.critChance)) : 0;
+  const critical = chance > 0 && rng.next() < chance;
+  const base = source.stats.attack * multiplier * (critical ? CRITICAL_MULTIPLIER : 1) - target.stats.defense * 0.5;
+  return { damage: Math.max(1, Math.floor(base * variance)), critical };
 }
 
 function calculateKnockback(attack: AttackInstance, target: CombatActor): Vec2 {

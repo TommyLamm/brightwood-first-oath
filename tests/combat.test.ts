@@ -9,7 +9,7 @@ function actor(overrides: Partial<CombatActor> = {}): CombatActor {
     position: { x: 100, y: 600 },
     facing: 1,
     hp: 100,
-    stats: { maxHp: 100, maxMp: 40, attack: 50, defense: 10 },
+    stats: { maxHp: 100, maxMp: 40, attack: 50, defense: 10, critChance: 0 },
     faction: 'player',
     body: { width: 24, height: 44 },
     knockbackImmune: false,
@@ -144,13 +144,13 @@ describe('combat', () => {
   });
 
   it('applies fixed-rank damage, seeded variance, away-from-source knockback, and boss immunity as Hit data', () => {
-    const source = actor({ stats: { maxHp: 100, maxMp: 40, attack: 100, defense: 10 } });
+    const source = actor({ stats: { maxHp: 100, maxMp: 40, attack: 100, defense: 10, critChance: 0 } });
     const prepared = prepareAttack('heavy-strike', source);
     const target = actor({
       id: 'boss',
       position: { x: 140, y: 600 },
       faction: 'enemy',
-      stats: { maxHp: 100, maxMp: 0, attack: 20, defense: 10 },
+      stats: { maxHp: 100, maxMp: 0, attack: 20, defense: 10, critChance: 0 },
       knockbackImmune: true,
     });
     const result = stepCombat(prepared.state, [source, target], rulesCatalog, 0.03, 1_230, fixedRandom(0));
@@ -160,6 +160,7 @@ describe('combat', () => {
       sourceId: 'player',
       targetId: 'boss',
       damage: 133,
+      critical: false,
       knockback: { x: 0, y: 0 },
     }]);
     expect(target.hp).toBe(100);
@@ -171,7 +172,7 @@ describe('combat', () => {
       position: { x: 100, y: 600 },
       facing: -1,
       faction: 'enemy',
-      stats: { maxHp: 50, maxMp: 0, attack: 20, defense: 0 },
+      stats: { maxHp: 50, maxMp: 0, attack: 20, defense: 0, critChance: 0 },
       skillRanks: {},
     });
     const prepared = prepareAttack('enemy-melee', source);
@@ -181,5 +182,25 @@ describe('combat', () => {
 
     expect(result.hits).toHaveLength(1);
     expect(result.hits[0]).toMatchObject({ targetId: 'player-target', damage: 14, knockback: { x: -140, y: -120 } });
+  });
+
+  it('rolls DEX critical hits for 1.5× attack before defense, and never rolls for actors without crit chance', () => {
+    const target = actor({
+      id: 'dummy', position: { x: 140, y: 600 }, faction: 'enemy',
+      stats: { maxHp: 1000, maxMp: 0, attack: 20, defense: 10, critChance: 0 }, knockbackImmune: true,
+    });
+    const swing = (critChance: number, random: RandomSource) => {
+      const source = actor({ stats: { maxHp: 100, maxMp: 40, attack: 100, defense: 10, critChance } });
+      const prepared = prepareAttack('basic', source);
+      return stepCombat(prepared.state, [source, target], rulesCatalog, 0.03, 1_200, random).hits[0]!;
+    };
+    // variance roll 0 → ×0.95; crit roll 0 < 0.3 → critical: floor((100×1.5 − 10×0.5) × 0.95) = 137.
+    expect(swing(0.3, fixedRandom(0))).toMatchObject({ damage: 137, critical: true });
+    // crit roll 0.5 ≥ 0.3 → normal: floor((100 − 5) × 0.95) = 90.
+    expect(swing(0.3, fixedRandom(0.5))).toMatchObject({ critical: false });
+    const calls = { n: 0 };
+    const counted: RandomSource = { next: () => { calls.n += 1; return 0; } };
+    expect(swing(0, counted)).toMatchObject({ damage: 90, critical: false });
+    expect(calls.n).toBe(1);
   });
 });

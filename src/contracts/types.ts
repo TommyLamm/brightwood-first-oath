@@ -119,6 +119,8 @@ export type DerivedStats = {
   maxMp: number;
   attack: number;
   defense: number;
+  /** 0–1 chance that a hit deals CRITICAL_MULTIPLIER damage. Monsters have 0. */
+  critChance: number;
 };
 
 export type Reward = {
@@ -167,6 +169,7 @@ export type Hit = {
   sourceId: EntityId;
   targetId: EntityId;
   damage: number;
+  critical: boolean;
   knockback: Vec2;
 };
 

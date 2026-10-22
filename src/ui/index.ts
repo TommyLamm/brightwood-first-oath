@@ -1713,6 +1713,10 @@ function buildEquipmentPanel(document: Document, view: UiSnapshot, parent: HTMLE
   parent.append(grid);
 }
 
+function formatCritChance(chance: number): string {
+  return (Math.round(chance * 1000) / 10).toFixed(1) + '%';
+}
+
 function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
   const player = view.saveData?.player;
   if (!player || !view.stats) {
@@ -1723,7 +1727,7 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
   const values: [string, string | number][] = [
     ['STR', player.str], ['DEX', player.dex], ['可用 AP', player.ap], ['可用 SP', player.sp],
     ['攻擊力', view.stats.attack], ['防禦力', view.stats.defense],
-    ['最大 HP', view.stats.maxHp], ['最大 MP', view.stats.maxMp],
+    ['暴擊率', formatCritChance(view.stats.critChance)], ['最大 HP／MP', view.stats.maxHp + '／' + view.stats.maxMp],
   ];
   for (const [label, value] of values) {
     const card = makeElement(document, 'div', 'ms-stat-card');
@@ -1731,7 +1735,7 @@ function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLEleme
     stats.append(card);
   }
   parent.append(stats);
-  parent.append(makeElement(document, 'p', 'ms-panel-note', 'STR：每點攻擊力 +2。DEX：每 5 點防禦力 +1。劍士建議優先提升 STR。'));
+  parent.append(makeElement(document, 'p', 'ms-panel-note', 'STR：每點攻擊力 +2，打得最重。DEX：每點攻擊力 +1、暴擊率 +0.4%（最高 40%，暴擊傷害 ×1.5），每 4 點防禦力 +1；傷害略低但更耐打，可依喜好分配。'));
   const actions = makeElement(document, 'div', 'ms-inline-actions');
   const bulk = Math.min(5, player.ap);
   for (const [stat, label] of [['str', 'STR'], ['dex', 'DEX']] as const) {
