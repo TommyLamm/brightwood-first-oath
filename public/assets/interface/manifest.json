@@ -43,6 +43,16 @@
       "pivotY": 0.5
     },
     {
+      "key": "item:frost-tide-sword",
+      "url": "assets/interface/item-frost-tide-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
       "key": "item:cloth-shirt",
       "url": "assets/interface/item-cloth-shirt-v1.png",
       "columns": 1,

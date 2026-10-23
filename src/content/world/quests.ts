@@ -121,4 +121,13 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '隘道裡還有冰甲蟹擋路，目標是擊退六隻並持有四枚冰殼。備齊後回雪痕海岸找雪芽報告，交付時冰殼會全部收走。',
     completeText: '六隻冰甲蟹已清退，四枚冰殼也完成交付，通往冰潮洞窟的道路已經開放。請回雪痕海岸找雪芽領取補給與金幣，再前往洞窟。',
   },
+  q11: {
+    id: 'q11', name: '冰潮的誓約', giverNpcId: 'frost-guide', turnInNpcId: 'frost-guide', prerequisiteIds: ['q10'], minLevel: 1,
+    objectives: [{ type: 'kill', targetId: 'frost-tide-warden', count: 1 }], consumeItems: [],
+    reward: { exp: 1200, coins: 2000, items: [{ itemId: 'frost-tide-sword', quantity: 1 }] },
+    summary: '擊敗冰潮守望獸，為霜雪群島的航道立下新的守望誓約。',
+    acceptText: '請再次深入冰潮洞窟，擊敗冰潮守望獸，讓潮汐航道恢復平靜。完成後回雪痕海岸找雪芽報告，領取最後的謝禮。',
+    progressText: '冰潮洞窟深處的守望獸仍在守著航道。擊敗牠後回雪痕海岸找雪芽回報；她會為群島的旅人準備一份實用謝禮。',
+    completeText: '冰潮守望獸已被擊敗，霜雪群島的航道也恢復平靜。請回雪痕海岸找雪芽完成最後回報，領取冰潮長鋒與金幣。',
+  },
 };

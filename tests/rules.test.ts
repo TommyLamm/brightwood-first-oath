@@ -3,13 +3,13 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(26);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(27);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
-      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell',
+      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword',
     ]));
     expect(Object.keys(rulesCatalog.skills)).toHaveLength(12);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([

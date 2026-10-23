@@ -18,7 +18,7 @@ function makeLegacyFrostSave(nextEntityId: () => EntityId): SaveData {
   const save = structuredClone(started.gameplay.saveData);
   const quests: SaveData['quests'] = {};
   for (const quest of Object.values(worldCatalog.quests)) {
-    if (quest.id === 'q09' || quest.id === 'q10') continue;
+    if (quest.id === 'q09' || quest.id === 'q10' || quest.id === 'q11') continue;
     quests[quest.id] = {
       status: 'claimed',
       counters: Object.fromEntries(quest.objectives
@@ -41,9 +41,11 @@ describe('Frost Isles manual guide quests', () => {
     expect(validated.ok).toBe(true);
     expect(oldSave.quests.q09).toBeUndefined();
     expect(oldSave.quests.q10).toBeUndefined();
+    expect(oldSave.quests.q11).toBeUndefined();
     if (!validated.ok) throw new Error(validated.message);
     expect(getQuestView(validated.value, 'q09', catalog).status).toBe('available');
     expect(getQuestView(validated.value, 'q10', catalog).status).toBe('locked');
+    expect(getQuestView(validated.value, 'q11', catalog).status).toBe('locked');
 
     const restored = restoreGame(validated.value, catalog, nextEntityId);
     expect(restored.repairedArenaLocation).toBe(false);
@@ -156,5 +158,93 @@ describe('Frost Isles manual guide quests', () => {
     expect(gameplay.pendingTransition?.mapId).toBe('frost-pine-pass');
     finishTravel();
     expect(gameplay.saveData.location.mapId).toBe('frost-pine-pass');
+  });
+
+  it('manually claims q11 after the Warden fight and grants the level-cap sword exactly once', () => {
+    const nextEntityId = createNextEntityId('frost-q11');
+    const legacy = makeLegacyFrostSave(nextEntityId);
+    legacy.quests.q09 = { status: 'claimed', counters: {} };
+    legacy.quests.q10 = { status: 'claimed', counters: { 'frost-crab': 6 } };
+    legacy.location = { mapId: 'frost-shore', spawnId: 'left' };
+    legacy.visitedMaps = ['camp', 'town', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern'];
+    expect(legacy.quests.q11).toBeUndefined();
+    const validated = validateSave(legacy, catalog);
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) throw new Error(validated.message);
+    expect(getQuestView(validated.value, 'q11', catalog).status).toBe('available');
+
+    let gameplay = restoreGame(validated.value, catalog, nextEntityId).gameplay;
+    gameplay.movement.position = { x: 250, y: 600 };
+    let nowMs = 1000;
+    let seq = 1;
+    const random = createSeededRandom(115);
+    const command = (draft: CommandDraft) => {
+      const result = stepGameplay(gameplay, {
+        catalog,
+        commands: [{ ...draft, seq: seq++ } as GameCommand],
+        input: idleInput,
+        dtSeconds: 0,
+        nowMs,
+        random,
+        nextEntityId,
+      });
+      nowMs += 20;
+      if (!result.gameplay) throw new Error('Expected Frost Isles gameplay to stay active.');
+      gameplay = result.gameplay;
+      return result;
+    };
+    const finishTravel = () => {
+      const result = completeMapTransition(gameplay, catalog, nextEntityId, nowMs);
+      if (!result.gameplay) throw new Error('Expected a completed map transition.');
+      gameplay = result.gameplay;
+    };
+
+    command({ type: 'acceptQuest', payload: { questId: 'q11' } });
+    expect(gameplay.saveData.quests.q11?.status).toBe('active');
+    gameplay.pendingTransition = { mapId: 'frost-tide-cavern', spawnId: 'left', after: 'travel' };
+    finishTravel();
+
+    const bossSpawn = catalog.world.maps['frost-tide-cavern']!.monsters.find(({ monsterId }) => monsterId === 'frost-tide-warden')!;
+    const boss = gameplay.monsters.find(({ monsterId }) => monsterId === 'frost-tide-warden')!;
+    gameplay.monsters = [{ ...boss, hp: 1, movement: { ...boss.movement, position: { x: bossSpawn.x, y: 600 } } }];
+    gameplay.movement = { ...gameplay.movement, position: { x: bossSpawn.x - 40, y: 600 }, facing: 1 };
+    let screen: ReturnType<typeof stepGameplay>['screen'] = 'playing';
+    for (let tick = 0; tick < 60; tick += 1) {
+      nowMs += 1000 / 60;
+      const result = stepGameplay(gameplay, {
+        catalog,
+        commands: tick === 0 ? [{ seq: seq++, type: 'attack', payload: { skillId: 'basic' } }] : [],
+        input: idleInput,
+        dtSeconds: 1 / 60,
+        nowMs,
+        random,
+        nextEntityId,
+      });
+      gameplay = result.gameplay!;
+      screen = result.screen;
+      if (screen === 'result') break;
+    }
+
+    expect(screen).toBe('result');
+    expect(getQuestView(gameplay.saveData, 'q11', catalog).status).toBe('ready');
+    expect(gameplay.saveData.flags).toEqual(legacy.flags);
+    expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'frost-tide-sword')).toBe(false);
+
+    command({ type: 'returnTown', payload: {} });
+    expect(gameplay.pendingTransition?.mapId).toBe('frost-shore');
+    finishTravel();
+    gameplay.movement.position = { x: 250, y: 600 };
+    const coinsBeforeClaim = gameplay.saveData.player.coins;
+    command({ type: 'claimQuest', payload: { questId: 'q11' } });
+    expect(gameplay.saveData.quests.q11?.status).toBe('claimed');
+    expect(gameplay.saveData.player.bag.filter(({ itemId }) => itemId === 'frost-tide-sword')
+      .reduce((sum, stack) => sum + stack.quantity, 0)).toBe(1);
+    expect(gameplay.saveData.player.coins).toBe(coinsBeforeClaim + worldCatalog.quests.q11!.reward.coins);
+    expect(gameplay.saveData.flags).toEqual(legacy.flags);
+    expect(rulesCatalog.items['frost-tide-sword']).toMatchObject({ minLevel: 30, attack: 50, buyPrice: 0 });
+
+    command({ type: 'claimQuest', payload: { questId: 'q11' } });
+    expect(gameplay.saveData.player.bag.filter(({ itemId }) => itemId === 'frost-tide-sword')
+      .reduce((sum, stack) => sum + stack.quantity, 0)).toBe(1);
   });
 });

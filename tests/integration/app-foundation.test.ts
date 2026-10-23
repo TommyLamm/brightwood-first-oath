@@ -14,7 +14,7 @@ describe('T14-a app foundation', () => {
     const result = composeContentCatalog();
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(Object.keys(result.value.rules.items)).toHaveLength(26);
+      expect(Object.keys(result.value.rules.items)).toHaveLength(27);
       expect(Object.keys(result.value.world.maps)).toHaveLength(10);
     }
   });

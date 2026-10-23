@@ -43,6 +43,16 @@
       "pivotY": 0.8
     },
     {
+      "key": "equip:frost-tide-sword",
+      "url": "assets/equipment/frost-tide-sword-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0.25,
+      "pivotY": 0.8
+    },
+    {
       "key": "equip:cloth-cap",
       "url": "assets/actors/equip-cloth-cap-v1.png",
       "columns": 1,

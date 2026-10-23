@@ -3,7 +3,7 @@ import { questDropByQuest } from '../rules/index.js';
 
 const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern'];
 const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide'];
-const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10'];
+const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11'];
 const expectedNpcPlacements: Record<Id, Id> = {
   guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore',
 };

@@ -50,7 +50,7 @@ type PackManifestResult =
 const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> = {
   actors: [
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
-    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
+    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:frost-tide-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
     'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide',
@@ -63,7 +63,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
   ],
   interface: [
     ...[
-      'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
+      'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'frost-tide-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell', 'forest-seed',

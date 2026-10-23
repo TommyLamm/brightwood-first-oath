@@ -23,6 +23,12 @@ export const items: Record<Id, ItemDef> = {
     // Only the guardian drops it (see monsters.guardian.drops); the shop does not sell the boss prize.
     buyPrice: 0, sellPrice: 450, iconKey: 'item:guardian-sword', visualKey: 'equip:guardian-sword',
   },
+  'frost-tide-sword': {
+    id: 'frost-tide-sword', name: '冰潮長鋒', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 30, attack: 50, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    // Awarded once by the Frost Isles finale; the merchant cannot sell this reward.
+    buyPrice: 0, sellPrice: 800, iconKey: 'item:frost-tide-sword', visualKey: 'equip:frost-tide-sword',
+  },
   'cloth-shirt': {
     id: 'cloth-shirt', name: '旅行布衣', kind: 'body', slot: 'body', stackLimit: 1,
     minLevel: 1, attack: 0, defense: 2, hpBonus: 0, restoreHp: 0, restoreMp: 0,
