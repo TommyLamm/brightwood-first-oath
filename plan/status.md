@@ -8,7 +8,7 @@
 
 - Stage A 已實作：新增 frost-shore「雪痕海岸」，q08 領獎後可由 Guardian Arena 前往，回程不設任務鎖；補入 world map 地標與探索進度、mapOrder、地圖驗證、frost 背景主題及格式 1 存檔相容測試。
 - Stage A 最小檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、git diff --check；指定 world-map、persistence、app-foundation 測試檔後，Vitest 回報 9 files／74 tests passed。此命令輸出比預期測試檔數廣，未再重跑。
-- Stage A 實作 commit 待提交；素材接入 commit：97be61e（sky，原始 7121210）、f632528（far/mid，原始 a5d86d3）。未推送，沒有建立 tag／Release 或發布。
+- Stage A 實作 commit：f347c76；素材接入 commit：97be61e（sky，原始 7121210）、f632528（far/mid，原始 a5d86d3）。未推送，沒有建立 tag／Release 或發布。
 - 尚未完成：frost-shore 暫無怪物；狼 atlas、霜牙圖示與地區卡插畫待素材代理交付。無瀏覽器／正式遊玩／視覺驗收。
 - 後續方向：三圖小區域 frost-shore → frost-pine-pass → frost-tide-cavern；加一種具短距衝刺行為的敵人、一隻有可躲預警的小首領，以及可領取／回報且讓霜牙能收集兌獎的區域挑戰。保持等級上限 30、桌面單人劍士和原有主線／格式 1 存檔。
 - 本輪唯一追蹤報告：reports/world-expansion-20261024.md。

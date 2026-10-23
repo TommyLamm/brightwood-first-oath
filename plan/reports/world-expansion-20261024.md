@@ -35,7 +35,7 @@
 - git diff --check：exit 0；Windows Git 對少數 LF 工作檔提示下次會轉成 CRLF，無 whitespace error。
 - 未跑瀏覽器、build、全套回歸或發布驗證。
 
-Stage A 程式與進度文件 commit 尚待建立；素材接入 commit 已在 main：97be61e（sky，來源 commit 7121210）與 f632528（far/mid，來源 commit a5d86d3）。
+Stage A 程式、focused tests 與狀態／報告 commit：f347c76（Add playable Frost Shore route）。素材接入 commit 已在 main：97be61e（sky，來源 commit 7121210）與 f632528（far/mid，來源 commit a5d86d3）。
 
 ## 後續實作
 
@@ -55,4 +55,4 @@ Stage A 程式與進度文件 commit 尚待建立；素材接入 commit 已在 m
 
 本聊天曾建立一次性 heartbeat automation 06-55-2：ACTIVE、COUNT=1，排程 2026-10-24 香港時間 06:55，目標是本聊天。建立時讀到帳戶五小時使用窗為 8%，該窗重設時間 06:51 香港時間；此數字是當時快照，不代表目前用量。
 
-中斷後續作步驟：先讀本報告和 plan/status.md；核對 git status -sb、main HEAD 與未追蹤 worktrees；保留尚未提交修改及素材分支。先完成 Stage A commit 並把 hash 回填本報告／狀態板，再整合素材代理後續 commit；沿 Stage B/C/D 的小階段完成怪物、任務、UI 接線與最少必要檢查。不要推送、發 tag、建立 Release 或上架。
+中斷後續作步驟：先讀本報告和 plan/status.md；核對 git status -sb、main HEAD 與未追蹤 worktrees；保留素材分支。Stage A 已提交 f347c76，素材接入已提交 97be61e 與 f632528；沿 Stage B/C/D 的小階段完成怪物、任務、UI 接線與最少必要檢查。不要推送、發 tag、建立 Release 或上架。
