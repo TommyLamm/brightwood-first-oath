@@ -293,7 +293,7 @@ export function applyMonsterHit(
       return monster;
     }
 
-    if (monster.monsterId !== 'guardian'
+    if (!isBossMonster(monster.monsterId)
       && Number.isFinite(hit.knockback.x) && Number.isFinite(hit.knockback.y)
       && (hit.knockback.x !== 0 || hit.knockback.y !== 0)) {
       monster.movement = {
@@ -306,8 +306,15 @@ export function applyMonsterHit(
   });
 }
 
+function isBossMonster(monsterId: string): boolean {
+  return monsterId === 'guardian' || monsterId === 'frost-tide-warden';
+}
+
 function chooseSkillId(monster: MonsterState): string | null {
   if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
+  if (monster.monsterId === 'frost-tide-warden') {
+    return monster.pendingSkillId === 'frost-tusk-slam' ? 'low-tide-wave' : 'frost-tusk-slam';
+  }
   if (monster.monsterId !== 'guardian') return 'enemy-melee';
   if (monster.pendingSkillId === null) return 'guardian-slam';
   return monster.pendingSkillId === 'guardian-slam' ? 'guardian-wave' : 'guardian-slam';

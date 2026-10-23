@@ -21,8 +21,8 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const monsterIds = Object.keys(catalog.monsters);
 
   if (itemIds.length !== 26) return invalid(`items 數量錯誤：預期 26，實際 ${itemIds.length}`);
-  if (skillIds.length !== 10) return invalid(`skills 數量錯誤：預期 10，實際 ${skillIds.length}`);
-  if (monsterIds.length !== 9) return invalid(`monsters 數量錯誤：預期 9，實際 ${monsterIds.length}`);
+  if (skillIds.length !== 12) return invalid('skills 數量錯誤：預期 12，實際 ' + skillIds.length);
+  if (monsterIds.length !== 10) return invalid('monsters 數量錯誤：預期 10，實際 ' + monsterIds.length);
   if (!hasMatchingIds(catalog.items)) return invalid('items 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.skills)) return invalid('skills 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.monsters)) return invalid('monsters 定義 id 必須與 Record key 完全相同');
@@ -102,7 +102,7 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const learnableCount = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'swordsman').length;
   const enemySkills = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'enemy');
   if (learnableCount !== 5) return invalid(`可學劍士技能數量錯誤：預期 5，實際 ${learnableCount}`);
-  if (enemySkills.length !== 4) return invalid(`敵人技能數量錯誤：預期 4，實際 ${enemySkills.length}`);
+  if (enemySkills.length !== 6) return invalid('敵人技能數量錯誤：預期 6，實際 ' + enemySkills.length);
   if (catalog.skills.basic?.requiredJob !== 'any') return invalid('basic 必須存在且可由任意職業使用');
   if (enemySkills.some((skill) => skill.maxRank !== 1 || skill.mpCost !== 0)) {
     return invalid('敵人技能必須 maxRank=1 且 mpCost=0');

@@ -172,6 +172,35 @@ describe('actor domain', () => {
     expect(retry.deathReported).toBe(false);
   });
 
+  it('alternates the Frost Tide Warden slam and jumpable low wave with separate warning shapes', () => {
+    const map = worldCatalog.maps['frost-tide-cavern'];
+    const spawn = map.monsters.find(({ monsterId }) => monsterId === 'frost-tide-warden')!;
+    const warden = createMonster('warden-run-1', spawn, map, rulesCatalog);
+    const target = player('warden-target', 2020);
+
+    const slam = stepActors([warden], target, map, rulesCatalog, DT, 1000);
+    expect(slam.attackRequests).toEqual([{ sourceId: warden.id, skillId: 'frost-tusk-slam' }]);
+    expect(slam.telegraphs[0]).toMatchObject({
+      rect: { x: spawn.x, y: 480, width: 190, height: 120 },
+      resolveAtMs: 1900,
+    });
+
+    const slamEnds = stepActors(slam.monsters, target, map, rulesCatalog, DT, 1900);
+    expect(slamEnds.monsters[0]?.mode).toBe('recovery');
+    const wave = stepActors(slamEnds.monsters, target, map, rulesCatalog, DT, 2850);
+    expect(wave.attackRequests).toEqual([{ sourceId: warden.id, skillId: 'low-tide-wave' }]);
+    expect(wave.telegraphs[0]).toMatchObject({
+      rect: { x: spawn.x, y: 570, width: 380, height: 30 },
+      resolveAtMs: 3950,
+    });
+
+    const immune = applyMonsterHit([warden], hit(warden.id, 1), 400)[0]!;
+    expect(immune.movement.velocity).toEqual({ x: 0, y: 0 });
+    expect(createMonster('warden-retry', spawn, map, rulesCatalog)).toMatchObject({
+      hp: rulesCatalog.monsters['frost-tide-warden'].maxHp, mode: 'idle', pendingSkillId: null, deathReported: false,
+    });
+  });
+
   it('makes the guardian retaliate against a player hitting it from outside its roam bounds', () => {
     const map = worldCatalog.maps['guardian-arena'];
     const spawn = map.monsters[0]!;

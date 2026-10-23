@@ -13,7 +13,7 @@ const expectedThemes: Record<Id, string> = {
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-field',
+  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss',
 };
 
 function failure(message: string): Result<WorldCatalog> {
@@ -58,7 +58,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     if (map.themeKey !== expectedThemes[mapId] || map.musicKey !== expectedMusic[mapId]) {
       return failure(`Map theme/music key invalid: ${mapId}`);
     }
-    if (map.boss !== (mapId === 'guardian-arena') || map.safe !== (mapId === 'town')) {
+    if (map.boss !== (mapId === 'guardian-arena' || mapId === 'frost-tide-cavern') || map.safe !== (mapId === 'town')) {
       return failure(`Map safe/boss classification invalid: ${mapId}`);
     }
     const spawnIds = new Set(map.spawns.map(({ id }) => id));
@@ -122,11 +122,13 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
 
   const normalMonsterIds = new Set<Id>();
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
-    if (monster.monsterId !== 'guardian') normalMonsterIds.add(monster.monsterId);
+    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden') normalMonsterIds.add(monster.monsterId);
   }
   if (normalMonsterIds.size !== 8 || !world.maps['guardian-arena']?.boss
-    || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian') {
-    return failure('World must use eight ordinary monsters and one arena guardian');
+    || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian'
+    || !world.maps['frost-tide-cavern']?.boss
+    || world.maps['frost-tide-cavern'].monsters.filter(({ monsterId }) => monsterId === 'frost-tide-warden').length !== 1) {
+    return failure('World must use eight ordinary monsters and one boss in each arena');
   }
 
   for (const [npcId, npc] of Object.entries(world.npcs)) {

@@ -912,14 +912,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       if (view.screen === 'result') {
-        // This screen only appears after the guardian is defeated and its core collected.
-        const card = makeScreenCard(document, '古礦守衛已被擊敗！', '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。');
-        card.append(makeButton(document, '返回城鎮', 'return-town', {
+        const frostResult = view.saveData?.location.mapId === 'frost-tide-cavern';
+        const card = makeScreenCard(document,
+          frostResult ? '冰潮守望獸已被擊敗！' : '古礦守衛已被擊敗！',
+          frostResult
+            ? '守望獸已沉入冰潮深處。返回雪痕海岸向雪芽回報，並可再次進入洞窟挑戰。'
+            : '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。');
+        card.append(makeButton(document, frostResult ? '返回雪痕海岸' : '返回城鎮', 'return-town', {
           className: 'ms-button ms-button--primary',
           disabled: !view.canReturnTown,
-          title: view.canReturnTown ? '返回木葉鎮' : '目前不可回城',
+          title: view.canReturnTown ? (frostResult ? '返回雪痕海岸' : '返回木葉鎮') : '首領戰尚未結束，暫時不能返回。',
         }));
-        card.append(makeButton(document, '再次挑戰守衛', 'retry-boss', { className: 'ms-button ms-button--secondary' }));
+        card.append(makeButton(document, frostResult ? '再次挑戰守望獸' : '再次挑戰守衛', 'retry-boss', { className: 'ms-button ms-button--secondary' }));
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);

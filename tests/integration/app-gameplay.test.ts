@@ -604,6 +604,70 @@ describe('app gameplay vertical slice', () => {
     expect(respawned.gameplay?.guardUntilMs).toBe(0);
   });
 
+  it('gives the Frost Tide boss a separate result and retry route without changing Guardian flags', () => {
+    const nextEntityId = createNextEntityId('warden-result');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.flags = { bossDefeated: true, chapterComplete: true };
+    gameplay.saveData.visitedMaps = ['camp', 'town', 'frost-shore', 'frost-pine-pass'];
+    gameplay.pendingTransition = { mapId: 'frost-tide-cavern', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+    const spawn = catalog.world.maps['frost-tide-cavern']!.monsters.find(({ monsterId }) => monsterId === 'frost-tide-warden')!;
+    const warden = gameplay.monsters.find(({ monsterId }) => monsterId === 'frost-tide-warden')!;
+    gameplay.monsters = [{ ...warden, hp: 1, movement: { ...warden.movement, position: { x: spawn.x, y: 600 } } }];
+    gameplay.movement = { ...gameplay.movement, position: { x: spawn.x - 40, y: 600 }, facing: 1 };
+    const originalCoins = gameplay.saveData.player.coins;
+
+    let screen: ReturnType<typeof stepGameplay>['screen'] = 'playing';
+    let nowMs = 2000;
+    for (let tick = 0; tick < 60; tick += 1) {
+      nowMs += 1000 / 60;
+      const step = stepGameplay(gameplay, {
+        catalog,
+        commands: tick === 0 ? [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }] : [],
+        input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+        dtSeconds: 1 / 60,
+        nowMs,
+        random: createSeededRandom(45),
+        nextEntityId,
+      });
+      gameplay = step.gameplay!;
+      screen = step.screen;
+      if (screen === 'result') break;
+    }
+
+    expect(screen).toBe('result');
+    expect(gameplay.bossResult).toBe(true);
+    expect(gameplay.saveData.player.coins).toBeGreaterThan(originalCoins);
+    expect(gameplay.saveData.flags).toEqual({ bossDefeated: true, chapterComplete: true });
+
+    const retry = stepGameplay(gameplay, {
+      catalog,
+      commands: [{ seq: 2, type: 'retryBoss', payload: {} }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs: nowMs + 10,
+      random: createSeededRandom(46),
+      nextEntityId,
+    }).gameplay!;
+    expect(retry.pendingTransition).toMatchObject({ mapId: 'frost-tide-cavern', spawnId: 'left', after: 'retryBoss' });
+    const restarted = completeMapTransition(retry, catalog, nextEntityId, nowMs + 20).gameplay!;
+    expect(restarted.bossResult).toBe(false);
+    expect(restarted.saveData.flags).toEqual({ bossDefeated: true, chapterComplete: true });
+
+    const returnFlow = stepGameplay(gameplay, {
+      catalog,
+      commands: [{ seq: 3, type: 'returnTown', payload: {} }],
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0,
+      nowMs: nowMs + 30,
+      random: createSeededRandom(47),
+      nextEntityId,
+    }).gameplay!;
+    expect(returnFlow.pendingTransition).toMatchObject({ mapId: 'frost-shore', spawnId: 'left', after: 'travel' });
+  });
+
   it('auto-collects guardian boss drops on death so q08 and chapterComplete can be claimed', () => {
     const nextEntityId = createNextEntityId('guardian-clear');
     const started = startNewGame('旅人', catalog, nextEntityId);

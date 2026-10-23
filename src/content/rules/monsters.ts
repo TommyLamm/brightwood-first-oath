@@ -57,6 +57,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 900, attackCooldownMs: 0, respawnMs: 0, actorKey: 'actor:guardian',
     drops: [{ itemId: 'guardian-sword', chance: 1, min: 1, max: 1 }],
   },
+  'frost-tide-warden': {
+    id: 'frost-tide-warden', name: '冰潮守望獸', level: 30, maxHp: 7600, attack: 62, defense: 30, exp: 2400, coins: 1600,
+    speed: 44, width: 72, height: 72, aggroRange: 460, attackRange: 420,
+    attackWindupMs: 900, attackCooldownMs: 900, respawnMs: 0, actorKey: 'actor:frost-tide-warden',
+    drops: [],
+  },
 };
 
 export const questDropByQuest: Readonly<Record<Id, { monsterId: Id; itemId: Id }>> = {

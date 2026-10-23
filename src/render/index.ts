@@ -942,6 +942,7 @@ export function createWorldRenderer(
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
+      const isNamedBoss = monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden';
       const attack = attackStartedAt(snapshot, monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
@@ -966,15 +967,15 @@ export function createWorldRenderer(
           definition.maxHp,
           content?.width ?? image?.displayWidth ?? Math.max(monster.width, definition.width),
           content?.height ?? image?.displayHeight ?? Math.max(monster.height, definition.height),
-          activeVisual.map.boss,
+          activeVisual.map.boss && isNamedBoss,
         );
         hpGraphics.fillStyle(0x261f2a, 0.88).fillRect(bar.x - 1, bar.y - 1, bar.width + 2, bar.height + 2);
         hpGraphics.fillStyle(0x342e32, 0.95).fillRect(bar.x, bar.y, bar.width, bar.height);
         hpGraphics.fillStyle(bar.ratio > 0.35 ? 0x76c36d : 0xe2625c, 1)
           .fillRect(bar.fillX, bar.fillY, bar.fillWidth, bar.fillHeight);
-        hpGraphics.lineStyle(activeVisual.map.boss ? 2 : 1, activeVisual.map.boss ? 0xffd884 : 0x17151b, 0.95)
+        hpGraphics.lineStyle(activeVisual.map.boss && isNamedBoss ? 2 : 1, activeVisual.map.boss && isNamedBoss ? 0xffd884 : 0x17151b, 0.95)
           .strokeRect(bar.x, bar.y, bar.width, bar.height);
-        if (activeVisual.map.boss) {
+        if (activeVisual.map.boss && isNamedBoss) {
           bossNameText.setText(`${definition.name}  Lv.${definition.level}`)
             .setPosition(bar.x + bar.width / 2, bar.y - 3)
             .setVisible(true);
@@ -1031,10 +1032,11 @@ export function createWorldRenderer(
     }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
-      const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, activeVisual.map.boss);
+      const bossTelegraph = source?.monsterId === 'guardian' || source?.monsterId === 'frost-tide-warden';
+      const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
-      const fillColor = activeVisual.map.boss ? 0xd94442 : 0xef6459;
-      const borderColor = activeVisual.map.boss ? 0xffd071 : 0xff8a73;
+      const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;
+      const borderColor = bossTelegraph ? 0xffd071 : 0xff8a73;
       telegraphGraphics.fillStyle(fillColor, cue.fillAlpha)
         .fillRect(cue.rect.x, cue.rect.y, cue.rect.width, cue.rect.height);
       telegraphGraphics.lineStyle(cue.borderWidth, borderColor, cue.borderAlpha)

@@ -231,7 +231,18 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
-    },    {
+    },
+    {
+      "key": "actor:frost-tide-warden",
+      "url": "assets/actors/monsters/frost-tide-warden-atlas-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 192,
+      "displayHeight": 192,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
       "key": "actor:guardian",
       "url": "assets/actors/monsters/guardian-atlas-v2.png",
       "columns": 6,
@@ -1327,7 +1338,43 @@
       "frames": [24, 25, 26, 27],
       "frameMs": [100, 100, 100, 100],
       "loop": false
-    },    {
+    },
+    {
+      "key": "frost-tide-warden:idle",
+      "imageKey": "actor:frost-tide-warden",
+      "frames": [0, 1],
+      "frameMs": [240, 240],
+      "loop": true
+    },
+    {
+      "key": "frost-tide-warden:walk",
+      "imageKey": "actor:frost-tide-warden",
+      "frames": [6, 7, 8, 9, 10, 11],
+      "frameMs": [120, 120, 120, 120, 120, 120],
+      "loop": true
+    },
+    {
+      "key": "frost-tide-warden:attack",
+      "imageKey": "actor:frost-tide-warden",
+      "frames": [12, 13, 14, 15],
+      "frameMs": [250, 250, 250, 250],
+      "loop": false
+    },
+    {
+      "key": "frost-tide-warden:hurt",
+      "imageKey": "actor:frost-tide-warden",
+      "frames": [18, 19],
+      "frameMs": [100, 100],
+      "loop": false
+    },
+    {
+      "key": "frost-tide-warden:dead",
+      "imageKey": "actor:frost-tide-warden",
+      "frames": [24, 25, 26, 27],
+      "frameMs": [130, 130, 130, 130],
+      "loop": false
+    },
+    {
       "key": "guardian:idle",
       "imageKey": "actor:guardian",
       "frames": [

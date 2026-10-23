@@ -173,7 +173,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'frost-tide-cavern', name: '冰潮洞窟', width: 2160, themeKey: 'frost-cave', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'frost-tide-cavern', name: '冰潮洞窟', width: 2160, themeKey: 'frost-cave', musicKey: 'theme-boss', safe: false, boss: true,
     platforms: [[320, 500, 650, 500], [820, 430, 1140, 430], [1320, 470, 1600, 470], [1780, 405, 2050, 405]],
     ladders: [{ x: 480, topY: 500, bottomY: 600 }, { x: 970, topY: 430, bottomY: 600 }, { x: 1450, topY: 470, bottomY: 600 }, { x: 1910, topY: 405, bottomY: 600 }],
     extraSpawns: [],
@@ -185,6 +185,7 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'frost-crab', x: 560, roamLeft: 460, roamRight: 660 },
       { monsterId: 'frost-crab', x: 1120, roamLeft: 1020, roamRight: 1220 },
       { monsterId: 'frost-crab', x: 1700, roamLeft: 1600, roamRight: 1800 },
+      { monsterId: 'frost-tide-warden', x: 1900, roamLeft: 1770, roamRight: 2050 },
     ],
   },
 ];

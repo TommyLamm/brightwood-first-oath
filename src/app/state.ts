@@ -89,6 +89,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     && mapId !== 'town'
     && (state.screen === 'playing' || state.screen === 'result')
     && (mapId !== 'guardian-arena' || gameplay.bossResult)
+    && (mapId !== 'frost-tide-cavern' || gameplay.bossResult)
     // Before the hero has reached 木葉鎮, 返回城鎮 would skip camp's q01 gate.
     && saveData?.visitedMaps.includes('town') === true;
 

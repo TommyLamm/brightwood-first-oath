@@ -629,19 +629,28 @@ function processCommand(
         ...(isChapterComplete ? { screen: 'chapter' as const } : {}),
       };
     }
-    case 'returnTown':
-      if (gameplay.saveData.location.mapId === 'guardian-arena' && !gameplay.bossResult) {
-        return withToast(gameplay, '首領戰尚未結束，暫時不能返回城鎮。');
+    case 'returnTown': {
+      const currentMapId = gameplay.saveData.location.mapId;
+      if ((currentMapId === 'guardian-arena' || currentMapId === 'frost-tide-cavern') && !gameplay.bossResult) {
+        return withToast(gameplay, '首領戰尚未結束，暫時不能返回安全地點。');
+      }
+      if (currentMapId === 'frost-tide-cavern' && gameplay.bossResult) {
+        return requestTransition(gameplay, 'frost-shore', 'left', 'travel', catalog);
       }
       if (!gameplay.saveData.visitedMaps.includes('town')) {
         return withToast(gameplay, '還沒到過木葉鎮；完成森芽的委託後，從營地東側出口前往。');
       }
       return requestTransition(gameplay, 'town', 'center', 'travel', catalog);
+    }
     case 'retryBoss': {
-      if (gameplay.saveData.location.mapId !== 'guardian-arena' || !gameplay.bossResult) {
+      const currentMapId = gameplay.saveData.location.mapId;
+      const currentMap = catalog.world.maps[currentMapId];
+      if (!currentMap?.boss || !gameplay.bossResult) {
         return withToast(gameplay, '目前沒有可重試的首領戰。');
       }
-      return requestTransition(gameplay, 'guardian-arena', 'entry', 'retryBoss', catalog);
+      const retrySpawn = currentMap.spawns.find(({ id }) => id === 'entry') ?? currentMap.spawns.find(({ id }) => id === 'left');
+      if (!retrySpawn) return withToast(gameplay, '找不到首領戰的重試出生點。');
+      return requestTransition(gameplay, currentMapId, retrySpawn.id, 'retryBoss', catalog);
     }
     case 'respawn': {
       if (player.hp > 0 || gameplay.deathAtMs === null) {
@@ -795,7 +804,7 @@ export function completeMapTransition(
     const stats = deriveStats(saveData.player, catalog.rules);
     saveData = { ...saveData, player: { ...saveData.player, hp: stats.maxHp, mp: stats.maxMp } };
   }
-  if (pending.after === 'retryBoss') {
+  if (pending.after === 'retryBoss' && map.id === 'guardian-arena') {
     saveData = { ...saveData, flags: { ...saveData.flags, bossDefeated: false } };
   }
   saveData = {
@@ -923,7 +932,7 @@ function applyDeathEvent(
     }
   }
 
-  if (monster.monsterId === 'guardian') {
+  if (monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden') {
     const orderedDrops = [...drops].sort((a, b) => {
       const priority = (entry: typeof drops[number]) =>
         entry.itemId === null ? 0 : catalog.rules.items[entry.itemId]?.kind === 'quest' ? 1 : 2;
@@ -946,12 +955,16 @@ function applyDeathEvent(
       position: scatterDropPosition(monster, index, remainingDrops.length, gameplay, catalog),
       expiresAtMs: nowMs + 120_000,
     })));
-    gameplay.saveData = {
-      ...gameplay.saveData,
-      flags: { ...gameplay.saveData.flags, bossDefeated: true },
-    };
+    if (monster.monsterId === 'guardian') {
+      gameplay.saveData = {
+        ...gameplay.saveData,
+        flags: { ...gameplay.saveData.flags, bossDefeated: true },
+      };
+    }
     gameplay.bossResult = true;
-    if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
+    if (monster.monsterId === 'frost-tide-warden') {
+      gameplay.toast = '冰潮守望獸已倒下，可返回雪痕海岸向雪芽回報。';
+    } else if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
       gameplay.toast = '背包空間不足，請先整理背包並拾取守衛核心。';
     } else if (remainingDrops.some(({ itemId }) => itemId !== null)) {
       gameplay.toast = '背包空間不足，守衛的掉落物留在地上，整理背包後再拾取。';
@@ -1023,7 +1036,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense, critChance: 0 },
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
-        knockbackImmune: monster.monsterId === 'guardian',
+        knockbackImmune: monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden',
         skillRanks: monster.pendingSkillId ? { [monster.pendingSkillId]: 1 } : {},
       };
     }),
