@@ -203,6 +203,15 @@
       "pivotY": 0.5
     },
     {
+      "key": "item:ice-shell",
+      "url": "assets/interface/item-ice-shell-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },    {
       "key": "item:frost-fang",
       "url": "assets/interface/item-frost-fang-v1.png",
       "columns": 1,
