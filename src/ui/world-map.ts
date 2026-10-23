@@ -1,5 +1,16 @@
 import type { UiSnapshot } from '../contracts/ports.js';
-import { WORLD_LANDMARKS, PLANNED_REGIONS, mapLevelLabel, portalRequirements } from './world-map-model.js';
+import {
+  WORLD_LANDMARKS,
+  FROST_LANDMARKS,
+  FROST_ISLES_WORLD_LANDMARK,
+  PLANNED_REGIONS,
+  atlasViewModel,
+  frostIslesOverview,
+  isFrostMapId,
+  mapLevelLabel,
+  portalRequirements,
+} from './world-map-model.js';
+import type { MapLandmark } from './world-map-model.js';
 
 function element<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, text = ''): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -17,7 +28,7 @@ function mapButton(document: Document, id: string, label: string, className: str
   return button;
 }
 
-/** Informational atlas: selecting a landmark never changes the player's location. */
+/** Informational atlas: selecting a landmark changes the chart selection, never the player's location. */
 export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null): HTMLElement {
   const root = element(document, 'div', 'ms-world-map');
   const data = view.saveData;
@@ -25,75 +36,71 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     root.append(element(document, 'p', 'ms-empty-state', '建立角色後，展開你的冒險地圖。'));
     return root;
   }
-  const maps = Object.values(view.catalog.world.maps);
-  const visited = new Set([...data.visitedMaps, data.location.mapId]);
-  const planned = PLANNED_REGIONS.find(({ id }) => id === selectedId);
-  const selected = planned ? null : view.catalog.world.maps[selectedId ?? ''] ?? view.catalog.world.maps[data.location.mapId];
+
+  const atlas = atlasViewModel(view.catalog, data, selectedId);
+  const frostOverview = frostIslesOverview(view.catalog, data);
+  const landmarks = atlas.scope === 'frost' ? FROST_LANDMARKS : WORLD_LANDMARKS;
+  const planned = atlas.scope === 'world' ? PLANNED_REGIONS.find(({ id }) => id === selectedId) : undefined;
+  const selected = planned ? null : atlas.selectedMap;
   if (!selected && !planned) return root;
-  const selectedKey = planned?.id ?? selected!.id;
+  const selectedKey = planned?.id ?? selected?.id ?? '';
+  const visited = atlas.visitedMapIds;
 
   const toolbar = element(document, 'div', 'ms-atlas-toolbar');
   const progress = element(document, 'div', 'ms-atlas-progress');
   progress.append(
-    element(document, 'span', 'ms-atlas-eyebrow', 'BRIGHTWOOD · FIRST OATH'),
-    element(document, 'strong', '', '已探索 ' + maps.filter(({ id }) => visited.has(id)).length + ' / ' + maps.length + ' 個地區'),
+    element(document, 'span', 'ms-atlas-eyebrow', atlas.scope === 'frost' ? 'FROST ISLES · 霜雪群島' : 'BRIGHTWOOD · FIRST OATH'),
+    element(document, 'strong', '', atlas.scope === 'frost'
+      ? '已探索 ' + atlas.exploredCount + ' / ' + atlas.totalCount + ' 個地區'
+      : '已探索 ' + atlas.allExploredCount + ' / ' + atlas.allMapCount + ' 個可玩地區'),
   );
   const locate = mapButton(document, data.location.mapId, '⌖ 目前位置', 'ms-button ms-atlas-locate');
   toolbar.append(progress, locate);
+  if (atlas.scope === 'frost') {
+    const returnWorld = mapButton(document, 'guardian-arena', '← 世界總覽', 'ms-button ms-atlas-world-return');
+    returnWorld.dataset.focus = 'atlas-region-map-toggle';
+    returnWorld.title = '返回木葉世界總覽；只切換地圖圖表，不移動角色。';
+    toolbar.append(returnWorld);
+  }
   root.append(toolbar);
 
   const layout = element(document, 'div', 'ms-atlas-layout');
-  const chart = element(document, 'section', 'ms-atlas-chart');
-  chart.setAttribute('aria-label', '木葉世界手繪地圖，點選地標查看區域');
-  const artwork = element(document, 'img', 'ms-atlas-art');
-  artwork.src = new URL('assets/interface/world-map-background-v2.png', document.baseURI).href;
-  artwork.alt = '木葉世界群島：木葉島與霜雪群島已有八個可探索地區，黃金沙海及遠古遺跡仍待開發。';
+  const chart = element(document, 'section', 'ms-atlas-chart' + (atlas.scope === 'frost' ? ' ms-atlas-chart--frost' : ''));
+  chart.setAttribute('aria-label', atlas.scope === 'frost' ? '霜雪群島區域圖，選取地標查看區域情報' : '木葉世界群島總覽，點選地標查看區域');
+  const artwork = element(document, 'img', 'ms-atlas-art', '');
+  artwork.src = new URL(atlas.scope === 'frost'
+    ? 'assets/interface/region-frost-isles-map-v1.png'
+    : 'assets/interface/world-map-background-v2.png', document.baseURI).href;
+  artwork.alt = atlas.scope === 'frost'
+    ? '霜雪群島手繪區域圖，雪痕海岸、霜松隘道與冰潮洞窟地形。'
+    : '木葉世界群島總覽；霜雪群島可另行查看區域圖，黃金沙海及遠古遺跡尚待開發。';
   artwork.draggable = false;
   artwork.addEventListener('error', () => {
     artwork.hidden = true;
     chart.classList.add('is-art-unavailable');
   }, { once: true });
-  const banner = element(document, 'div', 'ms-atlas-banner');
-  banner.append(element(document, 'span', '', 'THE FIRST OATH'), element(document, 'h3', '', '木葉世界'));
-  const compass = element(document, 'img', 'ms-atlas-compass');
-  compass.src = new URL('assets/interface/map-compass-rose-v1.png', document.baseURI).href;
-  compass.alt = '';
-  compass.draggable = false;
-  compass.addEventListener('error', () => { compass.hidden = true; }, { once: true });
-  chart.append(artwork, banner, compass);
-
-  // Render each real connection once. Availability follows the outward, gated portal.
-  const routes = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  routes.setAttribute('viewBox', '0 0 100 100');
-  routes.setAttribute('preserveAspectRatio', 'none');
-  routes.setAttribute('class', 'ms-atlas-routes');
-  routes.setAttribute('aria-hidden', 'true');
-  const pairs = new Set<string>();
-  for (const map of maps) {
-    const from = WORLD_LANDMARKS[map.id];
-    if (!from) continue;
-    for (const portal of map.portals) {
-      const to = WORLD_LANDMARKS[portal.targetMapId];
-      const pair = [map.id, portal.targetMapId].sort().join(':');
-      if (!to || pairs.has(pair)) continue;
-      pairs.add(pair);
-      const open = portalRequirements(portal, data, view.catalog).open;
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      const midpointX = (from.x + to.x) / 2;
-      path.setAttribute('d', 'M ' + from.x + ' ' + from.y + ' Q ' + midpointX + ' ' + (Math.min(from.y, to.y) - 2) + ' ' + to.x + ' ' + to.y);
-      path.setAttribute('class', open ? 'is-open' : 'is-locked');
-      routes.append(path);
-    }
+  const banner = element(document, 'div', 'ms-atlas-banner' + (atlas.scope === 'frost' ? ' ms-atlas-banner--frost' : ''));
+  banner.append(
+    element(document, 'span', '', atlas.scope === 'frost' ? 'REGIONAL CHART' : 'THE FIRST OATH'),
+    element(document, 'h3', '', atlas.scope === 'frost' ? '霜雪群島' : '木葉世界'),
+  );
+  chart.append(artwork, banner);
+  if (atlas.scope === 'world') {
+    const compass = element(document, 'img', 'ms-atlas-compass');
+    compass.src = new URL('assets/interface/map-compass-rose-v1.png', document.baseURI).href;
+    compass.alt = '';
+    compass.draggable = false;
+    compass.addEventListener('error', () => { compass.hidden = true; }, { once: true });
+    chart.append(compass);
   }
-  chart.append(routes);
 
-  for (const map of maps) {
-    const landmark = WORLD_LANDMARKS[map.id];
-    if (!landmark) continue;
+  chart.append(buildRoutes(document, view, atlas.maps, landmarks, atlas.scope));
+  for (const map of atlas.maps) {
+    const landmark = landmarks[map.id];
     const current = map.id === data.location.mapId;
     const seen = visited.has(map.id);
     const status = current ? '目前位置' : seen ? '已探索' : '未探索';
-    const button = mapButton(document, map.id, '', 'ms-atlas-landmark');
+    const button = mapButton(document, map.id, '', 'ms-atlas-landmark' + (atlas.scope === 'frost' ? ' ms-atlas-landmark--frost' : ''));
     button.classList.toggle('is-current', current);
     button.classList.toggle('is-visited', seen);
     button.classList.toggle('is-selected', map.id === selectedKey);
@@ -110,18 +117,110 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     chart.append(button);
   }
 
-  for (const region of PLANNED_REGIONS) {
-    const button = mapButton(document, region.id, '', 'ms-atlas-landmark ms-atlas-landmark--planned');
-    button.style.left = region.x + '%';
-    button.style.top = region.y + '%';
-    button.classList.toggle('is-selected', region.id === selectedKey);
-    button.setAttribute('aria-pressed', String(region.id === selectedKey));
-    button.setAttribute('aria-label', region.name + '，待開發，查看規劃狀態');
-    button.append(element(document, 'span', 'ms-atlas-label', region.name), element(document, 'span', 'ms-atlas-planned-badge', '待開發'));
-    chart.append(button);
+  if (atlas.scope === 'world') {
+    if (frostOverview.totalCount > 0) chart.append(buildFrostIslesEntry(document, frostOverview));
+    for (const region of PLANNED_REGIONS) {
+      const button = mapButton(document, region.id, '', 'ms-atlas-landmark ms-atlas-landmark--planned');
+      button.style.left = region.x + '%';
+      button.style.top = region.y + '%';
+      button.classList.toggle('is-selected', region.id === selectedKey);
+      button.setAttribute('aria-pressed', String(region.id === selectedKey));
+      button.setAttribute('aria-label', region.name + '，待開發，查看規劃狀態');
+      button.append(element(document, 'span', 'ms-atlas-label', region.name), element(document, 'span', 'ms-atlas-planned-badge', '待開發'));
+      chart.append(button);
+    }
   }
 
-  const details = element(document, 'aside', 'ms-atlas-details');
+  const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview);
+  layout.append(chart, details);
+  root.append(layout);
+
+  const legend = element(document, 'footer', 'ms-atlas-legend');
+  legend.append(
+    element(document, 'span', 'ms-atlas-legend-current', '◆ 目前位置'),
+    element(document, 'span', '', '● 已探索'),
+    element(document, 'span', '', '◇ 未探索'),
+    element(document, 'span', '', atlas.scope === 'frost' ? '虛線為區域通道' : '虛線為島嶼間通道'),
+  );
+  if (atlas.scope === 'world') legend.append(element(document, 'span', '', '▧ 待開發'));
+  root.append(legend);
+  return root;
+}
+
+function buildRoutes(
+  document: Document,
+  view: UiSnapshot,
+  maps: UiSnapshot['catalog']['world']['maps'][string][],
+  landmarks: Record<string, MapLandmark>,
+  scope: 'world' | 'frost',
+): SVGSVGElement {
+  const routes = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  routes.setAttribute('viewBox', '0 0 100 100');
+  routes.setAttribute('preserveAspectRatio', 'none');
+  routes.setAttribute('class', 'ms-atlas-routes');
+  routes.setAttribute('aria-hidden', 'true');
+  const pairs = new Set<string>();
+  for (const map of maps) {
+    const from = landmarks[map.id];
+    if (!from) continue;
+    for (const portal of map.portals) {
+      const to = scope === 'world'
+        ? portal.targetMapId === 'frost-shore' ? FROST_ISLES_WORLD_LANDMARK : landmarks[portal.targetMapId]
+        : landmarks[portal.targetMapId];
+      const targetMap = view.catalog.world.maps[portal.targetMapId];
+      if (!to || !targetMap || (scope === 'world' && isFrostMapId(targetMap.id) && targetMap.id !== 'frost-shore')) continue;
+      const pair = [map.id, portal.targetMapId].sort().join(':');
+      if (pairs.has(pair)) continue;
+      pairs.add(pair);
+      const open = portalRequirements(portal, view.saveData!, view.catalog).open;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const midpointX = (from.x + to.x) / 2;
+      path.setAttribute('d', 'M ' + from.x + ' ' + from.y + ' Q ' + midpointX + ' ' + (Math.min(from.y, to.y) - 2) + ' ' + to.x + ' ' + to.y);
+      path.setAttribute('class', open ? 'is-open' : 'is-locked');
+      routes.append(path);
+    }
+  }
+  return routes;
+}
+
+function buildFrostIslesEntry(
+  document: Document,
+  overview: ReturnType<typeof frostIslesOverview>,
+): HTMLButtonElement {
+  const requirement = overview.entryRequirement;
+  const current = overview.current;
+  const seen = overview.exploredCount > 0;
+  const button = mapButton(document, 'frost-shore', '', 'ms-atlas-landmark ms-atlas-landmark--island');
+  button.dataset.focus = 'atlas-region-map-toggle';
+  button.style.left = FROST_ISLES_WORLD_LANDMARK.x + '%';
+  button.style.top = FROST_ISLES_WORLD_LANDMARK.y + '%';
+  button.classList.toggle('is-current', current);
+  button.classList.toggle('is-visited', seen);
+  const islandStatus = current ? '你在霜雪群島' : requirement?.open ? '通道已開放 · 查看區域' : '入口未開放 · 查看區域';
+  const access = requirement?.text ?? '尚無已配置的入口通道';
+  button.setAttribute('aria-pressed', 'false');
+  button.setAttribute('aria-label', '霜雪群島，' + overview.exploredCount + ' / ' + overview.totalCount + ' 個地區已探索；' + access + '。查看區域地圖，不會移動角色。');
+  button.title = '查看霜雪群島區域地圖；不會移動角色。入口狀態：' + access;
+  const pin = element(document, 'span', 'ms-atlas-pin', current ? '◆' : seen ? '●' : '◇');
+  pin.setAttribute('aria-hidden', 'true');
+  button.append(
+    pin,
+    element(document, 'span', 'ms-atlas-label', '霜雪群島'),
+    element(document, 'span', current ? 'ms-atlas-you' : 'ms-atlas-island-status', islandStatus),
+  );
+  return button;
+}
+
+function buildDetails(
+  document: Document,
+  view: UiSnapshot,
+  scope: 'world' | 'frost',
+  selected: UiSnapshot['catalog']['world']['maps'][string] | null,
+  planned: typeof PLANNED_REGIONS[number] | undefined,
+  landmarks: Record<string, MapLandmark>,
+  frostOverview: ReturnType<typeof frostIslesOverview>,
+): HTMLElement {
+  const details = element(document, 'aside', 'ms-atlas-details' + (scope === 'frost' ? ' ms-atlas-details--frost' : ''));
   details.setAttribute('aria-label', '區域詳情');
   details.setAttribute('aria-live', 'polite');
   if (planned) {
@@ -132,18 +231,26 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
       element(document, 'p', 'ms-atlas-description', planned.description),
       element(document, 'p', 'ms-atlas-hint', '此區域尚未開放，暫時沒有任務、怪物或可通行的傳點。'),
     );
-  } else if (selected) {
+  } else if (selected && view.saveData) {
+    const data = view.saveData;
+    const visited = new Set([...data.visitedMaps, data.location.mapId]);
     const status = selected.id === data.location.mapId ? '目前位置' : visited.has(selected.id) ? '已探索' : '未探索';
     details.append(
-      element(document, 'span', 'ms-atlas-eyebrow', 'REGION · ' + status),
+      element(document, 'span', 'ms-atlas-eyebrow', (scope === 'frost' ? 'FROST ISLES · ' : 'REGION · ') + status),
       element(document, 'h3', 'ms-atlas-region-name', selected.name),
       element(document, 'p', 'ms-atlas-level', mapLevelLabel(selected, view.catalog)),
-      element(document, 'p', 'ms-atlas-description', WORLD_LANDMARKS[selected.id]?.description ?? ''),
+      element(document, 'p', 'ms-atlas-description', landmarks[selected.id]?.description ?? ''),
     );
     const npcNames = selected.npcs.map(({ npcId }) => view.catalog.world.npcs[npcId]?.name ?? npcId);
     const monsterNames = [...new Set(selected.monsters.map(({ monsterId }) => view.catalog.rules.monsters[monsterId]?.name ?? monsterId))];
     if (npcNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '居民：' + npcNames.join('、')));
     if (monsterNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '出沒：' + monsterNames.join('、')));
+    if (scope === 'frost' && selected.id === 'frost-shore' && frostOverview.entryRequirement) {
+      details.append(
+        element(document, 'h4', 'ms-atlas-path-heading', '群島入口'),
+        element(document, 'p', frostOverview.entryRequirement.open ? 'ms-atlas-condition is-open' : 'ms-atlas-condition', frostOverview.entryRequirement.text),
+      );
+    }
     details.append(element(document, 'h4', 'ms-atlas-path-heading', '相連區域'));
     for (const portal of selected.portals) {
       const target = view.catalog.world.maps[portal.targetMapId];
@@ -155,20 +262,16 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
       details.append(row);
     }
   }
+
+
   const returnTown = element(document, 'button', 'ms-button ms-button--primary ms-atlas-return', '返回木葉鎮');
   returnTown.type = 'button';
   returnTown.dataset.uiAction = 'return-town';
   returnTown.dataset.focus = 'atlas-return-town';
   returnTown.disabled = !view.canReturnTown;
-  returnTown.title = view.canReturnTown ? '返回木葉鎮' : data.location.mapId === 'town' ? '目前已在木葉鎮' : data.location.mapId === 'guardian-arena' ? '首領戰尚未結束，不能返回城鎮。' : '目前狀態不允許回城。';
+  returnTown.title = view.canReturnTown ? '返回木葉鎮' : view.saveData?.location.mapId === 'town' ? '目前已在木葉鎮' : view.saveData?.location.mapId === 'guardian-arena' ? '首領戰尚未結束，不能返回城鎮。' : '目前狀態不允許回城。';
   details.append(returnTown);
   if (returnTown.disabled) details.append(element(document, 'p', 'ms-atlas-return-note', returnTown.title));
-  details.append(element(document, 'p', 'ms-atlas-hint', '點選地標查看情報；沿場景中的傳點前往下一區。'));
-  layout.append(chart, details);
-  root.append(layout);
-
-  const legend = element(document, 'footer', 'ms-atlas-legend');
-  legend.append(element(document, 'span', 'ms-atlas-legend-current', '◆ 目前位置'), element(document, 'span', '', '● 已探索'), element(document, 'span', '', '◇ 未探索'), element(document, 'span', '', '虛線為區域通道'), element(document, 'span', '', '▧ 待開發'));
-  root.append(legend);
-  return root;
+  details.append(element(document, 'p', 'ms-atlas-hint', '點選地標查看情報；實際移動仍須使用場景中已開放的傳點。'));
+  return details;
 }

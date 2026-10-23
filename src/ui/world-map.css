@@ -76,3 +76,33 @@
   .ms-atlas-landmark--planned .ms-atlas-label { font-size: 9px; }
   .ms-atlas-planned-badge { padding: 1px 5px; font-size: 8px; }
 }
+
+/* The Frost Isles have their own chart and remain separate from Leaf Isle coordinates. */
+.ms-atlas-chart--frost { aspect-ratio: 16 / 9; border-color: #587f91; background: #a9d4df; box-shadow: 0 2px 6px #243f4c38, inset 0 0 24px #32647a30; }
+.ms-atlas-banner--frost { border-color: #496879; background: linear-gradient(100deg, #bedde4, #f3fbf5 45%, #bedde4); box-shadow: 0 3px 0 #243d4b55, inset 0 0 0 2px #f5ffff; }
+.ms-atlas-banner--frost > span { color: #527385; }
+.ms-atlas-banner--frost h3 { color: #29495b; }
+.ms-atlas-routes path { stroke: #516b78; }
+.ms-atlas-routes path.is-open { stroke: #3e7567; }
+.maple-ui .ms-atlas-landmark--frost .ms-atlas-label { border-color: #466b7c; color: #294b5d; background: linear-gradient(#f5fcf7, #c7e3e6); }
+.maple-ui .ms-atlas-landmark--frost .ms-atlas-pin { border-color: #e9f7f6; color: #e9f4f1; background: #526d7a; }
+.ms-atlas-landmark--frost.is-visited .ms-atlas-pin { color: #f0ffec; background: #4f7669; }
+.ms-atlas-landmark--frost.is-current .ms-atlas-pin { color: #fff6c5; background: #b46c3c; }
+.ms-atlas-details--frost { border-color: #8caeba; color: #294a5a; background: #e0eef0; }
+.ms-atlas-details--frost .ms-atlas-level { color: #385a64; background: #c7dede; }
+.ms-atlas-details--frost .ms-atlas-description,
+.ms-atlas-details--frost .ms-atlas-inhabitants { color: #486874; }
+.ms-atlas-details--frost .ms-atlas-path-heading { border-color: #b8d0d5; }
+.ms-atlas-details--frost .ms-atlas-condition { color: #875c45; }
+.ms-atlas-details--frost .ms-atlas-condition.is-open { color: #3e7567; }
+.maple-ui .ms-atlas-landmark--island { min-width: 112px; }
+.maple-ui .ms-atlas-landmark--island .ms-atlas-label { border-color: #496879; color: #29495b; background: linear-gradient(#f5fcf7, #c7e3e6); }
+.ms-atlas-island-status { max-width: 130px; padding: 2px 5px; border: 1px solid #7c725f; border-radius: 3px; color: #fff3d1; background: #5b5b50df; font-size: 8px; font-weight: 700; line-height: 1.35; text-align: center; white-space: normal; }
+.ms-atlas-world-return { justify-self: start; }
+@container (max-width: 620px) {
+  .ms-atlas-toolbar { flex-wrap: wrap; }
+  .ms-atlas-toolbar .ms-atlas-progress { flex: 1 1 100%; }
+  .maple-ui .ms-atlas-landmark--island { min-width: 76px; }
+  .ms-atlas-island-status { max-width: 92px; font-size: 7px; }
+  .ms-atlas-chart--frost .ms-atlas-label { max-width: 92px; white-space: normal; }
+}
