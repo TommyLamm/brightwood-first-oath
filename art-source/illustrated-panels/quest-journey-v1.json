@@ -1,0 +1,22 @@
+{
+  "tool": "Built-in Codex image_gen.imagegen",
+  "generatedSourcePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a16973-8fca-78d1-87ab-560ca36cea9f\\exec-04b5ddbf-51e3-4efd-b3fa-7fc73a37e539.png",
+  "outputPath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\illustrated\\quest-journey-v1.png",
+  "dimensionsPx": {
+    "width": 2172,
+    "height": 724
+  },
+  "aspectRatio": "3:1",
+  "transparentBackground": false,
+  "referenceImages": [
+    {
+      "path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\world-map-background-v1.png",
+      "role": "Style and world reference"
+    },
+    {
+      "path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\journal\\hero-portrait-chibi.png",
+      "role": "Character design reference"
+    }
+  ],
+  "prompt": "Use case: illustration-story\nAsset type: wide quest-journal banner illustration for a whimsical fantasy RPG interface, displayed as a shallow top banner around 120px tall.\nInput images: Image 1 is a style and world reference: a richly colored, hand-painted fantasy island map with dense green forest, a distinct mushroom grove, warm red-rock mountains, an old mine, and a glowing stone altar. Image 2 is a character design reference: a friendly brown-haired chibi adventurer with a green outfit and brown leather details. Use these only as visual guidance; create a new original scene.\nScene/backdrop: A warm, hand-drawn fairy-tale RPG landscape on softly textured parchment, with a winding trail passing through a lush forest and oversized mushrooms, then red-rock hills, an ancient mine entrance, and a small stone altar.\nSubject: In the left foreground, a brown-haired cloak-wearing swordsman and a kind forest guide pause together to study an unfolded map. The swordsman carries a sheathed sword; the guide has a practical woodland cloak. Their expressions are curious and hopeful. Keep both figures readable at banner scale.\nComposition/framing: Extra-wide horizontal panorama, approximately 3:1 aspect ratio (target 1536x512 if supported). Pair of travelers occupies the leftmost quarter; the winding path leads the eye from them across the scene through the landmarks in a clear sequence toward the right. Keep all important elements within the central band; soften/fade the very top and bottom edges into the parchment texture so the artwork crops gracefully as a shallow banner. Complete cohesive scene, not a collage.\nStyle/medium: Original, warm hand-painted storybook illustration with gentle linework and rounded fantasy-RPG shapes, consistent in palette and mood with the reference island map; not pixel art. Rich but uncluttered, clear silhouettes and readable story at small display size.\nLighting/mood: Soft golden daylight, cozy adventurous mood, subtle atmospheric depth.\nColor palette: Pine green, moss green, warm ochre and muted red earth, parchment cream, small accents of sky blue.\nMaterials/textures: Visible delicate paper grain, painted foliage and rocks, soft watercolor/gouache-like shading.\nText (verbatim): none.\nConstraints: The map is a plain map with no writing or symbols that look like letters or numbers. Show exactly two travelers. Keep the whole image fully illustrated, with soft feathered top and bottom edges.\nAvoid: Any text, letters, numbers, logos, watermark, UI, interface frames, panels, badges, icons, UI-like markers, extra characters, distorted hands, cropping off the travelers, modern objects, hard rectangular edges, or a screenshot of an app. Do not make a full-page UI mockup."
+}

@@ -1,0 +1,118 @@
+/* Illustrated ability and quest pages share the existing parchment shell. */
+.ms-panel-host.is-illustrated-panel { width: min(1040px, calc(100% - 28px)); height: min(800px, calc(100% - 36px)); }
+.is-illustrated-panel .ms-panel__body { padding: 14px; }
+.ms-visual-stats, .ms-visual-journal { display: grid; gap: 14px; color: #59422b; }
+.ms-visual-icon { display: inline-block; flex: 0 0 32px; width: 32px; height: 32px; object-fit: contain; image-rendering: auto; }
+.ms-visual-icon--fallback { display: grid; place-items: center; border-radius: 50%; background: #d3bb8b; color: #674c31; font-weight: 700; }
+.ms-visual-actor { display: inline-block; flex: 0 0 66px; width: 66px; height: 66px; background-position: 0 0; background-repeat: no-repeat; image-rendering: auto; }
+.ms-visual-token { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border: 1px solid #bda47a; border-radius: 7px; background: #f7e9cb; }
+.ms-visual-token > span { font-size: 11px; color: #836545; }
+.ms-visual-token strong { font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ms-ability-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.ms-ability-identity { display: grid; grid-template-columns: 64px auto; column-gap: 9px; align-items: center; }
+.ms-ability-avatar { grid-row: span 2; width: 64px; height: 74px; object-fit: contain; image-rendering: auto; }
+.ms-ability-identity strong { align-self: end; font-size: 18px; }
+.ms-ability-identity > span { align-self: start; font-size: 12px; color: #8c6b43; }
+.ms-ability-points { display: flex; gap: 8px; align-items: stretch; }
+.ms-ability-points .ms-visual-token { border-color: #9c7b44; background: #ead29e; }
+.maple-ui .ms-ability-sp { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-size: 11px; border: 1px solid #bda47a; border-radius: 7px; background: #f7e9cb; }
+.ms-ability-sp strong { font-size: 20px; }
+.ms-ability-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ms-ability-card { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; justify-items: center; gap: 7px; padding: 14px; border: 1px solid #bb965c; border-radius: 9px; background: linear-gradient(#faf0d6, #ecd5a7); box-shadow: inset 0 0 0 3px #ffffff45; overflow: hidden; }
+.ms-ability-card--precision { background: linear-gradient(#edf0d8, #d7ddba); border-color: #9aa077; }
+.ms-ability-art { position: relative; width: 100%; height: clamp(160px, 23cqh, 220px); overflow: hidden; }
+/* Keep intrinsic image dimensions out of the grid track sizing. */
+.ms-ability-art img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
+.ms-ability-title { display: flex; justify-content: center; align-items: center; gap: 14px; }
+.ms-ability-title h3 { margin: 0; font-size: 17px; }
+.ms-ability-title strong { font-size: 34px; font-variant-numeric: tabular-nums; line-height: 1; }
+.ms-ability-summary { margin: 0; color: #866746; font-size: 12px; }
+.ms-ability-effects { display: flex; justify-content: center; align-content: start; flex-wrap: wrap; gap: 5px; }
+.ms-ability-effects > span { align-self: start; padding: 3px 7px; border: 1px solid #baa173; border-radius: 20px; color: #6c5030; background: #fbefd4bb; font-size: 11px; white-space: nowrap; }
+.ms-ability-actions { display: flex; justify-content: center; gap: 10px; width: 100%; margin-top: 4px; }
+.ms-ability-actions .ms-button { min-width: 70px; font-size: 16px; }
+.ms-ability-totals { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.ms-ability-totals .ms-visual-token { flex-wrap: wrap; gap: 3px 7px; }
+.ms-ability-totals .ms-visual-token strong { flex-basis: 100%; text-align: center; font-size: 23px; }
+.ms-ability-foot { display: flex; align-items: start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ms-visual-details { font-size: 11px; line-height: 1.7; color: #7d6444; }
+.ms-visual-details > summary { cursor: pointer; color: #705331; padding-block: 5px; text-decoration: underline; text-underline-offset: 3px; }
+.ms-visual-details > p { margin: 4px 0 0; max-width: 640px; }
+
+.ms-quest-journey { position: relative; height: clamp(110px, 14cqh, 170px); overflow: hidden; border: 1px solid #ad8552; border-radius: 6px; background: #8c9871; }
+.ms-quest-journey > img { width: 100%; height: 100%; object-fit: cover; object-position: center 48%; image-rendering: auto; }
+.ms-quest-journey__title { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 14px 22px; background: linear-gradient(90deg, #213f32e6, #213f3299 30%, transparent 65%); color: #fff0c9; }
+.ms-quest-journey__title strong { color: #fff0c9 !important; font-size: 27px; letter-spacing: .08em; }
+.ms-quest-journey__title > span { font-size: 11px; letter-spacing: .05em; }
+.ms-quest-route { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; padding: 5px 2px; }
+.maple-ui .ms-quest-stop { position: relative; display: grid; align-content: start; justify-items: center; gap: 6px; min-width: 0; padding: 6px 2px; border: 0; background: none; box-shadow: none; color: #705e42; font-size: 10px; line-height: 1.5; }
+.ms-quest-stop__number { position: relative; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #9e875f; border-radius: 50%; background: #ecdcbb; color: #725d3a; font-size: 16px; font-weight: 700; }
+.ms-quest-stop:not(:last-child)::before { content: ''; position: absolute; top: 22px; left: 65%; width: 80%; height: 2px; background: #b59d72; }
+.ms-quest-stop.is-claimed .ms-quest-stop__number { background: #617954; color: #fff4c7; border-color: #617954; }
+.ms-quest-stop.is-ready .ms-quest-stop__number, .ms-quest-stop.is-active .ms-quest-stop__number { background: #d2a44f; color: #fff5d6; border-color: #a97935; }
+.ms-quest-stop.is-locked { opacity: .7; }
+.ms-quest-stop.is-selected .ms-quest-stop__number { outline: 3px solid #416b52; outline-offset: 3px; }
+.ms-journal-sheet { display: grid; gap: 12px; padding: 15px; border: 1px solid #b89a6a; border-radius: 7px; background: #f4e4c5; }
+.ms-journal-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.ms-journal-heading h3 { flex: 1; margin: 0; font-size: 20px; }
+.ms-journal-status { padding: 3px 9px; border-radius: 20px; background: #d9c396; color: #72552e; font-size: 11px; font-weight: 700; }
+.is-ready .ms-journal-status { background: #617954; color: #fff2cb; }
+.ms-journal-objectives { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ms-journal-objective { display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; align-items: center; gap: 4px 10px; padding: 10px; border: 1px solid #c6af88; border-radius: 6px; background: #fff1d6; }
+.ms-journal-objective > .ms-visual-icon { width: 56px; height: 56px; padding: 6px; }
+.ms-journal-objective__target { display: grid; gap: 3px; }
+.ms-journal-objective__target strong { font-size: 13px; }
+.ms-journal-objective__target small { color: #8c795b; font-size: 10px; line-height: 1.5; }
+.ms-journal-objective__verb { color: #967345; font-size: 10px; }
+.ms-journal-objective__count { font-size: 17px; white-space: nowrap; }
+.ms-journal-progress { grid-column: 1 / -1; width: 100%; height: 9px; border: 0; border-radius: 8px; overflow: hidden; accent-color: #75905e; background: #d8c8a8; }
+.ms-journal-progress::-webkit-progress-bar { background: #d8c8a8; }
+.ms-journal-progress::-webkit-progress-value { border-radius: 8px; background: #75905e; }
+.ms-journal-progress::-moz-progress-bar { border-radius: 8px; background: #75905e; }
+.ms-journal-objective.is-done { border-color: #8c9b72; background: #eaf0d5; }
+.ms-journal-contacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ms-journal-contact { display: flex; align-items: center; gap: 9px; padding: 4px 10px; border-radius: 5px; background: #e6d3ac; }
+.ms-journal-contact > .ms-visual-actor { width: 48px; height: 48px; flex-basis: 48px; }
+.ms-journal-contact > div { display: grid; gap: 3px; }
+.ms-journal-contact span:not(.ms-visual-actor) { font-size: 10px; color: #8b6c43; }
+.ms-journal-contact strong { font-size: 12px; }
+.ms-journal-next { margin: 0; color: #5b714b; font-size: 12px; }
+.ms-journal-rewards { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid #c2a97c; }
+.ms-journal-rewards h4 { flex-basis: 100%; margin: 0; font-size: 12px; }
+.ms-journal-rewards .ms-visual-token, .ms-journal-reward-item { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #c3a87b; border-radius: 5px; background: #faedcf; font-size: 11px; }
+.ms-journal-rewards .ms-visual-token strong { font-size: 13px; }
+.ms-journal-rewards .ms-visual-icon { width: 27px; height: 27px; flex-basis: 27px; }
+.ms-journal-reward-extra { font-size: 11px; color: #7e603c; }
+.ms-journal-map-button { justify-self: end; }
+.ms-journal-locked { display: grid; justify-items: center; gap: 7px; padding: 10px; text-align: center; }
+.ms-journal-locked img { width: 90px; height: 90px; object-fit: contain; image-rendering: auto; opacity: .7; }
+.ms-journal-locked p { margin: 0; font-size: 12px; color: #8a704c; }
+@container (max-width: 720px) {
+  .ms-ability-heading { flex-wrap: wrap; gap: 9px; }
+  .ms-ability-identity { grid-template-columns: 45px auto; }
+  .ms-ability-avatar { width: 45px; height: 52px; }
+  .ms-ability-identity strong { font-size: 15px; }
+  .ms-ability-points { flex: 1; justify-content: end; }
+  .ms-ability-points .ms-visual-icon { display: none; }
+  .ms-ability-cards { gap: 10px; }
+  .ms-ability-card { padding: 10px; }
+  .ms-ability-art { height: 145px; }
+  .ms-ability-totals { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ms-ability-totals .ms-visual-token strong { flex-basis: auto; font-size: 17px; }
+  .ms-journal-objectives { grid-template-columns: minmax(0, 1fr); }
+  .ms-journal-sheet { padding: 10px; }
+  .ms-journal-heading h3 { font-size: 17px; }
+}
+@container (max-width: 480px) {
+  .is-illustrated-panel .ms-panel { border-width: 12px; }
+  .is-illustrated-panel .ms-panel__body { padding: 8px; }
+  .ms-ability-cards { grid-template-columns: minmax(0, 1fr); }
+  .ms-ability-art { height: 170px; }
+  .ms-ability-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ms-quest-route { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .ms-quest-stop:nth-child(4)::before { display: none; }
+  .ms-journal-contacts { grid-template-columns: minmax(0, 1fr); }
+  .ms-journal-objective { gap: 4px 7px; grid-template-columns: 56px minmax(0, 1fr) auto; }
+  .ms-journal-objective .ms-visual-actor { width: 56px; height: 56px; flex-basis: 56px; }
+  .ms-journal-objective__count { font-size: 15px; }
+}

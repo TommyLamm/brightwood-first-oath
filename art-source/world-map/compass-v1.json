@@ -1,0 +1,18 @@
+{
+  "asset": "map-compass-rose-v1.png",
+  "asset_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\map-compass-rose-v1.png",
+  "original_generated_image_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1695f-4fd1-7e20-98a3-55ae2c0d5464\\exec-128fed66-74c7-4562-854d-4bfd663e65d0.png",
+  "tool": "image_gen",
+  "mode": "built-in",
+  "transparent_background": true,
+  "reference_image_path": "C:\\Users\\Tommy\\.codex\\attachments\\4632ec41-ac81-4fae-b877-4f1055711290\\codex-clipboard-b4ee92a9-f082-4606-975f-648888be7a57.png",
+  "dimensions_px": {
+    "width": 1278,
+    "height": 1230
+  },
+  "alpha_check": {
+    "corner_pixel_alpha": 0,
+    "center_pixel_alpha": 253
+  },
+  "prompt": "Use case: stylized-concept\nAsset type: isolated decorative game-map asset, transparent PNG\nPrimary request: one original fantasy nautical compass rose as a standalone ornament\nScene/backdrop: genuinely transparent background with generous clear transparent margin around the entire ornament; no map or scene\nSubject: a single elegant eight-point compass rose, centered, with a small aged brass hub and subtle old-wood details integrated into its points; delicate pine-needle motifs curl around the outer ring\nStyle/medium: fine hand-inked and hand-painted fairy-tale game-map illustration, warm brown and antique gold linework, matching the intricate storybook cartography feel of the viewed reference\nComposition/framing: isolated centered object, fully visible, balanced radial symmetry, crisp silhouette and fine readable detail, ample transparent whitespace\nLighting/mood: softly aged and enchanting\nColor palette: walnut brown, sepia, muted antique brass and restrained warm gold, with modest deep pine-green accents\nMaterials/textures: engraved brass, worn dark wood, fine etched strokes, restrained paper-illustration hatching rendered on the object itself only\nText (verbatim): none\nConstraints: exactly one compass rose; no letters, no numbers, no labels, no words, no watermark; preserve true alpha transparency outside the ornament\nAvoid: background parchment, map, landscape, scenery, border, shadow plate, multiple icons, extra objects, text, typography, cropped points, blurry edges"
+}

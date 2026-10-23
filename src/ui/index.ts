@@ -1,5 +1,10 @@
 import './styles.css';
 import './journal.css';
+import './world-map.css';
+import './illustrated-panels.css';
+import { buildVisualStats, buildVisualQuests } from './illustrated-panels.js';
+import { buildWorldMap } from './world-map.js';
+import { PLANNED_REGIONS } from './world-map-model.js';
 import { DEFAULT_KEY_BINDINGS, type GameAction } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import type { UiController, UiSnapshot } from '../contracts/ports.js';
@@ -11,7 +16,7 @@ const PANEL_LABELS: Record<PanelId, string> = {
   skills: '技能',
   stats: '能力',
   quests: '任務',
-  map: '地圖',
+  map: '世界地圖',
   shop: '商店',
   dialogue: '對話',
   settings: '設定',
@@ -47,7 +52,7 @@ type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
   | 'retry-save' | 'discard-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'use-item' | 'select-bag'
-  | 'inventory-filter'
+  | 'inventory-filter' | 'select-map' | 'select-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'settings-reset-bindings' | 'reload-page';
@@ -486,6 +491,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
   let selectedBagIndex: number | null = null;
   let inventoryFilter = 'all';
+  let selectedMapId: string | null = null;
+  let selectedQuestId: string | null = null;
   let createRequested = false;
   let replaceConfirmed = false;
   let discardConfirmed = false;
@@ -975,6 +982,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       bindingMessageAction = null;
     }
     panelHost.hidden = panel === null;
+    panelHost.classList.toggle('is-world-map', panel === 'map');
+    panelHost.classList.toggle('is-illustrated-panel', panel === 'stats' || panel === 'quests');
+    if (panel !== 'quests') selectedQuestId = null;
+    if (panel !== 'map') selectedMapId = null;
     if (!panel) {
       if (lastPanelSignature !== '') {
         lastPanelSignature = '';
@@ -991,6 +1002,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       interaction: view.interaction,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
+      selectedMapId,
+      selectedQuestId,
       inventoryFilter,
       shopQuantities: Array.from(shopQuantities.entries()),
       sellQuantities: Array.from(sellQuantities.entries()),
@@ -1000,9 +1013,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     });
     if (!force && signature === lastPanelSignature) return;
     lastPanelSignature = signature;
+    const samePanel = panelHost.querySelector<HTMLElement>('.ms-panel')?.dataset.panel === panel;
+    const scrollTop = samePanel ? panelHost.querySelector<HTMLElement>('.ms-panel__body')?.scrollTop ?? 0 : 0;
+    const openDetails = new Set(samePanel
+      ? Array.from(panelHost.querySelectorAll<HTMLDetailsElement>('details[open][data-detail-id]')).map((detail) => detail.dataset.detailId)
+      : []);
     preserveFocus(panelHost, () => {
       const card = makeElement(document, 'section', 'ms-panel');
       card.setAttribute('aria-label', PANEL_LABELS[panel]);
+      card.dataset.panel = panel;
       const heading = makeElement(document, 'header', 'ms-panel__header');
       const title = makeElement(document, 'div', 'ms-panel__title');
       title.append(
@@ -1017,6 +1036,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const body = makeElement(document, 'div', 'ms-panel__body');
       body.append(buildPanelContent(document, view, panel, {
         selectedBagIndex,
+        selectedMapId,
+        selectedQuestId,
         inventoryFilter,
         shopQuantities,
         sellQuantities,
@@ -1024,15 +1045,30 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         bindingMessage,
         bindingMessageAction,
       }));
+      for (const detail of body.querySelectorAll<HTMLDetailsElement>('details[data-detail-id]')) {
+        detail.open = openDetails.has(detail.dataset.detailId);
+      }
       card.append(heading, body);
       panelHost.replaceChildren(card);
     });
+    const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
+    if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
   };
 
   const handleAction = (button: HTMLButtonElement, view: UiSnapshot): void => {
     const action = button.dataset.uiAction as UiAction | undefined;
     if (!action) return;
     switch (action) {
+      case 'select-quest':
+        if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
+        selectedQuestId = button.dataset.questId!;
+        renderPanel(view, true);
+        return;
+      case 'select-map':
+        if (!button.dataset.mapId || (!view.catalog.world.maps[button.dataset.mapId] && !PLANNED_REGIONS.some(({ id }) => id === button.dataset.mapId))) return;
+        selectedMapId = button.dataset.mapId;
+        renderPanel(view, true);
+        return;
       case 'open-panel': {
         const panel = PANEL_ORDER.find((entry) => entry === button.dataset.panel);
         if (!panel) return;
@@ -1494,6 +1530,8 @@ function skillNextRankPreview(skill: UiSnapshot['catalog']['rules']['skills'][st
 
 type PanelBuildState = {
   selectedBagIndex: number | null;
+  selectedMapId: string | null;
+  selectedQuestId: string | null;
   inventoryFilter: string;
   shopQuantities: Map<string, number>;
   sellQuantities: Map<number, number>;
@@ -1520,13 +1558,13 @@ function buildPanelContent(
       buildSkillsPanel(document, view, content);
       break;
     case 'stats':
-      buildStatsPanel(document, view, content);
+      content.append(buildVisualStats(document, view));
       break;
     case 'quests':
-      buildQuestsPanel(document, view, content);
+      content.append(buildVisualQuests(document, view, state.selectedQuestId));
       break;
     case 'map':
-      buildMapPanel(document, view, content);
+      content.append(buildWorldMap(document, view, state.selectedMapId));
       break;
     case 'shop':
       buildShopPanel(document, view, state, content);
@@ -1713,59 +1751,6 @@ function buildEquipmentPanel(document: Document, view: UiSnapshot, parent: HTMLE
   parent.append(grid);
 }
 
-function formatCritChance(chance: number): string {
-  return (Math.round(chance * 1000) / 10).toFixed(1) + '%';
-}
-
-function buildStatsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
-  const player = view.saveData?.player;
-  if (!player || !view.stats) {
-    parent.append(makeElement(document, 'p', 'ms-empty-state', '角色能力尚未載入。'));
-    return;
-  }
-  const stats = makeElement(document, 'div', 'ms-stat-grid');
-  const values: [string, string | number][] = [
-    ['STR', player.str], ['DEX', player.dex], ['可用 AP', player.ap], ['可用 SP', player.sp],
-    ['攻擊力', view.stats.attack], ['防禦力', view.stats.defense],
-    ['暴擊率', formatCritChance(view.stats.critChance)], ['最大 HP／MP', view.stats.maxHp + '／' + view.stats.maxMp],
-  ];
-  for (const [label, value] of values) {
-    const card = makeElement(document, 'div', 'ms-stat-card');
-    card.append(makeElement(document, 'span', 'ms-eyebrow', label), makeElement(document, 'strong', '', String(value)));
-    stats.append(card);
-  }
-  parent.append(stats);
-  parent.append(makeElement(document, 'p', 'ms-panel-note', 'STR：每點攻擊力 +2，打得最重。DEX：每點攻擊力 +1、暴擊率 +0.4%（最高 40%，暴擊傷害 ×1.5），每 4 點防禦力 +1；傷害略低但更耐打，可依喜好分配。'));
-  const actions = makeElement(document, 'div', 'ms-inline-actions');
-  const bulk = Math.min(5, player.ap);
-  for (const [stat, label] of [['str', 'STR'], ['dex', 'DEX']] as const) {
-    actions.append(makeButton(document, label + ' +1', 'allocate-ap', {
-      className: 'ms-button ms-button--primary', disabled: player.ap < 1,
-      title: player.ap > 0 ? '消耗 1 AP 提升 ' + label : '目前沒有 AP', data: { stat },
-    }));
-    if (player.ap > 1) {
-      actions.append(makeButton(document, label + ' +' + bulk, 'allocate-ap', {
-        className: 'ms-button ms-button--secondary',
-        title: '消耗 ' + bulk + ' AP 提升 ' + label, data: { stat, amount: String(bulk) },
-      }));
-    }
-  }
-  // Players who skipped levelling their stats can bank dozens of AP; one click spends it all on STR.
-  if (player.ap > 5) {
-    actions.append(makeButton(document, '全部加到 STR（' + player.ap + '）', 'allocate-ap', {
-      className: 'ms-button ms-button--secondary',
-      title: '一次消耗全部 ' + player.ap + ' AP 提升 STR', data: { stat: 'str', amount: String(player.ap) },
-    }));
-  }
-  parent.append(actions);
-  // Greyed-out buttons with no explanation read as a bug; say when the next AP arrives.
-  if (player.ap < 1) {
-    const atCap = player.level >= view.catalog.rules.progression.maxLevel;
-    parent.append(makeElement(document, 'span', 'ms-disabled-reason',
-      atCap ? '目前沒有可用 AP；已達等級上限。' : '目前沒有可用 AP；每次升級可獲得 5 AP。'));
-  }
-}
-
 function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
   const player = view.saveData?.player;
   if (!player) {
@@ -1819,142 +1804,6 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     grid.append(card);
   }
   parent.append(grid);
-}
-
-function buildQuestsPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '任務需在指定 NPC 對話中接取或領獎。'));
-  const groups: { status: UiSnapshot['questViews'][number]['status']; label: string }[] = [
-    { status: 'active', label: '進行中' },
-    { status: 'ready', label: '可回報' },
-    { status: 'available', label: '可接取' },
-    { status: 'locked', label: '尚未解鎖' },
-    { status: 'claimed', label: '已完成' },
-  ];
-  for (const group of groups) {
-    const quests = view.questViews.filter((quest) => quest.status === group.status);
-    if (quests.length === 0) continue;
-    const section = makeElement(document, 'section', 'ms-quest-group');
-    section.append(makeSectionTitle(document, group.label));
-    for (const quest of quests) {
-      const definition = view.catalog.world.quests[quest.questId];
-      const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '未知 NPC';
-      const turnIn = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '未知 NPC';
-      const card = makeElement(document, 'article', 'ms-quest-card ms-quest-card--' + quest.status);
-      if (quest.status === 'locked') {
-        // Locked quests used to print their full story, objectives and rewards (spoilers, and
-        // seven long cards at the start). Show only the title and what unlocks it.
-        const missing = (definition?.prerequisiteIds ?? [])
-          .filter((id) => view.saveData?.quests[id]?.status !== 'claimed')
-          .map((id) => '「' + (view.catalog.world.quests[id]?.name ?? id) + '」');
-        const levelShort = definition && view.saveData && definition.minLevel > view.saveData.player.level;
-        const hint = [
-          missing.length ? '完成' + missing.join('、') + '後解鎖' : '',
-          levelShort ? '需要 Lv.' + definition.minLevel : '',
-        ].filter(Boolean).join('・') || '尚未解鎖';
-        card.append(makeElement(document, 'h4', '', quest.title), makeElement(document, 'p', 'ms-detail-copy', hint));
-        section.append(card);
-        continue;
-      }
-      if (quest.status === 'claimed') {
-        // Finished quests are history: keep them compact so the active ones stay in view.
-        card.append(
-          makeElement(document, 'h4', '', '✓ ' + quest.title),
-          makeElement(document, 'p', 'ms-detail-copy', definition?.summary ?? ''),
-        );
-        section.append(card);
-        continue;
-      }
-      // Title first with the NPC badges beside it; the section heading already names the status.
-      const head = makeElement(document, 'div', 'ms-quest-card__head');
-      head.append(
-        makeElement(document, 'h4', '', quest.title),
-        makeBadge(document, '接取：' + giver, 'neutral'),
-        makeBadge(document, '回報：' + turnIn, 'neutral'),
-      );
-      card.append(head, makeElement(document, 'p', 'ms-detail-copy', definition?.summary ?? '任務說明目前無法載入。'));
-      const objectives = makeElement(document, 'ul', 'ms-objectives');
-      for (const objective of quest.objectives) objectives.append(makeElement(document, 'li', '', objectiveText(view, objective)));
-      card.append(objectives, makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
-      section.append(card);
-    }
-    parent.append(section);
-  }
-  if (view.questViews.length === 0) parent.append(makeElement(document, 'p', 'ms-empty-state', '目前沒有任務資料。'));
-}
-
-function buildMapPanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
-  const data = view.saveData;
-  if (!data) {
-    parent.append(makeElement(document, 'p', 'ms-empty-state', '地圖資料會在建立角色後顯示。'));
-    return;
-  }
-  const currentMap = view.catalog.world.maps[data.location.mapId];
-  parent.append(makeElement(document, 'p', 'ms-panel-note', '目前位置：' + (currentMap?.name ?? data.location.mapId)));
-  const visited = new Set(data.visitedMaps);
-  visited.add(data.location.mapId);
-  const mapList = makeElement(document, 'div', 'ms-map-list');
-  // Keep world (progression) order; localeCompare on CJK names produces an arbitrary order.
-  const maps = Object.values(view.catalog.world.maps);
-  for (const map of maps) {
-    const seen = visited.has(map.id);
-    const row = makeElement(document, 'div', 'ms-map-row' + (map.id === data.location.mapId ? ' is-current' : ''));
-    // Name first: the stylesheet pushes the badge to the right edge (margin-left: auto).
-    // Monster level range tells players where they can safely train.
-    const levels = map.monsters.map((spawn) => view.catalog.rules.monsters[spawn.monsterId]?.level).filter((level): level is number => typeof level === 'number');
-    const low = Math.min(...levels);
-    const high = Math.max(...levels);
-    const range = levels.length === 0 ? (map.safe ? '安全區' : '') : (map.boss ? '首領 ' : '怪物 ') + 'Lv.' + low + (high > low ? '–' + high : '');
-    row.append(
-      makeElement(document, 'strong', '', map.name),
-      makeElement(document, 'span', 'ms-map-row__level', range),
-      makeBadge(document, map.id === data.location.mapId ? '目前' : seen ? '已探索' : '未探索', map.id === data.location.mapId ? 'level' : seen ? 'success' : 'neutral'),
-    );
-    mapList.append(row);
-  }
-  parent.append(makeSectionTitle(document, '地區'), mapList);
-
-  const portals = currentMap?.portals ?? [];
-  const portalSection = makeElement(document, 'section', 'ms-portal-list');
-  portalSection.append(makeSectionTitle(document, '傳點條件'));
-  if (portals.length === 0) portalSection.append(makeElement(document, 'p', 'ms-empty-state', '本地區沒有傳點資料。'));
-  for (const portal of portals) {
-    const target = view.catalog.world.maps[portal.targetMapId];
-    const conditions: string[] = [];
-    const blockers: string[] = [];
-    if (portal.requiredQuestId) {
-      const quest = view.catalog.world.quests[portal.requiredQuestId];
-      const claimed = data.quests[portal.requiredQuestId]?.status === 'claimed';
-      conditions.push((claimed ? '已完成 ' : '需完成 ') + (quest?.name ?? portal.requiredQuestId));
-      if (!claimed) blockers.push('需完成 ' + (quest?.name ?? portal.requiredQuestId));
-    }
-    if (portal.minLevel > 1) {
-      conditions.push(portal.minLevel > data.player.level ? '需要 Lv.' + portal.minLevel : '等級已達 Lv.' + portal.minLevel);
-      if (portal.minLevel > data.player.level) blockers.push('需要 Lv.' + portal.minLevel);
-    }
-    const row = makeElement(document, 'div', 'ms-portal-row');
-    row.append(
-      makeBadge(document, blockers.length === 0 ? '條件已滿足' : '尚未開放', blockers.length === 0 ? 'success' : 'warning'),
-      makeElement(document, 'strong', '', '前往 ' + (target?.name ?? portal.targetMapId)),
-      makeElement(document, 'span', '', conditions.length ? conditions.join('・') : '不需額外條件'),
-    );
-    portalSection.append(row);
-  }
-  parent.append(portalSection);
-
-  const canShowReturn = view.canReturnTown;
-  const arenaBlocked = data.location.mapId === 'guardian-arena' && !canShowReturn;
-  parent.append(makeButton(document, '返回城鎮', 'return-town', {
-    className: 'ms-button ms-button--primary',
-    disabled: !canShowReturn,
-    title: data.location.mapId === 'town'
-      ? '目前已在木葉鎮'
-      : arenaBlocked ? '首領戰尚未結束，不能返回城鎮。' : canShowReturn ? '返回木葉鎮' : '目前狀態不允許回城。',
-  }));
-  if (!canShowReturn && data.location.mapId !== 'town') {
-    parent.append(makeElement(document, 'p', 'ms-disabled-reason', arenaBlocked
-      ? '首領戰中無法回城；請先結束挑戰。'
-      : '回城目前不可用，請完成目前操作後再試。'));
-  }
 }
 
 function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildState, parent: HTMLElement): void {

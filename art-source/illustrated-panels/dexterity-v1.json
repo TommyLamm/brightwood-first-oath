@@ -1,0 +1,21 @@
+{
+  "asset": "dexterity-training-v1.png",
+  "generatedAt": "2026-10-23",
+  "tool": "image_gen.imagegen (built-in)",
+  "generationMode": "new image generation",
+  "generatedSourcePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a16973-522d-77d3-8c71-956a6457e491\\exec-e8350592-57bd-4c57-b934-82c5835697d1.png",
+  "outputPath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\illustrated\\dexterity-training-v1.png",
+  "referenceImagePath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\public\\assets\\interface\\journal\\hero-portrait-chibi.png",
+  "referenceRole": "style reference only; inspected with view_image and not supplied as an image-generation input",
+  "dimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "imageMode": "RGBA",
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "transparentBackgroundRequested": true,
+  "prompt": "Use case: illustration-story\nAsset type: small transparent character illustration for the dexterity ability card in a fantasy RPG game UI\nPrimary request: Create one original image that communicates dexterity as precision, critical hits, and defense: a youthful chestnut-brown-haired cloaked swordsman makes a light, nimble sidestep while parrying a single incoming arrow with his sword. Show a clear small impact glint at the exact blade-arrow contact and a few elegant teal-green speed arcs that reinforce the movement.\nScene/backdrop: no environment; isolated figure and action marks on a fully transparent background.\nSubject: one original youthful adventurer with warm brown hair, a teal-green cloak and simple parchment-toned accents; one sword and one arrow only. Show the complete character and the complete sword, with the arrow visibly deflected.\nStyle/medium: polished hand-drawn storybook fantasy RPG UI illustration, warm expressive outlines, gentle painted texture, charming compact proportions, cohesive warm-brown and teal palette. High-level style cue from the viewed project portrait: friendly youthful character, chestnut hair, dark teal clothing, warm colors; do not reproduce that portrait.\nComposition/framing: square composition, centered compact full figure with generous transparent padding; clear readable silhouette, action concentrated around the sword and upper body; use large simple shapes and restrained detail so it remains legible at small card size.\nLighting/mood: lively, confident, nimble, warm and adventurous.\nColor palette: chestnut brown, deep teal and soft turquoise, muted parchment beige, a small warm golden-white impact sparkle.\nMaterials/textures: soft hand-painted shading and warm clean linework; subtle cloth folds only.\nText (verbatim): none.\nConstraints: original character and scene; isolated on true transparent background; complete character, cloak, sword, and arrow remain inside the canvas; no essential feature cropped; no excessive micro-detail.\nAvoid: any background or ground, extra characters, extra arrows or weapons, blood, violence beyond a harmless arrow parry, text, numbers, letters, symbols, labels, UI panels, card frames, badges, logos, watermarks, checkerboard transparency preview, pixel-art rendering."
+}

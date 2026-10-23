@@ -1,0 +1,78 @@
+/* Full atlas artwork; dynamic labels remain selectable DOM text. */
+.ms-panel-host.is-world-map { width: min(1180px, calc(100% - 28px)); height: min(860px, calc(100% - 36px)); }
+.is-world-map .ms-panel__body { padding: 10px; }
+.ms-world-map { display: grid; gap: 10px; color: #533e29; }
+.ms-atlas-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ms-atlas-progress { display: grid; gap: 3px; }
+.ms-atlas-progress strong { font-size: 13px; }
+.ms-atlas-eyebrow { color: #806746; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.ms-atlas-layout { display: grid; grid-template-columns: minmax(0, 1fr) 218px; gap: 12px; align-items: start; }
+.ms-atlas-chart { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border: 2px solid #9e7950; border-radius: 6px; background: #abd7ce; box-shadow: 0 2px 6px #5b402a38, inset 0 0 28px #5e7b6540; isolation: isolate; }
+.ms-atlas-art { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: auto; }
+.ms-atlas-art[hidden], .ms-atlas-compass[hidden] { display: none; }
+.ms-atlas-banner { position: absolute; z-index: 2; top: 4%; left: 50%; transform: translateX(-50%); min-width: 32%; padding: 7px 22px 9px; border: 2px solid #775337; border-radius: 5px 5px 40% 40% / 5px 5px 15% 15%; background: linear-gradient(100deg, #dec290, #fff0c7 45%, #dfbf88); box-shadow: 0 3px 0 #3c493f55, inset 0 0 0 2px #fff3c5; text-align: center; white-space: nowrap; pointer-events: none; }
+.ms-atlas-banner > span { color: #8a6742; font-size: 8px; letter-spacing: .18em; }
+.ms-atlas-banner h3 { margin: 2px 0 0; color: #543821; font-family: Georgia, "Microsoft JhengHei", serif; font-size: clamp(18px, 2cqw, 27px); letter-spacing: .18em; }
+.ms-atlas-compass { position: absolute; z-index: 1; right: 3%; bottom: 3%; width: 12%; height: auto; image-rendering: auto; pointer-events: none; }
+.ms-atlas-routes { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.ms-atlas-routes path { fill: none; stroke: #7b6044; stroke-width: 2; stroke-dasharray: 4 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.ms-atlas-routes path.is-open { stroke: #3d6c4c; stroke-width: 3; }
+.ms-atlas-routes path.is-locked { stroke-opacity: .7; }
+.maple-ui .ms-atlas-landmark { position: absolute; z-index: 3; display: grid; justify-items: center; gap: 1px; min-width: 84px; min-height: 50px; padding: 0; transform: translate(-50%, -12px); border: 0; background: none; box-shadow: none; color: #513820; cursor: pointer; }
+.maple-ui .ms-atlas-landmark:hover:not(:disabled) { transform: translate(-50%, -12px); filter: brightness(1.08); }
+.maple-ui .ms-atlas-landmark:hover::after { content: none; }
+.ms-atlas-pin { display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid #f6e5ad; border-radius: 50%; color: #e8dcbd; background: #756b52; box-shadow: 0 1px 4px #302f28; font-size: 13px; line-height: 1; }
+.is-visited .ms-atlas-pin { color: #e8f0c7; background: #54714d; }
+.is-current .ms-atlas-pin { color: #fff4b5; background: #bd6b35; box-shadow: 0 0 0 4px #fff1bc80, 0 1px 5px #513722; }
+.ms-atlas-label { display: block; padding: 4px 9px; border: 1px solid #85623c; border-inline-width: 4px; border-radius: 2px; color: #543820; background: linear-gradient(#fff0c8, #e2c495); box-shadow: 0 2px 2px #3d493b70, inset 0 0 0 1px #fff0c5; font-size: clamp(10px, 1.15cqw, 14px); font-weight: 700; white-space: nowrap; }
+.is-selected .ms-atlas-label { outline: 2px solid #37694e; outline-offset: 2px; }
+.ms-atlas-you { padding: 1px 5px; border-radius: 2px; color: #fff4cd; background: #81522c; font-size: 9px; white-space: nowrap; }
+.ms-atlas-details { display: grid; align-content: start; gap: 9px; padding: 13px; border: 1px solid #b4966c; border-radius: 3px; background: #f2e1bd; }
+.ms-atlas-details h3 { margin: 0; font-size: 20px; }
+.ms-atlas-level { justify-self: start; margin: 0; padding: 3px 7px; border-radius: 3px; background: #ddd3ac; color: #5b603c; font-size: 11px; font-weight: 700; }
+.ms-atlas-description, .ms-atlas-inhabitants { margin: 0; font-size: 12px; line-height: 1.7; }
+.ms-atlas-inhabitants { color: #7b6345; font-size: 11px; }
+.ms-atlas-path-heading { margin: 4px 0 0; padding-top: 9px; border-top: 1px solid #c8ac80; font-size: 12px; }
+.ms-atlas-connection { display: grid; gap: 4px; }
+.maple-ui .ms-atlas-region-link { justify-self: start; padding: 3px 6px; border: 0; background: transparent; box-shadow: none; color: #416348; font-size: 12px; font-weight: 700; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
+.ms-atlas-condition { padding-left: 6px; color: #95623c; font-size: 10px; line-height: 1.6; }
+.ms-atlas-condition.is-open { color: #54704c; }
+.ms-atlas-return { margin-top: 4px; }
+.ms-atlas-hint, .ms-atlas-return-note { margin: 0; color: #806b4d; font-size: 10px; line-height: 1.6; }
+.ms-atlas-return-note { color: #95623c; }
+.ms-atlas-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px 18px; color: #786044; font-size: 11px; }
+.ms-atlas-legend-current { color: #a46132; }
+@container (max-width: 850px) {
+  .ms-atlas-layout { grid-template-columns: minmax(0, 1fr); }
+  .ms-atlas-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ms-atlas-details > :is(.ms-atlas-description, .ms-atlas-path-heading, .ms-atlas-hint, .ms-atlas-return-note, .ms-atlas-eyebrow) { grid-column: 1 / -1; }
+  .ms-atlas-details > h3 { font-size: 18px; }
+  .ms-atlas-level { align-self: center; justify-self: end; }
+}
+@container (max-width: 480px) {
+  .is-world-map .ms-panel { border-width: 10px; }
+  .is-world-map .ms-panel__header { padding: 8px; }
+  .is-world-map .ms-panel__body { padding: 7px; }
+  .ms-atlas-toolbar { align-items: start; }
+  .ms-atlas-eyebrow { font-size: 8px; }
+  .ms-atlas-progress strong { font-size: 11px; }
+  .ms-atlas-locate { padding: 5px !important; font-size: 10px; }
+  .ms-atlas-banner { top: 3%; padding: 2px 12px 4px; }
+  .ms-atlas-banner > span { font-size: 6px; }
+  .ms-atlas-banner h3 { font-size: 16px; }
+  .maple-ui .ms-atlas-landmark { min-width: 60px; min-height: 44px; }
+  .ms-atlas-label { padding: 3px 4px; border-inline-width: 2px; font-size: 9px; }
+  .ms-atlas-pin { width: 14px; height: 14px; font-size: 10px; }
+  .ms-atlas-you { font-size: 8px; }
+}
+
+/* Unbuilt territories are always labelled, and only open an information card. */
+.maple-ui .ms-atlas-landmark--planned { min-width: 82px; gap: 3px; }
+.ms-atlas-landmark--planned .ms-atlas-label { color: #665c50; border-color: #8f8371; background: linear-gradient(#e8e3d4, #c9c4b4); }
+.ms-atlas-planned-badge { padding: 2px 8px; border: 1px solid #c5bda7; border-radius: 3px; color: #f8f0dd; background: #68695bd9; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.ms-atlas-banner { left: 38%; top: 3%; min-width: 30%; }
+.ms-atlas-compass { left: 3%; right: auto; bottom: 3%; width: 11%; }
+@container (max-width: 480px) {
+  .ms-atlas-landmark--planned .ms-atlas-label { font-size: 9px; }
+  .ms-atlas-planned-badge { padding: 1px 5px; font-size: 8px; }
+}

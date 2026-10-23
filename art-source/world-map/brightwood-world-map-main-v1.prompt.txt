@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: game world map background illustration for Brightwood: First Oath
+Primary request: Create an original fantasy MMORPG-style hand-painted nautical world map featuring one large forest island, turquoise blue-green surrounding sea, and a few small reef islets. Keep the seven distinct landmark vignettes centered near these normalized canvas coordinates (x from left, y from top): (16%,70%) Dawnlight Camp, a small creekside campsite with a tent; (30%,51%) Leafrest Town, a cozy wood village with warm red roofs; (45%,65%) Sproutwood Trail, a leafy footpath with a small wooden bridge; (51%,37%) Mushroomshade Forest, dense woodland with several giant mushrooms; (67%,30%) Redstone Ridge, ochre and rust-red mountain slopes; (77%,49%) Old Mine Entrance, a timber mine doorway with a little mine cart; (84%,69%) Guardian Altar, an ancient circular stone altar.
+Input images: Image 1 is only a style reference for detailed classic hand-drawn fantasy game-map illustration; do not copy its names, text, labels, map layout, borders, or icons.
+Scene/backdrop: a single connected island with naturally irregular coastlines, lush forest clearings, meandering paths connecting the seven sites, gentle streams and bays, teal sea, and a handful of tiny rocky reef islets.
+Subject: seven distinctive miniature isometric landmark scenes, readable as separate places at the requested coordinates; preserve each landmark silhouette and leave a little open breathing room around each for later HTML labels.
+Style/medium: finely detailed hand-painted fantasy sea chart, classic MMO adventure-map feeling, delicate ink linework with watercolor and gouache shading, small isometric vignettes, warm aged paper grain on land.
+Composition/framing: landscape 3:2 panorama, map fills canvas; positions are approximate scene centers measured from top-left; natural coastline and ocean visible all around.
+Lighting/mood: warm daylight, inviting exploration, soft painterly shadows.
+Color palette: turquoise and blue-green water, emerald and moss-green woods, warm red roof accents, ochre and rust mountains, parchment cream and sepia land details.
+Materials/textures: subtle warm paper texture, painted terrain relief, fine trees and stonework.
+Constraints: exactly one main island/landmass, plus sea and only a few tiny reef islets; exactly the seven described focal locations; no snow peaks, no desert region; absolutely no text, lettering, labels, numbers, UI, map legend, compass, compass rose, framing border, logos, or watermark.
