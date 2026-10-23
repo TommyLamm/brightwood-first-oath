@@ -146,7 +146,7 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'frost-shore:south', x: 100, y: 600, targetMapId: 'guardian-arena', targetSpawnId: 'entry', requiredQuestId: null, minLevel: 1 },
-      { id: 'frost-shore:north', x: 1820, y: 600, targetMapId: 'frost-pine-pass', targetSpawnId: 'left', requiredQuestId: null, minLevel: 1 },
+      { id: 'frost-shore:north', x: 1820, y: 600, targetMapId: 'frost-pine-pass', targetSpawnId: 'left', requiredQuestId: 'q09', minLevel: 1 },
     ],
     npcs: [{ npcId: 'frost-guide', x: 250, y: 600 }],
     monsters: [
@@ -166,6 +166,8 @@ const blueprints: MapBlueprint[] = [
     npcs: [],
     monsters: [
       { monsterId: 'frost-crab', x: 680, roamLeft: 570, roamRight: 790 },
+      { monsterId: 'frost-crab', x: 1170, roamLeft: 1060, roamRight: 1280 },
+      { monsterId: 'frost-crab', x: 1740, roamLeft: 1630, roamRight: 1850 },
       { monsterId: 'frost-wolf', x: 1510, roamLeft: 1400, roamRight: 1620 },
     ],
   },

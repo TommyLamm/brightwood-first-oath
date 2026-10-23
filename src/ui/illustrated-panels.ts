@@ -124,16 +124,50 @@ export function chooseJournalQuest(quests: readonly QuestView[], selectedId: str
     ?? quests.at(-1);
 }
 
-function objectivePlaces(view: UiSnapshot, questId: string, objective: QuestView['objectives'][number]): string {
+export function objectivePlaces(
+  view: Pick<UiSnapshot, 'catalog'>,
+  questId: string,
+  objective: QuestView['objectives'][number],
+): string {
   if (objective.type === 'reach') return view.catalog.world.maps[objective.targetId]?.name ?? '';
   if (objective.type === 'equip') return '裝備欄';
-  const drop = questDropByQuest[questId];
-  const monster = objective.type === 'kill' ? objective.targetId : drop?.itemId === objective.targetId ? drop.monsterId : null;
-  return Object.values(view.catalog.world.maps)
-    .filter((map) => map.monsters.some(({ monsterId }) => monsterId === monster))
-    .map(({ name }) => name).join('／');
-}
 
+  const claimedPrerequisites = new Set<string>();
+  const addPrerequisites = (id: string): void => {
+    for (const prerequisite of view.catalog.world.quests[id]?.prerequisiteIds ?? []) {
+      if (claimedPrerequisites.has(prerequisite)) continue;
+      claimedPrerequisites.add(prerequisite);
+      addPrerequisites(prerequisite);
+    }
+  };
+  addPrerequisites(questId);
+
+  const reachableMaps = new Set<string>(['camp']);
+  const pendingMaps = ['camp'];
+  while (pendingMaps.length > 0) {
+    const mapId = pendingMaps.shift()!;
+    for (const portal of view.catalog.world.maps[mapId]?.portals ?? []) {
+      if (portal.requiredQuestId !== null && !claimedPrerequisites.has(portal.requiredQuestId)) continue;
+      if (!reachableMaps.has(portal.targetMapId)) {
+        reachableMaps.add(portal.targetMapId);
+        pendingMaps.push(portal.targetMapId);
+      }
+    }
+  }
+
+  const conditionalSource = questDropByQuest[questId];
+  const monsterIds = objective.type === 'kill'
+    ? new Set([objective.targetId])
+    : new Set([
+      ...(conditionalSource?.itemId === objective.targetId ? [conditionalSource.monsterId] : []),
+      ...Object.values(view.catalog.rules.monsters)
+        .filter((monster) => monster.drops.some((drop) => drop.itemId === objective.targetId && drop.chance > 0))
+        .map(({ id }) => id),
+    ]);
+  return Object.entries(view.catalog.world.maps)
+    .filter(([mapId, map]) => reachableMaps.has(mapId) && map.monsters.some(({ monsterId }) => monsterIds.has(monsterId)))
+    .map(([, map]) => map.name).join('／');
+}
 export function buildVisualQuests(document: Document, view: UiSnapshot, selectedId: string | null): HTMLElement {
   const root = node(document, 'div', 'ms-visual-journal');
   const quests = view.questViews;

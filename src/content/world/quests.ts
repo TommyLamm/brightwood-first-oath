@@ -98,4 +98,27 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '必須在任務進行時擊敗守衛祭壇的古礦守衛，並持有牠留下的一枚守衛核心。若在接取任務前就擊敗了首領，請再次挑戰守衛，取得核心後再回赤岩山徑找礦道守望者。',
     completeText: '古礦守衛已被擊敗，守衛核心也已取得。請回赤岩山徑找礦道守望者交付核心並領取經驗與金幣，完成章節結算。',
   },
+  q09: {
+    id: 'q09', name: '北路的狼牙', giverNpcId: 'frost-guide', turnInNpcId: 'frost-guide', prerequisiteIds: ['q08'], minLevel: 1,
+    objectives: [{ type: 'collect', targetId: 'frost-fang', count: 6 }],
+    consumeItems: [{ itemId: 'frost-fang', quantity: 6 }],
+    reward: { exp: 1500, coins: 750, items: [{ itemId: 'large-red', quantity: 6 }, { itemId: 'large-blue', quantity: 3 }] },
+    summary: '交付六枚霜牙，替雪痕海岸打開通往霜松隘道的北方路線。',
+    acceptText: '請從霜牙雪狼身上收集六枚霜牙。集齊後回雪痕海岸找雪芽交付，北方隘道才會開放。',
+    progressText: '背包裡還需要六枚霜牙；雪狼會在雪痕海岸一帶巡行。備齊後回雪痕海岸找雪芽報告，交付時霜牙會全部收走。',
+    completeText: '六枚霜牙已交付，雪痕海岸通往霜松隘道的北路現已開通。請回雪痕海岸找雪芽領取補給與金幣，再沿北路前進。',
+  },
+  q10: {
+    id: 'q10', name: '冰甲蟹清障', giverNpcId: 'frost-guide', turnInNpcId: 'frost-guide', prerequisiteIds: ['q09'], minLevel: 1,
+    objectives: [
+      { type: 'kill', targetId: 'frost-crab', count: 6 },
+      { type: 'collect', targetId: 'ice-shell', count: 4 },
+    ],
+    consumeItems: [{ itemId: 'ice-shell', quantity: 4 }],
+    reward: { exp: 2200, coins: 1100, items: [{ itemId: 'large-red', quantity: 8 }, { itemId: 'large-blue', quantity: 5 }] },
+    summary: '擊退六隻冰甲蟹並交付四枚冰殼，清出通往冰潮洞窟的道路。',
+    acceptText: '請到霜松隘道擊退六隻冰甲蟹，並收集四枚冰殼作為清障證明。完成後回雪痕海岸找雪芽交付，洞窟通道便會打開。',
+    progressText: '隘道裡還有冰甲蟹擋路，目標是擊退六隻並持有四枚冰殼。備齊後回雪痕海岸找雪芽報告，交付時冰殼會全部收走。',
+    completeText: '六隻冰甲蟹已清退，四枚冰殼也完成交付，通往冰潮洞窟的道路已經開放。請回雪痕海岸找雪芽領取補給與金幣，再前往洞窟。',
+  },
 };

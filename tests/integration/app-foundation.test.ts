@@ -14,8 +14,8 @@ describe('T14-a app foundation', () => {
     const result = composeContentCatalog();
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(Object.keys(result.value.rules.items)).toHaveLength(25);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(8);
+      expect(Object.keys(result.value.rules.items)).toHaveLength(26);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(9);
     }
   });
 
@@ -164,7 +164,7 @@ describe('T14-a app foundation', () => {
       screen: 'playing',
     });
     expect(snapshot?.saveData?.player.name).toBe('旅人');
-    expect(snapshot?.questViews).toHaveLength(8);
+    expect(snapshot?.questViews).toHaveLength(Object.keys(catalog.value.world.quests).length);
     expect(snapshot?.stats?.maxHp).toBeGreaterThan(0);
     expect(snapshot?.panels).toEqual([]);
     // A fresh hero has not reached 木葉鎮 yet, so 返回城鎮 must not skip camp's q01 gate.
