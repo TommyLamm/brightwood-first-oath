@@ -69,31 +69,33 @@
 - 瀏覽器檢查為 PARTIAL：使用隔離 Playwright profile 的人工 q08 claimed、Lv30 劍士 fixture；成功載入雪痕海岸、reload 後從標題續玩並恢復地點、世界圖列出已探索 8/8 與海岸詳情、顯示狼與場景素材、使用「返回城鎮」抵達木葉鎮。畫面觀察到霜狼攻擊，fixture HP 660 降至 419。自動化操作未擊殺狼、未在 browser 驗掉落；狼戰鬥／必掉霜牙／拾取／出售由上述 focused integration test 覆蓋。此 fixture 起點是人工構造的 q08 完成存檔，不代表從頭通關；未完整走祭壇傳點往返。
 - 隔離存檔 key maplewood-swordsman:save:v1:dev 已刪除，Playwright session frost-shore-stage-b 已關閉。我送出 Ctrl-C 的 Vite exec session 為 33276；主代理另觀察到 PID 15908 仍服務 5173，故保留該共用／來源未確認的程序，沒有再終止。
 - 本聊天 heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除；當時用量重設後為 1%，ordinary usage allowed。先前8%／06:51為歷史讀值。
-- Stage C 最新狀態見下方與唯一續作報告：q09/q10 已在 445559f，Warden 圖集在 4b5d3d9／3134390，區域圖 UI 在 3ec2b8d；仍待洞窟地圖/q10 gate、Warden gameplay/q11、劍 icon 及集中 browser acceptance。
+- Stage C 程式已擴至完整 Frost Isles 候選：Warden gameplay 在 fa11987，q11 與霜潮長鋒接線在 87fb9a1；詳見唯一續作報告的最新 current snapshot。集中 build/pack/validate/browser 尚待執行。
 
 ## 2026-10-24 霜雪群島 Stage C current (IN_PROGRESS)
 
-- Main 已整合 C1/C2、guide、q09/q10、第三張 frost-tide-cavern、Warden atlas、區域圖 UI，以及霜潮長鋒 sprite/icon。最新程式與驗收 commit 9c88e5c；icon 7137479；Cave content bf7bfb5；Warden runtime 3134390；UI 3ec2b8d。
-- Cave 由 q10 claimed 的松隘東門進入，回岸不設任務鎖；更新 mapOrder、內容驗證、地圖數與 q09/q10 integration route。專用區域地圖顯示三個實際地圖節點。
-- Cave focused checks 已通過：typecheck、check:content、排除 .worktrees 的 frost-quests/app-foundation Vitest（2 files／10 tests）、git diff --check。沒有重跑未變更的 Stage A/B/C1/C2 checks。
-- UI 代理的 Cave/UI focused check 亦通過：在包含 bf7bfb5 等效 Cave content 的 worktree baseline 1c92952、提交測試差異前，world-map.test.ts 6/6、typecheck、git diff --check 通過；只測第三節點、80%/25% landmark、q10 gate claim 前鎖定與退回總覽位置保留。驗收測試提交 8301ef5 已整合為 9c88e5c。
-- 霜潮守望獸圖集已入 main（4b5d3d9/3134390；1632×1360，272px cell，6×5，192px runtime）；AI、獨立重試狀態、兩招與 q11 尚未完成。
-- 長鋒 sprite 64×64 RGBA 在 7838c1d，item icon 128×128 RGBA、遊戲顯示 32×32 在 7137479。尚未註冊 frost-tide-sword item、visual key 或接上 q11 獎勵。
-- Browser、build、pack、validate 尚未跑。集中檢查等 boss/q11/item 完成；沒有宣稱已從頭通關。
-- 本輪已完整重讀根目錄 AGENTS.md 所指 template 與其七份指定文件（game-development、command-contracts、game.schema、game-release、starter playroom-sdk.js、sdk-versioning、save-compatibility）；時間約 2026-10-24 香港 07:06。適用要求：相對素材路徑、iframe 子目錄相容、保留格式 1 舊存檔與 q08/Guardian flags；不修改平台 schema／SDK，不發布。
-- 一次性 heartbeat 06-55-2 已於香港時間 06:55 執行並刪除；當時 quota 1%、ordinary usage allowed。沒有仍待執行的喚醒排程。
-- 下一步：實作 frost-tide-warden encounter、boss 專屬死亡重試、兩種有明確預告與躲避窗口的攻擊，以及 q11 手動 claim 才一次性授予長鋒；先檢查 Lv30 強度、item/visual 接線與格式 1 save contract。完成最小 integration checks 後，再集中 build/pack/validate/browser。保留未追蹤 .worktrees/。
+- Main 最新程式 commit 87fb9a1，上一個 Warden gameplay commit fa11987。唯一未追蹤路徑是 .worktrees/，保留全部 worktree；沒有把它加入 commit。
+- Stage C1/C2 與路線內容已在 main：q09/q10 445559f；第三地圖 Cave bf7bfb5；pine/cave backgrounds df70efa / 06e884d；雪芽素材/接線 0e6a333；Warden atlas provenance/runtime 4b5d3d9 / 3134390；區域圖 UI 3ec2b8d 與 focused test 9c88e5c。以上 commit 不要重挑。
+- Warden gameplay fa11987：Cave 切至 boss music/classification；霜潮守望獸 Lv30、HP 7600、碰撞 72×72、atlas 顯示 192×192；獠牙下砸（900ms 預警、190×120）與低潮湧浪（1100ms 預警、380×30，可跳躍）交替，首領免擊退，有專屬 result/retry/返回海岸路徑。新 boss death/retry 不改 bossDefeated/chapterComplete；q08 Guardian 流程維持原狀。
+- q11/item 接線 87fb9a1：q10 claim 後可在雪芽處手動接取；擊敗 Warden 後回海岸手動 claim 才獲得一次冰潮長鋒。武器攻擊 +50、Lv30、不可購買、同一武器槽；比 Guardian sword +38 高 12，目標是提供封頂後可感知的進展。sprite 64×64 RGBA、icon 128×128 RGBA/runtime32 已在 7838c1d / 7137479；兩者現在註冊為 item/visual。
+- SaveData format 1 未變。缺少 q11 的舊存檔仍有效，q11 開始為 locked/available 由 q10 claim 決定；Warden result/retry/claim 不動 q08／Guardian flags。
+- Warden 包驗證 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest actors/rules/app-gameplay（3 files／38 tests；排除 .worktrees）、git diff --check。
+- q11/item 包驗證 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest rules/app-foundation/frost-quests（3 files／17 tests；排除 .worktrees）、git diff --check。新增 integration 覆蓋老存檔缺 q11、Boss kill 使 q11 ready、返回雪岸手動 claim、獎勵單次與舊 flags 不變。
+- UI agent 先前的第三節點／80%–25% landmark／q10 gate focused tests 仍有效；q11/item 沒改 world-map UI/model/styles/controller/tests，未重跑該組。
+- 尚未做集中瀏覽器、build、pack/validate 或全路線遊玩。下一步依協調安排做一次集中驗收，使用隔離 profile/fixture，清楚標註起點，不稱為從頭通關。
+- 本包開始前已完整重讀模板與七份規格（game-development、command-contracts、game.schema、game-release、starter playroom-sdk.js、sdk-versioning、save-compatibility），香港時間約 2026-10-24 07:23。適用要求為相對資產 URL、iframe 子目錄相容及存檔 format 1 不遷移；沒有發布／push/tag/Release 授權。
+- Stage D 開始前於香港時間約 2026-10-24 07:30 再次完整讀取本地 AGENTS.md、線上模板及七份規格；對本輪適用的是保持相對資產路徑／子目錄 iframe 兼容及 format 1 存檔，完成真實 build 與固定工具 pack/validate；不建立 tag／Release、不發布。
+- Heartbeat 06-55-2 已於香港時間 2026-10-24 06:55 執行並刪除；非待執行排程。當時使用量 1%，ordinary usage allowed；goal 可能仍顯示 usageLimited，需使用者 /goal resume，現有工具無法代為恢復。
 
 ## Agent／worktree／commit
 
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | 9c88e5c；僅 status/report 待 checkpoint commit | content、runtime、integration、focused checks 與進度紀錄 |
+| /root/game_expansion | repository main | 87fb9a1；本次 status/report 待 commit | Frost Isles content/runtime、integration、focused checks 與 Stage D 驗收 |
 | /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | 3e6643a；美術包完成 | Warden／長鋒素材已整合 |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
 
 ## 恢復方式
 
-先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。已在 main 的 Cave bf7bfb5、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。新實作包開始前重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
+先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
