@@ -3,7 +3,7 @@
 ## Intended assets
 
 - `public/assets/equipment/frost-tide-sword-v1.png`: 64×64 RGBA equipment sprite.
-- `public/assets/interface/item-frost-tide-sword-v1.png`: 128×128 RGBA inventory icon, displayed at 32×32. **Not generated yet.**
+- `public/assets/interface/item-frost-tide-sword-v1.png`: 128×128 RGBA inventory icon, displayed at 32×32. **Generated in the following icon stage.**
 
 The design is an original one-handed straight sword with a pale ice-teal crystalline blade, ivory edge/spine, muted-teal guard, dark-brown leather grip, and a small amber pommel. It follows the accepted sword assets' diagonal grip-bottom-left to tip-upper-right orientation and pixel scale.
 
@@ -33,4 +33,13 @@ The edit output is 1254×1254 RGBA with alpha extrema 0–255. The visible sword
 
 `export_sword_sprite.py` is the packaging step. It loads the transparent ImageGen source, adds 128 transparent pixels on every side without modifying source pixels, then resizes to 64×64 with nearest-neighbor sampling. This is format/size preparation only; the sprite was not drawn, recolored, or background-removed by code. The resulting runtime sprite is 64×64 RGBA with a transparent canvas and visible sword pixels. The current visible alpha bounds are `(13, 12, 53, 56)`.
 
-The source PNGs above are retained unchanged beside this log. The inventory icon remains pending and will be generated and committed separately.
+The source PNGs above are retained unchanged beside this log. The icon is documented below and is being delivered in a separate commit.
+
+
+## Inventory icon stage
+
+The icon was generated separately with the ImageGen tool using `transparent_background: true` and the committed runtime sprite as its design reference. The exact prompt was:
+
+> Create the matching 128x128 RGBA inventory icon for the exact original frost-tide one-handed sword in the supplied image. Use that image only as a design reference: preserve its diagonal bottom-left grip to upper-right tip orientation, pale ice-teal crystalline straight blade, ivory edge/spine, small muted-teal guard, dark-brown leather grip, tiny amber pommel, dark pixel outline and simple shading. Render one complete sword centered with generous true-transparent padding, crisp readable pixel clusters that remain clear when displayed at 32x32. Keep the full tip, guard, handle and pommel inside the canvas. Original 2D side-scrolling adventure game asset, match the accepted pixel scale and finish. No hand, character, extra item, aura, glow, splash, sparkle, floor, shadow, frame, UI, label, text, logo or watermark. Transparent background.
+
+The generated original is preserved at `C:\Users\Tommy\.codex\generated_images\01a16a02-5b2c-79c3-858d-ba8b26ec8e5a\exec-111efbfc-507a-417e-b247-e4d1cd6ee72d.png` and copied unchanged to `frost-tide-sword-icon-imagegen-rgba-1254.png`. It is 1254×1254 RGBA with alpha extrema 0–255. The final `public/assets/interface/item-frost-tide-sword-v1.png` is packaged by `export_sword_icon.py`: 128 transparent pixels are added on each side, then nearest-neighbor resized to 128×128. It remains RGBA with alpha extrema 0–255 and visible-alpha bounds `(35, 20, 101, 100)`. No drawing, recoloring, background removal, or alpha thresholding was used in packaging.
