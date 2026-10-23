@@ -27,3 +27,4 @@ Text (verbatim): none.
 Constraints: real transparent alpha; only the single fang icon; preserve the visual scale and outline clarity of the local references.
 Avoid: any words, letters, numerals, UI frame, tile, background, scenery, wolf or other creature, shield, sword, ice blade, extra objects, particles, glow, cast shadow, checkerboard pattern, logo, or watermark.
 ```
+- Preserved unchanged original inside this repository at `art-source/expansion-frost/interface/item-frost-fang-generated-v1.png` (1254 × 1254 RGBA); this copy is byte-identical to the generated output above.
