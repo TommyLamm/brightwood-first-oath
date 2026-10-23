@@ -50,9 +50,9 @@ Stage B commits：9f90269（wolf／loot 與玩法接線）、61db462（狼 atlas
 - 瀏覽器集中檢查為 PARTIAL，非完整路線驗收。使用隔離 Playwright profile，起點是人工構造的 q08 claimed／Lv30 fixture，並非從頭通關。可續玩狀態在 reload 後恢復到雪岸；世界圖顯示 8/8 已探索、雪岸地標與狼情報；畫面確認狼 atlas 與雪岸背景出現在實際場景，雪狼攻擊使測試角色 HP 由 660 降為 419；「返回城鎮」成功抵達木葉鎮。沒有完成狼擊殺或 browser 掉落檢查，沒有走完整祭壇傳點往返；該戰鬥與掉落由 focused integration test 覆蓋。隔離 save key 已刪除、Playwright session 已關閉。共用 Vite PID 15908 由主代理觀察且仍在服務 5173；未終止來源未確認的程序。
 - 未執行 full test suite、build、完整主線流程、發布或 tag／Release。
 
-## 2026-10-24 Stage C current snapshot
+## 2026-10-24 Stage D current snapshot
 
-Main 最新程式 commit 87fb9a1；Warden gameplay 已在 fa11987。plan/status.md 是唯一狀態板。Stage A/B、C1/C2 與 UI check 的歷史證據保留於上文及狀態板，不重複重跑。
+Main 最新 runtime commit 288693e；q11/item 接線在 87fb9a1、Warden gameplay 在 fa11987。plan/status.md 是唯一狀態板。Stage A/B、C1/C2 與 UI check 的歷史證據保留於上文及狀態板，不重複重跑。
 
 - 霜雪三張可玩地圖與 q09/q10 接線已在 main。q10 claim 後松隘東門開放；Cave 西出口始終可退回 Pine。UI 區域圖顯示真實地圖節點，世界總覽與 q10 lock 曾由 UI 代理 focused 驗收（6/6）。
 - fa11987 接入 frost-tide-warden：Cave boss/music、Lv30/HP7600/碰撞72×72、192×192 atlas；交替 frost-tusk-slam 與 low-tide-wave，預警各900ms/1100ms，hit area 分別190×120與380×30。Boss death 開啟專屬結果及重試；結果返回到 Frost Shore。Guardian 的旗標與 q08 流程沒有改動。
@@ -64,12 +64,21 @@ Main 最新程式 commit 87fb9a1；Warden gameplay 已在 fa11987。plan/status.
 - 集中 browser、當前版本候選確認、build、固定工具 pack/validate 尚未執行；也沒有完整從頭通關證據。下一步先確認未使用版本候選，再以隔離 profile/fixture 集中驗入口、region 切換、boss preview/攻擊/返回/重試、q11 手動獎勵/存檔重載與 runtime 素材。真實 Warden 戰鬥的瀏覽器結果尚未驗證，focused integration 不等於 browser QA。
 - 本次 q11/item 開發包於 2026-10-24 香港時間約 07:23 完整讀取根目錄指定 Playroom template 與其七份 main 文件；沿用相對路徑、iframe 子目錄可用與存檔相容原則。不改平台 SDK/schema，不發布/push/tag/Release。
 
+## Stage D candidate and focused acceptance (2026-10-24)
+
+- Versions in local package/game manifests and existing tags were checked: beta.1–beta.5 were already used, so beta.6 was selected and committed in `3b327e1`. This is a local candidate only; no tag, Release, upload or publish was made.
+- The first beta.6 browser launch caught a renderer timing contract mismatch for the crab idle row. `799d08f` changed it to the shared 200 ms idle cadence. A subsequent Cave load found Warden idle/dead cadence mismatches; `288693e` set those to the shared 200/100 ms values. `npm.cmd run check:content` passed after these manifest corrections.
+- Final `npm.cmd run build` passed (Vite 8.3.4, 62 modules). The pinned tools 1.1.0 pack command produced `artifacts/brightwood-first-oath-1.0.0-beta.6.zip`, and the matching pinned `validate-game.mjs` reported `Valid: brightwood-first-oath v1.0.0-beta.6 (tools 1.1.0)`. The ZIP is 48,494,575 bytes (~46.3 MiB), under the 64 MiB package budget. Build, pack and validation were run once after the final timing fixes.
+- Browser acceptance is PARTIAL. It used a disposable, schema-validated q08-claimed / q10-claimed Level 30 fixture, not a from-scratch playthrough or the user's save. The app entered the regional map and Cave; all three Frost Isles nodes and 3/3 explored state appeared in that fixture; the cave environment, crab, Warden and telegraph rendered with zero console errors after the timing fixes. The character later died during timed combat before Warden victory. Browser QA therefore did not verify victory, result/retry, return to Pine/Shore, or manual q11 claim. The isolated save remained format 1, q11 was absent, the existing fixture flags remained true, and reload returned to the title with the Cave location retained. Focused integration tests recorded in the q11 section cover kill → ready → return → manual claim and one-time reward; they are not a substitute for the uncompleted browser path.
+- A warning-window capture is retained at `output/playwright/frost-isles-beta6/warden-warning.png`. The task-owned Vite server on port 5193 and named disposable fixture files/logs were removed; the screenshot is kept as evidence. No shared server or real save was touched.
+- The browser run exposed the two timing issues above and they were fixed; no other startup or console error remained in the successful Cave load. No full test suite or full playthrough was run.
+- Before this Stage D work, the root `AGENTS.md`, the online game-agent template and all seven linked specifications were fully read (around 2026-10-24 07:30 Hong Kong): game-development, command-contracts, game schema, game-release workflow, starter SDK, SDK versioning and save compatibility. Applicable rules were relative asset URLs/subdirectory iframe compatibility, format 1 save compatibility, and pinned build/package validation. No release or platform action was authorized or performed.
+
 ## Next implementation slice
 
-1. 根據 package.json 與 game.json 檢查下一個實際未使用版本候選，不覆寫 beta.5；確認增加版本只改必要 manifest/config，不推 tag 或發布。
-2. 集中執行一次必要 build、repo 固定工具 pack/validate，再以隔離 profile/save 做一次 browser 子集。從 q08-claimed fixture 明確標示起始狀態；覆蓋雪岸／松隘／洞窟區域切換、q10 gate、Warden 預警/結果/重試/回岸、q11 手動 claim 與 sword visual、reload/舊存檔。若工具啟動失敗且與變更無關，停止排查並記 UNVERIFIED。
-3. 若發現本次變更缺陷，只修相關範圍、跑必要 focused check，另立小 commit；記錄真實失敗／通過及剩餘限制。
-4. Frost Isles 集中驗收完成後，持續改進尚未開發的黃金沙海／遠古遺跡或其他可確認的缺口；先更新本單報告與素材 prompt contract，再分階段提交。沒有停止指示時保留 active，不推送或發布。
+1. The Frost Isles beta.6 candidate has passed build and pinned pack/validate. The browser route remains PARTIAL: when extending QA, use a disposable isolated profile/save and target Warden victory/result/retry/return plus q11 manual claim; identify its fixture start and do not call it a full route. Do not repeat the already passing package checks unless sources change.
+2. Continue the user's authorized world expansion into the remaining planned regions, starting with the Gold Sand Sea or Ancient Ruins. Before each new development package, reread the required online template and its seven linked specifications, state the applicable requirements and smallest acceptance checks, and coordinate a concrete image prompt/path contract before requesting new art.
+3. For each small content/runtime increment, preserve format 1 saves and existing q01–q08/Guardian behavior; run only directly relevant focused checks, commit each safe stage, and keep this report/status board current. No push, tag, Release or platform listing.
 
 ## Agent, worktree and art status
 
@@ -77,10 +86,10 @@ Main 最新程式 commit 87fb9a1；Warden gameplay 已在 fa11987。plan/status.
 - /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 位於 3e6643a；代理回報素材包完成且工作樹 clean。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
 - /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5；代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
 - 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
-- 本報告與狀態板記錄至 87fb9a1；提交文件 checkpoint 時只 stage plan/status.md 與本 report。
+- 本報告與狀態板先前 checkpoint 為 9d400de；最新 runtime commit 為 288693e。文件 checkpoint 只 stage plan/status.md 與本 report。
 
 ## Tools, heartbeat and resume
 
 PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
 
-Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量在恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。恢復 Stage D 時檢查 main/worktrees，保留 WIP，先完成 beta.6 候選確認、一次 build 與固定工具 pack/validate，再做隔離 browser 子集；不重跑已通過的 boss/q11 focused checks。禁止推送、發布、tag 或 Release。
+Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 已完成；若程式或素材未變，不要重跑。browser僅 PARTIAL，下一次集中檢查限補足未驗證的首領結果／重試／回岸／q11手動領獎。禁止推送、發布、tag 或 Release。

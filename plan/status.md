@@ -69,11 +69,11 @@
 - 瀏覽器檢查為 PARTIAL：使用隔離 Playwright profile 的人工 q08 claimed、Lv30 劍士 fixture；成功載入雪痕海岸、reload 後從標題續玩並恢復地點、世界圖列出已探索 8/8 與海岸詳情、顯示狼與場景素材、使用「返回城鎮」抵達木葉鎮。畫面觀察到霜狼攻擊，fixture HP 660 降至 419。自動化操作未擊殺狼、未在 browser 驗掉落；狼戰鬥／必掉霜牙／拾取／出售由上述 focused integration test 覆蓋。此 fixture 起點是人工構造的 q08 完成存檔，不代表從頭通關；未完整走祭壇傳點往返。
 - 隔離存檔 key maplewood-swordsman:save:v1:dev 已刪除，Playwright session frost-shore-stage-b 已關閉。我送出 Ctrl-C 的 Vite exec session 為 33276；主代理另觀察到 PID 15908 仍服務 5173，故保留該共用／來源未確認的程序，沒有再終止。
 - 本聊天 heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除；當時用量重設後為 1%，ordinary usage allowed。先前8%／06:51為歷史讀值。
-- Stage C 程式已擴至完整 Frost Isles 候選：Warden gameplay 在 fa11987，q11 與霜潮長鋒接線在 87fb9a1；詳見唯一續作報告的最新 current snapshot。集中 build/pack/validate/browser 尚待執行。
+- Stage D 候選版本 1.0.0-beta.6 已確認 beta.1–beta.5 為既有版本，於 3b327e1 更新設定；runtime 動作節拍修正在 799d08f、288693e。最終 build、固定工具 pack/validate 通過；隔離 browser 驗收 PARTIAL，未完成首領勝利/q11手動領獎。完整證據與限制見唯一續作報告的 Stage D current snapshot。
 
-## 2026-10-24 霜雪群島 Stage C current (IN_PROGRESS)
+## 2026-10-24 霜雪群島 Stage D current (IN_PROGRESS)
 
-- Main 最新程式 commit 87fb9a1，上一個 Warden gameplay commit fa11987。唯一未追蹤路徑是 .worktrees/，保留全部 worktree；沒有把它加入 commit。
+- 最新程式 commit 288693e；本狀態板記錄 Stage D 驗收。唯一未追蹤路徑是 .worktrees/，保留全部 worktree；沒有把它加入 commit。
 - Stage C1/C2 與路線內容已在 main：q09/q10 445559f；第三地圖 Cave bf7bfb5；pine/cave backgrounds df70efa / 06e884d；雪芽素材/接線 0e6a333；Warden atlas provenance/runtime 4b5d3d9 / 3134390；區域圖 UI 3ec2b8d 與 focused test 9c88e5c。以上 commit 不要重挑。
 - Warden gameplay fa11987：Cave 切至 boss music/classification；霜潮守望獸 Lv30、HP 7600、碰撞 72×72、atlas 顯示 192×192；獠牙下砸（900ms 預警、190×120）與低潮湧浪（1100ms 預警、380×30，可跳躍）交替，首領免擊退，有專屬 result/retry/返回海岸路徑。新 boss death/retry 不改 bossDefeated/chapterComplete；q08 Guardian 流程維持原狀。
 - q11/item 接線 87fb9a1：q10 claim 後可在雪芽處手動接取；擊敗 Warden 後回海岸手動 claim 才獲得一次冰潮長鋒。武器攻擊 +50、Lv30、不可購買、同一武器槽；比 Guardian sword +38 高 12，目標是提供封頂後可感知的進展。sprite 64×64 RGBA、icon 128×128 RGBA/runtime32 已在 7838c1d / 7137479；兩者現在註冊為 item/visual。
@@ -91,11 +91,11 @@
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | 87fb9a1；本次 status/report 待 commit | Frost Isles content/runtime、integration、focused checks 與 Stage D 驗收 |
+| /root/game_expansion | repository main | 程式 288693e；Stage D 驗收已記錄 | Frost Isles content/runtime、candidate build/pack/validate；browser 為 PARTIAL |
 | /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | 3e6643a；美術包完成 | Warden／長鋒素材已整合 |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
 
 ## 恢復方式
 
-先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
+先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。Stage D beta.6 build/pack/validate 已通過，不要在內容未變時重跑；browser只完成隔離 fixture 的 PARTIAL 子集。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
