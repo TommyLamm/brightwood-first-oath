@@ -28,3 +28,17 @@ Both outputs are RGBA 1373x1145 with alpha extrema 0-255 and transparent corners
 > Edit ONLY the third sprite in the third row of this exact transparent 6-by-5 walrus atlas. Move that complete existing walrus sprite straight upward by 36 pixels within its own cell (approximately x458–686, y458–686), so all tusks and feet remain fully inside the third row. Remove only its old stray spill pixels immediately below y687 in that same column, leaving genuine transparency there. Preserve the exact current canvas size, grid, palette, pixel edges, pose and identity, and ALL OTHER 29 sprites unchanged. Do not resize or reposition any other sprite, do not add a background, ground, checkerboard, line, text, shadow or new object.
 
 Inspection: row 3, column 3 was cleared at y=686–688, but this edit altered other cells and introduced boundary alpha at y=229 in columns 3 and 6, and y=687 in columns 2, 4, 5 and 6 (with additional column 4 alpha at y=688). It is retained for provenance only; do not use it as runtime source. No further ImageGen call was made.
+
+## Production atlas export update
+
+The first source-only status above describes the generation stage and is superseded by this export record. The spacing-edit PNG is not loaded directly as a runtime atlas; `export_atlas.py` extracts the generated poses, preserves their alpha pixels, and assembles the production 6x5 atlas at `public/assets/actors/monsters/frost-tide-warden-atlas-v1.png`.
+
+- Runtime dimensions are 1632x1360 RGBA, with equal 272x272 cells; display size remains 192x192 and collision size remains 72x72.
+- The generated source is 1373x1145 RGBA. The export adds one fully transparent column on the right in memory to establish six 229px source cells. It does not modify the saved raw image.
+- Each source pose is cropped to its full-alpha bounds and placed without scaling or resampling, horizontally centered with the lowest alpha pixel aligned to local y=251. Every output cell has at least 16px transparent clearance; all internal cutlines are transparent.
+- Source row 3, column 3 uses crop `(458,458,687,690)` so its complete three-row foot spill remains with that pose. Source row 4, column 3 starts at y=690 to prevent duplication of those spill pixels; it remains within its own transparent lead-in.
+- Rows are idle 2, shuffle-walk 6, attack 4, hurt 2, collapse/dead 4; unused poses repeat the last authored pose in that state. The exact per-cell mapping and measured bounds are in `atlas-export-report.md`.
+- No sprite was redrawn, recolored, alpha-thresholded, or background-removed. The script and report distinguish this deterministic crop-and-placement export from ImageGen output.
+- Visual QA noted a single isolated blue alpha pixel above the hurt pose 2 body. It is present in the original pose's full-alpha bounds and is retained unchanged; it was not treated as the row 3 spill.
+
+The previously recorded statement that no production runtime image existed was true at the time of the source-only commit and is superseded by this export update.
