@@ -103,6 +103,11 @@ export const items: Record<Id, ItemDef> = {
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
     buyPrice: 0, sellPrice: 25, iconKey: 'item:metal-shard', visualKey: null,
   },
+  'frost-fang': {
+    id: 'frost-fang', name: '霜牙', kind: 'material', slot: null, stackLimit: 999,
+    minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 35, iconKey: 'item:frost-fang', visualKey: null,
+  },
   'forest-seed': {
     id: 'forest-seed', name: '林心種子', kind: 'quest', slot: null, stackLimit: 99,
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,

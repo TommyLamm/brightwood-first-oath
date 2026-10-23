@@ -770,6 +770,64 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.toast).toBe('測試訊息');
   });
 
+  it('drops a frost fang, lets the player pick it up, and sell it to the merchant', () => {
+    const nextEntityId = createNextEntityId('frost-wolf-loot');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.quests.q08 = { status: 'claimed', counters: {} };
+    gameplay.pendingTransition = { mapId: 'frost-shore', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+    const wolf = gameplay.monsters.find(({ monsterId }) => monsterId === 'frost-wolf');
+    if (!wolf) throw new Error('Expected a Frost Shore wolf.');
+    gameplay.monsters = gameplay.monsters.map((monster) => monster.id === wolf.id
+      ? {
+        ...monster,
+        hp: 1,
+        mode: 'idle',
+        movement: {
+          ...monster.movement,
+          position: { x: gameplay.movement.position.x + 40, y: 600 },
+          velocity: { x: 0, y: 0 },
+          mode: 'grounded',
+        },
+      }
+      : monster);
+    let nowMs = 2000;
+    gameplay.combat.cooldowns[wolf.id] = { 'enemy-melee': nowMs + 30_000 };
+    const run = (state: typeof gameplay, commands: GameCommand[], at: number) => stepGameplay(state, {
+      catalog,
+      commands,
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 1 / 60,
+      nowMs: at,
+      random: createSeededRandom(44),
+      nextEntityId,
+    }).gameplay!;
+    for (let tick = 0; tick < 35; tick += 1) {
+      gameplay = run(gameplay, tick === 0 ? [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }] : [], nowMs += 1000 / 60);
+    }
+    expect(gameplay.monsters.find(({ id }) => id === wolf.id)?.mode).toBe('dead');
+    const fangDrop = gameplay.drops.find(({ itemId }) => itemId === 'frost-fang');
+    expect(fangDrop).toBeDefined();
+    if (!fangDrop) throw new Error('Expected the guaranteed Frost Fang drop.');
+    gameplay.movement.position = { ...fangDrop.position };
+    gameplay = run(gameplay, [{ seq: 2, type: 'pickup', payload: {} }], nowMs += 1000 / 60);
+    expect(gameplay.drops.some(({ id }) => id === fangDrop.id)).toBe(false);
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'frost-fang')?.quantity).toBe(1);
+
+    gameplay.pendingTransition = { mapId: 'town', spawnId: 'center', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    const merchant = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'merchant')!;
+    gameplay.movement.position = { x: merchant.x, y: merchant.y };
+    const fangIndex = gameplay.saveData.player.bag.findIndex(({ itemId }) => itemId === 'frost-fang');
+    const coinsBeforeSale = gameplay.saveData.player.coins;
+    gameplay = run(gameplay, [{ seq: 3, type: 'interact', payload: {} }], nowMs += 200);
+    gameplay = run(gameplay, [{ seq: 4, type: 'sell', payload: { bagIndex: fangIndex, quantity: 1 } }], nowMs += 200);
+    expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'frost-fang')).toBe(false);
+    expect(gameplay.saveData.player.coins).toBe(coinsBeforeSale + rulesCatalog.items['frost-fang'].sellPrice);
+  });
+
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
     const nextEntityId = createNextEntityId('sell-and-potions');
     const started = startNewGame('旅人', catalog, nextEntityId);

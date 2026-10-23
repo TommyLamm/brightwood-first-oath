@@ -52,7 +52,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian',
+    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper',
   ],
   environment: [
@@ -66,7 +66,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
-      'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed',
+      'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'forest-seed',
       'spore-sample', 'ridge-emblem', 'guardian-core',
     ].map((id) => `item:${id}`),
     ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),

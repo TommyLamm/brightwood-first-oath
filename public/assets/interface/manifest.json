@@ -203,6 +203,16 @@
       "pivotY": 0.5
     },
     {
+      "key": "item:frost-fang",
+      "url": "assets/interface/item-frost-fang-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
       "key": "item:forest-seed",
       "url": "assets/interface/item-forest-seed-v1.png",
       "columns": 1,

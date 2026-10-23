@@ -23,7 +23,7 @@ describe('world atlas information', () => {
     expect(mapLevelLabel(worldCatalog.maps.town!, catalog)).toBe('安全城鎮');
     expect(mapLevelLabel(worldCatalog.maps['forest-edge']!, catalog)).toBe('怪物 Lv.1–8');
     expect(mapLevelLabel(worldCatalog.maps['guardian-arena']!, catalog)).toBe('首領 Lv.30');
-    expect(mapLevelLabel(worldCatalog.maps['frost-shore']!, catalog)).toBe('探索區域');
+    expect(mapLevelLabel(worldCatalog.maps['frost-shore']!, catalog)).toBe('怪物 Lv.30');
     expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
   });
 

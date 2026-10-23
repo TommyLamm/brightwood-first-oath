@@ -203,6 +203,16 @@
       "pivotY": 1
     },
     {
+      "key": "actor:frost-wolf",
+      "url": "assets/actors/monsters/frost-wolf-atlas-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
       "key": "actor:guardian",
       "url": "assets/actors/monsters/guardian-atlas-v2.png",
       "columns": 6,
@@ -1156,6 +1166,87 @@
     {
       "key": "golem:dead",
       "imageKey": "actor:golem",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "frost-wolf:idle",
+      "imageKey": "actor:frost-wolf",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "frost-wolf:walk",
+      "imageKey": "actor:frost-wolf",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "frost-wolf:attack",
+      "imageKey": "actor:frost-wolf",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        125,
+        125,
+        125,
+        125
+      ],
+      "loop": false
+    },
+    {
+      "key": "frost-wolf:hurt",
+      "imageKey": "actor:frost-wolf",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "frost-wolf:dead",
+      "imageKey": "actor:frost-wolf",
       "frames": [
         24,
         25,

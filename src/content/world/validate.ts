@@ -124,9 +124,9 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
     if (monster.monsterId !== 'guardian') normalMonsterIds.add(monster.monsterId);
   }
-  if (normalMonsterIds.size !== 6 || !world.maps['guardian-arena']?.boss
+  if (normalMonsterIds.size !== 7 || !world.maps['guardian-arena']?.boss
     || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian') {
-    return failure('World must use six ordinary monsters and one arena guardian');
+    return failure('World must use seven ordinary monsters and one arena guardian');
   }
 
   for (const [npcId, npc] of Object.entries(world.npcs)) {

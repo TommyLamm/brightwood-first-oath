@@ -3,13 +3,13 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(24);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(25);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
-      'ridge-emblem', 'guardian-core',
+      'ridge-emblem', 'guardian-core', 'frost-fang',
     ]));
     expect(Object.keys(rulesCatalog.skills)).toHaveLength(9);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
@@ -31,7 +31,7 @@ describe('rules catalog', () => {
       'enemy-melee', 'guardian-slam', 'guardian-wave',
     ]);
     expect(Object.keys(rulesCatalog.monsters).sort()).toEqual([
-      'boar', 'golem', 'guardian', 'mushroom', 'sentinel', 'slime', 'snail',
+      'boar', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sentinel', 'slime', 'snail',
     ]);
   });
 
@@ -59,6 +59,17 @@ describe('rules catalog', () => {
     for (const monster of Object.values(rulesCatalog.monsters)) {
       expect(monster.drops.every((drop) => rulesCatalog.items[drop.itemId]?.kind !== 'quest')).toBe(true);
     }
+  });
+
+  it('gives the level-30 Frost wolf a guaranteed sellable fang', () => {
+    const wolf = rulesCatalog.monsters['frost-wolf'];
+    const fang = rulesCatalog.items['frost-fang'];
+    expect(wolf.level).toBe(30);
+    expect(wolf.drops).toContainEqual({ itemId: 'frost-fang', chance: 1, min: 1, max: 1 });
+    expect(fang.kind).toBe('material');
+    expect(fang.buyPrice).toBe(0);
+    expect(fang.sellPrice).toBeGreaterThan(0);
+    expect(wolf.actorKey).toBe('actor:frost-wolf');
   });
 
   it('validates the production catalog and gives a specific missing-drop diagnostic', () => {

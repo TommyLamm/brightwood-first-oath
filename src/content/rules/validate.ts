@@ -20,9 +20,9 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const skillIds = Object.keys(catalog.skills);
   const monsterIds = Object.keys(catalog.monsters);
 
-  if (itemIds.length !== 24) return invalid(`items 數量錯誤：預期 24，實際 ${itemIds.length}`);
+  if (itemIds.length !== 25) return invalid(`items 數量錯誤：預期 25，實際 ${itemIds.length}`);
   if (skillIds.length !== 9) return invalid(`skills 數量錯誤：預期 9，實際 ${skillIds.length}`);
-  if (monsterIds.length !== 7) return invalid(`monsters 數量錯誤：預期 7，實際 ${monsterIds.length}`);
+  if (monsterIds.length !== 8) return invalid(`monsters 數量錯誤：預期 8，實際 ${monsterIds.length}`);
   if (!hasMatchingIds(catalog.items)) return invalid('items 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.skills)) return invalid('skills 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.monsters)) return invalid('monsters 定義 id 必須與 Record key 完全相同');

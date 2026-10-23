@@ -37,6 +37,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 350, attackCooldownMs: 1400, respawnMs: 8000, actorKey: 'actor:sentinel',
     drops: [{ itemId: 'metal-shard', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.2, min: 1, max: 1 }, { itemId: 'small-blue', chance: 0.1, min: 1, max: 1 }, { itemId: 'iron-mail', chance: 0.03, min: 1, max: 1 }],
   },
+  'frost-wolf': {
+    id: 'frost-wolf', name: '霜牙雪狼', level: 30, maxHp: 980, attack: 46, defense: 18, exp: 480, coins: 75,
+    speed: 102, width: 50, height: 42, aggroRange: 320, attackRange: 60,
+    attackWindupMs: 500, attackCooldownMs: 1450, respawnMs: 8000, actorKey: 'actor:frost-wolf',
+    drops: [{ itemId: 'frost-fang', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.15, min: 1, max: 1 }],
+  },
   guardian: {
     // T00 requires collision dimensions; 08 leaves the boss dimensions unspecified.
     // These are project-specific logical dimensions, not an original-game measurement.
