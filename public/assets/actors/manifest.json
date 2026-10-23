@@ -1318,7 +1318,7 @@
       "key": "frost-crab:idle",
       "imageKey": "actor:frost-crab",
       "frames": [0, 1],
-      "frameMs": [220, 220],
+      "frameMs": [200, 200],
       "loop": true
     },
     {
