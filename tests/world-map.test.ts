@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { worldCatalog } from '../src/content/world/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { startNewGame } from '../src/app/gameplay.js';
-import { WORLD_LANDMARKS, mapLevelLabel, portalRequirements } from '../src/ui/world-map-model.js';
+import { WORLD_LANDMARKS, PLANNED_REGIONS, mapLevelLabel, portalRequirements } from '../src/ui/world-map-model.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 function save() {
@@ -23,8 +23,20 @@ describe('world atlas information', () => {
     expect(mapLevelLabel(worldCatalog.maps.town!, catalog)).toBe('安全城鎮');
     expect(mapLevelLabel(worldCatalog.maps['forest-edge']!, catalog)).toBe('怪物 Lv.1–8');
     expect(mapLevelLabel(worldCatalog.maps['guardian-arena']!, catalog)).toBe('首領 Lv.30');
+    expect(mapLevelLabel(worldCatalog.maps['frost-shore']!, catalog)).toBe('探索區域');
+    expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
   });
 
+  it('opens the Frost Isles only after q08 is claimed and keeps an unrestricted return route', () => {
+    const data = save();
+    const outbound = worldCatalog.maps['guardian-arena']!.portals.find(({ targetMapId }) => targetMapId === 'frost-shore')!;
+    const returnRoute = worldCatalog.maps['frost-shore']!.portals[0]!;
+    expect(portalRequirements(outbound, data, catalog)).toEqual({ open: false, text: '需完成「守衛的安息」並領獎' });
+    data.quests.q08 = { status: 'claimed', counters: {} };
+    expect(portalRequirements(outbound, data, catalog).open).toBe(true);
+    expect(returnRoute.targetMapId).toBe('guardian-arena');
+    expect(portalRequirements(returnRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
+  });
   it('keeps the camp exit locked until the quest reward has been claimed, without modifying the save', () => {
     const data = save();
     const portal = worldCatalog.maps.camp!.portals[0]!;

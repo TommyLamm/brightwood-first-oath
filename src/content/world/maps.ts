@@ -134,9 +134,21 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [{ id: 'entry', x: 160, y: 600 }],
     portals: [
       { id: 'guardian-arena:exit', x: 100, y: 600, targetMapId: 'mine-gate', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'guardian-arena:frost', x: 1340, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'left', requiredQuestId: 'q08', minLevel: 1 },
     ],
     npcs: [],
     monsters: [{ monsterId: 'guardian', x: 1000, roamLeft: 600, roamRight: 1250 }],
+  },
+  {
+    id: 'frost-shore', name: '雪痕海岸', width: 1920, themeKey: 'frost', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[280, 500, 600, 500], [760, 440, 1120, 440], [1300, 490, 1650, 490]],
+    ladders: [{ x: 440, topY: 500, bottomY: 600 }, { x: 900, topY: 440, bottomY: 600 }, { x: 1480, topY: 490, bottomY: 600 }],
+    extraSpawns: [],
+    portals: [
+      { id: 'frost-shore:south', x: 100, y: 600, targetMapId: 'guardian-arena', targetSpawnId: 'entry', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [],
   },
 ];
 

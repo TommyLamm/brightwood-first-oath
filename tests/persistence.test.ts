@@ -162,6 +162,15 @@ describe('persistence', () => {
     expect(oversized.player.name).toHaveLength(65 * 1024);
   });
 
+  it('accepts the Frost Isles as a visited location in the existing save format', () => {
+    const existingFormatSave = makeSave();
+    existingFormatSave.location = { mapId: 'frost-shore', spawnId: 'left' };
+    existingFormatSave.visitedMaps.push('frost-shore');
+
+    const result = validateSave(existingFormatSave, catalog);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value.location).toEqual({ mapId: 'frost-shore', spawnId: 'left' });
+  });
   it('retries a lost cloud result with identical data, revision, and request ID', async () => {
     const statuses: SaveStatus[] = [];
     const firstError = new Error('response lost');

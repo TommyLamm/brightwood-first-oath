@@ -15,7 +15,7 @@ describe('T14-a app foundation', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(Object.keys(result.value.rules.items)).toHaveLength(24);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(7);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(8);
     }
   });
 

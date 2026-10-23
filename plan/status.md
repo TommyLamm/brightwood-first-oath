@@ -2,7 +2,16 @@
 
 2026-10-18 repository 更新：Public repository [TommyLamm/brightwood-first-oath](https://github.com/TommyLamm/brightwood-first-oath) 的 main 已推送，[v1.0.0-beta.1 預發布 Release](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.1) 已建立，唯一 `game.zip` 已上傳；GitHub workflow 建置／固定工具驗證／pack／validate 全部成功。三個已完成工作樹與臨時分支已清除，原提交歷史保存在 main；尚未追蹤的計畫、來源原稿與預覽已補提交。實際結果見 [GitHub 發布報告](reports/github-release-20261018.md)。下方先前「沒有 tag／Release」是候選驗收當時的歷史狀態。Playroom 尚未上架。
 
-只有主 Agent 更新。建立計劃不算實作完成。狀態：NOT_STARTED → READY → IN_PROGRESS → PARTIAL／BLOCKED／REVIEW → DONE。缺驗收標 UNVERIFIED，不寫 PASS。
+由主 Agent 統一維護；經主 Agent 明確授權的實作代理可更新自己負責的工作段。建立計劃不算實作完成。狀態：NOT_STARTED → READY → IN_PROGRESS → PARTIAL／BLOCKED／REVIEW → DONE。缺驗收標 UNVERIFIED，不寫 PASS。
+
+## 2026-10-24 霜雪群島擴充（IN_PROGRESS）
+
+- Stage A 已實作：新增 frost-shore「雪痕海岸」，q08 領獎後可由 Guardian Arena 前往，回程不設任務鎖；補入 world map 地標與探索進度、mapOrder、地圖驗證、frost 背景主題及格式 1 存檔相容測試。
+- Stage A 最小檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、git diff --check；指定 world-map、persistence、app-foundation 測試檔後，Vitest 回報 9 files／74 tests passed。此命令輸出比預期測試檔數廣，未再重跑。
+- Stage A 實作 commit 待提交；素材接入 commit：97be61e（sky，原始 7121210）、f632528（far/mid，原始 a5d86d3）。未推送，沒有建立 tag／Release 或發布。
+- 尚未完成：frost-shore 暫無怪物；狼 atlas、霜牙圖示與地區卡插畫待素材代理交付。無瀏覽器／正式遊玩／視覺驗收。
+- 後續方向：三圖小區域 frost-shore → frost-pine-pass → frost-tide-cavern；加一種具短距衝刺行為的敵人、一隻有可躲預警的小首領，以及可領取／回報且讓霜牙能收集兌獎的區域挑戰。保持等級上限 30、桌面單人劍士和原有主線／格式 1 存檔。
+- 本輪唯一追蹤報告：reports/world-expansion-20261024.md。
 
 | 包 | 狀態 | 擁有者 | 輸出／下一步 |
 | --- | --- | --- | --- |

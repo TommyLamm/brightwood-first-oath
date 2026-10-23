@@ -47,7 +47,7 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   chart.setAttribute('aria-label', '木葉世界手繪地圖，點選地標查看區域');
   const artwork = element(document, 'img', 'ms-atlas-art');
   artwork.src = new URL('assets/interface/world-map-background-v2.png', document.baseURI).href;
-  artwork.alt = '木葉世界群島：木葉島有七個可探索地區，周邊的雪山、沙漠及遺跡區域仍待開發。';
+  artwork.alt = '木葉世界群島：木葉島與霜雪群島已有八個可探索地區，黃金沙海及遠古遺跡仍待開發。';
   artwork.draggable = false;
   artwork.addEventListener('error', () => {
     artwork.hidden = true;

@@ -123,6 +123,36 @@
       "pivotY": 0
     },
     {
+      "key": "env:frost:sky",
+      "url": "assets/environment/env-frost-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:far",
+      "url": "assets/environment/env-frost-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:mid",
+      "url": "assets/environment/env-frost-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
       "key": "env:tile-ground",
       "url": "assets/environment/env-tile-ground-v1.png",
       "columns": 1,

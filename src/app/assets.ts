@@ -56,7 +56,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper',
   ],
   environment: [
-    ...(['camp', 'town', 'forest', 'rock'] as const).flatMap((theme) =>
+    ...(['camp', 'town', 'forest', 'rock', 'frost'] as const).flatMap((theme) =>
       (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
     'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',

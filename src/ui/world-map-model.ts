@@ -10,6 +10,7 @@ export const WORLD_LANDMARKS: Record<string, { x: number; y: number; description
   'red-ridge': { x: 48, y: 29, description: '赭紅岩壁間蜿蜒的山路，通往被封印的古老礦區。' },
   'mine-gate': { x: 53, y: 46, description: '礦車與木樑停留在舊時光裡，岩石深處傳來守衛的回聲。' },
   'guardian-arena': { x: 52, y: 61, description: '古礦盡頭的石造祭壇。面對守衛，完成你的第一個誓約。' },
+  'frost-shore': { x: 80, y: 18, description: '越過守衛祭壇後，霜雪群島的海岸在冰霧間展開。' },
 };
 
 export function mapLevelLabel(map: MapDef, catalog: ContentCatalog): string {
@@ -32,7 +33,6 @@ export function portalRequirements(portal: Portal, data: SaveData, catalog: Cont
 
 /** Planned areas are atlas information only; they are never added to the playable catalog or save data. */
 export const PLANNED_REGIONS = [
-  { id: 'planned-frost-isles', name: '霜雪群島', x: 80, y: 18, description: '雲霧後的雪山群島，區域內容尚待開發。' },
   { id: 'planned-golden-sands', name: '黃金沙海', x: 85, y: 53, description: '海的另一側是金色沙漠，區域內容尚待開發。' },
   { id: 'planned-ancient-ruins', name: '遠古遺跡', x: 69, y: 86, description: '沉睡在南方海域的古老遺跡，區域內容尚待開發。' },
 ];

@@ -1,7 +1,7 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
 
-const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena'];
+const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore'];
 const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper'];
 const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08'];
 const expectedNpcPlacements: Record<Id, Id> = {
@@ -9,11 +9,11 @@ const expectedNpcPlacements: Record<Id, Id> = {
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
-  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock',
+  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost',
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss',
+  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field',
 };
 
 function failure(message: string): Result<WorldCatalog> {
@@ -224,7 +224,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
       }
     }
   }
-  if (reachableMaps.size !== expectedMapIds.length) return failure('All seven maps must be reachable from camp');
+  if (reachableMaps.size !== expectedMapIds.length) return failure('All maps must be reachable from camp');
 
   const claimedQuests = new Set<Id>();
   const rewardedItems = new Set<Id>();
