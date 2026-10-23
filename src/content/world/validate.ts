@@ -2,10 +2,10 @@ import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../con
 import { questDropByQuest } from '../rules/index.js';
 
 const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass'];
-const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper'];
+const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide'];
 const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08'];
 const expectedNpcPlacements: Record<Id, Id> = {
-  guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge',
+  guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore',
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',

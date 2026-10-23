@@ -133,6 +133,16 @@
       "pivotY": 1
     },
     {
+      "key": "actor:frost-guide",
+      "url": "assets/actors/npcs/frost-guide-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
       "key": "actor:hero-cloth",
       "url": "assets/actors/hero-cloth-v9.png",
       "columns": 8,
@@ -404,6 +414,19 @@
         100
       ],
       "loop": false
+    },
+    {
+      "key": "npc:frost-guide:idle",
+      "imageKey": "actor:frost-guide",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
     },
     {
       "key": "npc:guide:idle",

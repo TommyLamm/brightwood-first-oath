@@ -53,7 +53,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
     'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab',
-    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper',
+    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide',
   ],
   environment: [
     ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave'] as const).flatMap((theme) =>

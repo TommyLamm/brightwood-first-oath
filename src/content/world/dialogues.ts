@@ -25,6 +25,12 @@ export const dialogues: Record<Id, DialogueLine[]> = {
       text: '我是晨露，會在木葉鎮替旅人免費恢復體力與魔力。若你剛結束戰鬥或準備出發，先靠近我休整，再確認下一段路線。',
     },
   ],
+  'frost-guide-intro': [
+    {
+      speaker: '雪芽',
+      text: '我是雪芽，負責照看霜雪群島的海岸通道。狼群與冰甲蟹近日擋住北方路線，請先在此接下委託，完成後回來報告。',
+    },
+  ],
   'keeper-intro': [
     {
       speaker: '礦道守望者',
