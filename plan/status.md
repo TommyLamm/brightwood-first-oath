@@ -73,10 +73,27 @@
 
 ## 2026-10-24 霜雪群島 Stage C current (IN_PROGRESS)
 
-- C1/C2, guide wiring, route-map artwork/UI, quest gates, and Warden atlas are on main. Latest content commit: 445559f (q09/q10 manual accept/claim, q09 Coast→Pine gate); latest UI commit: 3ec2b8d.
-- C2 focused checks: typecheck/content and actor/combat Vitest with .worktrees excluded passed (2 files, 18 tests). q09/q10: typecheck/content passed; focused frost-quest/journal/quest/app-foundation checks passed after fixing reachable objective locations (initial run 3 files/23 tests plus one corrected journal expectation; final journal check 1 file/3 tests). No browser/build for q09/q10.
-- Regional-map UI focused checks, run by its agent on the exact q09/q10 parent 445559f before its UI-only commit d978ab4: typecheck and six world-map tests passed. Commit 3ec2b8d integrates that result; no checks rerun after cherry-pick.
-- Third playable map frost-tide-cavern, q10 Cave route gate, Warden gameplay, q11 and sword reward remain unimplemented. Cave scenery is on main. Warden provenance/runtime commits are integrated as 4b5d3d9/3134390 (source sequence 8767a17→8e4c87e); atlas is six-by-five, 272px cells, runtime 192px.
-- Regional-map UI commit d978ab4 is integrated on main as 3ec2b8d; its agent worktree .worktrees/frost-region-map / codex/frost-region-map is clean at d978ab4. UI agent reports it uses existing select-map and relative asset wiring; it awaits frost-tide-cavern for third-node/q10-lock focused check. The older frost-interface-art worktree is clean at 2b4bb2a.
-- Next: add frost-tide-cavern with q10-claimed outbound gate and free return; implement Warden encounter and q11 with a one-time sword reward. Sword source/edit/export script and 64px RGBA runtime candidate exist uncommitted on expansion-art; icon/source log are pending. Then run one browser route on an isolated fixture/save. No push, tag, Release or platform publication.
-- Resume from reports/world-expansion-20261024.md; inspect Git status/worktree list and preserve untracked .worktrees and sword WIP. Heartbeat 06-55-2 ran at 2026-10-24 06:55 Hong Kong time and was deleted; quota then read 1% used, ordinary usage allowed.
+- Main 已整合 C1/C2、guide、q09/q10、第三張 frost-tide-cavern、Warden atlas、區域圖 UI，以及霜潮長鋒 sprite/icon。最新程式與驗收 commit 9c88e5c；icon 7137479；Cave content bf7bfb5；Warden runtime 3134390；UI 3ec2b8d。
+- Cave 由 q10 claimed 的松隘東門進入，回岸不設任務鎖；更新 mapOrder、內容驗證、地圖數與 q09/q10 integration route。專用區域地圖顯示三個實際地圖節點。
+- Cave focused checks 已通過：typecheck、check:content、排除 .worktrees 的 frost-quests/app-foundation Vitest（2 files／10 tests）、git diff --check。沒有重跑未變更的 Stage A/B/C1/C2 checks。
+- UI 代理的 Cave/UI focused check 亦通過：在包含 bf7bfb5 等效 Cave content 的 worktree baseline 1c92952、提交測試差異前，world-map.test.ts 6/6、typecheck、git diff --check 通過；只測第三節點、80%/25% landmark、q10 gate claim 前鎖定與退回總覽位置保留。驗收測試提交 8301ef5 已整合為 9c88e5c。
+- 霜潮守望獸圖集已入 main（4b5d3d9/3134390；1632×1360，272px cell，6×5，192px runtime）；AI、獨立重試狀態、兩招與 q11 尚未完成。
+- 長鋒 sprite 64×64 RGBA 在 7838c1d，item icon 128×128 RGBA、遊戲顯示 32×32 在 7137479。尚未註冊 frost-tide-sword item、visual key 或接上 q11 獎勵。
+- Browser、build、pack、validate 尚未跑。集中檢查等 boss/q11/item 完成；沒有宣稱已從頭通關。
+- 本輪已完整重讀根目錄 AGENTS.md 所指 template 與其七份指定文件（game-development、command-contracts、game.schema、game-release、starter playroom-sdk.js、sdk-versioning、save-compatibility）；時間約 2026-10-24 香港 07:06。適用要求：相對素材路徑、iframe 子目錄相容、保留格式 1 舊存檔與 q08/Guardian flags；不修改平台 schema／SDK，不發布。
+- 一次性 heartbeat 06-55-2 已於香港時間 06:55 執行並刪除；當時 quota 1%、ordinary usage allowed。沒有仍待執行的喚醒排程。
+- 下一步：實作 frost-tide-warden encounter、boss 專屬死亡重試、兩種有明確預告與躲避窗口的攻擊，以及 q11 手動 claim 才一次性授予長鋒；先檢查 Lv30 強度、item/visual 接線與格式 1 save contract。完成最小 integration checks 後，再集中 build/pack/validate/browser。保留未追蹤 .worktrees/。
+
+## Agent／worktree／commit
+
+| Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
+| --- | --- | --- | --- |
+| /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
+| /root/game_expansion | repository main | 9c88e5c；僅 status/report 待 checkpoint commit | content、runtime、integration、focused checks 與進度紀錄 |
+| /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | 3e6643a；美術包完成 | Warden／長鋒素材已整合 |
+| /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
+| 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
+
+## 恢復方式
+
+先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。已在 main 的 Cave bf7bfb5、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。新實作包開始前重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。

@@ -52,32 +52,35 @@ Stage B commits：9f90269（wolf／loot 與玩法接線）、61db462（狼 atlas
 
 ## 2026-10-24 Stage C current snapshot
 
-C1/C2, guide, route-map UI/art, q09/q10 and Warden atlas provenance/runtime are committed on main. Latest content commit is 445559f; regional-map UI commit is 3ec2b8d. Pine/cave scenery, crab atlas, ice-shell icon, and guide details are inventoried below.
+截至程式驗收 commit 9c88e5c，main 已整合 C1/C2、雪芽 NPC、q09/q10、第三張 frost-tide-cavern、Warden atlas、霜雪區域圖 UI、長鋒 sprite 與 icon。q09/q10 在 445559f；Cave content 在 bf7bfb5；長鋒 sprite 在 7838c1d，icon 在 7137479；Warden runtime atlas 在 3134390；區域圖 UI 在 3ec2b8d；Cave 節點與 q10 gate focused UI tests 在 9c88e5c。
 
-- C1 frost-pine-pass is playable (b457c2e). C2 frost-crab bounded charge and ice-shell drop is committed (a034dba); atlas registration is fe3f23a/6c28d21.
-- Guide sprite/runtime is 0e6a333 and NPC wiring 5be355c. Route-map art is 3c78f01; regional-map UI is integrated as 3ec2b8d and renders its regional selection with the existing map action.
-- q09 and q10 manual quest flows, costs/rewards, and the q09 Coast→Pine gate are committed in 445559f. Pine→Coast return remains open. The q10 flow consumes four ice-shells after six crab kills. No Cave map or q10 route gate exists yet.
-- Cave scenery is already integrated (06e884d). Warden provenance and runtime atlas are integrated on main as 4b5d3d9 and 3134390 (original commits 8767a17→8e4c87e); atlas is 1632×1360, six by five, 272px cells, runtime 192px. Warden gameplay is not wired yet.
-- One-time heartbeat 06-55-2 ran at 2026-10-24 06:55 Hong Kong time and was deleted after firing. Quota then reset to 1% used at 06:55; ordinary usage was allowed. Earlier 8% / 06:51 readings are historical only.
-
-q09/q10 checks recorded from their implementation: typecheck and content validation passed. Focused Vitest covered frost-quests, quests, journal-selection, and app-foundation; initial run passed 3 files/23 tests with one journal expectation failure; after fixing reachable objective locations, typecheck and journal-selection passed (1 file/3 tests). The other three files passed in the initial run. The focused commands excluded .worktrees to avoid duplicate discovery. No build or browser run was made for q09/q10. C2 actor/combat checks remain as previously recorded (2 files/18 tests, plus typecheck/content). Regional-map UI check, run by its agent on base commit 445559f before its UI-only commit d978ab4: typecheck and six world-map focused tests passed. The commit is integrated as 3ec2b8d; checks were not repeated after cherry-pick. Do not repeat checks unless related code changes.
+- Cave frost-tide-cavern 使用 frost-cave 背景及三隻已註冊的 frost-crab；松隘→洞窟要求 q10 claimed，洞窟→松隘不設鎖。已更新 mapOrder、內容 validator、地圖數與 q09/q10 integration route。
+- Warden atlas provenance/runtime 已整合為 4b5d3d9／3134390：1632×1360 RGBA、6×5、272px cell、192px runtime。boss encounter、兩招、獨立重試與 q11 尚待開發。
+- 長鋒正式 sprite 為 64×64 RGBA；icon 為 128×128 RGBA、遊戲顯示 32×32。來源、prompt、原稿及 export scripts 隨素材 commits 保存。尚未註冊為 item/visual，也未作為任務獎勵。
+- Cave focused checks 在 bf7bfb5 通過：npm.cmd run typecheck、npm.cmd run check:content、排除 .worktrees 的 frost-quests/app-foundation Vitest（2 files／10 tests）、git diff --check。
+- UI 代理在具有 bf7bfb5 等效 Cave content 的 worktree baseline 1c92952 執行 world-map.test.ts（6/6）、typecheck、git diff --check，均通過；測試涵蓋第三節點、80%／25% landmark、q10 claimed 前鎖定及退回總覽後位置保留。測試差異提交 8301ef5 並已整合成 9c88e5c。沒有重跑已通過且未變更的 checks。
+- 尚未做 browser、build、pack/validate、boss/q11 整合或完整路線驗收。區域可切換與 q10 gate 有 focused UI evidence，但尚未集中檢視其實際遊戲流程。
+- 格式 1 舊存檔、q08/Guardian flags、桌面單人劍士與 Lv30 上限需維持。q11 只在手動 claim 時標記 Frost Isles 完成並給長鋒一次；boss死亡／重試不可提前完成或重發獎勵。
+- 本次新開發包完整讀取根目錄 AGENTS.md 所指 Playroom template 及其七份 main 規格：docs/game-development.md、docs/command-contracts.md、templates/game.schema.json、templates/game-release.yml、examples/starter/playroom-sdk.js、docs/sdk-versioning.md、docs/save-compatibility.md，約於 2026-10-24 香港時間 07:06。適用要求包括相對資源 URL、iframe 子目錄可運行、舊存檔相容；本輪不改 Playroom schema/SDK，沒有發布授權。
+- heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行後刪除。當時 quota 顯示 1% used、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，沒有可用代理 API resume，必要時使用者需輸入 /goal resume。
 
 ## Next implementation slice
 
-1. Add frost-tide-cavern as the third playable Frost Isles map. Pine→Cave requires q10 claimed; Cave→Pine is always open, preserving a safe return for existing or older saves.
-2. Keep world-map UI files with the UI agent. Add focused coverage for the new node, q10 gate, free return, and existing save format 1.
-3. Implement frost-tide-warden with its own encounter/retry state and two telegraphed attacks. Add q11 so only manual claim records Frost Isles completion and grants frost-tide-sword once; preserve q08/guardian flags and save format 1.
-4. Integrate the sword icon when delivered, then run one concentrated browser route on an isolated fixture/save. Report clearly that the fixture does not represent a fresh playthrough.
+1. 檢視既有 boss encounter、skill damage、預告與 death/retry lifecycle，接入 frost-tide-warden 專用 encounter state，不重用 guardian/q08 flags。
+2. 實作 frost-tusk-slam 與 low-tide-wave：清楚預警、可躲時窗、命中距離/邊界判定及一次傷害。Boss 使用現有 atlas attack row。以 focused tests 覆蓋 attack windows、死亡與重試。
+3. 註冊 frost-tide-sword（Lv30、不可購買，attack 按現有 Lv30 裝備調整）及 sprite/icon visual keys；q11 手動 accept/claim 時才消耗目標、一次性發獎並完成霜雪群島。保留 q08／Guardian flags、format 1 舊檔及已在松隘玩家的無鎖回岸。
+4. 累積 boss/q11/item checks 並確認 UI gate check 後，再集中做一次 build/pack/validate 和隔離 browser route；fixture 起點及範圍須清楚標示，不得稱為從頭通關。沒有推送或發布授權。
+
 ## Agent, worktree and art status
 
-- /root coordinates and supplies prompts; /root/game_expansion owns content/runtime code, focused checks, Git integration, and this report.
-- /root/expansion_art uses .worktrees/expansion-art / codex/expansion-art at 8e4c87e. Warden provenance/runtime is already on main. Sword sprite sources, transparent edit, export script, and 64×64 RGBA runtime candidate are untracked in art-source/expansion-frost/sword/ and public/assets/equipment/; source log/commit and icon are pending. Preserve this WIP; do not clean or copy it before handoff.
-- /root/frost_interface_art delivered regional-map UI commit d978ab4; integrated on main as 3ec2b8d. The four-file UI/model/style/test change is complete and agent worktree .worktrees/frost-region-map / codex/frost-region-map is clean at d978ab4. The agent reports no additional controller/manifest wiring; UI uses the existing select-map action and relative route-map asset (3c78f01). It awaits frost-tide-cavern content for a focused third-node/q10-lock check. Older .worktrees/frost-interface-art remains clean at 2b4bb2a.
-- The main checkout has only the untracked .worktrees directory unless later status reports say otherwise. Stage explicit files; never use git add ..
+- /root 是協調代理；/root/game_expansion 在 main 獨占 content/runtime code、Git 整合、focused checks 與本報告。
+- /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 位於 3e6643a，素材代理回報 clean。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
+- /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5，代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
+- 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
+- 本報告與狀態板在 9c88e5c 後仍有編輯，需只 stage 這兩個明確文件並 commit。
+
 ## Tools, heartbeat and resume
 
-The default sandbox shell previously stalled; the verified local method is powershell.exe with login=false and a narrow require_escalated exec_command. functions.apply_patch stalled without modifying files; small PowerShell edits worked. Do not repeat failed startup checks or broaden diagnostics. Focused Vitest commands must include --exclude "**/.worktrees/**"; the earlier inflated file counts likely included the other worktrees.
+PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
 
-Heartbeat 06-55-2 ran at 2026-10-24 06:55 Hong Kong time and was deleted after firing. Quota then showed 1% used with ordinary usage allowed; the prior 8% / 06:51 reading was historical.
-
-To resume: read this report and plan/status.md, inspect git status --short --branch, HEAD, and git worktree list. Main checkpoint is 3ec2b8d; content baseline is 445559f. Warden integration is complete in 4b5d3d9 and 3134390; regional UI is integrated in 3ec2b8d from d978ab4. Do not cherry-pick integrated art/UI again. Continue with Cave map/q10 route, Warden gameplay/q11 and sword reward, then one isolated browser review of the complete region. Preserve user data. No push, tag, Release, or platform publication.
+Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，非待執行排程。Quota 當時為 1% 且 ordinary usage allowed；goal 狀態可能仍為 usageLimited，工具無法代為 resume。恢復時先讀本報告/status 並檢查 git/worktrees，保留 WIP，先做 boss、q11、item wiring 的 focused checks；未改動的先前 checks 不重跑。禁止推送、發布、tag 或 Release。
