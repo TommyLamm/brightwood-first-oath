@@ -69,12 +69,13 @@
 - 瀏覽器檢查為 PARTIAL：使用隔離 Playwright profile 的人工 q08 claimed、Lv30 劍士 fixture；成功載入雪痕海岸、reload 後從標題續玩並恢復地點、世界圖列出已探索 8/8 與海岸詳情、顯示狼與場景素材、使用「返回城鎮」抵達木葉鎮。畫面觀察到霜狼攻擊，fixture HP 660 降至 419。自動化操作未擊殺狼、未在 browser 驗掉落；狼戰鬥／必掉霜牙／拾取／出售由上述 focused integration test 覆蓋。此 fixture 起點是人工構造的 q08 完成存檔，不代表從頭通關；未完整走祭壇傳點往返。
 - 隔離存檔 key maplewood-swordsman:save:v1:dev 已刪除，Playwright session frost-shore-stage-b 已關閉。我送出 Ctrl-C 的 Vite exec session 為 33276；主代理另觀察到 PID 15908 仍服務 5173，故保留該共用／來源未確認的程序，沒有再終止。
 - 本聊天一次性 heartbeat automation 06-55-2：2026-10-24 香港時間 06:55、COUNT=1、ACTIVE，目標本聊天。建立時五小時用量窗讀值 8%、重設時間 06:51 香港時間；這是當時快照，不代表目前用量。
-- Stage C current snapshot 見下方：C1 frost-pine-pass 已可玩（b457c2e）；C2 frost-crab 的有界衝鋒、冰殼掉落與聚焦測試已提交（a034dba）；霜松／洞窟環境、蟹 atlas、冰殼 icon、雪芽素材與 NPC 接線已在 main。q09/q10 門檻、區域圖 UI、洞窟地圖、霜雪首領和集中 browser acceptance 尚未完成，詳見唯一續作報告。
+- Stage C 最新狀態見下方與唯一續作報告：q09/q10 quests 與 q09 Shore→Pine gate 已提交 445559f；區域圖 UI、第三張洞窟地圖與 q10 route gate、Warden gameplay/q11、劍素材及集中 browser acceptance 尚未完成。
 
-## 2026-10-24 霜雪群島 Stage C current
+## 2026-10-24 霜雪群島 Stage C current (IN_PROGRESS)
 
-- C1 frost-pine-pass playable route: b457c2e. C2 frost-crab distinct bounded charge, reach snapshot, guaranteed ice-shell drop, and focused tests: a034dba. Guide source/runtime sprite 0e6a333 is connected as a Frost Shore scout at 5be355c.
-- Pine/cave scenery (df70efa, 06e884d), crab atlas (fe3f23a; registered 6c28d21), crab source archive (5237855), ice-shell icon (9b72acb), and region-map art (3c78f01) are already integrated. Guide wiring is 5be355c. Do not re-pick these commits.
-- C2 checks: typecheck, content validation, actor/combat Vitest with .worktrees excluded (2 files, 18 tests), and staged diff check all passed. No build/browser/full suite for C2.
-- Next: implement q09/q10 manual accept/turn-in and shore-to-pass lock on q09 while preserving pass-to-shore return, then gate the cave route on q10; retain format-1 save compatibility. Register and render the region map, add the playable cave and Warden, then q11 and the final isolated browser route.
-- Continue from plan/reports/world-expansion-20261024.md. Main code checkout has only untracked .worktrees; use explicit Git paths. The one-time heartbeat 06-55-2 details and the verified PowerShell exec workaround are recorded there.
+- C1/C2, guide wiring, route-map artwork, and quest gates are on main. Latest code commit: 445559f (q09/q10 manual accept/claim, q09 Coast→Pine gate; Pine→Coast return stays open).
+- C2 focused checks: typecheck/content and actor/combat Vitest with .worktrees excluded passed (2 files, 18 tests). q09/q10: typecheck/content passed; focused frost-quest/journal/quest/app-foundation checks passed after fixing reachable objective locations (initial run 3 files/23 tests plus one corrected journal expectation; final journal check 1 file/3 tests). No browser/build for q09/q10.
+- Third playable map frost-tide-cavern, q10 Cave route gate, Warden gameplay, q11 and sword reward remain unimplemented. Cave scenery is already on main. Warden provenance/runtime commits 8767a17→8e4c87e are delivered and ready for ordered integration; expansion-art worktree codex/expansion-art is clean at 8e4c87e. Atlas is six-by-five, 272px cells, runtime 192px.
+- Regional map UI is active in .worktrees/frost-region-map on codex/frost-region-map, based at 445559f with uncommitted changes to world-map-model.ts, world-map.css, world-map.ts, and tests/world-map.test.ts. Do not edit those files. The older frost-interface-art worktree is clean at 2b4bb2a; the route-map asset 3c78f01 is already on main.
+- Next: integrate Warden commits in order; add Cave map with q10-only outbound gate and free return; implement Warden, q11, and one-time sword reward. Sword RGBA candidate remains uncommitted; exact 64px runtime and icon are pending. Then run one browser route on an isolated fixture/save. No push, tag, Release or platform publication.
+- Resume from reports/world-expansion-20261024.md; inspect Git status/worktree list and preserve untracked .worktrees. The one-time heartbeat 06-55-2 (ACTIVE, COUNT=1, 2026-10-24 06:55 Hong Kong) is attached to this chat; its usage reading was historical.
