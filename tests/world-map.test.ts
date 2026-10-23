@@ -28,20 +28,18 @@ describe('world atlas information', () => {
     expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
 
     const data = save();
-    const currentFrost = atlasViewModel(catalog, data, 'frost-shore');
+    const mapsWithoutCavern = Object.fromEntries(Object.entries(worldCatalog.maps).filter(([id]) => id !== 'frost-tide-cavern'));
+    const catalogWithoutCavern = { ...catalog, world: { ...worldCatalog, maps: mapsWithoutCavern } };
+    const currentFrost = atlasViewModel(catalogWithoutCavern, data, 'frost-shore');
     expect(currentFrost.scope).toBe('frost');
     expect(currentFrost.maps.map(({ id }) => id).sort()).toEqual(['frost-pine-pass', 'frost-shore']);
     expect(currentFrost.totalCount).toBe(2);
     expect(currentFrost.maps.some(({ id }) => id === 'frost-tide-cavern')).toBe(false);
 
-    const cavern = { ...worldCatalog.maps['frost-pine-pass']!, id: 'frost-tide-cavern', name: '冰潮洞窟' };
-    const catalogWithCavern = {
-      ...catalog,
-      world: { ...worldCatalog, maps: { ...worldCatalog.maps, [cavern.id]: cavern } },
-    };
-    const futureFrost = atlasViewModel(catalogWithCavern, data, 'frost-shore');
-    expect(futureFrost.maps.map(({ id }) => id).sort()).toEqual(['frost-pine-pass', 'frost-shore', 'frost-tide-cavern'].sort());
-    expect(futureFrost.totalCount).toBe(3);
+    const actualFrost = atlasViewModel(catalog, data, 'frost-shore');
+    expect(actualFrost.maps.map(({ id }) => id).sort()).toEqual(['frost-pine-pass', 'frost-shore', 'frost-tide-cavern']);
+    expect(actualFrost.totalCount).toBe(3);
+    expect(FROST_LANDMARKS['frost-tide-cavern']).toMatchObject({ x: 80, y: 25 });
   });
 
   it('defaults to the local chart in Frost Isles and returns to the global overview without changing location', () => {
@@ -51,7 +49,7 @@ describe('world atlas information', () => {
     expect(local.scope).toBe('frost');
     expect(local.selectedMap?.id).toBe('frost-pine-pass');
     expect(local.exploredCount).toBe(1);
-    expect(local.totalCount).toBe(2);
+    expect(local.totalCount).toBe(3);
 
     const returned = atlasViewModel(catalog, data, 'guardian-arena');
     expect(returned.scope).toBe('world');
@@ -64,14 +62,14 @@ describe('world atlas information', () => {
   it('shows true Frost Isles entry, exploration and quest-gate state', () => {
     const data = save();
     const overview = frostIslesOverview(catalog, data);
-    expect(overview).toMatchObject({ current: false, exploredCount: 0, totalCount: 2 });
+    expect(overview).toMatchObject({ current: false, exploredCount: 0, totalCount: 3 });
     expect(overview.entryRequirement?.open).toBe(false);
 
     data.quests.q08 = { status: 'claimed', counters: {} };
     const outbound = worldCatalog.maps['guardian-arena']!.portals.find(({ targetMapId }) => targetMapId === 'frost-shore')!;
     expect(portalRequirements(outbound, data, catalog).open).toBe(true);
     data.location.mapId = 'frost-shore';
-    expect(frostIslesOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 2 });
+    expect(frostIslesOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 3 });
   });
 
   it('distinguishes town, monsters and boss and verifies the q09 Frost route gate', () => {
@@ -93,6 +91,12 @@ describe('world atlas information', () => {
     const returnRoute = worldCatalog.maps['frost-pine-pass']!.portals.find(({ targetMapId }) => targetMapId === 'frost-shore')!;
     expect(returnRoute.requiredQuestId).toBeNull();
     expect(portalRequirements(returnRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
+
+    const caveRoute = worldCatalog.maps['frost-pine-pass']!.portals.find(({ targetMapId }) => targetMapId === 'frost-tide-cavern')!;
+    expect(caveRoute.requiredQuestId).toBe('q10');
+    expect(portalRequirements(caveRoute, data, catalog)).toEqual({ open: false, text: '需完成「冰甲蟹清障」並領獎' });
+    data.quests.q10 = { status: 'claimed', counters: {} };
+    expect(portalRequirements(caveRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
   });
 
   it('keeps the camp exit locked until the quest reward has been claimed, without modifying the save', () => {
