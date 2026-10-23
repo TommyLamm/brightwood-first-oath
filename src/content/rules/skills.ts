@@ -49,6 +49,12 @@ export const skills: Record<Id, SkillDef> = {
     reach: 180, height: 100, targets: 1, multiplierBase: 1.4, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'frost-crab-charge': {
+    id: 'frost-crab-charge', name: '冰甲衝鋒', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 1950, windupMs: 750, activeMs: 250, recoveryMs: 750,
+    reach: 220, height: 64, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
   'guardian-wave': {
     id: 'guardian-wave', name: '礦脈震波', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 1100, activeMs: 100, recoveryMs: 900,

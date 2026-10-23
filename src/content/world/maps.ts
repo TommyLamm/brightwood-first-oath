@@ -165,7 +165,7 @@ const blueprints: MapBlueprint[] = [
     ],
     npcs: [],
     monsters: [
-      { monsterId: 'frost-wolf', x: 680, roamLeft: 570, roamRight: 790 },
+      { monsterId: 'frost-crab', x: 680, roamLeft: 570, roamRight: 790 },
       { monsterId: 'frost-wolf', x: 1510, roamLeft: 1400, roamRight: 1620 },
     ],
   },

@@ -58,6 +58,7 @@ export function createMonster(
     pendingSkillId: null,
     attackOrigin: null,
     attackFacing: null,
+    attackReach: null,
     deathReported: false,
   };
 }
@@ -128,15 +129,35 @@ export function stepActors(
         clearAttackSnapshot(monster);
       } else {
         const resolveAtMs = monster.lastAttackAtMs + skill.windupMs;
-        monster = advanceStationary(monster, map, rules, definition, elapsedSeconds, nowMs);
-        if (nowMs < resolveAtMs) result.telegraphs.push(makeTelegraph(monster, skill, resolveAtMs));
-        else monster.mode = 'recovery';
+        const crabCharge = monster.monsterId === 'frost-crab' && skill.id === 'frost-crab-charge';
+        if (crabCharge && nowMs >= resolveAtMs) {
+          monster.mode = 'dash';
+        } else {
+          monster = advanceStationary(monster, map, rules, definition, elapsedSeconds, nowMs);
+          if (nowMs < resolveAtMs) result.telegraphs.push(makeTelegraph(monster, skill, resolveAtMs, monster.attackReach));
+          else monster.mode = 'recovery';
+          result.monsters.push(monster);
+          continue;
+        }
+      }
+    }
+
+    if (monster.mode === 'dash') {
+      const skill = monster.pendingSkillId ? rules.skills[monster.pendingSkillId] : undefined;
+      if (!skill || !monster.attackOrigin || !monster.attackFacing) {
+        monster.mode = 'chase';
+        clearAttackSnapshot(monster);
+      } else {
+        monster = advanceCrabCharge(monster, skill, elapsedSeconds, nowMs);
+        const dashEndsAtMs = monster.lastAttackAtMs + skill.windupMs + skill.activeMs;
+        if (nowMs >= dashEndsAtMs) monster.mode = 'recovery';
         result.monsters.push(monster);
         continue;
       }
     }
 
     if (monster.mode === 'recovery') {
+
       const previousSkill = monster.pendingSkillId
         ? rules.skills[monster.pendingSkillId]
         : undefined;
@@ -158,20 +179,32 @@ export function stepActors(
         && isInsideSkillRange(monster, player, skill, definition)) {
         const facing: Facing = player.position.x < monster.movement.position.x ? -1 : 1;
         monster.movement = { ...monster.movement, facing };
-        monster.mode = 'windup';
-        monster.lastAttackAtMs = nowMs;
-        monster.pendingSkillId = skill.id;
-        monster.attackFacing = facing;
-        result.attackRequests.push({ sourceId: monster.id, skillId: skill.id });
         monster = advanceStationary(monster, map, rules, definition, elapsedSeconds, nowMs);
-        // The combat actor and telegraph now share the same post-movement snapshot.
-        monster.attackOrigin = { ...monster.movement.position };
-        const resolveAtMs = nowMs + skill.windupMs;
-        if (nowMs < resolveAtMs) result.telegraphs.push(makeTelegraph(monster, skill, resolveAtMs));
-        result.monsters.push(monster);
-        continue;
+        const isCrabCharge = monster.monsterId === 'frost-crab' && skill.id === 'frost-crab-charge';
+        const reach = isCrabCharge ? crabDashReach(monster, facing, spawn, map, definition, skill) : null;
+        if (reach !== null && reach <= EPSILON) {
+          monster.mode = 'chase';
+        } else {
+          monster.mode = 'windup';
+          monster.lastAttackAtMs = nowMs;
+          monster.pendingSkillId = skill.id;
+          monster.attackFacing = facing;
+          monster.attackReach = reach;
+          result.attackRequests.push({
+            sourceId: monster.id,
+            skillId: skill.id,
+            ...(reach === null ? {} : { reachOverride: reach }),
+          });
+          // The combat actor and telegraph now share the same post-movement snapshot.
+          monster.attackOrigin = { ...monster.movement.position };
+          const resolveAtMs = nowMs + skill.windupMs;
+          if (nowMs < resolveAtMs) result.telegraphs.push(makeTelegraph(monster, skill, resolveAtMs, reach));
+          result.monsters.push(monster);
+          continue;
+        }
       }
       monster.mode = 'chase';
+
     } else if (monster.mode === 'chase') {
       monster.mode = 'patrol';
     }
@@ -274,6 +307,7 @@ export function applyMonsterHit(
 }
 
 function chooseSkillId(monster: MonsterState): string | null {
+  if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
   if (monster.monsterId !== 'guardian') return 'enemy-melee';
   if (monster.pendingSkillId === null) return 'guardian-slam';
   return monster.pendingSkillId === 'guardian-slam' ? 'guardian-wave' : 'guardian-slam';
@@ -347,23 +381,82 @@ function hasClearHorizontalRoute(
   return true;
 }
 
-function makeTelegraph(monster: MonsterState, skill: SkillDef, resolveAtMs: number): Telegraph {
+function makeTelegraph(monster: MonsterState, skill: SkillDef, resolveAtMs: number, reachOverride: number | null = null): Telegraph {
   const origin = monster.attackOrigin ?? monster.movement.position;
   const facing = monster.attackFacing ?? monster.movement.facing;
+  const reach = reachOverride ?? skill.reach;
   return {
     id: `${monster.id}:telegraph:${monster.lastAttackAtMs}`,
     sourceId: monster.id,
     kind: 'rect',
     rect: {
-      x: facing === 1 ? origin.x : origin.x - skill.reach,
+      x: facing === 1 ? origin.x : origin.x - reach,
       y: origin.y - skill.height,
-      width: skill.reach,
+      width: reach,
       height: skill.height,
     },
     resolveAtMs,
   };
 }
 
+function crabDashReach(
+  monster: MonsterState,
+  facing: Facing,
+  spawn: MonsterSpawn,
+  map: MapDef,
+  definition: MonsterDef,
+  skill: SkillDef,
+): number {
+  const halfWidth = definition.width / 2;
+  const footY = monster.movement.position.y;
+  const bodyTop = footY - definition.height;
+  let endLimit = facing === 1
+    ? Math.min(spawn.roamRight, map.width - 32 - halfWidth)
+    : Math.max(spawn.roamLeft, 32 + halfWidth);
+
+  for (const wall of map.walls) {
+    const overlapsVertically = footY > wall.y + EPSILON
+      && bodyTop < wall.y + wall.height - EPSILON;
+    if (!overlapsVertically) continue;
+
+    if (facing === 1 && wall.x >= monster.movement.position.x + halfWidth - EPSILON) {
+      endLimit = Math.min(endLimit, wall.x - halfWidth);
+    } else if (facing === -1 && wall.x + wall.width <= monster.movement.position.x - halfWidth + EPSILON) {
+      endLimit = Math.max(endLimit, wall.x + wall.width + halfWidth);
+    }
+  }
+
+  const available = facing === 1
+    ? endLimit - monster.movement.position.x
+    : monster.movement.position.x - endLimit;
+  return Math.max(0, Math.min(skill.reach, available));
+}
+
+function advanceCrabCharge(
+  monster: MonsterState,
+  skill: SkillDef,
+  dtSeconds: number,
+  nowMs: number,
+): MonsterState {
+  const origin = monster.attackOrigin ?? monster.movement.position;
+  const facing = monster.attackFacing ?? monster.movement.facing;
+  const reach = monster.attackReach ?? skill.reach;
+  const dashStartMs = monster.lastAttackAtMs + skill.windupMs;
+  const dashDurationMs = Math.max(1, skill.activeMs);
+  const progress = Math.max(0, Math.min(1, (nowMs - dashStartMs) / dashDurationMs));
+  const previousX = monster.movement.position.x;
+  const nextX = origin.x + facing * reach * progress;
+  const velocityX = progress >= 1 || dtSeconds <= 0 ? 0 : (nextX - previousX) / dtSeconds;
+  return {
+    ...monster,
+    movement: {
+      ...monster.movement,
+      position: { x: nextX, y: origin.y },
+      velocity: { x: velocityX, y: 0 },
+      facing,
+    },
+  };
+}
 function advanceStationary(
   monster: MonsterState,
   map: MapDef,
@@ -485,6 +578,7 @@ function clearAttackSnapshot(monster: MonsterState): void {
   monster.pendingSkillId = null;
   monster.attackOrigin = null;
   monster.attackFacing = null;
+  monster.attackReach = null;
 }
 
 function attackDuration(skill: SkillDef): number {

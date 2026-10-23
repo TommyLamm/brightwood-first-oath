@@ -39,6 +39,9 @@ export function tryAttack(
   const skill = rules.skills[request.skillId];
   if (!skill) return failure('NOT_FOUND', 'Attack skill does not exist.');
   if (skill.kind !== 'attack') return failure('INVALID', 'Only attack skills can create attack instances.');
+  if (request.reachOverride !== undefined && (!Number.isFinite(request.reachOverride) || request.reachOverride <= 0)) {
+    return failure('INVALID', 'Attack reach override must be a positive finite number.');
+  }
 
   const rank = getAttackRank(source, skill);
   if (rank === null) return failure('REQUIREMENT', 'Actor does not meet the skill faction or rank requirement.');
@@ -63,6 +66,7 @@ export function tryAttack(
     origin: { ...source.position },
     rank,
     hitIds: [],
+    ...(request.reachOverride === undefined ? {} : { reachOverride: request.reachOverride }),
   };
   const cooldowns = cloneCooldowns(state.cooldowns);
   const sourceCooldowns = { ...(cooldowns[source.id] ?? {}) };
@@ -186,8 +190,9 @@ function isValidTarget(
 }
 
 function overlapsAttackRange(target: CombatActor, attack: AttackInstance, skill: SkillDef): boolean {
-  const attackLeft = attack.facing === 1 ? attack.origin.x : attack.origin.x - skill.reach;
-  const attackRight = attack.facing === 1 ? attack.origin.x + skill.reach : attack.origin.x;
+  const reach = attack.reachOverride ?? skill.reach;
+  const attackLeft = attack.facing === 1 ? attack.origin.x : attack.origin.x - reach;
+  const attackRight = attack.facing === 1 ? attack.origin.x + reach : attack.origin.x;
   const attackTop = attack.origin.y - skill.height;
   const targetLeft = target.position.x - target.body.width / 2;
   const targetRight = target.position.x + target.body.width / 2;

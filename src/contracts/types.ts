@@ -146,6 +146,7 @@ export type CombatActor = {
 export type AttackRequest = {
   sourceId: EntityId;
   skillId: Id;
+  reachOverride?: number;
 };
 
 export type AttackInstance = {
@@ -157,6 +158,7 @@ export type AttackInstance = {
   origin: Vec2;
   rank: number;
   hitIds: EntityId[];
+  reachOverride?: number;
 };
 
 export type CombatState = {
@@ -180,7 +182,7 @@ export type CombatStep = {
   rejected: { sourceId: EntityId; code: ErrorCode }[];
 };
 
-export type MonsterMode = 'idle' | 'patrol' | 'chase' | 'windup' | 'recovery' | 'dead';
+export type MonsterMode = 'idle' | 'patrol' | 'chase' | 'windup' | 'dash' | 'recovery' | 'dead';
 
 export type MonsterState = {
   id: EntityId;
@@ -198,6 +200,7 @@ export type MonsterState = {
   pendingSkillId: Id | null;
   attackOrigin: Vec2 | null;
   attackFacing: Facing | null;
+  attackReach: number | null;
   deathReported: boolean;
 };
 

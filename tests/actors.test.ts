@@ -204,4 +204,42 @@ describe('actor domain', () => {
     expect(deathStep.deaths).toEqual([guardian.id]);
     expect(deathStep.respawnRequests).toEqual([]);
   });
+
+  it('locks the frost crab telegraph and bounds its charge by roam edges and walls', () => {
+    const sourceMap = worldCatalog.maps['frost-pine-pass'];
+    const spawn = sourceMap.monsters.find((entry) => entry.monsterId === 'frost-crab')!;
+    const crab = createMonster('frost-crab-charge-test', spawn, sourceMap, rulesCatalog);
+    const first = stepActors([crab], player('crab-target', 770), sourceMap, rulesCatalog, DT, 1_000);
+
+    expect(first.attackRequests).toEqual([{
+      sourceId: crab.id,
+      skillId: 'frost-crab-charge',
+      reachOverride: 110,
+    }]);
+    expect(first.telegraphs[0]?.rect).toEqual({ x: 680, y: 536, width: 110, height: 64 });
+    expect(first.monsters[0]).toMatchObject({
+      mode: 'windup', attackFacing: 1, attackReach: 110, attackOrigin: { x: 680, y: 600 },
+    });
+
+    const windup = stepActors(first.monsters, player('crab-target-returned', 600), sourceMap, rulesCatalog, DT, 1_500);
+    expect(windup.monsters[0]).toMatchObject({ mode: 'windup', attackFacing: 1 });
+    expect(windup.telegraphs[0]?.rect).toEqual(first.telegraphs[0]?.rect);
+
+    const dashStart = stepActors(windup.monsters, player('crab-target-returned', 600), sourceMap, rulesCatalog, DT, 1_750);
+    expect(dashStart.monsters[0]).toMatchObject({ mode: 'dash', movement: { position: { x: 680, y: 600 }, facing: 1 } });
+    const dashMiddle = stepActors(dashStart.monsters, player('crab-target-returned', 600), sourceMap, rulesCatalog, DT, 1_875);
+    expect(dashMiddle.monsters[0]).toMatchObject({ mode: 'dash', movement: { position: { x: 735, y: 600 }, facing: 1 } });
+    const dashEnd = stepActors(dashMiddle.monsters, player('crab-target-returned', 600), sourceMap, rulesCatalog, DT, 2_000);
+    expect(dashEnd.monsters[0]).toMatchObject({ mode: 'recovery', movement: { position: { x: 790, y: 600 }, facing: 1 } });
+
+    const wallMap = { ...sourceMap, walls: [{ x: 720, y: 550, width: 20, height: 100 }] };
+    const wallSpawn = wallMap.monsters.find((entry) => entry.monsterId === 'frost-crab')!;
+    const wallCrab = createMonster('frost-crab-wall-test', wallSpawn, wallMap, rulesCatalog);
+    const wallStart = stepActors([wallCrab], player('crab-target-wall', 700), wallMap, rulesCatalog, DT, 1_000);
+    expect(wallStart.attackRequests[0]?.reachOverride).toBe(12);
+    const wallDashStart = stepActors(wallStart.monsters, player('crab-target-wall', 700), wallMap, rulesCatalog, DT, 1_750);
+    const wallDashEnd = stepActors(wallDashStart.monsters, player('crab-target-wall', 700), wallMap, rulesCatalog, DT, 2_000);
+    expect(wallDashEnd.monsters[0]?.movement.position.x).toBe(692);
+  });
+
 });

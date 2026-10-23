@@ -203,4 +203,36 @@ describe('combat', () => {
     expect(swing(0, counted)).toMatchObject({ damage: 90, critical: false });
     expect(calls.n).toBe(1);
   });
+
+  it('uses a crab charge reach snapshot and records only one hit per target', () => {
+    const source = actor({
+      id: 'frost-crab',
+      position: { x: 680, y: 600 },
+      faction: 'enemy',
+      stats: { maxHp: 1250, maxMp: 0, attack: 50, defense: 24, critChance: 0 },
+      skillRanks: {},
+    });
+    const prepared = tryAttack(
+      createCombatState(),
+      { sourceId: source.id, skillId: 'frost-crab-charge', reachOverride: 110 },
+      [source],
+      rulesCatalog,
+      1_000,
+      () => 'crab-charge',
+    );
+    expect(prepared.ok).toBe(true);
+    if (!prepared.ok) return;
+    expect(prepared.value.attack.reachOverride).toBe(110);
+
+    const outside = actor({ id: 'outside-charge', position: { x: 900, y: 600 } });
+    const miss = stepCombat(prepared.value.state, [source, outside], rulesCatalog, 0.05, 1_800, fixedRandom());
+    expect(miss.hits).toHaveLength(0);
+
+    const inReach = actor({ id: 'inside-charge', position: { x: 780, y: 600 } });
+    const hitOnce = stepCombat(miss.state, [source, inReach], rulesCatalog, 0.05, 1_850, fixedRandom());
+    expect(hitOnce.hits.map((hit) => hit.targetId)).toEqual([inReach.id]);
+    const repeated = stepCombat(hitOnce.state, [source, inReach], rulesCatalog, 0.05, 1_900, fixedRandom());
+    expect(repeated.hits).toHaveLength(0);
+  });
+
 });
