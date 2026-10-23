@@ -69,12 +69,12 @@
 - 瀏覽器檢查為 PARTIAL：使用隔離 Playwright profile 的人工 q08 claimed、Lv30 劍士 fixture；成功載入雪痕海岸、reload 後從標題續玩並恢復地點、世界圖列出已探索 8/8 與海岸詳情、顯示狼與場景素材、使用「返回城鎮」抵達木葉鎮。畫面觀察到霜狼攻擊，fixture HP 660 降至 419。自動化操作未擊殺狼、未在 browser 驗掉落；狼戰鬥／必掉霜牙／拾取／出售由上述 focused integration test 覆蓋。此 fixture 起點是人工構造的 q08 完成存檔，不代表從頭通關；未完整走祭壇傳點往返。
 - 隔離存檔 key maplewood-swordsman:save:v1:dev 已刪除，Playwright session frost-shore-stage-b 已關閉。我送出 Ctrl-C 的 Vite exec session 為 33276；主代理另觀察到 PID 15908 仍服務 5173，故保留該共用／來源未確認的程序，沒有再終止。
 - 本聊天一次性 heartbeat automation 06-55-2：2026-10-24 香港時間 06:55、COUNT=1、ACTIVE，目標本聊天。建立時五小時用量窗讀值 8%、重設時間 06:51 香港時間；這是當時快照，不代表目前用量。
-- Stage C current snapshot 見下方：C1 frost-pine-pass 已可玩（b457c2e）；C2 frost-crab 的有界衝鋒、冰殼掉落與聚焦測試已提交（a034dba）；霜松／洞窟環境、蟹 atlas、冰殼 icon、雪芽素材已在 main。現在接雪芽 manifest/NPC 與 q09/q10 門檻；洞窟地圖、獨立區域圖、霜雪首領和集中 browser acceptance 尚未完成，詳見唯一續作報告。
+- Stage C current snapshot 見下方：C1 frost-pine-pass 已可玩（b457c2e）；C2 frost-crab 的有界衝鋒、冰殼掉落與聚焦測試已提交（a034dba）；霜松／洞窟環境、蟹 atlas、冰殼 icon、雪芽素材與 NPC 接線已在 main。q09/q10 門檻、區域圖 UI、洞窟地圖、霜雪首領和集中 browser acceptance 尚未完成，詳見唯一續作報告。
 
 ## 2026-10-24 霜雪群島 Stage C current
 
-- C1 frost-pine-pass playable route: b457c2e. C2 frost-crab distinct bounded charge, reach snapshot, guaranteed ice-shell drop, and focused tests: a034dba. Guide source/runtime sprite added at 0e6a333; it still needs manifest/NPC接線.
-- Pine/cave scenery (df70efa, 06e884d), crab atlas (fe3f23a; registered 6c28d21), crab source archive (5237855), and ice-shell icon (9b72acb) are already integrated. Do not re-pick these commits.
+- C1 frost-pine-pass playable route: b457c2e. C2 frost-crab distinct bounded charge, reach snapshot, guaranteed ice-shell drop, and focused tests: a034dba. Guide source/runtime sprite 0e6a333 is connected as a Frost Shore scout at 5be355c.
+- Pine/cave scenery (df70efa, 06e884d), crab atlas (fe3f23a; registered 6c28d21), crab source archive (5237855), ice-shell icon (9b72acb), and region-map art (3c78f01) are already integrated. Guide wiring is 5be355c. Do not re-pick these commits.
 - C2 checks: typecheck, content validation, actor/combat Vitest with .worktrees excluded (2 files, 18 tests), and staged diff check all passed. No build/browser/full suite for C2.
-- Next: register and place frost-guide; implement q09/q10 with shore-to-pass lock on q09 while preserving pass-to-shore return, then q10 gating for the future cave route; retain format-1 save compatibility. Region map, playable cave, Warden atlas/runtime/AI, q11, and final isolated browser route remain pending.
+- Next: implement q09/q10 manual accept/turn-in and shore-to-pass lock on q09 while preserving pass-to-shore return, then gate the cave route on q10; retain format-1 save compatibility. Register and render the region map, add the playable cave and Warden, then q11 and the final isolated browser route.
 - Continue from plan/reports/world-expansion-20261024.md. Main code checkout has only untracked .worktrees; use explicit Git paths. The one-time heartbeat 06-55-2 details and the verified PowerShell exec workaround are recorded there.
