@@ -13,5 +13,5 @@ export { validateWorld } from './validate.js';
 export const worldCatalog: WorldCatalog = { maps, npcs, quests, dialogues };
 
 export const mapOrder: Id[] = [
-  'camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass',
+  'camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern',
 ];

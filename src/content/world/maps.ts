@@ -162,6 +162,7 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'frost-pine-pass:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'frost-pine-pass:east', x: 2060, y: 600, targetMapId: 'frost-tide-cavern', targetSpawnId: 'left', requiredQuestId: 'q10', minLevel: 1 },
     ],
     npcs: [],
     monsters: [
@@ -169,6 +170,21 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'frost-crab', x: 1170, roamLeft: 1060, roamRight: 1280 },
       { monsterId: 'frost-crab', x: 1740, roamLeft: 1630, roamRight: 1850 },
       { monsterId: 'frost-wolf', x: 1510, roamLeft: 1400, roamRight: 1620 },
+    ],
+  },
+  {
+    id: 'frost-tide-cavern', name: '冰潮洞窟', width: 2160, themeKey: 'frost-cave', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[320, 500, 650, 500], [820, 430, 1140, 430], [1320, 470, 1600, 470], [1780, 405, 2050, 405]],
+    ladders: [{ x: 480, topY: 500, bottomY: 600 }, { x: 970, topY: 430, bottomY: 600 }, { x: 1450, topY: 470, bottomY: 600 }, { x: 1910, topY: 405, bottomY: 600 }],
+    extraSpawns: [],
+    portals: [
+      { id: 'frost-tide-cavern:west', x: 100, y: 600, targetMapId: 'frost-pine-pass', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [
+      { monsterId: 'frost-crab', x: 560, roamLeft: 460, roamRight: 660 },
+      { monsterId: 'frost-crab', x: 1120, roamLeft: 1020, roamRight: 1220 },
+      { monsterId: 'frost-crab', x: 1700, roamLeft: 1600, roamRight: 1800 },
     ],
   },
 ];

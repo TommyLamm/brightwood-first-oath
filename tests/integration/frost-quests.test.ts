@@ -109,6 +109,11 @@ describe('Frost Isles manual guide quests', () => {
     expect(gameplay.pendingTransition?.mapId).toBe('frost-pine-pass');
     finishTravel();
 
+    gameplay.movement.position = { x: 2060, y: 600 };
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.pendingTransition).toBeNull();
+    expect(gameplay.toast).toContain(worldCatalog.quests.q10!.name);
+
     gameplay.movement.position = { x: 100, y: 600 };
     command({ type: 'interact', payload: {} });
     expect(gameplay.pendingTransition?.mapId).toBe('frost-shore');
@@ -134,5 +139,22 @@ describe('Frost Isles manual guide quests', () => {
     expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'ice-shell')).toBe(false);
     expect(gameplay.saveData.player.coins).toBe(coinsBeforeQ10 + worldCatalog.quests.q10!.reward.coins);
     expect(gameplay.saveData.flags).toEqual(oldSave.flags);
+
+    gameplay.movement.position = { x: 1820, y: 600 };
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.pendingTransition?.mapId).toBe('frost-pine-pass');
+    finishTravel();
+    gameplay.movement.position = { x: 2060, y: 600 };
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.pendingTransition?.mapId).toBe('frost-tide-cavern');
+    finishTravel();
+    expect(gameplay.saveData.location.mapId).toBe('frost-tide-cavern');
+    expect(gameplay.saveData.visitedMaps).toContain('frost-tide-cavern');
+
+    gameplay.movement.position = { x: 100, y: 600 };
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.pendingTransition?.mapId).toBe('frost-pine-pass');
+    finishTravel();
+    expect(gameplay.saveData.location.mapId).toBe('frost-pine-pass');
   });
 });
