@@ -1353,7 +1353,7 @@
       "key": "frost-tide-warden:idle",
       "imageKey": "actor:frost-tide-warden",
       "frames": [0, 1],
-      "frameMs": [240, 240],
+      "frameMs": [200, 200],
       "loop": true
     },
     {
@@ -1381,7 +1381,7 @@
       "key": "frost-tide-warden:dead",
       "imageKey": "actor:frost-tide-warden",
       "frames": [24, 25, 26, 27],
-      "frameMs": [130, 130, 130, 130],
+      "frameMs": [100, 100, 100, 100],
       "loop": false
     },
     {
