@@ -1,4 +1,4 @@
-# 霜雪群島擴充交接與進度
+﻿# 霜雪群島擴充交接與進度
 
 更新：2026-10-24（香港時間）。本報告是本輪續作紀錄，狀態板見 ../status.md。
 
@@ -37,22 +37,36 @@
 
 Stage A 程式、focused tests 與狀態／報告 commit：f347c76（Add playable Frost Shore route）。素材接入 commit 已在 main：97be61e（sky，來源 commit 7121210）與 f632528（far/mid，來源 commit a5d86d3）。
 
-## 後續實作
+## Stage B：霜牙雪狼與霜牙戰利品
 
-下一波以三張圖完成可遊玩的霜雪群島小區域：frost-shore → frost-pine-pass → frost-tide-cavern。新增霜牙雪狼 frost-wolf，Lv30 不超過現行玩家等級上限，並加入與其行為有差異的短距衝刺敵人，以及具有可躲預警的小首領。接著建立可手動領取與回報的區域挑戰，使 frost-fang 有收集及獎勵用途；完成後再集中接上道具圖示、地區卡插畫和必要的 UI／manifest。若任務或 item 資料需要演進，先保持舊格式存檔可載入。每階段只改明確擁有的檔案，明確路徑暫存並各自 commit。
+已新增 frost-wolf「霜牙雪狼」為 Lv30 敵人，加入雪痕海岸三個巡邏生成點，保證掉落 frost-fang「霜牙」。霜牙是可出售材料，透過既有 merchant 取得用途（35 金幣）；沒有改裝備槽、等級上限或存檔 schema。狼 atlas 以實際 229×229 cell、6×5 切格載入，idle/walk/attack/hurt/dead 五列對應有效幀；runtime 96×96。item icon runtime 顯示 32×32。
 
+Stage B commits：9f90269（wolf／loot 與玩法接線）、61db462（狼 atlas）。相關素材／接入 commits：be6958d（霜牙 icon）、87fbd08（雪岸 region card）；環境層為 97be61e、f632528。原始素材 commits 及 prompt/source 保留在代理分支和 art-source/expansion-frost/。狼圖目視可見透明底的側向角色與 6×5 格；來源記錄 alpha 四角約 0/0/1/0（左下極弱 alpha 1 點），沒有重採樣切格。
+
+最小驗收實際結果：
+
+- npm.cmd run typecheck、npm.cmd run check:content、git diff --check 均 exit 0。
+- npx.cmd vitest run tests/rules.test.ts tests/world-map.test.ts tests/integration/app-gameplay.test.ts tests/integration/app-foundation.test.ts 通過，原始 runner 輸出 12 files／117 tests passed。integration 覆蓋擊殺雪狼、必掉霜牙、拾取與向商人出售。
+- 瀏覽器集中檢查為 PARTIAL，非完整路線驗收。使用隔離 Playwright profile，起點是人工構造的 q08 claimed／Lv30 fixture，並非從頭通關。可續玩狀態在 reload 後恢復到雪岸；世界圖顯示 8/8 已探索、雪岸地標與狼情報；畫面確認狼 atlas 與雪岸背景出現在實際場景，雪狼攻擊使測試角色 HP 由 660 降為 419；「返回城鎮」成功抵達木葉鎮。沒有完成狼擊殺或 browser 掉落檢查，沒有走完整祭壇傳點往返；該戰鬥與掉落由 focused integration test 覆蓋。隔離 save key 已刪除、Playwright session 已關閉。共用 Vite PID 15908 由主代理觀察且仍在服務 5173；未終止來源未確認的程序。
+- 未執行 full test suite、build、完整主線流程、發布或 tag／Release。
+
+## 後續實作計畫
+
+三圖小區域固定為 frost-shore → frost-pine-pass → frost-tide-cavern，不把三張地圖塞進木葉島舊座標；完成三圖後由世界圖切換獨立霜雪群島區域圖。下一個敵人 ID 為 frost-crab「冰甲蟹」，使用既有 monster combat 接線增量加入獨立 windup → 有界短距 dash → recovery；預告與實際命中區域要共用幾何判定，focus tests 驗距離、地圖邊界、鎖定方向與一次傷害。蟹掉落 ice-shell。crab atlas 曾有角色跨格或貼格邊問題，目前只可保留 source-only，不可接入 runtime。
+
+區域任務採 frost-guide「雪芽」手動接／交：q09 霜牙收集、q10 隘道清障／冰殼收集、q11 冰潮洞窟首領；前置依 claimed 順序，獎勵採補給／金幣與後續區域解鎖。QuestDef／NpcDef 已是可增量資料型別，但 validators 目前固定 map、quest、NPC ID／placement allowlist，需擴增並加舊 save 缺少新 quest 時 idle 的相容測試；不變更 save 格式。冰潮守望獸方向為 frost-tide-warden，兩種清楚可躲的近距獠牙下砸／低潮波；q11 記錄區域完成，不重用 q08 的 guardian/chapter flags。
 ## 代理、工作樹與素材狀態
 
-- /root：主代理，規劃與協調，不直接改程式碼；要求主代理提供每批素材 prompt 指引，已對兩名素材代理提供規格。
-- /root/game_expansion：程式、manifest、驗證、git 整合與本報告；工作樹在專案 main。
-- /root/expansion_art：工作樹 .worktrees/expansion-art，branch codex/expansion-art。sky、far、mid 素材已分別提交 7121210、a5d86d3，已 cherry-pick 到 main 為 97be61e、f632528；霜狼 6×5 atlas 與其 source log 仍在製作。
-- /root/frost_interface_art：branch codex/frost-interface-art，獨立 worktree 路徑待代理回報。霜牙 item icon、地區卡插畫與 source log 待提交。icon 檔需沿用既有 128×128 RGBA 檔，runtime manifest 顯示 32×32；region 插畫 960×540。
-- 當前工作樹內有未追蹤 .worktrees/，是隔離素材代理目錄；提交程式時不要使用 git add .，只加入明確檔案路徑。
-
+- /root：主代理，負責規劃、素材 prompt 指引、協調與續作 heartbeat，不直接改程式碼。
+- /root/game_expansion：本輪唯一程式實作／驗證／Git 整合代理；在 main 工作樹，負責共用 map、world map、AI、quest、validator 和測試。
+- /root/expansion_art：隔離工作樹 .worktrees/expansion-art、branch codex/expansion-art。已交 sky/far/mid（原始 commits 7121210、a5d86d3，main 接入 97be61e、f632528）、wolf atlas（d54fdd0，main 接入 61db462）、pine layers（e79e3ff，待整合）、cave layers（74f9ed0，待整合）；來源與 prompt 分置於 art-source/expansion-frost/。
+- /root/frost_interface_art：隔離工作樹 .worktrees/frost-interface-art、branch codex/frost-interface-art。icon（1108e25，main be6958d）及 region card（aba7c7c，main 87fbd08）已整合；crab atlas 候選因跨格／貼邊不合安全切格契約，未提交 runtime。現由該代理製作 ice-shell icon 與 frost-guide 2×1 idle；crab atlas 改由 expansion_art 接手。
+- crab runtime 契約：public/assets/actors/monsters/frost-crab-atlas-v1.png，6×5、128px cell、768×640；rows 依序 idle2/walk6/attack4/hurt2/dead4，真 alpha、baseline 一致、16px 安全邊，空格複製有效末幀；runtime 96×96、邏輯碰撞約56×36、向右，drop ice-shell。不合格候選維持 source-only。
+- 目前 main 無已追蹤的未提交改動；.worktrees/ 是代理隔離目錄，提交時只 stage 明確路徑，禁止 git add .。
 ## 工具限制、續作與定時資訊
 
 本機預設 shell 曾遇到無輸出的 PowerShell FileSystem provider 問題，node_repl 啟動超時。已驗證可行方式為使用 powershell.exe、login=false，以及窄範圍 require_escalated exec_command；不要重複大量同類失敗呼叫。functions.apply_patch 曾因長時間無輸出被終止且沒有部分寫入；後以小份 PowerShell 檔案替換成功。變更後需檢查 git diff，避免把 .worktrees/ 加入 index。
 
 本聊天曾建立一次性 heartbeat automation 06-55-2：ACTIVE、COUNT=1，排程 2026-10-24 香港時間 06:55，目標是本聊天。建立時讀到帳戶五小時使用窗為 8%，該窗重設時間 06:51 香港時間；此數字是當時快照，不代表目前用量。
 
-中斷後續作步驟：先讀本報告和 plan/status.md；核對 git status -sb、main HEAD 與未追蹤 worktrees；保留素材分支。Stage A 已提交 f347c76，素材接入已提交 97be61e 與 f632528；沿 Stage B/C/D 的小階段完成怪物、任務、UI 接線與最少必要檢查。不要推送、發 tag、建立 Release 或上架。
+中斷後續作步驟：先讀本報告與 plan/status.md，核對 git status -sb、HEAD 和隔離 worktrees；目前 Stage A/B 已完成，下一步 cherry-pick expansion_art 的 pine/cave commits（e79e3ff、74f9ed0），按明確路徑接入兩個新地圖／區域地圖，再實作 crab windup/dash/recovery 與 focused tests。保留 crab source-only，直到有安全切格 atlas；其後接 q09–q11／frost-guide、冰潮首領和舊存檔 idle 測試。每個小階段明確 stage 路徑並單獨 commit。不要推送、發 tag、建立 Release 或上架。

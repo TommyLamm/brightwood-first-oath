@@ -9,8 +9,8 @@
 - Stage A 已實作：新增 frost-shore「雪痕海岸」，q08 領獎後可由 Guardian Arena 前往，回程不設任務鎖；補入 world map 地標與探索進度、mapOrder、地圖驗證、frost 背景主題及格式 1 存檔相容測試。
 - Stage A 最小檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、git diff --check；指定 world-map、persistence、app-foundation 測試檔後，Vitest 回報 9 files／74 tests passed。此命令輸出比預期測試檔數廣，未再重跑。
 - Stage A 實作 commit：f347c76；素材接入 commit：97be61e（sky，原始 7121210）、f632528（far/mid，原始 a5d86d3）。未推送，沒有建立 tag／Release 或發布。
-- 尚未完成：frost-shore 暫無怪物；狼 atlas、霜牙圖示與地區卡插畫待素材代理交付。無瀏覽器／正式遊玩／視覺驗收。
-- 後續方向：三圖小區域 frost-shore → frost-pine-pass → frost-tide-cavern；加一種具短距衝刺行為的敵人、一隻有可躲預警的小首領，以及可領取／回報且讓霜牙能收集兌獎的區域挑戰。保持等級上限 30、桌面單人劍士和原有主線／格式 1 存檔。
+- Stage A 當時尚無怪物、亦未做瀏覽器驗收；此為該階段快照，已由下方 Stage B 更新。
+- 後續方向：延續為 frost-shore → frost-pine-pass → frost-tide-cavern；再加入差異化短衝刺敵人、可躲預警首領與區域手動任務，維持等級上限 30、桌面單人劍士和格式 1 存檔。
 - 本輪唯一追蹤報告：reports/world-expansion-20261024.md。
 
 | 包 | 狀態 | 擁有者 | 輸出／下一步 |
@@ -60,3 +60,13 @@
 2026-10-18 本次素材復原完成：下方／前段歷史紀錄中的source-only結論是指未處理原稿，已由本次使用者授權的確定性匯出解除缺圖；原稿仍保留，正式使用新版本PNG與更新manifest。素材完成不等於T14/T16遊戲驗收完成。
 
 2026-10-18 T00-09 收尾：四包正式 manifest／素材齊全（actors 22 images／64 animations＋96 anchors、environment 20 images、interface 47 images／5 animations、audio 16 entries），asset-recovery 報告已記 `loadRequiredAssetManifests` 以本地 JSON 通過。T00 標 DONE。T14 音訊接線已在 app；仍需 T07 將正式角色／地形／VFX 呈現接到實際遊戲並檢查腳底、anchors、動作節拍，另以瀏覽器驗證 WAV 播放。T14-25 完整 45–60 分鐘路線未跑，時長仍 UNVERIFIED；T15 截圖／封面／ZIP 及 T16 驗收未完成。沒有 build、typecheck、測試、瀏覽器、pack/validate 或發布的新結果。
+
+## 2026-10-24 Stage B／瀏覽器集中檢查更新（IN_PROGRESS）
+
+- Stage B 已提交：9f90269 新增 Lv30 霜牙雪狼、海岸三處生成、保證掉落霜牙（可向既有商人出售，35 金幣）；未變更存檔格式。狼 atlas 接入為 61db462，來源為素材代理 commit d54fdd0，229×229 cell 的 6×5 atlas，runtime 96×96。
+- 已接入素材：霜牙圖示 be6958d（原始素材 commit 1108e25，128×128 RGBA，runtime 32×32）；雪岸地區卡 87fbd08（原始素材 commit aba7c7c，960×540 opaque）。先前雪岸三層環境在 97be61e、f632528。
+- Stage B 直接相關檢查均 exit 0：npm.cmd run typecheck、npm.cmd run check:content、npx.cmd vitest run tests/rules.test.ts tests/world-map.test.ts tests/integration/app-gameplay.test.ts tests/integration/app-foundation.test.ts（12 files／117 tests passed）、git diff --check。未跑全套回歸或完整 build。
+- 瀏覽器檢查為 PARTIAL：使用隔離 Playwright profile 的人工 q08 claimed、Lv30 劍士 fixture；成功載入雪痕海岸、reload 後從標題續玩並恢復地點、世界圖列出已探索 8/8 與海岸詳情、顯示狼與場景素材、使用「返回城鎮」抵達木葉鎮。畫面觀察到霜狼攻擊，fixture HP 660 降至 419。自動化操作未擊殺狼、未在 browser 驗掉落；狼戰鬥／必掉霜牙／拾取／出售由上述 focused integration test 覆蓋。此 fixture 起點是人工構造的 q08 完成存檔，不代表從頭通關；未完整走祭壇傳點往返。
+- 隔離存檔 key maplewood-swordsman:save:v1:dev 已刪除，Playwright session frost-shore-stage-b 已關閉。我送出 Ctrl-C 的 Vite exec session 為 33276；主代理另觀察到 PID 15908 仍服務 5173，故保留該共用／來源未確認的程序，沒有再終止。
+- 本聊天一次性 heartbeat automation 06-55-2：2026-10-24 香港時間 06:55、COUNT=1、ACTIVE，目標本聊天。建立時五小時用量窗讀值 8%、重設時間 06:51 香港時間；這是當時快照，不代表目前用量。
+- 下一步：整合 expansion_art 的 pine/cave 背景後接入第二圖及霜雪群島區域圖；接著由程式代理實作 frost-crab 的 windup→有界短衝→recovery 與可躲預告測試，並接入 q09–q11／frost-guide。crab atlas 目前不合安全切格要求，不能放進 runtime 或宣稱已接入。再集中驗證三圖入口、區域切換、蟹戰鬥、區域任務及舊格式存檔。
