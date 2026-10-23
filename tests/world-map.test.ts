@@ -24,6 +24,7 @@ describe('world atlas information', () => {
     expect(mapLevelLabel(worldCatalog.maps['forest-edge']!, catalog)).toBe('怪物 Lv.1–8');
     expect(mapLevelLabel(worldCatalog.maps['guardian-arena']!, catalog)).toBe('首領 Lv.30');
     expect(mapLevelLabel(worldCatalog.maps['frost-shore']!, catalog)).toBe('怪物 Lv.30');
+    expect(mapLevelLabel(worldCatalog.maps['frost-pine-pass']!, catalog)).toBe('怪物 Lv.30');
     expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
   });
 
@@ -35,6 +36,11 @@ describe('world atlas information', () => {
     data.quests.q08 = { status: 'claimed', counters: {} };
     expect(portalRequirements(outbound, data, catalog).open).toBe(true);
     expect(returnRoute.targetMapId).toBe('guardian-arena');
+    const northRoute = worldCatalog.maps['frost-shore']!.portals.find(({ targetMapId }) => targetMapId === 'frost-pine-pass')!;
+    const passRoute = worldCatalog.maps['frost-pine-pass']!.portals[0]!;
+    expect(northRoute.targetMapId).toBe('frost-pine-pass');
+    expect(portalRequirements(northRoute, data, catalog).open).toBe(true);
+    expect(passRoute.targetMapId).toBe('frost-shore');
     expect(portalRequirements(returnRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
   });
   it('keeps the camp exit locked until the quest reward has been claimed, without modifying the save', () => {

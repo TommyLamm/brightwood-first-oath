@@ -153,6 +153,66 @@
       "pivotY": 0
     },
     {
+      "key": "env:frost-pine:sky",
+      "url": "assets/environment/env-frost-pine-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-pine:far",
+      "url": "assets/environment/env-frost-pine-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-pine:mid",
+      "url": "assets/environment/env-frost-pine-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:sky",
+      "url": "assets/environment/env-frost-cave-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:far",
+      "url": "assets/environment/env-frost-cave-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:mid",
+      "url": "assets/environment/env-frost-cave-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
       "key": "env:tile-ground",
       "url": "assets/environment/env-tile-ground-v1.png",
       "columns": 1,

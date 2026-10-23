@@ -1,7 +1,7 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
 
-const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore'];
+const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass'];
 const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper'];
 const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08'];
 const expectedNpcPlacements: Record<Id, Id> = {
@@ -9,11 +9,11 @@ const expectedNpcPlacements: Record<Id, Id> = {
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
-  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost',
+  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine',
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field',
+  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field',
 };
 
 function failure(message: string): Result<WorldCatalog> {

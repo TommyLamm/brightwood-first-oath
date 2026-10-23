@@ -11,6 +11,7 @@ export const WORLD_LANDMARKS: Record<string, { x: number; y: number; description
   'mine-gate': { x: 53, y: 46, description: '礦車與木樑停留在舊時光裡，岩石深處傳來守衛的回聲。' },
   'guardian-arena': { x: 52, y: 61, description: '古礦盡頭的石造祭壇。面對守衛，完成你的第一個誓約。' },
   'frost-shore': { x: 80, y: 18, description: '越過守衛祭壇後，霜雪群島的海岸在冰霧間展開。' },
+  'frost-pine-pass': { x: 87, y: 30, description: '松林與冰蝕岩壁夾成的隘道，雪狼在風雪之間巡行。' },
 };
 
 export function mapLevelLabel(map: MapDef, catalog: ContentCatalog): string {

@@ -146,12 +146,27 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'frost-shore:south', x: 100, y: 600, targetMapId: 'guardian-arena', targetSpawnId: 'entry', requiredQuestId: null, minLevel: 1 },
+      { id: 'frost-shore:north', x: 1820, y: 600, targetMapId: 'frost-pine-pass', targetSpawnId: 'left', requiredQuestId: null, minLevel: 1 },
     ],
     npcs: [],
     monsters: [
       { monsterId: 'frost-wolf', x: 460, roamLeft: 380, roamRight: 540 },
       { monsterId: 'frost-wolf', x: 960, roamLeft: 880, roamRight: 1040 },
       { monsterId: 'frost-wolf', x: 1460, roamLeft: 1380, roamRight: 1540 },
+    ],
+  },
+  {
+    id: 'frost-pine-pass', name: '霜松隘道', width: 2160, themeKey: 'frost-pine', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[280, 500, 620, 500], [760, 440, 1080, 440], [1260, 490, 1580, 490], [1710, 430, 1980, 430]],
+    ladders: [{ x: 440, topY: 500, bottomY: 600 }, { x: 920, topY: 440, bottomY: 600 }, { x: 1420, topY: 490, bottomY: 600 }, { x: 1840, topY: 430, bottomY: 600 }],
+    extraSpawns: [],
+    portals: [
+      { id: 'frost-pine-pass:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [
+      { monsterId: 'frost-wolf', x: 680, roamLeft: 570, roamRight: 790 },
+      { monsterId: 'frost-wolf', x: 1510, roamLeft: 1400, roamRight: 1620 },
     ],
   },
 ];
