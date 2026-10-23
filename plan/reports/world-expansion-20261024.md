@@ -19,7 +19,7 @@
 - docs/sdk-versioning.md
 - docs/save-compatibility.md
 
-另參照 plan/README.md、plan/10-asset-spec.md、plan/status.md 與 imagegen skill。適用要求：素材與 manifest 使用入口相對 URL、保持跨來源 iframe／子目錄相容、維護舊存檔相容；沒有使用者授權不得建立 Release、tag 或平台上架。最小驗收是新增地圖可由 q08 已領獎存檔抵達並返回，world map 能列出地標，舊格式存檔可以記錄新地圖位置，素材 manifest／世界內容／型別及相關測試有效。
+本階段（2026-10-24）重新完整讀取上述線上模板與七份指定文件。另參照 plan/README.md、plan/10-asset-spec.md、plan/status.md 與 imagegen skill。適用要求：素材與 manifest 使用入口相對 URL、保持跨來源 iframe／子目錄相容、維護舊存檔相容；沒有使用者授權不得建立 Release、tag 或平台上架。最小驗收是新增地圖可由 q08 已領獎存檔抵達並返回，world map 能列出地標，舊格式存檔可以記錄新地圖位置，素材 manifest／世界內容／型別及相關測試有效。
 
 ## Stage A：雪痕海岸路徑與存檔相容
 
@@ -52,35 +52,32 @@ Stage B commits：9f90269（wolf／loot 與玩法接線）、61db462（狼 atlas
 
 ## 2026-10-24 Stage C current snapshot
 
-C1/C2 and the guide, route-map artwork, and quest gates are committed on main. The latest code commit is 445559f (q09/q10). Pine/cave environment layers, crab atlas, ice-shell icon, guide, route-map image, and Warden atlas provenance/runtime inputs are inventoried below.
+C1/C2, guide, route-map UI/art, q09/q10 and Warden atlas provenance/runtime are committed on main. Latest content commit is 445559f; regional-map UI commit is 3ec2b8d. Pine/cave scenery, crab atlas, ice-shell icon, and guide details are inventoried below.
 
 - C1 frost-pine-pass is playable (b457c2e). C2 frost-crab bounded charge and ice-shell drop is committed (a034dba); atlas registration is fe3f23a/6c28d21.
-- Guide sprite/runtime is 0e6a333 and NPC wiring 5be355c. Route-map art is 3c78f01; regional-map UI/manifest hookup remains with the separate UI agent.
+- Guide sprite/runtime is 0e6a333 and NPC wiring 5be355c. Route-map art is 3c78f01; regional-map UI is integrated as 3ec2b8d and renders its regional selection with the existing map action.
 - q09 and q10 manual quest flows, costs/rewards, and the q09 Coast→Pine gate are committed in 445559f. Pine→Coast return remains open. The q10 flow consumes four ice-shells after six crab kills. No Cave map or q10 route gate exists yet.
-- Cave scenery is already integrated (06e884d). Warden art is delivered on the expansion-art branch in ordered commits 8767a17 (provenance/source) then 8e4c87e (runtime atlas, 1632×1360, six by five, 272px cells; runtime 192px). Neither Warden commit is on main yet; no Warden gameplay is wired.
-- One-time heartbeat automation 06-55-2 is ACTIVE, COUNT=1, scheduled 2026-10-24 06:55 Hong Kong time for this chat. Historical usage at creation was 8% in the five-hour window, reset at 06:51; not a current reading.
+- Cave scenery is already integrated (06e884d). Warden provenance and runtime atlas are integrated on main as 4b5d3d9 and 3134390 (original commits 8767a17→8e4c87e); atlas is 1632×1360, six by five, 272px cells, runtime 192px. Warden gameplay is not wired yet.
+- One-time heartbeat 06-55-2 ran at 2026-10-24 06:55 Hong Kong time and was deleted after firing. Quota then reset to 1% used at 06:55; ordinary usage was allowed. Earlier 8% / 06:51 readings are historical only.
 
-q09/q10 checks recorded from their implementation: typecheck and content validation passed. Focused Vitest covered frost-quests, quests, journal-selection, and app-foundation; initial run passed 3 files/23 tests with one journal expectation failure; after fixing reachable objective locations, typecheck and journal-selection passed (1 file/3 tests). The other three files passed in the initial run. The focused commands excluded .worktrees to avoid duplicate discovery. No build or browser run was made for q09/q10. C2 actor/combat checks remain as previously recorded (2 files/18 tests, plus typecheck/content). Do not repeat checks unless related code changes.
+q09/q10 checks recorded from their implementation: typecheck and content validation passed. Focused Vitest covered frost-quests, quests, journal-selection, and app-foundation; initial run passed 3 files/23 tests with one journal expectation failure; after fixing reachable objective locations, typecheck and journal-selection passed (1 file/3 tests). The other three files passed in the initial run. The focused commands excluded .worktrees to avoid duplicate discovery. No build or browser run was made for q09/q10. C2 actor/combat checks remain as previously recorded (2 files/18 tests, plus typecheck/content). Regional-map UI check, run by its agent on base commit 445559f before its UI-only commit d978ab4: typecheck and six world-map focused tests passed. The commit is integrated as 3ec2b8d; checks were not repeated after cherry-pick. Do not repeat checks unless related code changes.
 
 ## Next implementation slice
 
-1. Integrate Warden provenance/runtime commits 8767a17 then 8e4c87e, checking status and parentage first.
-2. Add frost-tide-cavern as the third playable Frost Isles map, with Pine→Cave gated by q10 and Cave→Pine always open. Keep the new map's content separate from the world-map UI files owned by the UI agent.
-3. Implement frost-tide-warden with its own encounter/retry state and two telegraphed attacks. Add q11 so only manual claim records Frost Isles completion and grants frost-tide-sword once. Do not reuse guardian/boss or q08/chapter flags.
-4. After the regional-map UI handoff and sword assets are integrated, run one concentrated browser route using an isolated fixture/save, clearly distinguishing its start state from a fresh playthrough.
-
-Do not modify src/ui/world-map-model.ts, src/ui/world-map.ts, world-map styles, or world-map-specific tests while the UI agent owns those files. Do not push, tag, publish, or create a release.
-
+1. Add frost-tide-cavern as the third playable Frost Isles map. Pine→Cave requires q10 claimed; Cave→Pine is always open, preserving a safe return for existing or older saves.
+2. Keep world-map UI files with the UI agent. Add focused coverage for the new node, q10 gate, free return, and existing save format 1.
+3. Implement frost-tide-warden with its own encounter/retry state and two telegraphed attacks. Add q11 so only manual claim records Frost Isles completion and grants frost-tide-sword once; preserve q08/guardian flags and save format 1.
+4. Integrate the sword icon when delivered, then run one concentrated browser route on an isolated fixture/save. Report clearly that the fixture does not represent a fresh playthrough.
 ## Agent, worktree and art status
 
 - /root coordinates and supplies prompts; /root/game_expansion owns content/runtime code, focused checks, Git integration, and this report.
-- /root/expansion_art uses .worktrees/expansion-art / codex/expansion-art at 8e4c87e (clean). Warden source/runtime commits 8767a17→8e4c87e are ready to integrate in order. Sword art is still an uncommitted RGBA candidate; safe 64px runtime export and icon are pending, with the initial checkerboard candidate kept outside the repo.
-- /root/frost_interface_art is implementing regional-map UI in .worktrees/frost-region-map / codex/frost-region-map based on 445559f; current uncommitted files are src/ui/world-map-model.ts, src/ui/world-map.css, src/ui/world-map.ts, and tests/world-map.test.ts. Keep those files untouched here. The older .worktrees/frost-interface-art / codex/frost-interface-art checkout remains clean at 2b4bb2a (route-map asset only); route-map asset 3c78f01 is already on main.
+- /root/expansion_art uses .worktrees/expansion-art / codex/expansion-art at 8e4c87e. Warden provenance/runtime is already on main. Sword sprite sources, transparent edit, export script, and 64×64 RGBA runtime candidate are untracked in art-source/expansion-frost/sword/ and public/assets/equipment/; source log/commit and icon are pending. Preserve this WIP; do not clean or copy it before handoff.
+- /root/frost_interface_art delivered regional-map UI commit d978ab4; integrated on main as 3ec2b8d. The four-file UI/model/style/test change is complete and agent worktree .worktrees/frost-region-map / codex/frost-region-map is clean at d978ab4. The agent reports no additional controller/manifest wiring; UI uses the existing select-map action and relative route-map asset (3c78f01). It awaits frost-tide-cavern content for a focused third-node/q10-lock check. Older .worktrees/frost-interface-art remains clean at 2b4bb2a.
 - The main checkout has only the untracked .worktrees directory unless later status reports say otherwise. Stage explicit files; never use git add ..
 ## Tools, heartbeat and resume
 
 The default sandbox shell previously stalled; the verified local method is powershell.exe with login=false and a narrow require_escalated exec_command. functions.apply_patch stalled without modifying files; small PowerShell edits worked. Do not repeat failed startup checks or broaden diagnostics. Focused Vitest commands must include --exclude "**/.worktrees/**"; the earlier inflated file counts likely included the other worktrees.
 
-This chat has a one-time heartbeat automation 06-55-2 (ACTIVE, COUNT=1), scheduled 2026-10-24 at 06:55 Hong Kong time and targeted at this chat. At creation, the five-hour usage window showed 8% used and a 06:51 reset; that is a historical reading, not current.
+Heartbeat 06-55-2 ran at 2026-10-24 06:55 Hong Kong time and was deleted after firing. Quota then showed 1% used with ordinary usage allowed; the prior 8% / 06:51 reading was historical.
 
-To resume: read this report and plan/status.md, inspect git status --short --branch, HEAD, and git worktree list. Current content checkpoint is 445559f, preceded by C1/C2 and guide/map work already listed above. Warden source/runtime commits 8767a17→8e4c87e remain to integrate in order. Do not cherry-pick already integrated pine/cave layers, crab atlas/icon, guide, or route-map art. Continue with the Cave map/q10 route, boss/q11 and sword reward, then one isolated browser review of the complete region. Preserve user data. No push, tag, Release, or platform publication.
+To resume: read this report and plan/status.md, inspect git status --short --branch, HEAD, and git worktree list. Main checkpoint is 3ec2b8d; content baseline is 445559f. Warden integration is complete in 4b5d3d9 and 3134390; regional UI is integrated in 3ec2b8d from d978ab4. Do not cherry-pick integrated art/UI again. Continue with Cave map/q10 route, Warden gameplay/q11 and sword reward, then one isolated browser review of the complete region. Preserve user data. No push, tag, Release, or platform publication.
