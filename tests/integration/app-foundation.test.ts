@@ -113,6 +113,17 @@ describe('T14-a app foundation', () => {
     }
   });
 
+  it('requires the Gold Sand amber-scale inventory icon', () => {
+    const manifest = JSON.parse(readFileSync(
+      new URL('../../public/assets/interface/manifest.json', import.meta.url),
+      'utf-8',
+    )) as { images: { key: string }[]; [key: string]: unknown };
+    expect(() => parseAssetManifest(manifest, 'interface')).not.toThrow();
+
+    const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== 'item:amber-scale') };
+    expect(() => parseAssetManifest(incomplete, 'interface')).toThrow('item:amber-scale');
+  });
+
   it('rejects a present but incomplete manifest and reports all missing pack manifests', async () => {
     expect(() => parseAssetManifest({
       version: 1,
