@@ -102,6 +102,12 @@
 - 32d204a 增加 sand-stinger combat check，證明空中角色能跳過低尾刺、地面角色在相同 90ms active window 受擊；npx.cmd vitest run tests/combat.test.ts --exclude '**/.worktrees/**'（1 file／11 tests）與隨後 npm.cmd run typecheck 通過。
 - 3b541f3 新增 test-only sand-scorpion spawn 的完整遊戲流程：攻擊、擊殺、保證琥珀甲片掉落、拾取、回鎮出售；`npx.cmd vitest run tests/integration/app-gameplay.test.ts --exclude '**/.worktrees/**' -t 'amber scale'`通過1項（23 skipped），`npm.cmd run typecheck` exit 0。production MapDef仍無該怪物，不能視為實際遭遇驗收。
 - 上一進度快照記錄當時沒有可用沙蠍 runtime atlas；以下為使用者 2026-10-24 指定的目前範圍，取代先前擴展到 sunwell-basin、boss 或 q12–q14 的方向。
+
+### Current implementation snapshot (2026-10-24; code only, UNVERIFIED)
+
+- Commit bb23360 adds three repeatable sand-scorpion spawns on sand-glass-shore, sands-guide and q12 (manual accept; three kills plus three amber-scale consumed at claim), and a q12-gated route to a 2,600px sand-dune-pass with five foothold levels, ladders, four repeatable scorpions and an unrestricted return portal. World catalog validation contracts and the existing Gold Sand atlas assertion were updated. git diff --check passed before commit.
+- No tests, build, pack, browser run or playable acceptance has been performed for this code stage. The scorpion runtime atlas and dune runtime wiring remain pending. Do not report either phase complete yet.
+- Dune art commit 1112506061ccdde51ffe82b509388135038f50c7 delivered sky, far/mid canyon layers and sands-guide. Visual review found a bright red/magenta fringe on far/mid transparent edges; those two layers are withheld pending cleanup. Sky and guide looked clean. Scorpion source commits 2a4bba3, 59bdb9b and 36ce331 contain only source art; runtime atlas remains pending.
 ## 2026-10-24 黃金沙海有限續作（目前權威計畫；Stage 3 完成即停止）
 
 只完成 production sand-glass-shore 沙蠍遭遇、sand-dune-pass 第二地圖及 q12 手動解鎖任務、一次集中驗證與提交整合。保留 SDK/tools 1.1.0、SaveData format 1、既有 q01–q11/Guardian 行為和相對資源路徑。不新增第三張圖、首領、新區域或後續功能；不 push、tag、Release 或上架。
@@ -120,8 +126,8 @@
 | --- | --- | --- |
 | /root | Coordinator | Holds the finite scope, coordinates the two art dependencies; no runtime code ownership. |
 | /root/sand_integration | repository main | Sole current owner of runtime, docs/status, focused checks, accepted asset integration, commits and main integration. Stop after Stage 3 in this plan. |
-| /root/expansion_art | .worktrees/expansion-art | Resumed scorpion art task; provide a reviewable runtime atlas and source provenance for Stage 1. |
-| /root/sand_scene_art | isolated worktree | Coordinator-designated owner for new dune scenery and guide/NPC art for Stage 2; worktree/output details pending coordinator handoff. |
+| /root/expansion_art | .worktrees/expansion-art | Resumed scorpion art task; source poses are committed, runtime atlas and manifest contract remain pending for Stage 1. |
+| /root/sand_scene_art | isolated worktree | Delivered dune scenery and guide/NPC art in commit 1112506061ccdde51ffe82b509388135038f50c7; far/mid edge cleanup is requested before integration. |
 
 Earlier agent rows and worktree states below are historical snapshots. In particular, the completed frost interface agent's old instruction not to edit world-map files/tests does not restrict this second-map task. Preserve existing .worktrees/ contents; do not stage .worktrees/.
 

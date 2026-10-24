@@ -117,12 +117,18 @@ The behavior and rules tests use synthetic placements so the new AI can be check
 
 計畫起點 main HEAD 3edb5f7。當時已在 main 的內容是 sand-glass-shore、Frost→Sand 的 q11 claimed + Lv30 gate、amber-scale icon、scorpion AI/低尾刺與 test-only loot/sale integration；尚缺 production spawn、scorpion runtime atlas、sand-dune-pass、q12 與新 dune scenery/NPC。Stage 1/2 art 依賴分別由 /root/expansion_art 和 /root/sand_scene_art 隔離 worktree 負責，不重複生成。本次已完整讀取根 AGENTS 指定的線上模板與七份 main 規格；適用要求包括固定工具/SDK與存檔契約、相對路徑、子目錄 iframe 相容、pack/validate，且不發布。
 
+## Current implementation snapshot (2026-10-24; code only, UNVERIFIED)
+
+Commit bb23360 adds three repeatable sand-scorpion spawns on sand-glass-shore, the sands-guide and q12 (manual accept; kill three scorpions, collect and consume three amber scales at claim), plus a q12-gated route to sand-dune-pass. The second map is 2,600px wide, has five platform heights with ladders, four repeatable scorpions and a free return portal. The world validator contracts and existing Gold Sand atlas assertion were updated. git diff --check passed before commit.
+
+No tests, build, package validation or browser run has been performed for this code stage, and neither stage is claimed playable yet. The scorpion runtime atlas and asset-manifest wiring remain pending. The scene-art commit 1112506061ccdde51ffe82b509388135038f50c7 delivered the sky, far/mid canyon layers and guide; review found a bright red/magenta fringe on the far/mid transparent edges, so those two files are withheld while the art agent cleans them. The sky and guide looked clean. Scorpion commits 2a4bba3, 59bdb9b and 36ce331 are source art only; a runtime atlas is still pending.
+
 ## Current ownership (2026-10-24 finite Gold Sand task)
 
 - /root/sand_integration is the sole current owner of runtime/content code, this report and status, focused checks, accepted-art integration and commits on main. It stops after Stage 3.
 - /root coordinates scope and art dependencies and does not own runtime edits.
-- /root/expansion_art has resumed the scorpion art task in .worktrees/expansion-art; runtime art is pending review.
-- /root/sand_scene_art is the coordinator-designated owner for new dune scenery and guide/NPC art; isolated worktree/output details are pending handoff.
+- /root/expansion_art has committed clean identity/attack/idle source poses in .worktrees/expansion-art; runtime atlas is still being prepared.
+- /root/sand_scene_art delivered scenery and guide/NPC art in isolated commit 1112506061ccdde51ffe82b509388135038f50c7; far/mid alpha-edge cleanup is requested before integration.
 - Earlier agent/worktree details below are historical snapshots. The former frost_interface_art UI-only restriction not to change world-map model/view/style/tests applied to its completed UI task and does not limit implementation of sand-dune-pass. Preserve all existing .worktrees/ content and never stage that directory.
 - Existing source provenance already in main: Gold Sand map/art c8997ed/bf2cc2f; scorpion rules c498dce; icon/manifest 29820ce/0e2b40b; required sand loader a65b1d9; focused combat/test-only loot 32d204a/3b541f3. The first finite-scope documentation commit is edd3cbd.
 
