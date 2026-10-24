@@ -234,3 +234,13 @@ This finite three-stage task is complete. The implementation and focused checks 
 - beta.9 的唯一 production build 已完成。固定 Playroom tools 1.1.0 pack/validate 對 artifacts/game-beta9.zip 回報 Valid：53,742,110 bytes、179 entries、56,616,927 expanded bytes，SHA-256 101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A。artifacts/game-beta8.zip 保留。
 
 沒有 push、tag、Release、上傳或發布。既有 .worktrees/ 保留且不 stage；本次最後提交只更新兩份 canonical 文件。
+
+## 2026-10-24 日井守衛瀏覽器視覺補驗（IN_PROGRESS）
+
+本次是接續日井守衛包的有限 QA，只補 beta.9 成品瀏覽器中首領實際外觀及 900ms 地面預警的直接證據。唯一目標為 `artifacts/game-beta9.zip`，SHA-256 `101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A`；該包已 build 並以固定工具驗證。本次不改 production、不重建／重打包。當前工作樹含未提交 audio／SDK／beta.10 更動，不用它作驗收來源，也不把結果描述為目前工作樹行為。上輪 smoke 的盆地回程已驗證，Boss 外觀與預警維持 UNVERIFIED；不重跑回程、擊殺、q14 領獎、舊區域旅程或全套檢查。
+
+先將 beta.9 ZIP 解至獨占 temp 目錄，從該解壓資料夾以臨時靜態 server 提供頁面，使用自己的閒置 port（預定 5197；啟動前先確認可用），僅由本次 browser session 存取此 origin。server 以隱藏方式啟動並記錄 owner PID；收尾只停止該 PID，不碰共用 5173 或其他程序。使用新的獨立 named Playwright session 與一次性 format-1 Lv30 fixture，依 `tests/integration/sunwell-quests.test.ts` 的合法欄位／catalog 起點載入 `sand-sunwell-altar`，q01–q13 claimed、q14 active 0/1、Guardian flags 維持 fixture 原值。這只證明 beta.9 ZIP 的 fixture 載入及頁面視覺，不宣稱 UI 從頭完成任務。
+
+先以當前 DOM snapshot 查看實際頁面和控制項，再以短分段移動靠近首領；確認可辨識 boss 畫面後，最多再保留一張實際地面 telegraph 證據。截圖須在預警仍顯示的當下取得，隨即退離／暫停。每次 keydown 都在同一 bounded action 的 finally 執行 keyup，不跨工具或等待保持按鍵；不擊殺首領、不操作獎勵。最多兩張有意義截圖，其他觀察只用少量 DOM snapshot。
+
+存檔隔離與清理：先從 beta.9 歷史來源或 ZIP 實際頁面確認 production localStorage key 與 format-1 envelope，再於該獨立 session／beta.9 origin 讀取正確 key；若原值存在，先在該 session 保存原值與標記，完成後還原原值；若不存在，只移除本次寫入的 fixture 和自己的 backup marker。只關閉本次 named session、只停止自有 server PID，不碰其他存檔／程序。驗收為 beta.9 fixture 實際載入祭壇、畫面能辨識日井守衛、即時截圖能看到其實際地面預警；無法在有界操作內取得時如實維持 UNVERIFIED。Playwright 環境／工具無關失敗超過約 10 分鐘便停止並記錄，不擴大除錯。完成證據與清理紀錄後停止，不啟動新功能包。

@@ -274,3 +274,15 @@ Boss 外觀和 900ms 預警未由 browser 驗證：兩張保留的截圖都顯�
 beta.9 metadata 已在來源穩定後一次更新至 package.json、package-lock.json 和 public/game.json。唯一 production build 成功；node tools/playroom/pack.mjs dist artifacts/game-beta9.zip 使用 pinned tools 1.1.0 打包，node tools/playroom/validate.mjs artifacts/game-beta9.zip 回報 Valid。ZIP 為 53,742,110 bytes、179 entries、56,616,927 expanded bytes，SHA-256 101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A；beta.8 ZIP 保留。
 
 兩份 canonical 文件以文件-only commit 收尾。既有 .worktrees/ 保留且未 stage。沒有 push、tag、Release、上傳、listing 或平台發布。此有限包完成後停止。
+
+## 2026-10-24 有限續作：補首領外觀與預警證據（IN_PROGRESS）
+
+此續作只補上日井守衛包未取得的兩項 browser 證據：beta.9 成品中可辨識的 `sunwell-sentinel` 遊戲外觀，以及 900ms 單區域重擊的地面 telegraph。驗收對象固定為 `artifacts/game-beta9.zip`，SHA-256 `101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A`。上一包已完成 build 與 pinned tools 1.1.0 pack/validate；本次不修改 production，不改版本、不重建或重打包。當前工作樹有未提交 audio／SDK／beta.10 更動，不以該工作樹或共用 5173 為驗收來源；結果只代表 beta.9 ZIP。既有免費回盆地 smoke 已確認，因此不重做回程、長路線、擊殺、q14 claim 或發布工作。上一輪錯誤截圖仍只代表該兩項未驗證，不推論為 production defect。
+
+開始前重讀本地 AGENTS、Playwright skill、canonical status/report、完整最新 game-agent template 與其七份規格。適用要求為 format-1 舊檔相容、相對資產／子目錄 iframe 契約；實際瀏覽器不能確認的項目標 UNVERIFIED；本次沒有 push、tag、Release 或 publish 授權。
+
+### 最小 browser 驗收與隔離
+
+將固定 beta.9 ZIP 解至獨占 temp 目錄，並以隱藏的自有靜態 server 在啟動前確認閒置的 port（預定 5197）供應該目錄。記錄自有 server owner PID，結束時只停止該 PID；不連接、不終止共用 5173。建立一個新的獨立 named Playwright session，使用 beta.9 隔離 origin。先 snapshot 讀實際頁面與按鈕，再載入由 `tests/integration/sunwell-quests.test.ts` 對照的合法 format-1、Lv30 disposable fixture：祭壇 `sand-sunwell-altar`、q01–q13 claimed、q14 active 0/1、Guardian flags true/true、HP/MP 滿。這是人工設定起點，只驗證 beta.9 ZIP 的存檔載入及 boss 視覺，不代表 UI 任務通關。使用 public UI 輸入；以分段短移動取得可辨識首領畫面，另在實際重擊警示仍顯示時即時截圖，並立刻退離或暫停。任何按鍵在同一 bounded action 的 finally 釋放；不跨工具等待保持按鍵。最多兩張有意義截圖，不殺 boss、不領獎、不再走盆地回程。
+
+先從 beta.9 歷史來源或 ZIP 實際頁面確認 production localStorage key 與 format-1 envelope，再於隔離 session 讀取該 key。若原值存在，備份並在結束時還原；若不存在，清理只移除此 fixture 與本次建立的 backup marker。關閉本次 named session，清理獨占 temp 資料，僅停止自有 server PID。環境／工具失敗約 10 分鐘即有界停止；不為自動化失誤推斷 production 問題，如遇可重現產品問題回報 root，不自行改 production。驗收停止點：一張可辨識 boss 外觀與一張正在顯示地面 telegraph 的即時截圖，或如實記錄哪項未驗；記錄截圖路徑、console 摘要、beta.9 archive hash、fixture 與 cleanup，然後停止。
