@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "description": "踏上劍士之路：探索木葉世界與霜雪群島，完成十一個任務，挑戰古礦守衛與冰潮守望獸，立下你的第一個誓約。",
   "author": "獨立製作",
   "entry": "index.html",
