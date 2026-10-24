@@ -91,12 +91,32 @@ Commit c498dce adds the sand-scorpion Lv30 rules definition, the ranged telegrap
 
 The behavior and rules tests use synthetic placements so the new AI can be checked independently of art delivery. The monster is not yet in any real MapDef; the amber-scale icon is integrated, but the actor atlas is not. Loot flow has only been exercised with a test-only spawn, not in a live encounter. Commit c498dce checks passed: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**' (2 files / 17 tests), and git diff --check. Follow-up a65b1d9 adds sand sky/far/mid to required asset keys and fixes foundation catalog counts; typecheck and npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**' (1 file / 10 tests) passed. Test commit 32d204a directly verifies the stinger hits a grounded target while a jumping target avoids the low attack band; tests/combat.test.ts passed 11/11, followed by typecheck. Art commit e10833d is integrated as icon commit 29820ce; 0e2b40b registers it in the interface manifest and requires that key. Four rejected 6×5 scorpion atlas candidates and one rejected 2×2 attack-strip diagnostic are preserved with source notes by source-only commits 7cf3d4a and 6f71d43, integrated as 07382d4 and fac1544. None is a safe runtime image: the strip is non-square/unevenly divisible and has red/coral fringe. The art agent stopped further ImageGen attempts. Commit 3b541f3 adds a test-only sand-scorpion spawn and covers attack→kill→guaranteed amber-scale drop→pickup→merchant sale; targeted Vitest passed 1 test (23 skipped) and `npm.cmd run typecheck` exited 0. This does not add a production MapDef spawn. No build, package validation or browser QA was run.
 
-## Next implementation slice
+## 使用者指定的有限續作：三階段與停止條件（取代舊後續方向）
 
-1. The scorpion has no accepted runtime atlas and same-approach ImageGen attempts have stopped. Do not spawn it yet. A new visual approach must first produce a complete cut-safe atlas; then register image/animations, spawn it on sand-glass-shore, and run a focused attack/death-drop/pickup/sale check. The amber-scale icon is already registered.
-2. Complete the Gold Sand Sea in small slices: add sand-dune-pass with its own behavior and a short manual challenge, followed by sand-sunwell-basin and a readable boss telegraph/one-time reward. Keep q11 as the unlock to the region, always allow return, and do not raise the level cap.
-3. After the content/art route is complete, select an unused version (beta.7 or later only after checking manifests/tags), run one build and pinned pack/validate, then one isolated browser route. The earlier beta.6 package checks do not cover commits c8997ed/bf2cc2f. Frost browser combat remains PARTIAL; do not call its q11 claim or full route browser-verified.
-4. Before each new development package, reread the required online template and its seven linked specifications, state requirements/acceptance, and define the image prompt/path contract. Preserve format 1 saves and q01–q11/Guardian behavior; focused checks only. No push, tag, Release or platform listing.
+只完成沙蠍 production encounter、第二張 sand-dune-pass 地圖及 q12 手動解鎖、一次集中驗證和提交整合。Stage 3 完成後立即停止；不做 sunwell-basin、首領、第三張地圖、新區域或其他後續內容。保留 SDK/tools 1.1.0、SaveData format 1、q01–q11/Guardian 契約及相對資源路徑。不 push、不建 tag/Release、不上架。
+
+### Stage 1：沙蠍和琥珀甲片正式遭遇
+
+本整合代理負責遊戲程式、manifest/loader、MapDef、focused check、Git 整合與此報告；/root/expansion_art 負責隔離工作樹的 scorpion ImageGen/素材包裝。前次 atlas 均為 rejected source-only，本階段依賴 art worktree 提供可檢視的 runtime 素材。遵循 art agent 的 2×2 clean poses 再技術切格方案，不要求 raw canvas 為正方形；animation 格數依實際獨特姿勢調整，renderer contract 要求 idle 200ms、dead 100ms。
+
+完成條件：正式 actor manifest/required keys 載入 atlas；sand-glass-shore MapDef 有實際 scorpion spawn；玩家能看見 850ms stinger warning、跳躍躲過低尾刺、擊殺後保證取得 amber-scale、拾取並向商人出售。對真實 MapDef encounter 增一項直接相關 integration check。素材可切格、alpha 邊緣乾淨，時間與 anchor 符合 manifest 才接入。
+
+### Stage 2：第二地圖探索與 q12 解鎖
+
+本整合代理負責 sand-dune-pass MapDef、探索迴路/平台、自由回程 portal、atlas/world catalog、q12 條件/獎勵與 focused coverage；/root/sand_scene_art 負責隔離 worktree 的新 ImageGen dune scenery 與 guide/NPC art。收到素材後檢查檔案、像素尺寸、alpha、相對路徑和 runtime manifest 契約；依實際交付與 renderer 支援決定尺寸。
+
+完成條件：由 sand-glass-shore guide 手動接 q12；擊敗可重生沙蠍並取得、交付 3 個 amber-scale，再手動 claim q12 開放 sand-dune-pass。售出材料不軟鎖，正式沙蠍可重生供重取。第二圖有真實探索路徑和自由返回沙岸的出口，不是單純背景或節點。舊 format 1 save 缺 q12 狀態仍能載入並使用合理預設；不改 save format 或既有任務契約。圖像未註冊並在遊戲渲染前，不能標示本階段完成。
+
+### Stage 3：最小集中驗證、分段提交及整合 main
+
+本整合代理負責。依小階段明確 stage/commit；從隔離 art worktree 僅 cherry-pick 通過檢視的素材 commit。保留 .worktrees/，不追蹤、不 stage。
+
+完成條件：直接相關的 typecheck、content check、focused tests 通過（Vitest 排除 **/.worktrees/**）；對最終整合只 build 一次、以 pinned Playroom tools 1.1.0 pack/validate 一次、以隔離 browser profile 做一次路線 smoke：q11/Lv30 入沙岸→打沙蠍→掉落/拾取/出售→接取並完成 q12→進 sand-dune-pass 探索→自由回程。沒實測項目維持 UNVERIFIED。提交整合到 main 並更新 status/report；達成後標記 DONE 並停止。沒有 push/tag/Release/平台發布。
+
+### 基線與依賴
+
+計畫起點 main HEAD 3edb5f7。當時已在 main 的內容是 sand-glass-shore、Frost→Sand 的 q11 claimed + Lv30 gate、amber-scale icon、scorpion AI/低尾刺與 test-only loot/sale integration；尚缺 production spawn、scorpion runtime atlas、sand-dune-pass、q12 與新 dune scenery/NPC。Stage 1/2 art 依賴分別由 /root/expansion_art 和 /root/sand_scene_art 隔離 worktree 負責，不重複生成。本次已完整讀取根 AGENTS 指定的線上模板與七份 main 規格；適用要求包括固定工具/SDK與存檔契約、相對路徑、子目錄 iframe 相容、pack/validate，且不發布。
+
 ## Agent, worktree and art status
 
 - /root 是協調代理；/root/game_expansion 在 main 獨占 content/runtime code、Git 整合、focused checks 與本報告。

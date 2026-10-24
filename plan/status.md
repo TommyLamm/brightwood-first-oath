@@ -101,7 +101,18 @@
 - 0e2b40b 將 amber-scale icon 加入 manifest/required keys；typecheck 與更新後的 app-foundation focused test（1 file／11 tests）通過。07382d4/fac1544 僅保存不合格 scorpion 候選與 source notes，無 runtime；沒有因此新增遊戲驗收。
 - 32d204a 增加 sand-stinger combat check，證明空中角色能跳過低尾刺、地面角色在相同 90ms active window 受擊；npx.cmd vitest run tests/combat.test.ts --exclude '**/.worktrees/**'（1 file／11 tests）與隨後 npm.cmd run typecheck 通過。
 - 3b541f3 新增 test-only sand-scorpion spawn 的完整遊戲流程：攻擊、擊殺、保證琥珀甲片掉落、拾取、回鎮出售；`npx.cmd vitest run tests/integration/app-gameplay.test.ts --exclude '**/.worktrees/**' -t 'amber scale'`通過1項（23 skipped），`npm.cmd run typecheck` exit 0。production MapDef仍無該怪物，不能視為實際遭遇驗收。
-- sand-scorpion 尚無可用runtime atlas，且相同ImageGen方式已停止；不要接入或放到沙岸生成。待有不同且可驗收的視覺方案後，加入actor manifest/動畫與生成點，再以integration check驗攻擊、擊殺掉落、拾取及出售。amber-scale icon已註冊。後續再做沙丘隘道與挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
+- 上一進度快照記錄當時沒有可用沙蠍 runtime atlas；以下為使用者 2026-10-24 指定的目前範圍，取代先前擴展到 sunwell-basin、boss 或 q12–q14 的方向。
+## 2026-10-24 黃金沙海有限續作（目前權威計畫；Stage 3 完成即停止）
+
+只完成 production sand-glass-shore 沙蠍遭遇、sand-dune-pass 第二地圖及 q12 手動解鎖任務、一次集中驗證與提交整合。保留 SDK/tools 1.1.0、SaveData format 1、既有 q01–q11/Guardian 行為和相對資源路徑。不新增第三張圖、首領、新區域或後續功能；不 push、tag、Release 或上架。
+
+| 階段 | 負責人與依賴 | 完成條件 |
+| --- | --- | --- |
+| 1. 沙蠍 production encounter | 本整合代理負責 runtime、MapDef、loader/manifest、focused check 與 main 整合；/root/expansion_art 負責 scorpion 圖像。需先收到通過檢視的隔離 worktree runtime atlas；prototype/source-only 圖不可用。 | sand-glass-shore 實際生成 sand-scorpion；stinger 預警、可躲低尾刺、死亡、保證 amber-scale 掉落、拾取及商人出售都從生產遭遇觸發。Atlas 符合 renderer idle 200ms、dead 100ms 契約，frame 數依實際可用姿勢決定。加一個真實 MapDef/遭遇 focused integration check。 |
+| 2. sand-dune-pass + q12 | 本整合代理負責 MapDef、探索路線、portal、quest/runtime 與 focused check；/root/sand_scene_art 負責新 ImageGen 地景和 guide/NPC 圖。接線前確定實際路徑、尺寸、alpha 和 manifest 契約。 | 建立真實第二張可玩圖，含探索迴路/平台與可自由回沙岸的出口。guide 手動接 q12；擊敗可重生沙蠍並交付 3 個 amber-scale 後手動 claim，才解鎖地圖。已售出材料可重取，不軟鎖。atlas/world catalog 只顯示真實定義。舊 format 1 存檔可缺 q12 狀態並安全使用；不改格式。 |
+| 3. 集中驗證、分段提交並整合 main | 本整合代理負責；素材只 cherry-pick 通過檢視的 commit，保留 .worktrees/ 且不 stage。 | 只跑直接相關 typecheck/content/focused tests（Vitest 排除 **/.worktrees/**）、一次 build、固定 Playroom tools 1.1.0 pack/validate 和一次隔離 browser smoke，覆蓋入口、遭遇、戰利品、q12、第二圖探索與回程。所有本輪提交整合到 main；文件如實列出未驗證項目。達成後標記完成並停止。 |
+
+基線為 main HEAD 3edb5f7。已有 sand-glass-shore、q11/Lv30 入口、琥珀甲片 icon、沙蠍 AI/低尾刺 prototype 和 test-only loot flow；尚無 production spawn/atlas、sand-dune-pass 或 q12。兩份 art worktree 分別供應沙蠍及 dune scenery/NPC，程式整合不重做圖像生成。
 
 ## Agent／worktree／commit
 
