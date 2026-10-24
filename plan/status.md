@@ -192,3 +192,31 @@ This finite three-stage task is complete. The implementation and focused checks 
 - 最後定點 smoke 的 disposable fixture 與備份標記已清除；共用 5173 未關閉。沒有 publish、push、tag、Release、listing 或平台操作。提交後 tracked files clean；既有 .worktrees/ 保留且不 stage。
 
 日井盆地有限包已完成；在此停止。
+
+## 2026-10-24 日井守衛終章有限續作（新授權；Stage 3 完成即停止）
+
+本節記錄在日井盆地包完成後新授權的有限續作。上一包末尾「在此停止」是已完成工作的歷史停止點，不限制本次新包；本包完成後立即停止，不自動建立下一個目標。基線為 main `1a4647f`，開始時 tracked files clean，既有 `.worktrees/` 保留且不 stage。
+
+已完整讀取本地 `AGENTS.md`、Playroom 線上模板及其七份 main 規格：game-development、command-contracts、game.schema.json、game-release.yml、starter `playroom-sdk.js`、sdk-versioning、save-compatibility。適用要求：所有資源使用相對 URL 並支援子目錄／跨來源 iframe；維持 SaveData format 1 及舊檔相容；focused 驗收使用固定 Playroom tools 1.1.0；不 push、tag、Release、上傳或上架。
+
+### 範圍與固定契約
+
+- 新增獨立小型首領地圖 `sand-sunwell-altar`「日井祭壇」，位於既有 `sand-sunwell-basin` 東側；約 1,400px、平坦安全入口、單一中東區首領，沿用已接受的 Sunwell 環境主題，不生成新環境圖。盆地繼續是普通探索地圖：`boss: false`、現有四個普通怪生成點與西側無鎖返回砂丘關道均保持不變，只增加通往祭壇的東出口。祭壇西側出口永遠可回盆地；區域圖只列出新增的真實 MapDef 節點。
+- 祭壇首領為 Lv30 `sunwell-sentinel`「日井守衛」，人形砂岩石像、青綠核心與砂金紋、雙巨拳重擊；單次地面近身重擊沿用 Warden slam 參數：900ms 預警、100ms active、850ms recovery、190×120 命中範圍、1.3 倍傷害。碰撞 72×84；使用既有首領 UI／結果／重試／返回流程，不新增戰鬥框架或 Guardian 存檔旗標。
+- 琉砂在 q13 已 claimed 後允許玩家手動接 q14。入口要求 q13 claimed。q14 active 時在祭壇擊敗一次日井守衛，回琉砂手動 claim 才領 1 把日井誓刃及 1,800 金幣；無物品交付。已領取的 q14 不可再次領獎；首領可重戰，但額外擊殺不重發任務獎勵。
+- SaveData 維持 format 1，不新增持久化 boss flag；舊檔缺少 q14 狀態仍有效。所有 Guardian／q01–q13 契約與 Guardian flags 保持不變。
+- 日井誓刃是 Lv30 weapon slot，ATK 58、不可購買，出售價依同級唯一任務武器合理設定。素材同時提供 128×128 RGBA 任務／背包 icon（runtime 32×32）和透明 64×64 已裝備武器 sprite；兩者分別註冊於介面及 actors manifest。
+
+### 素材交付與擁有者
+
+- `/root/sentinel_actor_art` 負責石像角色身分、idle/walk/hurt/dead poses 及最後 atlas 組裝；先把角色身分交給攻擊素材代理。最終 atlas 固定 384×384，4×4 個 96px cell，runtime display 192×192、pivot 0.5/1；索引 idle 0–1、walk 2–5、attack 6–9、hurt 10–11、dead 12–15。動畫為 idle 2×200ms loop、walk 4×120ms loop、attack 4 格 non-loop 並對應完整重擊時間、hurt 2×100ms non-loop、dead 4×100ms non-loop。只為 `actor:sunwell-sentinel` 加入四格 walk contract 例外，其他演員不放寬。
+- `/root/sentinel_reward_attack_art` 負責四張連貫重擊姿勢、日井誓刃 icon 與裝備 sprite；交給角色代理組入最終 atlas。素材保留原始圖、完整 prompt、生成／匯出紀錄及 runtime 來源鏈。
+- 兩個素材代理在本計畫 commit 之前不生成；只 cherry-pick 通過檢視的素材 commits，完整來源與 runtime chain 一併整合。沒有新的環境素材代理。
+
+### 階段、最小驗收與停止條件
+
+1. 本整合代理先提交兩份 canonical plan 文件，之後通知素材代理按上述契約開始。
+2. 接入素材後由本整合代理新增首領、祭壇 MapDef／傳點、q14／獎勵、world map、assets manifest／required keys、world/content validators 與 focused coverage；每個小階段各自 commit，`.worktrees/` 永不 stage。
+3. 一個 focused gameplay case 使用真實 catalog／production spawn 與縮短戰鬥的 HP=1 harness，覆蓋 format-1 舊檔缺 q14、q13 門檻與祭壇入口、q14 手動接取、一次首領擊殺後只變 ready、手動 claim 後才加入單把誓刃及 1,800 金幣、第二次 claim 不重獎、首領重戰不重獎、Guardian flags 不變、祭壇自由返回盆地。另有需要才增加首領預警／單次命中 focused case。
+4. 只跑直接相關 `npm.cmd run typecheck`、`npm.cmd run check:content`、Vitest focused tests（固定 `--exclude '**/.worktrees/**'`）及 `git diff --check`。來源與 beta.9 metadata 穩定後，build 一次，使用固定 Playroom tools 1.1.0 pack/validate 一次，產物為 `artifacts/game-beta9.zip`；保留 `artifacts/game-beta8.zip`。由 root 安排一次短暫隔離 browser smoke，只看首領顯示、短預警及免費返回，不跑長戰或從頭任務。
+5. 完成整合與如實記錄已驗證／未驗證項目後停止。沒有 push、tag、Release、上傳或平台發布授權。

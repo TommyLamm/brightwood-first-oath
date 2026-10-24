@@ -216,3 +216,33 @@ After the renderer fix, a separate one-image check loaded the same kind of dispo
 After the accepted 37a5dc7 renderer change, one final npm.cmd run build completed; node tools/playroom/pack.mjs dist artifacts/game-beta8.zip packed successfully, and node tools/playroom/validate.mjs artifacts/game-beta8.zip reported Valid for brightwood-first-oath v1.0.0-beta.8 using pinned tools 1.1.0. The final archive is 53,523,653 bytes with 176 entries and 56,394,472 expanded bytes; SHA-256 is B60943E1ABFBBDD611A7452A736634AAB525009618619F0ECC2A3290914C5537. It is below 64 MiB. The previous beta.7 archive remains at artifacts/game.zip.
 
 The task is complete on main. The two canonical progress documents are being finalized in the closing documentation commit. The existing .worktrees/ directory is preserved and was not staged. No publish, push, tag, Release, listing or platform action occurred. Stop after this finite packet.
+
+## 2026-10-24 新授權有限續作：日井守衛終章
+
+日井盆地包的前一節「在此停止」是已完成上一包的歷史停止點，不限制使用者授權的本次新包。這是一個新有限任務；完成下列明確內容後停止，不延伸下一個目標。計畫在兩份 canonical 文件中先行提交；該 commit 完成前，素材代理不得生成。
+
+### 固定範圍與玩法
+
+新增第四張黃金沙海地圖 `sand-sunwell-altar`「日井祭壇」，作為既有 `sand-sunwell-basin` 東側的小型獨立首領場。祭壇約 1,400px、平坦地面、入口安全且只放一名首領；沿用已接受的 Sunwell 背景主題，不需要新增環境素材。祭壇西門無鎖返回盆地。盆地仍為 `boss: false` 普通探索圖，原有四個普通怪生成點與西門回砂丘關道維持不變，只新增通往祭壇的東門。region atlas 增列真實 MapDef 祭壇節點，不虛構其他地圖。
+
+新增 Lv30 日井守衛 `sunwell-sentinel`：砂岩人形石像、青綠核心、砂金紋、以雙巨拳重擊。沿用霜潮守望獸的可讀單區域重擊節奏：900ms telegraph、100ms active、850ms recovery，攻擊矩形 190×120，傷害倍率 1.3。邏輯碰撞 72×84。它使用既有 boss map 結果、再戰與離場流程，死亡可由同一場地重新挑戰；不使用、不修改 Guardian flags，也不增加新戰鬥框架。
+
+琉砂在 q13 claimed 後可供玩家手動接 q14。q14 要求祭壇擊敗一次日井守衛；擊殺後只成為 ready，玩家必須回琉砂手動領取才獲得 1,800 金幣與日井誓刃。沒有物品 turn-in。日井誓刃為 Lv30、ATK 58、weapon slot、不可購買；以同級唯一武器訂合理出售價。任務狀態 claimed 後不可再領取，重戰首領也不重複支付任務獎勵。
+
+SaveData 保持 format 1，不新增持久化首領旗標。舊 format-1 存檔沒有 q14 欄位時照常載入；q01–q13 與 Guardian 流程、flags 均不變。素材使用相對路徑及現有 manifest/loader 契約。
+
+### 素材責任與接線順序
+
+`/root/sentinel_actor_art` 負責首領身分、idle/walk/hurt/dead 姿勢與最終 atlas 組裝；先把角色身分交 `/root/sentinel_reward_attack_art`。`/root/sentinel_reward_attack_art` 負責四張連續重擊姿勢、日井誓刃 icon 和裝備 sprite，再把攻擊 poses 交給角色代理組進 atlas。保留原始稿、完整 prompts、生成日誌與匯出紀錄，整條 provenance/runtime commit chain 都需整合。
+
+最終首領圖固定 384×384、4×4 格、每格 96px；actors manifest 為 display 192×192、pivot 0.5/1、collision 72×84。格位依序為 idle 0–1（200ms loop）、walk 2–5（120ms loop）、attack 6–9（non-loop、配合重擊動作）、hurt 10–11（100ms non-loop）、dead 12–15（100ms non-loop）。原 actor animation contract 要求一般首領 6 格 walk，因此本包只為 `actor:sunwell-sentinel` 加一個 4 格 walk 白名單，保留其他角色與沙蠍／甲蟲的既有檢查。
+
+日井誓刃素材含 128×128 RGBA UI icon（runtime 32×32）與獨立透明 64×64 裝備 sprite。前者註冊於 interface manifest，後者註冊於 actors manifest；ItemDef 的 iconKey 與 visualKey 同時使用，確保背包顯示及裝備後場景可見。
+
+### 實作、驗收與停止
+
+本整合代理擁有唯一 main 程式、content、manifest、focused tests、Git 整合及兩份 plan 文件。第一個 mutation 只更新本報告與 `plan/status.md` 並 commit；提交後通知素材代理開始。素材只從隔離 worktree cherry-pick 通過檢視的 commit，不 stage `.worktrees/`。
+
+新增一個最小 focused gameplay case，使用實際 world catalog／MapDef production spawn，並以 HP=1 harness 控制耗時。驗收 q13 claimed 門檻與進出祭壇、舊 format-1 檔缺 q14 狀態、手動接取 q14、擊殺一隻首領後任務 ready 但未先發物品／金幣、回琉砂手動 claim 正好取得一把誓刃與 1,800 金幣、二次 claim 不重獎、重戰擊殺不多獎、Guardian flags 保持原值、祭壇免費返回盆地。若必要，另加重擊 telegraph／active hit 的單一 focused case。
+
+只跑直接相關 typecheck、content check、Vitest focused tests（固定排除 `**/.worktrees/**`）與 diff check；不跑全套測試。beta.9 metadata 只在內容及來源穩定後更新一次，最後 build 一次並用固定 Playroom tools 1.1.0 pack/validate 一次，產出 `artifacts/game-beta9.zip`，保留 beta.8 ZIP。root 另安排一次隔離 browser 短 smoke，只核對首領顯示、短預警及無鎖返回；不做長戰或全任務遊玩。完工記錄真實驗收與未驗證項目後即停止；不 push、tag、Release、上傳或發布。
