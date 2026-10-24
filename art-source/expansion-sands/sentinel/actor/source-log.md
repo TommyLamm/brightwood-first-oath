@@ -26,3 +26,5 @@ Composition/framing: one complete neutral standing pose, centered alone; full bo
 Lighting/mood: neutral diffuse sprite lighting, no directional light effects.
 Constraints: preserve a single coherent stone golem identity; true transparent alpha outside the natural outline; hard pixel edges; no detached pixels.
 Avoid: aura, halo, glow, bloom, light spill, rimlight, cast shadow, floor, ground, smoke, particles, background, checkerboard, text, grid, frame, watermark, extra characters, extra objects, weapon, shield, insect parts, animal parts.
+
+- Idle v1: 2026-10-24; built-in ImageGen, transparent background, reference-only accepted identity raw. Prompt/source/hash/provenance in sunwell-sentinel-idle-prompt-v1.md and sunwell-sentinel-idle-source-v1.md; review frames exported by export_idle_previews_v1.py.
