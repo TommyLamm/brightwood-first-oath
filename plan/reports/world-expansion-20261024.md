@@ -85,21 +85,28 @@ Main runtime commits: art c8997ed, playable map/atlas bf2cc2f; the beta.6 checks
 - Checks after content integration: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/world-map.test.ts --exclude '**/.worktrees/**' (1 file / 7 tests), direct Python manifest/file/dimension/mode/alpha checks for all four runtime images, and git diff --check all passed. The final UI model change was followed by typecheck and the same 7 focused tests. No build, package validation, or browser QA has been run on these Gold Sand commits.
 - The entry shoreline is playable exploration content but still has no enemies, NPC, quest, or boss. No complete Gold Sand Sea acceptance is claimed. Before this package, the local AGENTS.md, online game-agent template and all seven linked Playroom specs were fully reread (around 2026-10-24 08:00 Hong Kong); plan/10-asset-spec.md and the imagegen skill were also read.
 
+## Gold Sand Sea Stage B1: scorpion combat prototype
+
+Commit c498dce adds the sand-scorpion Lv30 rules definition, the ranged telegraphed sand-stinger attack, and a guaranteed saleable amber-scale material drop. The scorpion uses a 190px × 44px locked telegraph with an 850ms warning and does not dash; this gives it a ranged tail-sting role distinct from the Frost crab charge. The scale sells for 42 coins and cannot be bought.
+
+The behavior and rules tests use a synthetic map placement so the new AI can be checked independently of art delivery. The monster is not yet in any real MapDef, and the actor atlas/icon are not in runtime manifests; therefore no live encounter or loot is claimed. Relevant checks passed: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**' (2 files / 17 tests), and git diff --check. No build, package validation or browser QA was run.
+
 ## Next implementation slice
 
-1. Complete the Gold Sand Sea in small slices: add a differentiated Lv30 enemy with a useful drop, then sand-dune-pass with its own behavior and a short manual challenge, followed by sand-sunwell-basin and a readable boss telegraph/one-time reward. Keep q11 as the unlock to the region, always allow return, and do not raise the level cap.
+1. Integrate the pending scorpion atlas and amber-scale icon, register them in manifests, then spawn the scorpion on sand-glass-shore. A focused integration check should cover its attack, death drop, pickup and sale before calling the encounter playable.
+2. Complete the Gold Sand Sea in small slices: add sand-dune-pass with its own behavior and a short manual challenge, followed by sand-sunwell-basin and a readable boss telegraph/one-time reward. Keep q11 as the unlock to the region, always allow return, and do not raise the level cap.
 2. After the content/art route is complete, select an unused version (beta.7 or later only after checking manifests/tags), run one build and pinned pack/validate, then one isolated browser route. The earlier beta.6 package checks do not cover commits c8997ed/bf2cc2f. Frost browser combat remains PARTIAL; do not call its q11 claim or full route browser-verified.
 3. Before each new development package, reread the required online template and its seven linked specifications, state requirements/acceptance, and define the image prompt/path contract. Preserve format 1 saves and q01–q11/Guardian behavior; focused checks only. No push, tag, Release or platform listing.
 ## Agent, worktree and art status
 
 - /root 是協調代理；/root/game_expansion 在 main 獨占 content/runtime code、Git 整合、focused checks 與本報告。
-- /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 位於 3e6643a；代理回報素材包完成且工作樹 clean。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
+- /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 現正處理 Gold Sand sand-scorpion atlas 與 amber-scale icon；最新已知 HEAD 3e6643a，尚無 Gold Sand 圖像 commit。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
 - /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5；代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
 - 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
-- 本報告與狀態板最新 docs checkpoint 為 ac4f2a4；Frost beta.6 runtime 為 288693e，Gold Sand runtime commits 為 c8997ed/bf2cc2f。文件 checkpoint 只 stage plan/status.md 與本 report。
+- 本報告與狀態板最新 docs checkpoint 為 e5110db；Frost beta.6 runtime 為 288693e，Gold Sand commits 為 c8997ed/bf2cc2f/c498dce。文件 checkpoint 只 stage plan/status.md 與本 report。
 
 ## Tools, heartbeat and resume
 
 PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
 
-Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
+Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f/c498dce 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
