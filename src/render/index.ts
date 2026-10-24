@@ -125,10 +125,16 @@ const MAP_ATMOSPHERE: Readonly<Record<string, { color: number; alpha: number }>>
   'mine-gate': { color: 0x1c2233, alpha: 0.26 },
   'guardian-arena': { color: 0x3b1222, alpha: 0.3 },
 };
+/**
+ * The layers are pinned to the screen (scroll factor 0). They must not be repositioned from
+ * `camera.scrollX`: that value is read before the follow camera rounds its scroll for the frame,
+ * so a scroll-derived position lands on a different sub-pixel every frame and, with smoothing
+ * off, flips by a whole pixel while the hero moves.
+ */
 const BACKGROUND_LAYERS = [
-  { name: 'sky', factor: 0, depth: WORLD_DEPTH.sky },
-  { name: 'far', factor: 0.2, depth: WORLD_DEPTH.far },
-  { name: 'mid', factor: 0.5, depth: WORLD_DEPTH.mid },
+  { name: 'sky', depth: WORLD_DEPTH.sky },
+  { name: 'far', depth: WORLD_DEPTH.far },
+  { name: 'mid', depth: WORLD_DEPTH.mid },
 ] as const;
 type BackgroundLayer = (typeof BACKGROUND_LAYERS)[number];
 // Enlarge Sunwell's far layer around its bottom edge so the basin clears the ground without floating.
@@ -619,7 +625,6 @@ export function createWorldRenderer(
         const anchoredTilePositionY = background.frame.height - worldHeight / background.tileScaleY;
         background.setTilePosition(0, anchoredTilePositionY);
       }
-      background.setPosition(camera.scrollX * layer.factor, camera.scrollY * layer.factor);
       background.setSize(worldWidth, worldHeight);
     });
   };
@@ -651,11 +656,11 @@ export function createWorldRenderer(
     }>();
 
     try {
-    for (const { name, factor, depth } of BACKGROUND_LAYERS) {
+    for (const { name, depth } of BACKGROUND_LAYERS) {
       const key = `env:${map.themeKey}:${name}`;
       const image = assets.images.get(key)!;
       const background = scene.add.tileSprite(0, 0, BASE_WIDTH, BASE_HEIGHT, key).setOrigin(0, 0).setDepth(depth);
-      background.setScrollFactor(factor);
+      background.setScrollFactor(0);
       const scale = textureDisplayScale(image);
       const themeScaleY = BACKGROUND_THEME_TILE_SCALE_Y[map.themeKey]?.[name] ?? 1;
       background.setTileScale(scale.x, scale.y * themeScaleY);
