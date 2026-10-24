@@ -246,3 +246,31 @@ SaveData 保持 format 1，不新增持久化首領旗標。舊 format-1 存檔�
 新增一個最小 focused gameplay case，使用實際 world catalog／MapDef production spawn，並以 HP=1 harness 控制耗時。驗收 q13 claimed 門檻與進出祭壇、舊 format-1 檔缺 q14 狀態、手動接取 q14、擊殺一隻首領後任務 ready 但未先發物品／金幣、回琉砂手動 claim 正好取得一把誓刃與 1,800 金幣、二次 claim 不重獎、重戰擊殺不多獎、Guardian flags 保持原值、祭壇免費返回盆地。若必要，另加重擊 telegraph／active hit 的單一 focused case。
 
 只跑直接相關 typecheck、content check、Vitest focused tests（固定排除 `**/.worktrees/**`）與 diff check；不跑全套測試。beta.9 metadata 只在內容及來源穩定後更新一次，最後 build 一次並用固定 Playroom tools 1.1.0 pack/validate 一次，產出 `artifacts/game-beta9.zip`，保留 beta.8 ZIP。root 另安排一次隔離 browser 短 smoke，只核對首領顯示、短預警及無鎖返回；不做長戰或全任務遊玩。完工記錄真實驗收與未驗證項目後即停止；不 push、tag、Release、上傳或發布。
+
+### 最終驗收與停止（2026-10-24）
+
+本次新授權的有限包已完成，並於此停止。日井祭壇作為第四張真實 MapDef 地圖接在日井盆地東側；盆地仍為普通探索圖，原四個普通生成點和西側返程保持不變。日井守衛只使用既有 boss 結果、再戰及返回流程。q14 的舊 format-1 相容、q13 claimed 門檻、手動接取、一次首領擊殺後只變 ready、回琉砂手動 claim 才領取一把日井誓刃和 1,800 金幣、二次 claim／重戰不重獎、Guardian flags 不變，均由真實 catalog/spawn 的 focused gameplay case 驗收。Boss 擊殺後先經結果畫面返回祭壇，再使用現有離場方式完成回程。
+
+程式提交：7042e8c（先行 plan）、588d380（quest/map content）、5733fb7（boss gameplay）、c461350（最終 actor atlas）及 9099725（actors manifest、required keys、唯一 Sentinel 四格 walk 例外、beta.9 metadata）。日井誓刃與日井守衛素材來源鏈亦已整合，包括 53333e2、9b1713c、99fd430、f53f64a、f93e4c4、dc8075c、d35f94e、9b17652。素材報告保留 identity、各姿勢原稿、完整 prompts、crop/hash、exporter 與 runtime provenance；最終 atlas 為 384×384 RGBA，與來源報告 hash 相符。誓刃提供 128×128 RGBA icon 及 64×64 裝備 sprite。
+
+直接相關檢查結果：
+
+- npm run typecheck 通過；npm run check:content 通過。
+- npx vitest run tests/rules.test.ts tests/world-map.test.ts --exclude '**/.worktrees/**'：16/16 通過。
+- npx vitest run tests/actors.test.ts tests/integration/sunwell-quests.test.ts --exclude '**/.worktrees/**'：13/13 通過。
+- npx vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**'：12/12 通過。
+- 另執行 npx vitest run tests/integration/app-foundation.test.ts tests/integration/app-persistence.test.ts tests/integration/app-audio.test.ts --exclude '**/.worktrees/**'。Foundation 12 項通過；persistence 4 項與 audio 1 項在 startup 失敗，原因是兩個既有 fixture manifest 仍缺既有 required keys（例如 equip:frost-tide-sword、actor:frost-tide-warden）。新增的 Sentinel/Oathblade keys 已加到 fixture；沒有擴大修理舊 Frost fixture。沒有執行完整測試套件。
+
+#### 單次 browser smoke 與限制
+
+隔離 session sunwell-sentinel-smoke-20261024-b8d2 載入一次性 formatVersion 1 存檔：Lv30、HP 660/660、MP 98/98、q01–q13 claimed（q13 進度 2）、q14 active 0/1、Guardian flags true/true，位置日井祭壇 left，祭壇已列入 visited；原本的 dev save key 不存在。一次有限動作按右約 4.8 秒、短等候並截圖，再按左約 4.8 秒、Space、等候並釋放移動鍵。最後 snapshot 確認畫面在日井盆地、HP 439/660、遊戲暫停，故西門返回盆地已確認；返程目標設定為 right，但沒有另外讀取實際座標。
+
+Boss 外觀和 900ms 預警未由 browser 驗證：兩張保留的截圖都顯示暫停中的日井盆地，沒有可辨識的 boss 或預警。該 smoke 沒有擊殺 boss 或領獎。Console 共 3 則訊息、0 errors、0 warnings，其中有 1 則 Phaser info。操作前曾有兩次 run-code syntax/function-form 錯誤，均在動作執行前；有效動作後 pause-button locator 逾時 1 秒，但 snapshot 仍確認回到盆地。
+
+截圖為 output/playwright/sentinel-smoke-20261024-b8d2/altar-boss-view.png 與 output/playwright/sentinel-smoke-20261024-b8d2/basin-return-paused.png。Named session 已關閉；fixture 的 dev key 起初不存在且 cleanup 後仍不存在，backup marker 已移除；共用 5173 server 未關閉。
+
+#### 最終候選包與停止
+
+beta.9 metadata 已在來源穩定後一次更新至 package.json、package-lock.json 和 public/game.json。唯一 production build 成功；node tools/playroom/pack.mjs dist artifacts/game-beta9.zip 使用 pinned tools 1.1.0 打包，node tools/playroom/validate.mjs artifacts/game-beta9.zip 回報 Valid。ZIP 為 53,742,110 bytes、179 entries、56,616,927 expanded bytes，SHA-256 101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A；beta.8 ZIP 保留。
+
+兩份 canonical 文件以文件-only commit 收尾。既有 .worktrees/ 保留且未 stage。沒有 push、tag、Release、上傳、listing 或平台發布。此有限包完成後停止。

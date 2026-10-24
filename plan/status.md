@@ -92,7 +92,7 @@
 - Regional atlas 現有獨立 sand scope、全域黃金沙海入口點、Frost↔Sand 真實 portal 連線及 q11 鎖定狀態；只有 catalog 真正存在的 maps 才繪出區域節點。當前沙海僅有 1 張可玩探索圖，沒有怪物、NPC、沙海任務或首領；其餘兩個圖位是座標資料、UI 不會假繪成可玩節點。
 - 素材 commit c8997ed：960×540 黃金沙海路線圖及 shore sky/far/mid 圖層，far/mid 真 alpha；保留原始 ImageGen PNG、逐項完整 prompt 與 source logs。Chart 在 320×180 可分辨海岸、沙脊、綠洲；三層合成已視檢。Runtime 約 2.5 MiB。
 - 程式／區域接線 commit bf2cc2f：MapDef、portal、mapOrder、world validator、兩個資產 manifest、atlas model/UI/CSS、world-map focused test。
-- 直接相關檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest tests/world-map.test.ts --exclude **/.worktrees/**（1 file／7 tests）、manifest/file/dimension/alpha Python 檢查與 git diff --check。未對最新 Gold Sand commit 執行 build、pack/validate 或 browser。
+- 直接相關檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest tests/world-map.test.ts --exclude '**/.worktrees/**'（1 file／7 tests）、manifest/file/dimension/alpha Python 檢查與 git diff --check。未對最新 Gold Sand commit 執行 build、pack/validate 或 browser。
 - 本開發包開始前，已完整重讀本地 AGENTS.md、Playroom game-agent template 及其七份線上規格，另讀 plan/10-asset-spec.md 與 imagegen skill。適用要求是相對 asset URL、iframe 子目錄相容、format 1 存檔及來源原稿保留；本包最小驗收為新圖可由 q11＋Lv30 到達並自由回程、atlas 只顯示真實 MapDef、舊 save 無新欄位依然有效、manifest/內容/型別/focused tests 通過。未升級 SDK/schema、未發布/push/tag/Release。
 - 本區域尚未完成。c498dce 加入 sand-scorpion（Lv30，攻擊碰撞 52×44）、850ms 可讀風報的 190px 低尾刺 sand-stinger，以及保證掉落、可出售 42 金幣的 amber-scale。當前只完成 rules/actor AI definition，尚未在任何 MapDef 生成；正式 actor atlas 尚未交付，不得稱為可遭遇／可拾取。
 - amber-scale icon 已由 29820ce 整合為 128×128 RGBA、runtime 32×32；0e2b40b 將其加入 interface manifest 與 required keys。四張6×5 scorpion atlas與一張2×2 attack-strip候選由07382d4/fac1544 source-only保留；均有紅邊或尺寸／格線問題，無runtime atlas，ImageGen重試已停止。
@@ -220,3 +220,17 @@ This finite three-stage task is complete. The implementation and focused checks 
 3. 一個 focused gameplay case 使用真實 catalog／production spawn 與縮短戰鬥的 HP=1 harness，覆蓋 format-1 舊檔缺 q14、q13 門檻與祭壇入口、q14 手動接取、一次首領擊殺後只變 ready、手動 claim 後才加入單把誓刃及 1,800 金幣、第二次 claim 不重獎、首領重戰不重獎、Guardian flags 不變、祭壇自由返回盆地。另有需要才增加首領預警／單次命中 focused case。
 4. 只跑直接相關 `npm.cmd run typecheck`、`npm.cmd run check:content`、Vitest focused tests（固定 `--exclude '**/.worktrees/**'`）及 `git diff --check`。來源與 beta.9 metadata 穩定後，build 一次，使用固定 Playroom tools 1.1.0 pack/validate 一次，產物為 `artifacts/game-beta9.zip`；保留 `artifacts/game-beta8.zip`。由 root 安排一次短暫隔離 browser smoke，只看首領顯示、短預警及免費返回，不跑長戰或從頭任務。
 5. 完成整合與如實記錄已驗證／未驗證項目後停止。沒有 push、tag、Release、上傳或平台發布授權。
+
+## 2026-10-24 日井守衛終章完成（停止）
+
+本有限續作已完成，現在停止。日井祭壇是獨立第四張真實地圖；日井盆地維持普通探索、原有四個普通怪生成點與西側回程。q14 的 format-1 相容、手動接取／claim、實際首領擊殺、結果離場與單次誓刃／金幣獎勵，在 focused gameplay case 驗收；Guardian flags 未變。素材保留原始稿、prompts、匯出器與 runtime 來源鏈。
+
+主要 main 提交為計畫 7042e8c、內容 588d380、boss flow 5733fb7、atlas/素材整合 c461350、最後 manifest 與 beta.9 metadata 9099725。來源鏈亦包括 53333e2、9b1713c、99fd430、f53f64a、f93e4c4、dc8075c、d35f94e 與 9b17652。
+
+- 通過：npm run typecheck；npm run check:content；npx vitest run tests/rules.test.ts tests/world-map.test.ts --exclude '**/.worktrees/**'（16/16）；npx vitest run tests/actors.test.ts tests/integration/sunwell-quests.test.ts --exclude '**/.worktrees/**'（13/13）；npx vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**'（12/12）。沒有跑完整測試套件。
+- 已執行 app-foundation、app-persistence、app-audio 的 focused run；foundation 為 12/12，另外 app-persistence 的 4 項與 app-audio 的 1 項在 startup 失敗。這兩個舊測試 manifest fixture 仍缺既有 required asset keys（例如 equip:frost-tide-sword、actor:frost-tide-warden）；本輪新增的日井守衛與日井誓刃 keys 已加入，沒有延伸修理無關舊 fixture。
+- 唯一 browser smoke 使用一次性 format-1 fixture：Lv30、HP/MP 全滿、q01–q13 claimed、q14 active 0/1、Guardian flags true/true、祭壇 left。單次短輸入後 snapshot 確認已由西門返回日井盆地，HP 439/660 且暫停；西返已驗證。祭壇 boss 與 900ms 預警未驗證，兩張 screenshot 都是暫停中的盆地畫面；沒有擊殺或領獎。Console 3 則訊息、0 errors、0 warnings，其中 1 則 Phaser info。Named session 已關閉；原本不存在的 dev save key 仍不存在、backup marker 已移除，共用 5173 未動。
+- 截圖保留於 output/playwright/sentinel-smoke-20261024-b8d2/altar-boss-view.png 和 output/playwright/sentinel-smoke-20261024-b8d2/basin-return-paused.png。互動紀錄包含一次前置 script 語法／函式形式錯誤，以及成功動作後 pause-button locator 1 秒逾時；最終 snapshot 仍確認了西返。
+- beta.9 的唯一 production build 已完成。固定 Playroom tools 1.1.0 pack/validate 對 artifacts/game-beta9.zip 回報 Valid：53,742,110 bytes、179 entries、56,616,927 expanded bytes，SHA-256 101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A。artifacts/game-beta8.zip 保留。
+
+沒有 push、tag、Release、上傳或發布。既有 .worktrees/ 保留且不 stage；本次最後提交只更新兩份 canonical 文件。
