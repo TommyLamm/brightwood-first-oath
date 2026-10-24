@@ -1059,6 +1059,8 @@ describe('app gameplay vertical slice', () => {
     let gameplay = started.gameplay;
     gameplay.saveData.quests.q11 = { status: 'claimed', counters: { 'frost-tide-warden': 1 } };
     gameplay.saveData.quests.q12 = { status: 'claimed', counters: { 'sand-scorpion': 3 } };
+    const q12Before = structuredClone(gameplay.saveData.quests.q12);
+    expect(catalog.world.quests.q13?.consumeItems).toEqual([]);
     gameplay.saveData.player = { ...gameplay.saveData.player, level: 30 };
     expect(gameplay.saveData.quests).not.toHaveProperty('q13');
     expect(getQuestView(gameplay.saveData, 'q13', catalog).status).toBe('available');
@@ -1148,6 +1150,7 @@ describe('app gameplay vertical slice', () => {
     gameplay.movement.position = { x: guide.x, y: guide.y };
     gameplay = run(gameplay, [{ seq: seq++, type: 'claimQuest', payload: { questId: 'q13' } }], nowMs += 100);
     expect(gameplay.saveData.quests.q13?.status).toBe('claimed');
+    expect(gameplay.saveData.quests.q12).toEqual(q12Before);
     expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'sunwell-shell')?.quantity).toBe(2);
 
     gameplay.movement.position = { x: shoreEast.x, y: shoreEast.y };
