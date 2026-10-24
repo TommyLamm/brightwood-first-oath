@@ -130,6 +130,11 @@ const BACKGROUND_LAYERS = [
   { name: 'far', factor: 0.2, depth: WORLD_DEPTH.far },
   { name: 'mid', factor: 0.5, depth: WORLD_DEPTH.mid },
 ] as const;
+type BackgroundLayer = (typeof BACKGROUND_LAYERS)[number];
+// Keep the Sunwell pool above the lower terrain edge so the map's landmark stays visible.
+const BACKGROUND_THEME_Y_OFFSETS: Readonly<Record<string, Partial<Record<BackgroundLayer['name'], number>>>> = {
+  sunwell: { far: -130 },
+};
 
 /** A load error is safe to display and retry; the currently active map remains intact. */
 export class RendererAssetError extends Error {
@@ -606,9 +611,14 @@ export function createWorldRenderer(
     const camera = scene.cameras.main;
     const worldWidth = camera.width / camera.zoom;
     const worldHeight = camera.height / camera.zoom;
+    const themeOffsets = BACKGROUND_THEME_Y_OFFSETS[activeVisual.map.themeKey];
     activeVisual.backgrounds.forEach((background, index) => {
-      const factor = BACKGROUND_LAYERS[index]!.factor;
-      background.setPosition(camera.scrollX * factor, camera.scrollY * factor);
+      const layer = BACKGROUND_LAYERS[index]!;
+      const themeYOffset = themeOffsets?.[layer.name] ?? 0;
+      background.setPosition(
+        camera.scrollX * layer.factor,
+        camera.scrollY * layer.factor + themeYOffset,
+      );
       background.setSize(worldWidth, worldHeight);
     });
   };
