@@ -100,6 +100,7 @@
 - a65b1d9 修正資產契約：loader 現強制要求 sand 的 sky/far/mid 三層；foundation 測試驗證缺任何一層都會拒絕，也更新 Gold Sand item/map catalog 預期數。npm.cmd run typecheck 與 npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**'（1 file／10 tests）通過。
 - 0e2b40b 將 amber-scale icon 加入 manifest/required keys；typecheck 與更新後的 app-foundation focused test（1 file／11 tests）通過。07382d4/fac1544 僅保存不合格 scorpion 候選與 source notes，無 runtime；沒有因此新增遊戲驗收。
 - 32d204a 增加 sand-stinger combat check，證明空中角色能跳過低尾刺、地面角色在相同 90ms active window 受擊；npx.cmd vitest run tests/combat.test.ts --exclude '**/.worktrees/**'（1 file／11 tests）與隨後 npm.cmd run typecheck 通過。
+- 3b541f3 新增 test-only sand-scorpion spawn 的完整遊戲流程：攻擊、擊殺、保證琥珀甲片掉落、拾取、回鎮出售；`npx.cmd vitest run tests/integration/app-gameplay.test.ts --exclude '**/.worktrees/**' -t 'amber scale'`通過1項（23 skipped），`npm.cmd run typecheck` exit 0。production MapDef仍無該怪物，不能視為實際遭遇驗收。
 - sand-scorpion 尚無可用runtime atlas，且相同ImageGen方式已停止；不要接入或放到沙岸生成。待有不同且可驗收的視覺方案後，加入actor manifest/動畫與生成點，再以integration check驗攻擊、擊殺掉落、拾取及出售。amber-scale icon已註冊。後續再做沙丘隘道與挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
 
 ## Agent／worktree／commit
@@ -107,7 +108,7 @@
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | Gold Sand scorpion code/art checkpoints through fac1544; this documentation update pending | sting AI tested; amber icon integrated; no runtime atlas or live scorpion encounter |
+| /root/game_expansion | repository main | Gold Sand scorpion code/art/test checkpoints through 3b541f3; this documentation update pending | sting AI tested; amber icon integrated; no runtime atlas or live scorpion encounter |
 | /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | HEAD 6f71d43；clean；四張6×5與一張2×2候選皆source-only，無runtime | 已停止同方式ImageGen重試；amber-scale icon已交付 |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
