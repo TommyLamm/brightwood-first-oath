@@ -131,9 +131,9 @@ const BACKGROUND_LAYERS = [
   { name: 'mid', factor: 0.5, depth: WORLD_DEPTH.mid },
 ] as const;
 type BackgroundLayer = (typeof BACKGROUND_LAYERS)[number];
-// Keep the Sunwell pool above the lower terrain edge so the map's landmark stays visible.
-const BACKGROUND_THEME_Y_OFFSETS: Readonly<Record<string, Partial<Record<BackgroundLayer['name'], number>>>> = {
-  sunwell: { far: -130 },
+// Enlarge Sunwell's far layer around its bottom edge so the basin clears the ground without floating.
+const BACKGROUND_THEME_TILE_SCALE_Y: Readonly<Record<string, Partial<Record<BackgroundLayer['name'], number>>>> = {
+  sunwell: { far: 1.6 },
 };
 
 /** A load error is safe to display and retry; the currently active map remains intact. */
@@ -611,14 +611,15 @@ export function createWorldRenderer(
     const camera = scene.cameras.main;
     const worldWidth = camera.width / camera.zoom;
     const worldHeight = camera.height / camera.zoom;
-    const themeOffsets = BACKGROUND_THEME_Y_OFFSETS[activeVisual.map.themeKey];
+    const themeScales = BACKGROUND_THEME_TILE_SCALE_Y[activeVisual.map.themeKey];
     activeVisual.backgrounds.forEach((background, index) => {
       const layer = BACKGROUND_LAYERS[index]!;
-      const themeYOffset = themeOffsets?.[layer.name] ?? 0;
-      background.setPosition(
-        camera.scrollX * layer.factor,
-        camera.scrollY * layer.factor + themeYOffset,
-      );
+      const themeScaleY = themeScales?.[layer.name] ?? 1;
+      if (themeScaleY !== 1) {
+        const anchoredTilePositionY = background.frame.height - worldHeight / background.tileScaleY;
+        background.setTilePosition(0, anchoredTilePositionY);
+      }
+      background.setPosition(camera.scrollX * layer.factor, camera.scrollY * layer.factor);
       background.setSize(worldWidth, worldHeight);
     });
   };
@@ -656,7 +657,12 @@ export function createWorldRenderer(
       const background = scene.add.tileSprite(0, 0, BASE_WIDTH, BASE_HEIGHT, key).setOrigin(0, 0).setDepth(depth);
       background.setScrollFactor(factor);
       const scale = textureDisplayScale(image);
-      background.setTileScale(scale.x, scale.y);
+      const themeScaleY = BACKGROUND_THEME_TILE_SCALE_Y[map.themeKey]?.[name] ?? 1;
+      background.setTileScale(scale.x, scale.y * themeScaleY);
+      if (themeScaleY !== 1) {
+        const anchoredTilePositionY = background.frame.height - background.height / background.tileScaleY;
+        background.setTilePosition(0, anchoredTilePositionY);
+      }
       backgrounds.push(background);
       environmentTextureKeys.add(key);
     }
