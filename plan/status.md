@@ -175,3 +175,20 @@ This finite three-stage task is complete. The implementation and focused checks 
 | 3. 最小驗收、提交與停止 | `/root/sunwell_integration`。只 cherry-pick 通過檢視的素材 commit，保留 `.worktrees/` 且不 stage。 | 一個使用實際 world catalog／MapDef 生成點的 q13 路線案例覆蓋 q13 缺席舊檔、未手動 claim 前門鎖定、完成兩次甲蟲擊殺與手動 claim、進入新圖並無鎖返回；若新 charge 參數需要，增加一個聚焦邊界／牆面裁切／一次命中案例。只執行直接相關 typecheck、content check、focused tests（Vitest 排除 `**/.worktrees/**`）及 diff check。來源與版本穩定後 build 一次，使用固定 Playroom tools 1.1.0 pack/validate 一次；不跑完整測試套件、不發布或推送。完成後記錄真實結果並停止。 |
 
 基線是 main `90591ca`，tracked files clean；既有未追蹤 `.worktrees/` 保留。實作完成前先提交本計畫；此後由本整合代理獨自修改主程式、manifest、status/report 與測試。
+
+## 2026-10-24 日井盆地完成（final acceptance）
+
+本次有限包已完成並停止：在 sand-dune-pass 加入日井甲蟲遭遇；完成 q13 手動接取／claim 與日井盆地東門；新增日井盆地地圖、混合遭遇、免費西側回程、甲蟲素材及日井甲殼商品。前一個 Gold Sand STOP 是上一包的歷史完成條件；本次授權包完成後不再展開下一項功能。
+
+實作與整合提交包括 3752c0c、467d335、3466add、6c0917a、b569cb0、744bb0c、43683b1、2387678、49df6af、cd6bc02、cd62ac5、c28a9d4、3ee429b、1d4a9a4、b9a7c65、70cf742、37a5dc7。最後 70cf742 的純垂直平移曾造成地形下方天空縫，已由 37a5dc7 取代為只套用於 Sunwell far layer 的底部錨定縮放。root 接受最終畫面：地形延伸到地面線，日井水池與破環片段可辨；部分細節被平台遮擋屬場景層次。沒有再調整視覺。
+
+- q13 使用既有琉砂，需 q12 已 claim 後手動接取；在砂丘關道擊敗兩隻甲蟲，再手動 claim 才開東門，沒有物品交付。正式生成點保留兩隻沙蠍並新增兩隻甲蟲。format 1 不變，缺 q13 的舊存檔仍可載入；q01–q12 及 Guardian 契約未改。
+- 日井甲蟲沿用 Frost Crab bounded charge（750ms 預警、250ms active、最多 220px），沿用鎖向、預警路徑、命中一次、牆面／地圖界線及 spawn roam 限制。日井甲殼保證掉落、只能按既有商店出售，售價 55。
+- 甲蟲 atlas 384×384、4×4 個 96px 格，display 96×96、collision 52×42；保留 source、prompt、hash 與 exporter provenance。環境 sky/far/mid 是 960×540。沒有新增 combat framework、boss、第四張圖或裝備系統。
+- 聚焦驗證通過：q13 route case 1 passed、25 skipped，使用正式 catalog/MapDef 生成點，涵蓋缺 q13 的舊檔、手動接取、兩次擊殺、手動領獎、門鎖／開啟、進圖及免費回程；bound charge actor/combat cases 通過；app-foundation 12/12；npm.cmd run check:content 通過；npm.cmd run typecheck 在最後 renderer commit 37a5dc7 後通過。沒有跑完整測試套件。
+- 一次 beta.8 瀏覽器路線 smoke 使用隔離的 format-1、Lv30/q13 已預先 claim 存檔；它驗證日井盆地顯示、短距離移動及免費西門回砂丘關道。q13 是預先建立，沒有宣稱瀏覽器從接取到 claim 的戰鬥流程通過。該次 console 為 0 errors、0 warnings、1 Phaser info。
+- 37a5dc7 之後另做一張定點畫面確認底部錨定修正，只驗證水池／破環可見及無天空縫；這次沒有移動、路線或 console 檢查。兩次畫面分別保留在 .playwright-cli/page-2026-10-24T05-10-11-806Z.png、page-2026-10-24T05-13-14-795Z.png、page-2026-10-24T05-23-42-149Z.png。
+- 最終來源經 npm.cmd run build、固定 Playroom tools 1.1.0 的 pack 與 validate；validate 回報 beta.8 Valid。檔案 artifacts/game-beta8.zip：53,523,653 bytes、176 entries、56,394,472 expanded bytes；SHA-256 B60943E1ABFBBDD611A7452A736634AAB525009618619F0ECC2A3290914C5537，低於 64 MiB。舊 beta.7 artifacts/game.zip 保留。
+- 最後定點 smoke 的 disposable fixture 與備份標記已清除；共用 5173 未關閉。沒有 publish、push、tag、Release、listing 或平台操作。提交後 tracked files clean；既有 .worktrees/ 保留且不 stage。
+
+日井盆地有限包已完成；在此停止。

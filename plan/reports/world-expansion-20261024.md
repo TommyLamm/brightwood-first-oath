@@ -190,3 +190,29 @@ The finite three-stage task is complete on main: production sand-scorpion encoun
 甲蟲沿用 Frost Crab 既有 bounded charge 行為與參數（750ms 預警、250ms active、最多 220px）：預警時鎖定方向，既有命中、map wall、map edge 與 spawn roam 裁切保持一致，警示路徑對應衝鋒攻擊路徑；新增甲蟲專屬技能資料，不複製沙蠍尾刺，也不新增 combat framework。美術契約為環境三層 sky/far/mid；甲蟲 384×384、4×4 個 96px 格（idle 0–1／walk 2–5／attack 6–9／hurt 10–11／dead 12–15），walk 格須為真實獨特姿勢，idle 200ms、dead 100ms，runtime 96×96、collision 約 52×42；甲殼 icon 128×128 RGBA，runtime 32×32。walk 四格特例僅給甲蟲，既有沙蠍檢查不放寬。
 
 `/root/sunwell_integration` 擁有全部 main 程式、manifest、文件及測試；`/root/sunwell_environment_art` 與 `/root/sunwell_beetle_art` 各自在隔離 worktree 交付素材。素材代理等計畫 commit 後開始生成。最小驗收是一個以實際 catalog spawn 的 q13 路線案例（q13 缺席舊 format 1 save、門在手動領獎前鎖定、兩次擊殺、claim、進圖和自由回程），及需要時一個 charge 碰撞／牆面／單次命中案例；另跑相關 typecheck、content、focused tests、diff check。固定工具 1.1.0 pack/validate 與 build 各一次，待來源和 metadata 穩定後執行；不跑 full suite、不發布。詳細範圍、責任、acceptance 和停止條件見 `plan/status.md` 新增的「日井盆地有限續作」。
+
+## Sunwell Basin final acceptance (2026-10-24)
+
+The newly authorized finite packet is complete. It adds the production Sunwell Beetle encounter to Sand Dune Pass, the q13 manual unlock route, the real Sunwell Basin map with mixed encounters and free west return, the beetle atlas, and a guaranteed saleable Sunwell Shell. Gold Sand's earlier STOP described its completed packet; this packet is now complete and stops here.
+
+The integration commits are 3752c0c, 467d335, 3466add, 6c0917a, b569cb0, 744bb0c, 43683b1, 2387678, 49df6af, cd6bc02, cd62ac5, c28a9d4, 3ee429b, 1d4a9a4, b9a7c65, 70cf742 and 37a5dc7. The -130px far-layer translation in 70cf742 exposed a sky gap beneath the terrain and was replaced by a Sunwell-far-only vertically scaled, bottom-anchored layer in 37a5dc7. Root accepted the final fixed screenshot: the canyon reaches the floor with no sky strip, and the turquoise pool and broken sundial ring remain visible; the platform naturally occludes some lower details. No further visual edits were made.
+
+### Production behavior and focused checks
+
+q13 is offered by the existing Liusha NPC after q12 is claimed. The player manually accepts it, defeats two Sunwell Beetles in Sand Dune Pass, and manually claims it to unlock the east gate; there is no item turn-in. Two production scorpion spawns remain in the pass and two are beetles. SaveData remains format 1, a save without q13 remains valid, and q01–q12 plus Guardian behavior remain unchanged. Sunwell Shell is guaranteed from the beetle, sells for 55 through the existing shop path, and is not buyable.
+
+The Beetle reuses the Frost Crab bounded charge parameters and rules: a 750ms warning, 250ms active interval, maximum 220px travel, locked direction, matching warning path, one hit, wall/map bounds and spawn-roam limits. The 384×384 atlas uses sixteen 96px cells with idle 0–1 at 200ms, walk 2–5, attack 6–9, hurt 10–11 and dead 12–15 at 100ms. Runtime display is 96×96 with 52×42 collision. Environmental layers are 960×540. Source art, prompts, hashes and exporter provenance are retained.
+
+Focused checks passed: the production-catalog q13 route case reported 1 passed / 25 skipped and covered an old format-1 save missing q13, manual accept, two production beetle kills, manual claim, locked/unlocked gate, Basin entry and free return. Relevant bounded-charge actor/combat cases passed. The app-foundation integration file passed 12/12. npm.cmd run check:content passed. npm.cmd run typecheck passed after the final renderer change at 37a5dc7. No full suite was run.
+
+### Browser evidence and limits
+
+The single route smoke on beta.8 used a disposable format-1 Lv30 fixture with q13 already preseeded as claimed; it was not a from-scratch q13 playthrough. It confirmed the Basin rendered, a short movement worked, and the free west portal returned to Sand Dune Pass. Console inspection reported zero errors and warnings and one Phaser info message.
+
+After the renderer fix, a separate one-image check loaded the same kind of disposable q13-claimed fixture at Basin/left and captured the corrected far-layer framing. That check only confirmed the pool/ring visibility and absence of the sky gap; it did not include movement, a route or console inspection. Captures: .playwright-cli/page-2026-10-24T05-10-11-806Z.png and page-2026-10-24T05-13-14-795Z.png for the earlier route smoke, and .playwright-cli/page-2026-10-24T05-23-42-149Z.png for the final visual check. The disposable fixture and backup marker were removed, the named browser session was closed, and shared port 5173 was left running.
+
+### Final package and stop
+
+After the accepted 37a5dc7 renderer change, one final npm.cmd run build completed; node tools/playroom/pack.mjs dist artifacts/game-beta8.zip packed successfully, and node tools/playroom/validate.mjs artifacts/game-beta8.zip reported Valid for brightwood-first-oath v1.0.0-beta.8 using pinned tools 1.1.0. The final archive is 53,523,653 bytes with 176 entries and 56,394,472 expanded bytes; SHA-256 is B60943E1ABFBBDD611A7452A736634AAB525009618619F0ECC2A3290914C5537. It is below 64 MiB. The previous beta.7 archive remains at artifacts/game.zip.
+
+The task is complete on main. The two canonical progress documents are being finalized in the closing documentation commit. The existing .worktrees/ directory is preserved and was not staged. No publish, push, tag, Release, listing or platform action occurred. Stop after this finite packet.
