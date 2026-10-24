@@ -94,19 +94,21 @@
 - 程式／區域接線 commit bf2cc2f：MapDef、portal、mapOrder、world validator、兩個資產 manifest、atlas model/UI/CSS、world-map focused test。
 - 直接相關檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest tests/world-map.test.ts --exclude **/.worktrees/**（1 file／7 tests）、manifest/file/dimension/alpha Python 檢查與 git diff --check。未對最新 Gold Sand commit 執行 build、pack/validate 或 browser。
 - 本開發包開始前，已完整重讀本地 AGENTS.md、Playroom game-agent template 及其七份線上規格，另讀 plan/10-asset-spec.md 與 imagegen skill。適用要求是相對 asset URL、iframe 子目錄相容、format 1 存檔及來源原稿保留；本包最小驗收為新圖可由 q11＋Lv30 到達並自由回程、atlas 只顯示真實 MapDef、舊 save 無新欄位依然有效、manifest/內容/型別/focused tests 通過。未升級 SDK/schema、未發布/push/tag/Release。
-- 本區域尚未完成。c498dce 加入 sand-scorpion（Lv30，攻擊碰撞 52×44）、850ms 可讀風報的 190px 低尾刺 sand-stinger，以及保證掉落、可出售 42 金幣的 amber-scale。當前只完成 rules/actor AI definition，尚未在任何 MapDef 生成；正式 actor atlas、item icon、asset manifest 與沙岸生成點仍待圖像素材交付，不得稱為可遭遇／可拾取。
+- 本區域尚未完成。c498dce 加入 sand-scorpion（Lv30，攻擊碰撞 52×44）、850ms 可讀風報的 190px 低尾刺 sand-stinger，以及保證掉落、可出售 42 金幣的 amber-scale。當前只完成 rules/actor AI definition，尚未在任何 MapDef 生成；正式 actor atlas 尚未交付，不得稱為可遭遇／可拾取。
+- amber-scale icon 已由 29820ce 整合為 128×128 RGBA、runtime 32×32；0e2b40b 將其加入 interface manifest 與 required keys。scorpion 三版高 alpha 紅邊候選由 07382d4 source-only 保留供追溯，不含 runtime atlas。
 - c498dce 相關檢查通過：npm.cmd run typecheck、npm.cmd run check:content、npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**'（2 files／17 tests）；git diff --check 通過。上一輪新增斷言排序曾失敗，修正後 focused run 全通過。
 - a65b1d9 修正資產契約：loader 現強制要求 sand 的 sky/far/mid 三層；foundation 測試驗證缺任何一層都會拒絕，也更新 Gold Sand item/map catalog 預期數。npm.cmd run typecheck 與 npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**'（1 file／10 tests）通過。
+- 0e2b40b 將 amber-scale icon 加入 manifest/required keys；typecheck 與更新後的 app-foundation focused test（1 file／11 tests）通過。07382d4 僅保存紅邊不合格 scorpion 候選與 source notes，無 runtime；沒有因此新增遊戲驗收。
 - 32d204a 增加 sand-stinger combat check，證明空中角色能跳過低尾刺、地面角色在相同 90ms active window 受擊；npx.cmd vitest run tests/combat.test.ts --exclude '**/.worktrees/**'（1 file／11 tests）與隨後 npm.cmd run typecheck 通過。
-- 下一小階段接入 sand-scorpion atlas 與 amber-scale icon、asset registry，再將怪物放入琥珀砂岸並以 integration check 驗攻擊、擊殺掉落、拾取及出售。後續再做沙丘隘道與挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
+- 下一小階段待有可安全切格的 sand-scorpion atlas 後加入 actor manifest/動畫與沙岸生成點，再以 integration check 驗攻擊、擊殺掉落、拾取及出售。amber-scale icon 已註冊。後續再做沙丘隘道與挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
 
 ## Agent／worktree／commit
 
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | Frost runtime 288693e + Gold Sand c8997ed/bf2cc2f + scorpion c498dce/a65b1d9/32d204a；本次文件待 commit | 新敵人 rules/AI/attack 已有 focused checks；等圖後接入 map/asset/drop flow |
-| /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | HEAD 3e6643a；sand-scorpion/amber-scale 素材任務進行中，尚無 Gold Sand art commit | 交付 6×5 actor atlas 與 128×128 item icon，保留 raw/prompt/source |
+| /root/game_expansion | repository main | Frost runtime 288693e + Gold Sand c8997ed/bf2cc2f + scorpion c498dce/a65b1d9/32d204a/29820ce/0e2b40b/07382d4；本次文件待 commit | sting AI tested; amber icon integrated; safe actor atlas/map/drop flow pending |
+| /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | HEAD 7cf3d4a；amber-scale icon delivered, scorpion candidates source-only, no runtime atlas | 若找到安全grid，再交付 sand-scorpion atlas；保留現有 raw/失敗紀錄 |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
 
