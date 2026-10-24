@@ -96,6 +96,7 @@
 - 本開發包開始前，已完整重讀本地 AGENTS.md、Playroom game-agent template 及其七份線上規格，另讀 plan/10-asset-spec.md 與 imagegen skill。適用要求是相對 asset URL、iframe 子目錄相容、format 1 存檔及來源原稿保留；本包最小驗收為新圖可由 q11＋Lv30 到達並自由回程、atlas 只顯示真實 MapDef、舊 save 無新欄位依然有效、manifest/內容/型別/focused tests 通過。未升級 SDK/schema、未發布/push/tag/Release。
 - 本區域尚未完成。c498dce 加入 sand-scorpion（Lv30，攻擊碰撞 52×44）、850ms 可讀風報的 190px 低尾刺 sand-stinger，以及保證掉落、可出售 42 金幣的 amber-scale。當前只完成 rules/actor AI definition，尚未在任何 MapDef 生成；正式 actor atlas、item icon、asset manifest 與沙岸生成點仍待圖像素材交付，不得稱為可遭遇／可拾取。
 - c498dce 相關檢查通過：npm.cmd run typecheck、npm.cmd run check:content、npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**'（2 files／17 tests）；git diff --check 通過。上一輪新增斷言排序曾失敗，修正後 focused run 全通過。
+- a65b1d9 修正資產契約：loader 現強制要求 sand 的 sky/far/mid 三層；foundation 測試驗證缺任何一層都會拒絕，也更新 Gold Sand item/map catalog 預期數。npm.cmd run typecheck 與 npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**'（1 file／10 tests）通過。
 - 下一小階段接入 sand-scorpion atlas 與 amber-scale icon、asset registry，再將怪物放入琥珀砂岸並以 integration check 驗攻擊、擊殺掉落、拾取及出售。後續再做沙丘隘道與挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
 
 ## Agent／worktree／commit
@@ -103,7 +104,7 @@
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | Frost runtime 288693e + Gold Sand c8997ed/bf2cc2f + scorpion rules c498dce；本次文件待 commit | 新敵人 rules/AI 已有測試；等圖後接入 map/asset/drop flow |
+| /root/game_expansion | repository main | Frost runtime 288693e + Gold Sand c8997ed/bf2cc2f + scorpion c498dce + asset fix a65b1d9；本次文件待 commit | 新敵人 rules/AI 已有測試；等圖後接入 map/asset/drop flow |
 | /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | HEAD 3e6643a；sand-scorpion/amber-scale 素材任務進行中，尚無 Gold Sand art commit | 交付 6×5 actor atlas 與 128×128 item icon，保留 raw/prompt/source |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
