@@ -204,6 +204,35 @@ describe('combat', () => {
     expect(calls.n).toBe(1);
   });
 
+  it('resolves the sand scorpion tail sting only inside its low telegraphed band', () => {
+    const source = actor({
+      id: 'sand-scorpion',
+      position: { x: 850, y: 600 },
+      faction: 'enemy',
+      stats: { maxHp: 1180, maxMp: 0, attack: 52, defense: 22, critChance: 0 },
+      skillRanks: {},
+    });
+    const prepared = tryAttack(
+      createCombatState(),
+      { sourceId: source.id, skillId: 'sand-stinger' },
+      [source],
+      rulesCatalog,
+      1_000,
+      () => 'sand-sting',
+    );
+    expect(prepared.ok).toBe(true);
+    if (!prepared.ok) return;
+
+    const airborne = actor({ id: 'jumping-target', position: { x: 1_000, y: 540 } });
+    const avoided = stepCombat(prepared.value.state, [source, airborne], rulesCatalog, 0.05, 1_850, fixedRandom());
+    expect(avoided.hits).toHaveLength(0);
+
+    const grounded = actor({ id: 'grounded-target', position: { x: 1_000, y: 600 } });
+    const struck = stepCombat(avoided.state, [source, grounded], rulesCatalog, 0.05, 1_850, fixedRandom());
+    expect(struck.hits).toHaveLength(1);
+    expect(struck.hits[0]).toMatchObject({ sourceId: source.id, targetId: grounded.id });
+  });
+
   it('uses a crab charge reach snapshot and records only one hit per target', () => {
     const source = actor({
       id: 'frost-crab',
