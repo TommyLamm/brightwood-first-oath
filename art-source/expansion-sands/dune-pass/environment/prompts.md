@@ -48,3 +48,14 @@ Materials/textures: Layered eroded sandstone and rounded wind-carved edges; cris
 Constraints: True transparent alpha PNG; only side-framing rock fragments and sparse outer-corner scrub are opaque. No sky fill, no black background, no continuous ground plane. No characters, enemies, interface, text, logos, map labels, frame or watermark.
 Avoid: Blocking the center, details on the lower ground line, close foreground rocks across the route, large relics, photorealism, repeating tile pattern.
 ```
+## Replacement Far v2 (current runtime)
+
+Built with the built-in ImageGen tool, transparent background enabled, and no reference image. Raw output is preserved as env-sand-dune-far-generated-v2.png.
+
+Create a clean environment cutout for a side-scrolling pixel-art fantasy game, wide 16:9, FAR layer for Sand Dune Pass. Muted tan, ochre, umber and pale blue-gray distance under neutral diffuse evening light. Distant arched sandstone buttes frame a wide clear middle, with layered smaller mesas receding toward the horizon. Keep the rock forms flat and crisply shaded in low-resolution pixels with a thin hard dark-brown contour. Transparent empty space beyond the rock silhouettes and through every natural arch opening; transparent means truly empty alpha, never black fill. No rim lighting, no red/pink/cyan fringe pixels, no glow, bloom, lens effects, or color spill beyond the contour. Sparse background relics only. Keep the central gameplay area wide and readable. No characters, enemies, foreground floor, interface, text, labels, logos, or frame.
+
+## Replacement Mid v2 (current runtime)
+
+Built with the built-in ImageGen tool, transparent background enabled, and no reference image. Raw output is preserved as env-sand-dune-mid-generated-v2.png.
+
+Create a clean foreground environment cutout for a side-scrolling pixel-art fantasy game, wide 16:9, MID layer for Sand Dune Pass. Sparse canyon walls only at the left and right edges framing a very wide clear center, with slightly distant pale blue-gray gaps beyond the rock. Muted tan, ochre, umber and pale blue-gray palette under neutral diffuse evening light. Flat, crisp, low-resolution pixel-art sandstone slabs and ledges with sparse tiny tufts of dry grass. Thin hard dark-brown contour. Transparent empty space beyond every rock silhouette and throughout the open middle; transparent means truly empty alpha, never black fill. No rim lighting, no red/pink/cyan fringe pixels, no glow, bloom, lens effects, or color spill beyond the contour. Keep the lower center open for gameplay. No characters, enemies, sky, background fill, interface, text, labels, logos, or frame.
