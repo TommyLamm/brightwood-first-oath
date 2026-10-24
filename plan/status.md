@@ -71,9 +71,9 @@
 - 本聊天 heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除；當時用量重設後為 1%，ordinary usage allowed。先前8%／06:51為歷史讀值。
 - Stage D 候選版本 1.0.0-beta.6 已確認 beta.1–beta.5 為既有版本，於 3b327e1 更新設定；runtime 動作節拍修正在 799d08f、288693e。最終 build、固定工具 pack/validate 通過；隔離 browser 驗收 PARTIAL，未完成首領勝利/q11手動領獎。完整證據與限制見唯一續作報告的 Stage D current snapshot。
 
-## 2026-10-24 霜雪群島 Stage D current (IN_PROGRESS)
+## 2026-10-24 霜雪群島 Stage D snapshot (candidate checks done; browser PARTIAL)
 
-- 最新程式 commit 288693e；本狀態板記錄 Stage D 驗收。唯一未追蹤路徑是 .worktrees/，保留全部 worktree；沒有把它加入 commit。
+- Stage D 驗收時 runtime commit 為 288693e；當前 Gold Sand 進度見下節。唯一未追蹤路徑是 .worktrees/，保留全部 worktree；沒有把它加入 commit。
 - Stage C1/C2 與路線內容已在 main：q09/q10 445559f；第三地圖 Cave bf7bfb5；pine/cave backgrounds df70efa / 06e884d；雪芽素材/接線 0e6a333；Warden atlas provenance/runtime 4b5d3d9 / 3134390；區域圖 UI 3ec2b8d 與 focused test 9c88e5c。以上 commit 不要重挑。
 - Warden gameplay fa11987：Cave 切至 boss music/classification；霜潮守望獸 Lv30、HP 7600、碰撞 72×72、atlas 顯示 192×192；獠牙下砸（900ms 預警、190×120）與低潮湧浪（1100ms 預警、380×30，可跳躍）交替，首領免擊退，有專屬 result/retry/返回海岸路徑。新 boss death/retry 不改 bossDefeated/chapterComplete；q08 Guardian 流程維持原狀。
 - q11/item 接線 87fb9a1：q10 claim 後可在雪芽處手動接取；擊敗 Warden 後回海岸手動 claim 才獲得一次冰潮長鋒。武器攻擊 +50、Lv30、不可購買、同一武器槽；比 Guardian sword +38 高 12，目標是提供封頂後可感知的進展。sprite 64×64 RGBA、icon 128×128 RGBA/runtime32 已在 7838c1d / 7137479；兩者現在註冊為 item/visual。
@@ -86,16 +86,26 @@
 - Stage D 開始前於香港時間約 2026-10-24 07:30 再次完整讀取本地 AGENTS.md、線上模板及七份規格；對本輪適用的是保持相對資產路徑／子目錄 iframe 兼容及 format 1 存檔，完成真實 build 與固定工具 pack/validate；不建立 tag／Release、不發布。
 - Heartbeat 06-55-2 已於香港時間 2026-10-24 06:55 執行並刪除；非待執行排程。當時使用量 1%，ordinary usage allowed；goal 可能仍顯示 usageLimited，需使用者 /goal resume，現有工具無法代為恢復。
 
+## 2026-10-24 黃金沙海 Stage A current (IN_PROGRESS)
+
+- 新區域已由 planned 黃金沙海轉為真實 MapDef。第一張「琥珀砂岸」sand-glass-shore 加入 mapOrder、world validator 與 sand environment theme；Frost Shore 東門要求 q11 claimed 且 Lv30，沙岸西門可無鎖返回 Frost Shore。SaveData format 1、q01–q11 與 Guardian flags/任務契約未改。
+- Regional atlas 現有獨立 sand scope、全域黃金沙海入口點、Frost↔Sand 真實 portal 連線及 q11 鎖定狀態；只有 catalog 真正存在的 maps 才繪出區域節點。當前沙海僅有 1 張可玩探索圖，沒有怪物、NPC、沙海任務或首領；其餘兩個圖位是座標資料、UI 不會假繪成可玩節點。
+- 素材 commit c8997ed：960×540 黃金沙海路線圖及 shore sky/far/mid 圖層，far/mid 真 alpha；保留原始 ImageGen PNG、逐項完整 prompt 與 source logs。Chart 在 320×180 可分辨海岸、沙脊、綠洲；三層合成已視檢。Runtime 約 2.5 MiB。
+- 程式／區域接線 commit bf2cc2f：MapDef、portal、mapOrder、world validator、兩個資產 manifest、atlas model/UI/CSS、world-map focused test。
+- 直接相關檢查 exit 0：npm.cmd run typecheck、npm.cmd run check:content、Vitest tests/world-map.test.ts --exclude **/.worktrees/**（1 file／7 tests）、manifest/file/dimension/alpha Python 檢查與 git diff --check。未對最新 Gold Sand commit 執行 build、pack/validate 或 browser。
+- 本開發包開始前，已完整重讀本地 AGENTS.md、Playroom game-agent template 及其七份線上規格，另讀 plan/10-asset-spec.md 與 imagegen skill。適用要求是相對 asset URL、iframe 子目錄相容、format 1 存檔及來源原稿保留；本包最小驗收為新圖可由 q11＋Lv30 到達並自由回程、atlas 只顯示真實 MapDef、舊 save 無新欄位依然有效、manifest/內容/型別/focused tests 通過。未升級 SDK/schema、未發布/push/tag/Release。
+- 本區域尚未完成。下一個小階段先加入至少一隻有差異化行為且掉落有實際用途的沙海怪物；後續再做沙丘隘道與區域挑戰、綠洲盆地首領及 q12–q14 手動任務。不要把目前單張入口稱為完整黃金沙海。
+
 ## Agent／worktree／commit
 
 | Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
 | --- | --- | --- | --- |
 | /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | 程式 288693e；Stage D 驗收已記錄 | Frost Isles content/runtime、candidate build/pack/validate；browser 為 PARTIAL |
+| /root/game_expansion | repository main | runtime 288693e + Gold Sand c8997ed/bf2cc2f；本次文件待 commit | Gold Sand entry map/atlas 已接入；下一步新敵人與任務內容 |
 | /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | 3e6643a；美術包完成 | Warden／長鋒素材已整合 |
 | /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
 | 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
 
 ## 恢復方式
 
-先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。Stage D beta.6 build/pack/validate 已通過，不要在內容未變時重跑；browser只完成隔離 fixture 的 PARTIAL 子集。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
+先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。Stage D beta.6 build/pack/validate 結果僅適用於 runtime commit 288693e；目前 Gold Sand 改動尚未重新打包或做 browser QA，待本區域內容完成再選下一候選版本執行一次集中驗證。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。

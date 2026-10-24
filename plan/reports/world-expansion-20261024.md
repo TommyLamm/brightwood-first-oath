@@ -50,7 +50,7 @@ Stage B commits：9f90269（wolf／loot 與玩法接線）、61db462（狼 atlas
 - 瀏覽器集中檢查為 PARTIAL，非完整路線驗收。使用隔離 Playwright profile，起點是人工構造的 q08 claimed／Lv30 fixture，並非從頭通關。可續玩狀態在 reload 後恢復到雪岸；世界圖顯示 8/8 已探索、雪岸地標與狼情報；畫面確認狼 atlas 與雪岸背景出現在實際場景，雪狼攻擊使測試角色 HP 由 660 降為 419；「返回城鎮」成功抵達木葉鎮。沒有完成狼擊殺或 browser 掉落檢查，沒有走完整祭壇傳點往返；該戰鬥與掉落由 focused integration test 覆蓋。隔離 save key 已刪除、Playwright session 已關閉。共用 Vite PID 15908 由主代理觀察且仍在服務 5173；未終止來源未確認的程序。
 - 未執行 full test suite、build、完整主線流程、發布或 tag／Release。
 
-## 2026-10-24 Stage D current snapshot
+## 2026-10-24 Frost Isles Stage D acceptance snapshot
 
 Main 最新 runtime commit 288693e；q11/item 接線在 87fb9a1、Warden gameplay 在 fa11987。plan/status.md 是唯一狀態板。Stage A/B、C1/C2 與 UI check 的歷史證據保留於上文及狀態板，不重複重跑。
 
@@ -74,22 +74,32 @@ Main 最新 runtime commit 288693e；q11/item 接線在 87fb9a1、Warden gamepla
 - The browser run exposed the two timing issues above and they were fixed; no other startup or console error remained in the successful Cave load. No full test suite or full playthrough was run.
 - Before this Stage D work, the root `AGENTS.md`, the online game-agent template and all seven linked specifications were fully read (around 2026-10-24 07:30 Hong Kong): game-development, command-contracts, game schema, game-release workflow, starter SDK, SDK versioning and save compatibility. Applicable rules were relative asset URLs/subdirectory iframe compatibility, format 1 save compatibility, and pinned build/package validation. No release or platform action was authorized or performed.
 
+## 2026-10-24 Gold Sand Sea Stage A current snapshot
+
+Main runtime commits: art c8997ed, playable map/atlas bf2cc2f; the beta.6 checks above still apply only to earlier runtime commit 288693e.
+
+- Gold Sand Sea now has one actual map, sand-glass-shore / 琥珀砂岸. The Frost Shore east portal requires q11 claimed and level 30; the west return portal is always open. No SaveData field or format change was made, and q08/Guardian state remains untouched.
+- A separate sand atlas scope displays the 960×540 generated route map, the real current-map landmark, region entrance status and cross-region portal line. World and regional node counts derive from actual catalog maps; the future dune-pass and sunwell-basin coordinates do not render as playable nodes until their MapDefs exist.
+- Art commit c8997ed adds region-golden-sands-map-v1.png and env-sand-{sky,far,mid}-v1.png; unchanged raw generations, exact prompts and logs are in art-source/expansion-sands/. The map remained readable at 320×180 and the three-layer shore composite was visually checked. Far/mid layers have real alpha; runtime images total about 2.5 MiB.
+- Code commit bf2cc2f adds the MapDef and route, map order and validation, relative manifest entries, independent atlas model/view styling, global Frost↔Sand connection, and Gold Sand focused test.
+- Checks after content integration: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/world-map.test.ts --exclude '**/.worktrees/**' (1 file / 7 tests), direct Python manifest/file/dimension/mode/alpha checks for all four runtime images, and git diff --check all passed. The final UI model change was followed by typecheck and the same 7 focused tests. No build, package validation, or browser QA has been run on these Gold Sand commits.
+- The entry shoreline is playable exploration content but still has no enemies, NPC, quest, or boss. No complete Gold Sand Sea acceptance is claimed. Before this package, the local AGENTS.md, online game-agent template and all seven linked Playroom specs were fully reread (around 2026-10-24 08:00 Hong Kong); plan/10-asset-spec.md and the imagegen skill were also read.
+
 ## Next implementation slice
 
-1. The Frost Isles beta.6 candidate has passed build and pinned pack/validate. The browser route remains PARTIAL: when extending QA, use a disposable isolated profile/save and target Warden victory/result/retry/return plus q11 manual claim; identify its fixture start and do not call it a full route. Do not repeat the already passing package checks unless sources change.
-2. Continue the user's authorized world expansion into the remaining planned regions, starting with the Gold Sand Sea or Ancient Ruins. Before each new development package, reread the required online template and its seven linked specifications, state the applicable requirements and smallest acceptance checks, and coordinate a concrete image prompt/path contract before requesting new art.
-3. For each small content/runtime increment, preserve format 1 saves and existing q01–q08/Guardian behavior; run only directly relevant focused checks, commit each safe stage, and keep this report/status board current. No push, tag, Release or platform listing.
-
+1. Complete the Gold Sand Sea in small slices: add a differentiated Lv30 enemy with a useful drop, then sand-dune-pass with its own behavior and a short manual challenge, followed by sand-sunwell-basin and a readable boss telegraph/one-time reward. Keep q11 as the unlock to the region, always allow return, and do not raise the level cap.
+2. After the content/art route is complete, select an unused version (beta.7 or later only after checking manifests/tags), run one build and pinned pack/validate, then one isolated browser route. The earlier beta.6 package checks do not cover commits c8997ed/bf2cc2f. Frost browser combat remains PARTIAL; do not call its q11 claim or full route browser-verified.
+3. Before each new development package, reread the required online template and its seven linked specifications, state requirements/acceptance, and define the image prompt/path contract. Preserve format 1 saves and q01–q11/Guardian behavior; focused checks only. No push, tag, Release or platform listing.
 ## Agent, worktree and art status
 
 - /root 是協調代理；/root/game_expansion 在 main 獨占 content/runtime code、Git 整合、focused checks 與本報告。
 - /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 位於 3e6643a；代理回報素材包完成且工作樹 clean。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
 - /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5；代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
 - 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
-- 本報告與狀態板先前 checkpoint 為 9d400de；最新 runtime commit 為 288693e。文件 checkpoint 只 stage plan/status.md 與本 report。
+- 本報告與狀態板最新 docs checkpoint 為 ac4f2a4；Frost beta.6 runtime 為 288693e，Gold Sand runtime commits 為 c8997ed/bf2cc2f。文件 checkpoint 只 stage plan/status.md 與本 report。
 
 ## Tools, heartbeat and resume
 
 PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
 
-Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 已完成；若程式或素材未變，不要重跑。browser僅 PARTIAL，下一次集中檢查限補足未驗證的首領結果／重試／回岸／q11手動領獎。禁止推送、發布、tag 或 Release。
+Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
