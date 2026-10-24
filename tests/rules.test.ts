@@ -3,18 +3,18 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(28);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(29);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
-      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale',
+      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale', 'sunwell-shell',
     ]));
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(13);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(14);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
       'basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
-      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'sand-stinger', 'sweep', 'vitality',
+      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'sand-stinger', 'sunwell-beetle-charge', 'sweep', 'vitality',
     ]);
     expect(playerSkillIds).toHaveLength(6);
     expect(playerLearnableIds).toHaveLength(5);
@@ -29,10 +29,10 @@ describe('rules catalog', () => {
     expect(rulesCatalog.skills.vitality.requiredLevel).toBe(10);
     expect(rulesCatalog.skills['rest-recovery'].requiredLevel).toBe(10);
     expect(Object.keys(rulesCatalog.skills).filter((id) => rulesCatalog.skills[id].requiredJob === 'enemy').sort()).toEqual([
-      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave', 'sand-stinger',
+      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave', 'sand-stinger', 'sunwell-beetle-charge',
     ]);
     expect(Object.keys(rulesCatalog.monsters).sort()).toEqual([
-      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sand-scorpion', 'sentinel', 'slime', 'snail',
+      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sand-scorpion', 'sentinel', 'slime', 'snail', 'sunwell-beetle',
     ]);
   });
 
@@ -86,6 +86,15 @@ describe('rules catalog', () => {
     expect(rulesCatalog.skills['sand-stinger'].height).toBeLessThan(50);
   });
 
+  it('defines the Sunwell beetle as a bounded-charge enemy with a guaranteed saleable shell', () => {
+    const beetle = rulesCatalog.monsters['sunwell-beetle'];
+    const shell = rulesCatalog.items['sunwell-shell'];
+    const charge = rulesCatalog.skills['sunwell-beetle-charge'];
+    expect(beetle).toMatchObject({ level: 30, width: 52, height: 42, attackRange: 220, actorKey: 'actor:sunwell-beetle' });
+    expect(beetle.drops).toContainEqual({ itemId: 'sunwell-shell', chance: 1, min: 1, max: 1 });
+    expect(shell).toMatchObject({ kind: 'material', buyPrice: 0, sellPrice: 55, iconKey: 'item:sunwell-shell' });
+    expect(charge).toMatchObject({ windupMs: 750, activeMs: 250, recoveryMs: 750, reach: 220, targets: 1 });
+  });
   it('validates the production catalog and gives a specific missing-drop diagnostic', () => {
     const result = validateRules(rulesCatalog);
     expect(result.ok).toBe(true);

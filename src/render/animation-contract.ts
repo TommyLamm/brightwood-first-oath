@@ -7,7 +7,7 @@ export function animationConformsToUse(imageKey: string, state: string, animatio
     : imageKey.startsWith('actor:') && state.startsWith('npc:')
       ? { idle: 2 }
       : imageKey.startsWith('actor:')
-        ? imageKey === 'actor:sand-scorpion'
+        ? imageKey === 'actor:sand-scorpion' || imageKey === 'actor:sunwell-beetle'
           ? { idle: 2, walk: 4, attack: 4, hurt: 2, dead: 4 }
           : { idle: 2, walk: 6, attack: 4, hurt: 2, dead: 4 }
         : { [animationState]: 6 };

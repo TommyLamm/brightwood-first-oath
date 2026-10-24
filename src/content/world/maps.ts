@@ -218,13 +218,36 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'sand-dune-pass:west', x: 100, y: 600, targetMapId: 'sand-glass-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'sand-dune-pass:east', x: 2500, y: 600, targetMapId: 'sand-sunwell-basin', targetSpawnId: 'left', requiredQuestId: 'q13', minLevel: 30 },
     ],
     npcs: [],
     monsters: [
       { monsterId: 'sand-scorpion', x: 560, roamLeft: 450, roamRight: 670 },
-      { monsterId: 'sand-scorpion', x: 1050, roamLeft: 940, roamRight: 1160 },
-      { monsterId: 'sand-scorpion', x: 1660, roamLeft: 1550, roamRight: 1770 },
+      { monsterId: 'sunwell-beetle', x: 1050, roamLeft: 940, roamRight: 1160 },
+      { monsterId: 'sunwell-beetle', x: 1660, roamLeft: 1550, roamRight: 1770 },
       { monsterId: 'sand-scorpion', x: 2200, roamLeft: 2080, roamRight: 2320 },
+    ],
+  },
+  {
+    id: 'sand-sunwell-basin', name: '日井盆地', width: 2800, themeKey: 'sunwell', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[330, 520, 670, 520], [830, 455, 1120, 455], [1300, 500, 1580, 500], [1730, 440, 2050, 440], [2200, 500, 2500, 500]],
+    ladders: [
+      { x: 500, topY: 520, bottomY: 600 },
+      { x: 970, topY: 455, bottomY: 600 },
+      { x: 1440, topY: 500, bottomY: 600 },
+      { x: 1900, topY: 440, bottomY: 600 },
+      { x: 2350, topY: 500, bottomY: 600 },
+    ],
+    extraSpawns: [],
+    portals: [
+      { id: 'sand-sunwell-basin:west', x: 100, y: 600, targetMapId: 'sand-dune-pass', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [
+      { monsterId: 'sand-scorpion', x: 540, roamLeft: 440, roamRight: 640 },
+      { monsterId: 'sunwell-beetle', x: 1120, roamLeft: 1010, roamRight: 1230 },
+      { monsterId: 'sand-scorpion', x: 1810, roamLeft: 1700, roamRight: 1920 },
+      { monsterId: 'sunwell-beetle', x: 2380, roamLeft: 2260, roamRight: 2500 },
     ],
   },
 ];

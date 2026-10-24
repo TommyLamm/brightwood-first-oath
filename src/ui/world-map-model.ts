@@ -25,7 +25,7 @@ export const FROST_LANDMARKS: Record<string, MapLandmark> = {
 export const GOLD_SAND_LANDMARKS: Record<string, MapLandmark> = {
   'sand-glass-shore': { x: 20, y: 70, description: '琥珀色海岸與淺灣在日光下交錯，回望可見霜雪群島的航路。' },
   'sand-dune-pass': { x: 50, y: 48, description: '風切沙脊環抱著狹窄山道，流沙深處傳來甲殼摩擦聲。' },
-  'sand-sunwell-basin': { x: 80, y: 25, description: '金色沙丘之間的綠洲湧出清泉，四周地勢像一座天然競技場。' },
+  'sand-sunwell-basin': { x: 80, y: 25, description: '日井遺跡立在盆地中央，清泉從古老石環間湧出，甲蟲沿著高低交錯的沙脊巡行。' },
 };
 
 /** One global-chart marker stands for each playable region. */

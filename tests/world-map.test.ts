@@ -70,12 +70,12 @@ describe('world atlas information', () => {
     const data = save();
     const sand = atlasViewModel(catalog, data, 'sand-glass-shore');
     expect(sand.scope).toBe('sand');
-    expect(sand.maps.map(({ id }) => id)).toEqual(['sand-glass-shore', 'sand-dune-pass']);
-    expect(sand.totalCount).toBe(2);
+    expect(sand.maps.map(({ id }) => id)).toEqual(['sand-glass-shore', 'sand-dune-pass', 'sand-sunwell-basin']);
+    expect(sand.totalCount).toBe(3);
     expect(sand.exploredCount).toBe(0);
 
     const overview = goldSandSeaOverview(catalog, data);
-    expect(overview).toMatchObject({ current: false, exploredCount: 0, totalCount: 2 });
+    expect(overview).toMatchObject({ current: false, exploredCount: 0, totalCount: 3 });
     expect(overview.entryRequirement?.open).toBe(false);
     data.player.level = 30;
     data.quests.q11 = { status: 'claimed', counters: {} };
@@ -85,9 +85,14 @@ describe('world atlas information', () => {
     expect(portalRequirements(duneRoute, data, catalog)).toEqual({ open: false, text: '需完成「琥珀鱗片的路標」並領獎' });
     data.quests.q12 = { status: 'claimed', counters: {} };
     expect(portalRequirements(duneRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
+    const basinRoute = worldCatalog.maps['sand-dune-pass']!.portals.find(({ targetMapId }) => targetMapId === 'sand-sunwell-basin')!;
+    expect(basinRoute.requiredQuestId).toBe('q13');
+    expect(portalRequirements(basinRoute, data, catalog)).toEqual({ open: false, text: '需完成「日井古道」並領獎' });
+    data.quests.q13 = { status: 'claimed', counters: { 'sunwell-beetle': 2 } };
+    expect(portalRequirements(basinRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
 
     data.location.mapId = 'sand-glass-shore';
-    expect(goldSandSeaOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 2 });
+    expect(goldSandSeaOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 3 });
     const returnRoute = worldCatalog.maps['sand-glass-shore']!.portals.find(({ targetMapId }) => targetMapId === 'frost-shore')!;
     expect(returnRoute.requiredQuestId).toBeNull();
     expect(portalRequirements(returnRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });

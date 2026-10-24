@@ -296,4 +296,36 @@ describe('actor domain', () => {
     expect(wallDashEnd.monsters[0]?.movement.position.x).toBe(692);
   });
 
+  it('locks the Sunwell beetle telegraph and bounds its charge by the production roam edge and walls', () => {
+    const sourceMap = worldCatalog.maps['sand-dune-pass'];
+    const spawn = sourceMap.monsters.find((entry) => entry.monsterId === 'sunwell-beetle')!;
+    const beetle = createMonster('sunwell-beetle-charge-test', spawn, sourceMap, rulesCatalog);
+    const first = stepActors([beetle], player('beetle-target', 1_140), sourceMap, rulesCatalog, DT, 1_000);
+
+    expect(first.attackRequests).toEqual([{
+      sourceId: beetle.id,
+      skillId: 'sunwell-beetle-charge',
+      reachOverride: 110,
+    }]);
+    expect(first.telegraphs[0]?.rect).toEqual({ x: 1_050, y: 536, width: 110, height: 64 });
+    expect(first.monsters[0]).toMatchObject({
+      mode: 'windup', attackFacing: 1, attackReach: 110, attackOrigin: { x: 1_050, y: 600 },
+    });
+
+    const windup = stepActors(first.monsters, player('beetle-target-returned', 1_000), sourceMap, rulesCatalog, DT, 1_500);
+    expect(windup.monsters[0]).toMatchObject({ mode: 'windup', attackFacing: 1 });
+    expect(windup.telegraphs[0]?.rect).toEqual(first.telegraphs[0]?.rect);
+    const dashStart = stepActors(windup.monsters, player('beetle-target-returned', 1_000), sourceMap, rulesCatalog, DT, 1_750);
+    const dashEnd = stepActors(dashStart.monsters, player('beetle-target-returned', 1_000), sourceMap, rulesCatalog, DT, 2_000);
+    expect(dashEnd.monsters[0]).toMatchObject({ mode: 'recovery', movement: { position: { x: 1_160, y: 600 }, facing: 1 } });
+
+    const wallMap = { ...sourceMap, walls: [{ x: 1_100, y: 550, width: 20, height: 100 }] };
+    const wallSpawn = wallMap.monsters.find((entry) => entry.monsterId === 'sunwell-beetle')!;
+    const wallBeetle = createMonster('sunwell-beetle-wall-test', wallSpawn, wallMap, rulesCatalog);
+    const wallStart = stepActors([wallBeetle], player('beetle-target-wall', 1_080), wallMap, rulesCatalog, DT, 1_000);
+    expect(wallStart.attackRequests[0]?.reachOverride).toBe(24);
+    const wallDashStart = stepActors(wallStart.monsters, player('beetle-target-wall', 1_080), wallMap, rulesCatalog, DT, 1_750);
+    const wallDashEnd = stepActors(wallDashStart.monsters, player('beetle-target-wall', 1_080), wallMap, rulesCatalog, DT, 2_000);
+    expect(wallDashEnd.monsters[0]?.movement.position.x).toBe(1_074);
+  });
 });

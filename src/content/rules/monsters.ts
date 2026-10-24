@@ -55,6 +55,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 850, attackCooldownMs: 2100, respawnMs: 9000, actorKey: 'actor:sand-scorpion',
     drops: [{ itemId: 'amber-scale', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.15, min: 1, max: 1 }],
   },
+  'sunwell-beetle': {
+    id: 'sunwell-beetle', name: '日井甲蟲', level: 30, maxHp: 1120, attack: 52, defense: 22, exp: 570, coins: 95,
+    speed: 58, width: 52, height: 42, aggroRange: 340, attackRange: 220,
+    attackWindupMs: 750, attackCooldownMs: 1950, respawnMs: 8000, actorKey: 'actor:sunwell-beetle',
+    drops: [{ itemId: 'sunwell-shell', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.18, min: 1, max: 1 }],
+  },
   guardian: {
     // T00 requires collision dimensions; 08 leaves the boss dimensions unspecified.
     // These are project-specific logical dimensions, not an original-game measurement.

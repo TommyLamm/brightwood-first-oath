@@ -55,6 +55,12 @@ export const skills: Record<Id, SkillDef> = {
     reach: 220, height: 64, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'sunwell-beetle-charge': {
+    id: 'sunwell-beetle-charge', name: '日井突進', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 1950, windupMs: 750, activeMs: 250, recoveryMs: 750,
+    reach: 220, height: 64, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
   'sand-stinger': {
     id: 'sand-stinger', name: '砂棘尾刺', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 850, activeMs: 90, recoveryMs: 680,

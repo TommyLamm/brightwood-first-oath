@@ -15,11 +15,11 @@ const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion',
+    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion', 'actor:sunwell-beetle',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
   ],
   environment: [
-    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune'] as const).flatMap((theme) =>
+    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell'] as const).flatMap((theme) =>
       (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
     'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
@@ -29,7 +29,7 @@ const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
       'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
       'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell',
-      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core',
+      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell',
     ].map((id) => `item:${id}`),
     ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),
     'marker:quest', 'marker:portal', 'marker:shop', 'marker:player', 'panel:frame',

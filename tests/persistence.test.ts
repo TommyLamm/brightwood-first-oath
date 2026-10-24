@@ -204,6 +204,27 @@ describe('persistence', () => {
     }
     persistence.dispose();
   });
+  it('accepts a format-1 save with q12 claimed and no q13 record', () => {
+    const legacy = makeSave();
+    legacy.player.level = 30;
+    legacy.player.ap = 145;
+    const questIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12'] as const;
+    legacy.quests = Object.fromEntries(questIds.map((questId) => {
+      const counters: Record<string, number> = {};
+      for (const objective of catalog.world.quests[questId]!.objectives) {
+        if (objective.type === 'kill' || objective.type === 'reach') counters[objective.targetId] = objective.count;
+      }
+      return [questId, { status: 'claimed', counters }];
+    })) as SaveData['quests'];
+
+    const result = validateSave(legacy, catalog);
+    expect(SAVE_FORMAT_VERSION).toBe(1);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.quests).not.toHaveProperty('q13');
+      expect(getQuestView(result.value, 'q13', catalog).status).toBe('available');
+    }
+  });
   it('retries a lost cloud result with identical data, revision, and request ID', async () => {
     const statuses: SaveStatus[] = [];
     const firstError = new Error('response lost');

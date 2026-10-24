@@ -129,8 +129,8 @@ export function stepActors(
         clearAttackSnapshot(monster);
       } else {
         const resolveAtMs = monster.lastAttackAtMs + skill.windupMs;
-        const crabCharge = monster.monsterId === 'frost-crab' && skill.id === 'frost-crab-charge';
-        if (crabCharge && nowMs >= resolveAtMs) {
+        const boundedCharge = isBoundedCharge(monster, skill);
+        if (boundedCharge && nowMs >= resolveAtMs) {
           monster.mode = 'dash';
         } else {
           monster = advanceStationary(monster, map, rules, definition, elapsedSeconds, nowMs);
@@ -148,7 +148,7 @@ export function stepActors(
         monster.mode = 'chase';
         clearAttackSnapshot(monster);
       } else {
-        monster = advanceCrabCharge(monster, skill, elapsedSeconds, nowMs);
+        monster = advanceBoundedCharge(monster, skill, elapsedSeconds, nowMs);
         const dashEndsAtMs = monster.lastAttackAtMs + skill.windupMs + skill.activeMs;
         if (nowMs >= dashEndsAtMs) monster.mode = 'recovery';
         result.monsters.push(monster);
@@ -180,8 +180,8 @@ export function stepActors(
         const facing: Facing = player.position.x < monster.movement.position.x ? -1 : 1;
         monster.movement = { ...monster.movement, facing };
         monster = advanceStationary(monster, map, rules, definition, elapsedSeconds, nowMs);
-        const isCrabCharge = monster.monsterId === 'frost-crab' && skill.id === 'frost-crab-charge';
-        const reach = isCrabCharge ? crabDashReach(monster, facing, spawn, map, definition, skill) : null;
+        const boundedCharge = isBoundedCharge(monster, skill);
+        const reach = boundedCharge ? boundedChargeReach(monster, facing, spawn, map, definition, skill) : null;
         if (reach !== null && reach <= EPSILON) {
           monster.mode = 'chase';
         } else {
@@ -310,8 +310,14 @@ function isBossMonster(monsterId: string): boolean {
   return monsterId === 'guardian' || monsterId === 'frost-tide-warden';
 }
 
+function isBoundedCharge(monster: MonsterState, skill: SkillDef): boolean {
+  return (monster.monsterId === 'frost-crab' && skill.id === 'frost-crab-charge')
+    || (monster.monsterId === 'sunwell-beetle' && skill.id === 'sunwell-beetle-charge');
+}
+
 function chooseSkillId(monster: MonsterState): string | null {
   if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
+  if (monster.monsterId === 'sunwell-beetle') return 'sunwell-beetle-charge';
   if (monster.monsterId === 'sand-scorpion') return 'sand-stinger';
   if (monster.monsterId === 'frost-tide-warden') {
     return monster.pendingSkillId === 'frost-tusk-slam' ? 'low-tide-wave' : 'frost-tusk-slam';
@@ -407,7 +413,7 @@ function makeTelegraph(monster: MonsterState, skill: SkillDef, resolveAtMs: numb
   };
 }
 
-function crabDashReach(
+function boundedChargeReach(
   monster: MonsterState,
   facing: Facing,
   spawn: MonsterSpawn,
@@ -440,7 +446,7 @@ function crabDashReach(
   return Math.max(0, Math.min(skill.reach, available));
 }
 
-function advanceCrabCharge(
+function advanceBoundedCharge(
   monster: MonsterState,
   skill: SkillDef,
   dtSeconds: number,

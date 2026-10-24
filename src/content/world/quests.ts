@@ -143,4 +143,13 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '任務期間仍需擊退三隻沙蠍並持有三枚琥珀鱗片。琥珀砂岸的沙蠍會持續出沒，若曾售出鱗片可再收集，備齊後回琥珀砂岸找琉砂。',
     completeText: '三隻沙蠍已擊退，三枚琥珀鱗片也已交給琉砂。琥珀砂岸通往砂丘關道的路線已解封，請回琥珀砂岸入口查看傳點，再沿高低交錯的風切沙脊探索。',
   },
+  q13: {
+    id: 'q13', name: '日井古道', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q12'], minLevel: 1,
+    objectives: [{ type: 'kill', targetId: 'sunwell-beetle', count: 2 }], consumeItems: [],
+    reward: { exp: 1200, coins: 900, items: [] },
+    summary: '替琉砂擊退砂丘關道的日井甲蟲，探明通往日井盆地的古井遺跡。',
+    acceptText: '砂丘關道深處有日井甲蟲擋住古井路徑。請在接取後擊退兩隻，再回琥珀砂岸找琉砂回報；領取謝禮後，東方通道便會開放。',
+    progressText: '日井甲蟲仍守在砂丘關道，請擊退兩隻後回琥珀砂岸找琉砂報告。完成後由你親自領取謝禮，才會開放東門。',
+    completeText: '兩隻日井甲蟲已被擊退。請回琥珀砂岸找琉砂領取金幣與經驗，通往日井盆地的東門將在領獎後開放。',
+  },
 };

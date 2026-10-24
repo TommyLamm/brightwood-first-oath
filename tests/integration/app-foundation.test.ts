@@ -16,8 +16,8 @@ describe('T14-a app foundation', () => {
     const result = composeContentCatalog();
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(Object.keys(result.value.rules.items)).toHaveLength(28);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(12);
+      expect(Object.keys(result.value.rules.items)).toHaveLength(29);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(13);
       expect(result.value.world.maps['sand-glass-shore']).toBeDefined();
       expect(result.value.world.maps['sand-dune-pass']).toBeDefined();
     }
@@ -108,7 +108,7 @@ describe('T14-a app foundation', () => {
     )) as { images: { key: string }[]; [key: string]: unknown };
     expect(() => parseAssetManifest(manifest, 'environment')).not.toThrow();
 
-    for (const theme of ['sand', 'sand-dune']) {
+    for (const theme of ['sand', 'sand-dune', 'sunwell']) {
       for (const layer of ['sky', 'far', 'mid']) {
         const key = 'env:' + theme + ':' + layer;
         const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== key) };

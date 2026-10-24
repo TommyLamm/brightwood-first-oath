@@ -1052,6 +1052,123 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.saveData.location.mapId).toBe('sand-glass-shore');
   });
 
+  it('opens the Sunwell Basin after manually claiming q13 from production beetle spawns', () => {
+    const nextEntityId = createNextEntityId('q13-sunwell-route');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.quests.q11 = { status: 'claimed', counters: { 'frost-tide-warden': 1 } };
+    gameplay.saveData.quests.q12 = { status: 'claimed', counters: { 'sand-scorpion': 3 } };
+    gameplay.saveData.player = { ...gameplay.saveData.player, level: 30 };
+    expect(gameplay.saveData.quests).not.toHaveProperty('q13');
+    expect(getQuestView(gameplay.saveData, 'q13', catalog).status).toBe('available');
+
+    const shore = catalog.world.maps['sand-glass-shore'];
+    if (!shore) throw new Error('Expected the Gold Sand Shore map.');
+    const guide = shore.npcs.find(({ npcId }) => npcId === 'sands-guide');
+    const shoreEast = shore.portals.find(({ targetMapId }) => targetMapId === 'sand-dune-pass');
+    if (!guide || !shoreEast) throw new Error('Expected the Sands Guide and the dune entrance.');
+    gameplay.pendingTransition = { mapId: 'sand-glass-shore', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+
+    let nowMs = 2000;
+    let seq = 1;
+    const random = createSeededRandom(47);
+    const run = (state: typeof gameplay, commands: GameCommand[], at: number) => stepGameplay(state, {
+      catalog,
+      commands,
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 1 / 60,
+      nowMs: at,
+      random,
+      nextEntityId,
+    }).gameplay!;
+
+    gameplay.movement.position = { x: guide.x, y: guide.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'acceptQuest', payload: { questId: 'q13' } }], nowMs += 100);
+    expect(gameplay.saveData.quests.q13?.status).toBe('active');
+    gameplay.movement.position = { x: shoreEast.x, y: shoreEast.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    expect(gameplay.saveData.location.mapId).toBe('sand-dune-pass');
+
+    const pass = catalog.world.maps['sand-dune-pass'];
+    const basinGate = pass?.portals.find(({ targetMapId }) => targetMapId === 'sand-sunwell-basin');
+    const beetleSpawns = pass?.monsters.filter(({ monsterId }) => monsterId === 'sunwell-beetle') ?? [];
+    if (!pass || !basinGate) throw new Error('Expected the dune pass and locked Sunwell gate.');
+    expect(beetleSpawns).toHaveLength(2);
+    expect(beetleSpawns.map(({ spawnId }) => spawnId)).toEqual([
+      'sand-dune-pass:sunwell-beetle:1', 'sand-dune-pass:sunwell-beetle:2',
+    ]);
+    gameplay.movement.position = { x: basinGate.x, y: basinGate.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toBeNull();
+    expect(gameplay.saveData.location.mapId).toBe('sand-dune-pass');
+
+    for (const spawn of beetleSpawns) {
+      const beetle = gameplay.monsters.find(({ spawnId }) => spawnId === spawn.spawnId);
+      if (!beetle) throw new Error('Expected production beetle spawn ' + spawn.spawnId + '.');
+      const playerX = spawn.x - 40;
+      gameplay.movement.position = { ...gameplay.movement.position, x: playerX, y: 600 };
+      gameplay.monsters = gameplay.monsters.map((monster) => monster.id === beetle.id
+        ? {
+          ...monster,
+          hp: 1,
+          mode: 'idle',
+          movement: {
+            ...monster.movement,
+            position: { x: playerX + 40, y: 600 },
+            velocity: { x: 0, y: 0 },
+            mode: 'grounded',
+          },
+        }
+        : monster);
+      gameplay.combat.cooldowns[beetle.id] = { 'sunwell-beetle-charge': nowMs + 60_000 };
+      for (let tick = 0; tick < 35; tick += 1) {
+        gameplay = run(gameplay, tick === 0 ? [{ seq: seq++, type: 'attack', payload: { skillId: 'basic' } }] : [], nowMs += 1000 / 60);
+      }
+      expect(gameplay.monsters.find(({ id }) => id === beetle.id)?.mode).toBe('dead');
+      const shellDrop = gameplay.drops.find(({ itemId }) => itemId === 'sunwell-shell');
+      if (!shellDrop) throw new Error('Expected the guaranteed Sunwell Shell drop.');
+      gameplay.movement.position = { ...shellDrop.position };
+      gameplay = run(gameplay, [{ seq: seq++, type: 'pickup', payload: {} }], nowMs += 200);
+    }
+
+    expect(gameplay.saveData.quests.q13?.counters['sunwell-beetle']).toBe(2);
+    expect(getQuestView(gameplay.saveData, 'q13', catalog).status).toBe('ready');
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'sunwell-shell')?.quantity).toBe(2);
+
+    const duneWest = pass.portals.find(({ targetMapId }) => targetMapId === 'sand-glass-shore')!;
+    gameplay.movement.position = { x: duneWest.x, y: duneWest.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toMatchObject({ mapId: 'sand-glass-shore', spawnId: 'right', after: 'travel' });
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+
+    gameplay.movement.position = { x: guide.x, y: guide.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'claimQuest', payload: { questId: 'q13' } }], nowMs += 100);
+    expect(gameplay.saveData.quests.q13?.status).toBe('claimed');
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'sunwell-shell')?.quantity).toBe(2);
+
+    gameplay.movement.position = { x: shoreEast.x, y: shoreEast.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    gameplay.movement.position = { x: basinGate.x, y: basinGate.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toMatchObject({ mapId: 'sand-sunwell-basin', spawnId: 'left', after: 'travel' });
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    expect(gameplay.saveData.location.mapId).toBe('sand-sunwell-basin');
+    expect(gameplay.movement.position.x).toBe(100);
+    const basin = catalog.world.maps['sand-sunwell-basin']!;
+    expect(basin.monsters).toHaveLength(4);
+    expect(Math.min(...basin.monsters.map(({ x }) => Math.abs(x - 100)))).toBeGreaterThan(400);
+
+    const basinWest = basin.portals.find(({ targetMapId }) => targetMapId === 'sand-dune-pass')!;
+    gameplay.movement.position = { x: basinWest.x, y: basinWest.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toMatchObject({ mapId: 'sand-dune-pass', spawnId: 'right', after: 'travel' });
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    expect(gameplay.saveData.location.mapId).toBe('sand-dune-pass');
+  });
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
     const nextEntityId = createNextEntityId('sell-and-potions');
     const started = startNewGame('旅人', catalog, nextEntityId);

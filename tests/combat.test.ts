@@ -264,4 +264,30 @@ describe('combat', () => {
     expect(repeated.hits).toHaveLength(0);
   });
 
+  it('records only one hit per target for the Sunwell beetle charge window', () => {
+    const source = actor({
+      id: 'sunwell-beetle',
+      position: { x: 1_050, y: 600 },
+      faction: 'enemy',
+      stats: { maxHp: 1_120, maxMp: 0, attack: 52, defense: 22, critChance: 0 },
+      skillRanks: {},
+    });
+    const prepared = tryAttack(
+      createCombatState(),
+      { sourceId: source.id, skillId: 'sunwell-beetle-charge', reachOverride: 110 },
+      [source],
+      rulesCatalog,
+      1_000,
+      () => 'sunwell-charge',
+    );
+    expect(prepared.ok).toBe(true);
+    if (!prepared.ok) return;
+    expect(prepared.value.attack.reachOverride).toBe(110);
+
+    const target = actor({ id: 'sunwell-target', position: { x: 1_140, y: 600 } });
+    const firstWindow = stepCombat(prepared.value.state, [source, target], rulesCatalog, 0.05, 1_850, fixedRandom());
+    expect(firstWindow.hits.map(({ targetId }) => targetId)).toEqual([target.id]);
+    const repeatedWindow = stepCombat(firstWindow.state, [source, target], rulesCatalog, 0.05, 1_900, fixedRandom());
+    expect(repeatedWindow.hits).toHaveLength(0);
+  });
 });

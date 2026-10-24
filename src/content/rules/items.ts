@@ -134,6 +134,11 @@ export const items: Record<Id, ItemDef> = {
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
     buyPrice: 0, sellPrice: 28, iconKey: 'item:ice-shell', visualKey: null,
   },
+  'sunwell-shell': {
+    id: 'sunwell-shell', name: '日井甲殼', kind: 'material', slot: null, stackLimit: 999,
+    minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 55, iconKey: 'item:sunwell-shell', visualKey: null,
+  },
   'amber-scale': {
     id: 'amber-scale', name: '琥珀甲片', kind: 'material', slot: null, stackLimit: 999,
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
