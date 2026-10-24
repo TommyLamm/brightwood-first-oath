@@ -53,6 +53,16 @@
       "pivotY": 0.5
     },
     {
+      "key": "item:sunwell-oathblade",
+      "url": "assets/interface/item-sunwell-oathblade-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
       "key": "item:cloth-shirt",
       "url": "assets/interface/item-cloth-shirt-v1.png",
       "columns": 1,
