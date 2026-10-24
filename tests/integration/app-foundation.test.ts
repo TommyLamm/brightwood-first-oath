@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { AssetManifestLoadError, loadRequiredAssetManifests, parseAssetManifest } from '../../src/app/assets.js';
 import { GameApp } from '../../src/app/app.js';
@@ -14,8 +15,9 @@ describe('T14-a app foundation', () => {
     const result = composeContentCatalog();
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(Object.keys(result.value.rules.items)).toHaveLength(27);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(10);
+      expect(Object.keys(result.value.rules.items)).toHaveLength(28);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(11);
+      expect(result.value.world.maps['sand-glass-shore']).toBeDefined();
     }
   });
 
@@ -95,6 +97,20 @@ describe('T14-a app foundation', () => {
     expect(input.keyDown('Escape', {
       focused: false, uiFocused: false, textInput: false, panels: ['quests'],
     })).toEqual({ command: null, preventDefault: false });
+  });
+
+  it('requires all three Gold Sand environment layers', () => {
+    const manifest = JSON.parse(readFileSync(
+      new URL('../../public/assets/environment/manifest.json', import.meta.url),
+      'utf-8',
+    )) as { images: { key: string }[]; [key: string]: unknown };
+    expect(() => parseAssetManifest(manifest, 'environment')).not.toThrow();
+
+    for (const layer of ['sky', 'far', 'mid']) {
+      const key = 'env:sand:' + layer;
+      const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== key) };
+      expect(() => parseAssetManifest(incomplete, 'environment')).toThrow(key);
+    }
   });
 
   it('rejects a present but incomplete manifest and reports all missing pack manifests', async () => {
