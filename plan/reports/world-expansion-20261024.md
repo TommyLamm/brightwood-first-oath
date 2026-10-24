@@ -117,16 +117,15 @@ The behavior and rules tests use synthetic placements so the new AI can be check
 
 計畫起點 main HEAD 3edb5f7。當時已在 main 的內容是 sand-glass-shore、Frost→Sand 的 q11 claimed + Lv30 gate、amber-scale icon、scorpion AI/低尾刺與 test-only loot/sale integration；尚缺 production spawn、scorpion runtime atlas、sand-dune-pass、q12 與新 dune scenery/NPC。Stage 1/2 art 依賴分別由 /root/expansion_art 和 /root/sand_scene_art 隔離 worktree 負責，不重複生成。本次已完整讀取根 AGENTS 指定的線上模板與七份 main 規格；適用要求包括固定工具/SDK與存檔契約、相對路徑、子目錄 iframe 相容、pack/validate，且不發布。
 
-## Agent, worktree and art status
+## Current ownership (2026-10-24 finite Gold Sand task)
 
-- /root 是協調代理；/root/game_expansion 在 main 獨占 content/runtime code、Git 整合、focused checks 與本報告。
-- /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 最新 HEAD 6f71d43，代理回報 clean。四個6×5 scorpion atlas候選與一個2×2攻擊條都只有來源檔，無可用runtime圖；同方法ImageGen已停止。source-only commits 7cf3d4a／6f71d43 分別整合為 07382d4／fac1544。amber-scale icon 已由 e10833d 整合為 29820ce，interface manifest 為 0e2b40b。長鋒 sprite／icon 為 7838c1d／7137479；Warden source/runtime 為 4b5d3d9／3134390。
-- /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5；代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
-- 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
-- 上一份 docs checkpoint 為 507d4d0；本 report 更新 Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9/32d204a/29820ce/0e2b40b/07382d4/fac1544/3b541f3，且文件 commit 僅包含 plan/status.md 與本 report。
+- /root/sand_integration is the sole current owner of runtime/content code, this report and status, focused checks, accepted-art integration and commits on main. It stops after Stage 3.
+- /root coordinates scope and art dependencies and does not own runtime edits.
+- /root/expansion_art has resumed the scorpion art task in .worktrees/expansion-art; runtime art is pending review.
+- /root/sand_scene_art is the coordinator-designated owner for new dune scenery and guide/NPC art; isolated worktree/output details are pending handoff.
+- Earlier agent/worktree details below are historical snapshots. The former frost_interface_art UI-only restriction not to change world-map model/view/style/tests applied to its completed UI task and does not limit implementation of sand-dune-pass. Preserve all existing .worktrees/ content and never stage that directory.
+- Existing source provenance already in main: Gold Sand map/art c8997ed/bf2cc2f; scorpion rules c498dce; icon/manifest 29820ce/0e2b40b; required sand loader a65b1d9; focused combat/test-only loot 32d204a/3b541f3. The first finite-scope documentation commit is edd3cbd.
 
 ## Tools, heartbeat and resume
 
-PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
-
-Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9/32d204a/29820ce/0e2b40b/07382d4/fac1544/3b541f3 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
+On this Windows host use powershell.exe with login=false and narrow require_escalated for short file operations. Vitest commands must exclude **/.worktrees/**. Heartbeat 06-55-2 was deleted; no pending wakeup. The coordinator's latest goal read reports the goal active and ordinary usage allowed at 24%; do not tell the user to run /goal resume. Stage D beta.6 package validation covers only runtime 288693e. Final Gold Sand validation remains the single Stage 3 build, pinned tools 1.1.0 pack/validate and isolated browser smoke. Browser findings for Frost remain historical and do not substitute for the current Sand route. No push, tag, Release or platform listing.

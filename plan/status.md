@@ -114,16 +114,17 @@
 
 基線為 main HEAD 3edb5f7。已有 sand-glass-shore、q11/Lv30 入口、琥珀甲片 icon、沙蠍 AI/低尾刺 prototype 和 test-only loot flow；尚無 production spawn/atlas、sand-dune-pass 或 q12。兩份 art worktree 分別供應沙蠍及 dune scenery/NPC，程式整合不重做圖像生成。
 
-## Agent／worktree／commit
+## Current ownership (2026-10-24 finite Gold Sand task)
 
-| Agent | Worktree／branch | HEAD／狀態 | 責任／下一步 |
-| --- | --- | --- | --- |
-| /root | 主協調 | — | 規劃、規格提示與素材協調；不改程式 |
-| /root/game_expansion | repository main | Gold Sand scorpion code/art/test checkpoints through 3b541f3; this documentation update pending | sting AI tested; amber icon integrated; no runtime atlas or live scorpion encounter |
-| /root/expansion_art | .worktrees/expansion-art／codex/expansion-art | HEAD 6f71d43；clean；四張6×5與一張2×2候選皆source-only，無runtime | 已停止同方式ImageGen重試；amber-scale icon已交付 |
-| /root/frost_interface_art | .worktrees/frost-region-map／codex/frost-region-map | 8301ef5；check 通過、工作樹 clean | UI-only 驗收已整合，勿覆寫其 world-map files/tests |
-| 舊素材工作樹 | .worktrees/frost-interface-art／codex/frost-interface-art | 2b4bb2a | 歷史素材工作樹；保留 |
+| Agent | Workspace | Current responsibility |
+| --- | --- | --- |
+| /root | Coordinator | Holds the finite scope, coordinates the two art dependencies; no runtime code ownership. |
+| /root/sand_integration | repository main | Sole current owner of runtime, docs/status, focused checks, accepted asset integration, commits and main integration. Stop after Stage 3 in this plan. |
+| /root/expansion_art | .worktrees/expansion-art | Resumed scorpion art task; provide a reviewable runtime atlas and source provenance for Stage 1. |
+| /root/sand_scene_art | isolated worktree | Coordinator-designated owner for new dune scenery and guide/NPC art for Stage 2; worktree/output details pending coordinator handoff. |
+
+Earlier agent rows and worktree states below are historical snapshots. In particular, the completed frost interface agent's old instruction not to edit world-map files/tests does not restrict this second-map task. Preserve existing .worktrees/ contents; do not stage .worktrees/.
 
 ## 恢復方式
 
-先讀本報告與本狀態板，再執行 git status --short --branch、git log -1 --oneline、git worktree list --porcelain；保留 .worktrees/ 與使用者修改。Stage D beta.6 build/pack/validate 結果僅適用於 runtime commit 288693e；目前 Gold Sand 改動尚未重新打包或做 browser QA，待本區域內容完成再選下一候選版本執行一次集中驗證。已在 main 的 Cave bf7bfb5、Warden gameplay fa11987、q11/item 87fb9a1、sword sprite 7838c1d、icon 7137479、Warden atlas 3134390、UI 3ec2b8d、UI focused test 9c88e5c 不要重複 cherry-pick。Stage D 開始前已於 2026-10-24 香港時間約 07:30 重讀本專案線上模板及七份指定規格；Vitest 命令排除 **/.worktrees/**。usage 中斷時保留文件所列 WIP，不聲稱未執行檢查通過。禁止推送、建立 tag／Release 或上架。
+Read this current scope and the finite plan above, then inspect git status/log and the existing worktrees before continuing. The documentation scope-setting commit is edd3cbd; it contains only plan/status.md and plan/reports/world-expansion-20261024.md. Stage D beta.6 build/pack/validate results apply only through runtime commit 288693e. Current Gold Sand commits still need the single final build, pinned pack/validate and isolated browser smoke described in Stage 3. Vitest commands exclude **/.worktrees/**. No push, tag, Release or platform listing.
