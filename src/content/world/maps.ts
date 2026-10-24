@@ -29,7 +29,7 @@ type MapBlueprint = {
 
 const blueprints: MapBlueprint[] = [
   {
-    id: 'camp', name: '晨光營地', width: 1440, themeKey: 'camp', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'camp', name: '晨光營地', width: 1440, themeKey: 'camp', musicKey: 'theme-brightwood', safe: false, boss: false,
     platforms: [[400, 500, 700, 500]],
     ladders: [{ x: 550, topY: 500, bottomY: 600 }],
     extraSpawns: [{ id: 'start', x: 150, y: 600 }],
@@ -60,7 +60,7 @@ const blueprints: MapBlueprint[] = [
     monsters: [],
   },
   {
-    id: 'forest-edge', name: '嫩芽林道', width: 1920, themeKey: 'forest', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'forest-edge', name: '嫩芽林道', width: 1920, themeKey: 'forest', musicKey: 'theme-brightwood', safe: false, boss: false,
     platforms: [[400, 490, 800, 490], [950, 460, 1300, 460], [1400, 420, 1700, 420]],
     ladders: [{ x: 600, topY: 490, bottomY: 600 }, { x: 1500, topY: 420, bottomY: 600 }],
     extraSpawns: [],
@@ -77,7 +77,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'mushroom-wood', name: '菌傘深林', width: 2160, themeKey: 'forest', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'mushroom-wood', name: '菌傘深林', width: 2160, themeKey: 'forest', musicKey: 'theme-brightwood', safe: false, boss: false,
     platforms: [[300, 480, 700, 480], [950, 390, 1300, 390], [1450, 450, 1900, 450]],
     ladders: [{ x: 500, topY: 480, bottomY: 600 }, { x: 1100, topY: 390, bottomY: 600 }],
     extraSpawns: [],
@@ -94,7 +94,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'red-ridge', name: '赤岩山徑', width: 2160, themeKey: 'rock', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'red-ridge', name: '赤岩山徑', width: 2160, themeKey: 'rock', musicKey: 'theme-ridge', safe: false, boss: false,
     platforms: [[300, 480, 650, 480], [800, 440, 1200, 440], [1500, 500, 1900, 500]],
     ladders: [{ x: 950, topY: 440, bottomY: 600 }, { x: 1700, topY: 500, bottomY: 600 }],
     extraSpawns: [],
@@ -111,7 +111,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'mine-gate', name: '古礦入口', width: 1920, themeKey: 'rock', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'mine-gate', name: '古礦入口', width: 1920, themeKey: 'rock', musicKey: 'theme-ridge', safe: false, boss: false,
     platforms: [[350, 470, 700, 470], [1000, 420, 1400, 420]],
     ladders: [{ x: 500, topY: 470, bottomY: 600 }, { x: 1200, topY: 420, bottomY: 600 }],
     extraSpawns: [],
@@ -128,7 +128,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'guardian-arena', name: '守衛祭壇', width: 1440, themeKey: 'rock', musicKey: 'theme-boss', safe: false, boss: true,
+    id: 'guardian-arena', name: '守衛祭壇', width: 1440, themeKey: 'rock', musicKey: 'boss-guardian', safe: false, boss: true,
     platforms: [[250, 460, 480, 460], [960, 460, 1190, 460]],
     ladders: [{ x: 360, topY: 460, bottomY: 600 }, { x: 1080, topY: 460, bottomY: 600 }],
     extraSpawns: [{ id: 'entry', x: 160, y: 600 }],
@@ -140,7 +140,7 @@ const blueprints: MapBlueprint[] = [
     monsters: [{ monsterId: 'guardian', x: 1000, roamLeft: 600, roamRight: 1250 }],
   },
   {
-    id: 'frost-shore', name: '雪痕海岸', width: 1920, themeKey: 'frost', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'frost-shore', name: '雪痕海岸', width: 1920, themeKey: 'frost', musicKey: 'theme-frost', safe: false, boss: false,
     platforms: [[280, 500, 600, 500], [760, 440, 1120, 440], [1300, 490, 1650, 490]],
     ladders: [{ x: 440, topY: 500, bottomY: 600 }, { x: 900, topY: 440, bottomY: 600 }, { x: 1480, topY: 490, bottomY: 600 }],
     extraSpawns: [],
@@ -157,7 +157,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'frost-pine-pass', name: '霜松隘道', width: 2160, themeKey: 'frost-pine', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'frost-pine-pass', name: '霜松隘道', width: 2160, themeKey: 'frost-pine', musicKey: 'theme-frost', safe: false, boss: false,
     platforms: [[280, 500, 620, 500], [760, 440, 1080, 440], [1260, 490, 1580, 490], [1710, 430, 1980, 430]],
     ladders: [{ x: 440, topY: 500, bottomY: 600 }, { x: 920, topY: 440, bottomY: 600 }, { x: 1420, topY: 490, bottomY: 600 }, { x: 1840, topY: 430, bottomY: 600 }],
     extraSpawns: [],
@@ -174,7 +174,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'frost-tide-cavern', name: '冰潮洞窟', width: 2160, themeKey: 'frost-cave', musicKey: 'theme-boss', safe: false, boss: true,
+    id: 'frost-tide-cavern', name: '冰潮洞窟', width: 2160, themeKey: 'frost-cave', musicKey: 'boss-frost', safe: false, boss: true,
     platforms: [[320, 500, 650, 500], [820, 430, 1140, 430], [1320, 470, 1600, 470], [1780, 405, 2050, 405]],
     ladders: [{ x: 480, topY: 500, bottomY: 600 }, { x: 970, topY: 430, bottomY: 600 }, { x: 1450, topY: 470, bottomY: 600 }, { x: 1910, topY: 405, bottomY: 600 }],
     extraSpawns: [],
@@ -190,7 +190,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'sand-glass-shore', name: '琥珀砂岸', width: 1920, themeKey: 'sand', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'sand-glass-shore', name: '琥珀砂岸', width: 1920, themeKey: 'sand', musicKey: 'theme-sands', safe: false, boss: false,
     platforms: [[320, 500, 650, 500], [880, 445, 1180, 445], [1360, 490, 1650, 490]],
     ladders: [{ x: 470, topY: 500, bottomY: 600 }, { x: 1020, topY: 445, bottomY: 600 }, { x: 1500, topY: 490, bottomY: 600 }],
     extraSpawns: [],
@@ -206,7 +206,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'sand-dune-pass', name: '砂丘關道', width: 2600, themeKey: 'sand-dune', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'sand-dune-pass', name: '砂丘關道', width: 2600, themeKey: 'sand-dune', musicKey: 'theme-sands', safe: false, boss: false,
     platforms: [[300, 520, 610, 520], [760, 455, 1080, 455], [1220, 500, 1510, 500], [1660, 420, 2010, 420], [2130, 490, 2400, 490]],
     ladders: [
       { x: 440, topY: 520, bottomY: 600 },
@@ -229,7 +229,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'sand-sunwell-basin', name: '日井盆地', width: 2800, themeKey: 'sunwell', musicKey: 'theme-field', safe: false, boss: false,
+    id: 'sand-sunwell-basin', name: '日井盆地', width: 2800, themeKey: 'sunwell', musicKey: 'theme-sands', safe: false, boss: false,
     platforms: [[330, 520, 670, 520], [830, 455, 1120, 455], [1300, 500, 1580, 500], [1730, 440, 2050, 440], [2200, 500, 2500, 500]],
     ladders: [
       { x: 500, topY: 520, bottomY: 600 },
@@ -252,7 +252,7 @@ const blueprints: MapBlueprint[] = [
     ],
   },
   {
-    id: 'sand-sunwell-altar', name: '日井祭壇', width: 1400, themeKey: 'sunwell', musicKey: 'theme-boss', safe: false, boss: true,
+    id: 'sand-sunwell-altar', name: '日井祭壇', width: 1400, themeKey: 'sunwell', musicKey: 'boss-sunwell', safe: false, boss: true,
     platforms: [],
     ladders: [],
     extraSpawns: [{ id: 'entry', x: 160, y: 600 }],

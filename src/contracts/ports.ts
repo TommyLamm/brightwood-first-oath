@@ -181,12 +181,24 @@ export type UiController = {
   dispose(): void;
 };
 
+/** explore = base layer only; combat adds the combat layer; phase2 (boss) adds every layer. */
+export type MusicIntensity = 'explore' | 'combat' | 'phase2';
+
 export type AudioController = {
   unlock(): Promise<void>;
-  setMusic(key: string): Promise<void>;
+  /**
+   * Selects a music set (a map's `musicKey`); its layers start together and crossfade in.
+   * null holds whatever is playing and starts nothing new (e.g. while a save loads).
+   */
+  setMusic(key: string | null): Promise<void>;
+  setMusicIntensity(level: MusicIntensity): void;
+  /** Procedural ambience for a map theme (`MapDef.themeKey`), or null for none. */
+  setAmbience(themeKey: string | null): void;
   playSfx(key: string): void;
   setSettings(settings: Settings): void;
   setPaused(paused: boolean): void;
+  /** Lowers music and ambience (without pausing) while a menu such as settings is open. */
+  setDucked(ducked: boolean): void;
   dispose(): void;
 };
 

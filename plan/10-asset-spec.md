@@ -25,7 +25,13 @@ type AssetManifest = {
     key: string; imageKey: string; frames: number[];
     frameMs: number[]; loop: boolean;
   }[];
-  audio: {key:string;url:string;kind:'music'|'sfx';loop:boolean}[];
+  audio: {
+    key: string; url: string; fallbackUrl?: string;
+    kind: 'music' | 'sfx'; loop: boolean;
+    group?: string; layer?: 'base' | 'combat' | 'phase2'; // 同組各層同一樣本啟動
+    duck?: number;     // 0..1，stinger 播放時音樂降至此倍數
+    variance?: number; // 0..1200 cents，每次播放隨機音高
+  }[];
 };
 ```
 
@@ -64,14 +70,22 @@ manifest: public/assets/interface/manifest.json。24個item:{id}圖示，display
 
 效果vfx:heavy-strike、vfx:sweep、vfx:hit、vfx:levelup、vfx:guard；每組6欄×1列透明圖集，單格display128×128，pivot(.5,.5)，60ms/格、非loop，guard用外圈疊角色不遮臉。傷害數字及介面文字由程式繪製。UI皮膚允許CSS處理可縮放邊框／色塊，正式角色、圖示、特效仍用生成點陣資產。
 
-## 6. T13 audio 資產清單
+## 6. T13 audio 資產清單（1.0.0-beta.10 重做）
 
-manifest: public/assets/audio/manifest.json。自行合成WAV16bit mono 22050Hz；三段原創循環theme-town/theme-field/theme-boss，各20秒；sfx keys：ui-click、jump、attack、hit、hurt、pickup、potion、equip、quest、levelup、portal、death、boss-win，各0.1–1.2秒。無人聲，不抄原曲旋律，不使用外部串流。音樂總音量預設.35、sfx.65、master.8。
+manifest: public/assets/audio/manifest.json，全部由 `node tools/audio/generate-audio.mjs` 離線確定性合成（零外部樣本、無 npm 依賴，只需 ffmpeg 編碼），`--check` 驗證已提交檔案。風格為管弦奇幻，全部曲目由原創主導動機「首誓」變奏，不抄原曲旋律，不使用外部串流；合唱為 formant 合成音色，無錄音人聲及歌詞。
 
-以可重現小腳本產生音符／包絡／打擊音，輸出WAV及manifest，原始作曲／腳本放tools/audio，runtime放src/audio。T13可用確定性程式產音訊；這不等於使用ImageGen生成音訊。播放器處理首次手勢、拒絕、淡入淡出400ms、同音效併發≤4、暫停與dispose。
+- 音樂：48 kHz 立體聲，Ogg Vorbis q5 為主、AAC M4A 160k 為 fallbackUrl。迴圈為樣本精確無縫（尾音繞回開頭，不淡出到靜音），長度為 640 樣本倍數。9 組：theme-title（標題／建立角色）、theme-town、theme-brightwood、theme-ridge、theme-frost、theme-sands 各一 base；後四組另有 `:combat` 層；boss-guardian、boss-frost、boss-sunwell 各有 base＋`:phase2` 層。同組各層等長、同和聲，runtime 同一 AudioContext 時間啟動並以增益交叉淡化。主層整合響度 −18.5..−15 LUFS，峰值 ≤ 0.98。
+- 地圖→音樂組由 MapDef.musicKey 決定，validate.ts 的 expectedMusic 鎖定。
+- Stinger：boss-win、death、levelup、quest 為 kind:'sfx' 的 Ogg＋M4A，帶 duck。
+- 音效：48 kHz 單聲道 PCM16 WAV（TPDF dither），0.05–1.5 s，峰值 ≤ 0.9。keys：ui-click、panel-open、dialogue、jump、attack、attack-heavy、attack-sweep、hit、crit-hit、hurt、pickup、potion、equip、guard、monster-die、telegraph、boss-phase、portal；攻擊／命中類帶 variance。
+- 環境音：src/audio/ambience.ts 依 MapDef.themeKey 於瀏覽器即時程序合成（0 位元組資源），音量 = sfxVolume×0.9，戰鬥時降至 0.3 倍，事件聲部上限 18。
+- 自適應：720 px 內怪物處於追擊／出招狀態 → combat，脫戰 4.5 s 後回 explore；Boss 血量 < 50% 或 phase 2 → phase2。設定面板只 duck 不暫停；暫停／失焦仍暫停。
+- 音量預設 music .35、sfx .65、master .8；不新增 Settings 欄位，存檔格式不變。
+- 播放器：只在首次玩家手勢後解鎖，拒絕或解碼失敗時靜默可玩；只載入當前音樂組，換組時釋放舊組 buffer。
+- 試聽：開發用 audio-lab.html（`npm run dev` → /audio-lab.html），不在 build 輸入。
 
 ## 7. 內部體積與完成證據
 
-壓縮包預算48MiB：actors18、environment16、interface6、audio4、程式／封面／SDK4。只是內部預算，平台硬限制以05為準。資產metadata、腳本及source-log留專案，需要的runtime檔才入dist，原始生成稿不入包。
+壓縮包預算：actors18、environment16、interface6、audio 約 48（Ogg 20.8 MiB＋M4A 25.6 MiB＋WAV 1 MiB；玩家只下載一種音樂編碼及當前音樂組）、程式／封面／SDK4。只是內部預算；平台硬限制為 Playroom tools 1.2.0 的 ZIP 512 MiB。資產metadata、腳本及source-log留專案，需要的runtime檔才入dist，原始生成稿不入包。
 
 每包完成需實際存在的檔案、可解析manifest、圖格尺寸整除、key唯一、正式／暫用狀態、必要視覺檢視。不反覆截遊戲所有畫面；只查看該新資產。T14核對動作／握點／平台與特效節拍後才標視覺已接合。

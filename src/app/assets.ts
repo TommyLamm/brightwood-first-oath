@@ -78,10 +78,18 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
 };
 
 const expectedAudioKeys = [
-  'theme-town', 'theme-field', 'theme-boss',
-  'ui-click', 'jump', 'attack', 'hit', 'hurt', 'pickup', 'potion', 'equip',
-  'quest', 'levelup', 'portal', 'death', 'boss-win',
+  'theme-title', 'theme-town',
+  ...['theme-brightwood', 'theme-ridge', 'theme-frost', 'theme-sands'].flatMap((key) => [key, `${key}:combat`]),
+  ...['boss-guardian', 'boss-frost', 'boss-sunwell'].flatMap((key) => [key, `${key}:phase2`]),
+  'boss-win', 'death', 'levelup', 'quest',
+  'ui-click', 'panel-open', 'dialogue', 'jump', 'attack', 'attack-heavy', 'attack-sweep', 'hit', 'crit-hit', 'hurt',
+  'pickup', 'potion', 'equip', 'guard', 'monster-die', 'telegraph', 'boss-phase', 'portal',
 ] as const;
+
+/** Keys every pack manifest must provide (used by the loader and by test fixtures). */
+export function requiredAssetKeys(pack: AssetPack): readonly string[] {
+  return pack === 'audio' ? expectedAudioKeys : expectedImageKeys[pack];
+}
 
 const heroAnchorFrameCounts: Record<HeroAnchorPose, number> = {
   idle: 4,
@@ -190,10 +198,29 @@ function parseAudio(value: unknown, index: number): AssetAudio {
   validateRelativeAssetUrl(url);
   if (value.kind !== 'music' && value.kind !== 'sfx') throw new Error(`${label}.kind must be music or sfx`);
   if (typeof value.loop !== 'boolean') throw new Error(`${label}.loop must be boolean`);
-  if (value.fallbackUrl === undefined) return { key, url, kind: value.kind, loop: value.loop };
-  const fallbackUrl = requiredString(value, 'fallbackUrl', label);
-  validateRelativeAssetUrl(fallbackUrl);
-  return { key, url, fallbackUrl, kind: value.kind, loop: value.loop };
+  const entry: AssetAudio = { key, url, kind: value.kind, loop: value.loop };
+  if (value.fallbackUrl !== undefined) {
+    entry.fallbackUrl = requiredString(value, 'fallbackUrl', label);
+    validateRelativeAssetUrl(entry.fallbackUrl);
+  }
+  if (value.group !== undefined) entry.group = requiredString(value, 'group', label);
+  if (value.layer !== undefined) {
+    if (value.layer !== 'base' && value.layer !== 'combat' && value.layer !== 'phase2') {
+      throw new Error(`${label}.layer must be base, combat or phase2`);
+    }
+    entry.layer = value.layer;
+  }
+  if (value.duck !== undefined) {
+    if (!isFiniteNumber(value.duck) || value.duck < 0 || value.duck > 1) throw new Error(`${label}.duck must be within 0..1`);
+    entry.duck = value.duck;
+  }
+  if (value.variance !== undefined) {
+    if (!isFiniteNumber(value.variance) || value.variance < 0 || value.variance > 1200) throw new Error(`${label}.variance must be 0..1200 cents`);
+    entry.variance = value.variance;
+  }
+  if ((entry.group === undefined) !== (entry.layer === undefined)) throw new Error(`${label} needs both group and layer`);
+  if (entry.group !== undefined && entry.kind !== 'music') throw new Error(`${label} only music can have a layer`);
+  return entry;
 }
 
 /** Validates the runtime manifest shape and its pack's required v1 content keys. */

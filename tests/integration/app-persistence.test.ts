@@ -8,74 +8,14 @@ import { createNextEntityId } from '../../src/contracts/helpers.js';
 import type { SaveData } from '../../src/contracts/types.js';
 import { localSaveKeyForGame } from '../../src/persistence/index.js';
 import { SAVE_FORMAT_VERSION } from '../../src/persistence/validate.js';
-import { createHeroAnchorFixture } from './asset-fixtures.js';
-
-const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
-  actors: [
-    'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
-    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:sunwell-oathblade',
-    'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel',
-    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
-  ],
-  environment: [
-    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell'] as const).flatMap((theme) =>
-      (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
-    'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
-    'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
-  ],
-  interface: [
-    ...[
-      'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
-      'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
-      'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell',
-      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell', 'sunwell-oathblade',
-    ].map((id) => `item:${id}`),
-    ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),
-    'marker:quest', 'marker:portal', 'marker:shop', 'marker:player', 'panel:frame',
-    'button:normal', 'button:hover', 'button:pressed', 'bar:hp', 'bar:mp', 'bar:exp',
-    'slot:normal', 'slot:selected', 'vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard',
-  ],
-};
-const audioKeys = [
-  'theme-town', 'theme-field', 'theme-boss', 'ui-click', 'jump', 'attack', 'hit', 'hurt',
-  'pickup', 'potion', 'equip', 'quest', 'levelup', 'portal', 'death', 'boss-win',
-];
-
-function validManifest(pack: AssetPack): unknown {
-  if (pack === 'audio') {
-    return {
-      version: 1,
-      pack,
-      images: [],
-      animations: [],
-      audio: audioKeys.map((key) => ({ key, url: `assets/audio/${key}.ogg`, kind: key.startsWith('theme-') ? 'music' : 'sfx', loop: key.startsWith('theme-') })),
-    };
-  }
-  return {
-    version: 1,
-    pack,
-    images: imageKeys[pack].map((key, index) => ({
-      key,
-      url: `assets/${pack}/${index}.png`,
-      columns: 1,
-      rows: 1,
-      displayWidth: 64,
-      displayHeight: 64,
-      pivotX: 0.5,
-      pivotY: 0.5,
-    })),
-    animations: [],
-    audio: [],
-  };
-}
+import { createHeroAnchorFixture, createManifestFixture } from './asset-fixtures.js';
 
 const fetchManifests = async (url: string) => {
   if (url.endsWith('/assets/actors/anchors.json')) {
     return { ok: true, status: 200, json: async () => createHeroAnchorFixture() };
   }
   const pack = url.split('/').at(-2) as AssetPack;
-  return { ok: true, status: 200, json: async () => validManifest(pack) };
+  return { ok: true, status: 200, json: async () => createManifestFixture(pack) };
 };
 
 class MemoryStorage implements StorageLike {

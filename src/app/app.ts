@@ -1,8 +1,8 @@
 import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand } from '../contracts/commands.js';
 import type { ContentCatalog } from '../contracts/definitions.js';
-import type { EntityId, RandomSource, SaveData, Settings } from '../contracts/types.js';
-import type { AudioController, AudioFactory, CloudPort, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
+import type { EntityId, MonsterState, RandomSource, SaveData, Settings } from '../contracts/types.js';
+import type { AudioController, AudioFactory, CloudPort, MusicIntensity, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
 import { createAudio } from '../audio/index.js';
 import { FIXED_STEP_SECONDS, FixedStepClock } from './fixed-step.js';
 import { AssetManifestLoadError, loadRequiredAssetManifests, loadRequiredHeroAnchors, type ManifestFetcher } from './assets.js';
@@ -52,6 +52,14 @@ const DEFAULT_AUDIO_SETTINGS: Settings = {
 };
 
 const MAX_REMEMBERED_AUDIO_EVENT_IDS = 512;
+const TITLE_MUSIC_KEY = 'theme-title';
+/** Monsters in these modes have noticed the hero; within this range the combat layer comes in. */
+const ENGAGED_MONSTER_MODES = new Set(['chase', 'windup', 'dash', 'recovery']);
+const COMBAT_MUSIC_RANGE_PX = 720;
+/** Combat music lingers this long after the last threat so it doesn't flap at the edge of aggro. */
+const COMBAT_MUSIC_HOLD_MS = 4500;
+const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel']);
+const ATTACK_SOUND_BY_SKILL: Record<string, string> = { 'heavy-strike': 'attack-heavy', sweep: 'attack-sweep' };
 
 /** Owns one app state, command sequence, game clock, RNG and EntityId sequence. */
 export class GameApp {
@@ -72,6 +80,12 @@ export class GameApp {
   private audioUnlockInFlight: Promise<void> | null = null;
   private readonly pendingAudioEvents: string[] = [];
   private audioMusicKey: string | null = null;
+  private audioAmbienceKey: string | null | undefined = undefined;
+  private audioIntensity: MusicIntensity = 'explore';
+  private audioDucked: boolean | null = null;
+  private lastThreatAtMs = -Infinity;
+  /** Last seen dead/enraged state per monster; states can be mutated in place between frames. */
+  private audioMonsterStates = new Map<EntityId, { dead: boolean; enraged: boolean }>();
   private audioPaused: boolean | null = null;
   private audioSettingsFingerprint: string | null = null;
   private audioEventSequence = 0;
@@ -635,6 +649,9 @@ export class GameApp {
       this.audioSettingsFingerprint = audioSettingsFingerprint(settings);
       this.audioPaused = null;
       this.audioMusicKey = null;
+      this.audioAmbienceKey = undefined;
+      this.audioIntensity = 'explore';
+      this.audioDucked = null;
       this.synchronizeAudio(this.stateValue, this.stateValue);
     } catch {
       // Audio setup is optional at runtime; a browser audio error must not block play.
@@ -673,22 +690,70 @@ export class GameApp {
       }
     }
 
-    const paused = !next.windowFocused || next.screen === 'paused' || next.panels.includes('settings');
+    const paused = !next.windowFocused || next.screen === 'paused';
     if (paused !== this.audioPaused) {
       this.audioPaused = paused;
       try { controller.setPaused(paused); } catch { /* Pause audio best-effort; gameplay remains authoritative. */ }
     }
+    // The settings panel keeps playing (quieter) so volume changes can be heard while adjusting.
+    const ducked = next.panels.includes('settings');
+    if (ducked !== this.audioDucked) {
+      this.audioDucked = ducked;
+      try { controller.setDucked(ducked); } catch { /* Ducking is cosmetic. */ }
+    }
 
+    // null (loading, no map yet) holds the current music so the title theme is not fetched on "continue".
     const musicKey = selectedMusicKey(next);
-    if (musicKey && musicKey !== this.audioMusicKey) {
+    if (musicKey !== this.audioMusicKey) {
       this.audioMusicKey = musicKey;
       try { void controller.setMusic(musicKey).catch(() => undefined); } catch { /* Missing music remains silent. */ }
+    }
+
+    const ambienceKey = selectedAmbienceKey(next);
+    if (ambienceKey !== undefined && ambienceKey !== this.audioAmbienceKey) {
+      this.audioAmbienceKey = ambienceKey;
+      try { controller.setAmbience(ambienceKey); } catch { /* Ambience is decoration. */ }
+    }
+
+    const intensity = this.musicIntensity(previous, next);
+    if (intensity !== this.audioIntensity) {
+      this.audioIntensity = intensity;
+      try { controller.setMusicIntensity(intensity); } catch { /* Adaptive music is best-effort. */ }
     }
 
     this.playStateTransitionAudio(previous, next);
   }
 
+  /**
+   * Adaptive music level: combat while an aggroed monster is near (held a few seconds after the
+   * last threat), phase2 once a boss is past half health or in its second phase.
+   */
+  private musicIntensity(previous: GameAppState, next: GameAppState): MusicIntensity {
+    const gameplay = next.gameplay;
+    const catalog = next.catalog;
+    if (!gameplay || !catalog || next.screen === 'title' || next.screen === 'create') return 'explore';
+    const nowMs = next.gameTimeMs;
+    const heroX = gameplay.movement.position.x;
+    let enraged = false;
+    for (const monster of gameplay.monsters) {
+      if (monster.mode === 'dead' || monster.hp <= 0) continue;
+      if (ENGAGED_MONSTER_MODES.has(monster.mode) && Math.abs(monster.movement.position.x - heroX) < COMBAT_MUSIC_RANGE_PX) {
+        this.lastThreatAtMs = nowMs;
+      }
+      if (bossEnraged(monster, catalog)) enraged = true;
+    }
+    const before = previous.gameplay;
+    if (before && gameplay.saveData.player.hp < before.saveData.player.hp) this.lastThreatAtMs = nowMs;
+    // A new session/game restarts the clock.
+    if (this.lastThreatAtMs > nowMs) this.lastThreatAtMs = -Infinity;
+    if (enraged) return 'phase2';
+    return nowMs - this.lastThreatAtMs < COMBAT_MUSIC_HOLD_MS ? 'combat' : 'explore';
+  }
+
   private playStateTransitionAudio(previous: GameAppState, next: GameAppState): void {
+    const newPanels = next.panels.filter((panel) => !previous.panels.includes(panel));
+    if (newPanels.length > 0) this.playAudioOnce(`panel:${newPanels.join(',')}:${next.gameTimeMs}:${++this.audioEventSequence}`, 'panel-open');
+
     const gameplay = next.gameplay;
     if (!gameplay) return;
     const before = previous.gameplay;
@@ -696,21 +761,40 @@ export class GameApp {
     const previousAttackIds = new Set(before?.combat.attacks.map(({ id }) => id) ?? []);
     for (const attack of gameplay.combat.attacks) {
       if (attack.sourceId === gameplay.playerEntityId && !previousAttackIds.has(attack.id)) {
-        this.playAudioOnce(`attack:${attack.id}`, 'attack');
+        this.playAudioOnce(`attack:${attack.id}`, ATTACK_SOUND_BY_SKILL[attack.skillId] ?? 'attack');
       }
     }
 
     const previousEffectIds = new Set(before?.effects.map(({ id }) => id) ?? []);
     for (const effect of gameplay.effects) {
       if (previousEffectIds.has(effect.id)) continue;
-      const key = effect.kind === 'hit' ? 'hit'
+      const key = effect.kind === 'hit' ? (effect.critical ? 'crit-hit' : 'hit')
         : effect.kind === 'pickup' ? 'pickup'
           : effect.kind === 'levelup' ? 'levelup'
-            : null;
+            : effect.kind === 'buff' ? 'guard'
+              : null;
       if (key) this.playAudioOnce(`visual:${effect.id}`, key);
     }
 
+    const previousTelegraphIds = new Set(before?.telegraphs.map(({ id }) => id) ?? []);
+    for (const telegraph of gameplay.telegraphs) {
+      if (!previousTelegraphIds.has(telegraph.id)) this.playAudioOnce(`telegraph:${telegraph.id}`, 'telegraph');
+    }
+
+    const monsterStates = new Map<EntityId, { dead: boolean; enraged: boolean }>();
+    for (const monster of gameplay.monsters) {
+      const now = { dead: monster.mode === 'dead', enraged: next.catalog ? bossEnraged(monster, next.catalog) : false };
+      const was = this.audioMonsterStates.get(monster.id);
+      if (was && !was.dead && now.dead) this.playAudioOnce(`monster-die:${monster.id}`, 'monster-die');
+      if (was && !was.enraged && now.enraged) this.playAudioOnce(`boss-phase:${monster.id}`, 'boss-phase');
+      monsterStates.set(monster.id, now);
+    }
+    this.audioMonsterStates = monsterStates;
+
     if (!before) return;
+    if (!before.interaction && gameplay.interaction) {
+      this.playAudioOnce(`dialogue:${gameplay.interaction.npcId}:${next.gameTimeMs}`, 'dialogue');
+    }
     const previousPlayer = before.saveData.player;
     const player = gameplay.saveData.player;
     if (player.hp < previousPlayer.hp) {
@@ -790,9 +874,24 @@ function audioSettingsFingerprint(settings: Settings): string {
 }
 
 function selectedMusicKey(state: GameAppState): string | null {
+  if (state.screen === 'title' || state.screen === 'create') return TITLE_MUSIC_KEY;
   const gameplay = state.gameplay;
   if (!gameplay || !state.catalog) return null;
   return state.catalog.world.maps[gameplay.saveData.location.mapId]?.musicKey ?? null;
+}
+
+/** Ambience follows the map's visual theme; the title screen is music only. undefined = no change. */
+function selectedAmbienceKey(state: GameAppState): string | null | undefined {
+  if (state.screen === 'title' || state.screen === 'create') return null;
+  const gameplay = state.gameplay;
+  if (!gameplay || !state.catalog) return undefined;
+  return state.catalog.world.maps[gameplay.saveData.location.mapId]?.themeKey ?? null;
+}
+
+function bossEnraged(monster: MonsterState, catalog: ContentCatalog): boolean {
+  if (!BOSS_MONSTER_IDS.has(monster.monsterId) || monster.mode === 'dead' || monster.hp <= 0) return false;
+  const maxHp = catalog.rules.monsters[monster.monsterId]?.maxHp ?? Infinity;
+  return monster.phase === 2 || monster.hp <= maxHp / 2;
 }
 
 function getSavedKeyBindings(bindings: Record<string, string> | undefined): KeyBindings {

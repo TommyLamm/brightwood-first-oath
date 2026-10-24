@@ -235,6 +235,10 @@ export class KeyboardControls {
       canvas.focus();
     }
   };
+  // UI-only buttons (e.g. "建立角色") dispatch nothing, but a click on them still unlocks title music.
+  private readonly handleUiClick = (event: MouseEvent): void => {
+    if (event.isTrusted) this.options.onTrustedGesture?.();
+  };
   private readonly handleGameFocusOut = (): void => {
     const active = this.options.gameRoot.ownerDocument.activeElement;
     if (!this.options.gameRoot.contains(active)) this.input.releaseAll();
@@ -255,6 +259,7 @@ export class KeyboardControls {
     doc.addEventListener('visibilitychange', this.handleVisibility);
     options.gameRoot.addEventListener('pointerdown', this.handlePointerDown);
     options.gameRoot.addEventListener('focusout', this.handleGameFocusOut);
+    options.uiRoot.addEventListener('click', this.handleUiClick);
   }
 
   setBindings(bindings: KeyBindings): void {
@@ -271,6 +276,7 @@ export class KeyboardControls {
     doc.removeEventListener('visibilitychange', this.handleVisibility);
     this.options.gameRoot.removeEventListener('pointerdown', this.handlePointerDown);
     this.options.gameRoot.removeEventListener('focusout', this.handleGameFocusOut);
+    this.options.uiRoot.removeEventListener('click', this.handleUiClick);
     this.input.releaseAll();
   }
 

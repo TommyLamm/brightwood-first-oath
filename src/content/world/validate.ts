@@ -12,8 +12,8 @@ const expectedThemes: Record<Id, string> = {
   'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand', 'sand-dune-pass': 'sand-dune', 'sand-sunwell-basin': 'sunwell', 'sand-sunwell-altar': 'sunwell',
 };
 const expectedMusic: Record<Id, string> = {
-  camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss', 'sand-glass-shore': 'theme-field', 'sand-dune-pass': 'theme-field', 'sand-sunwell-basin': 'theme-field', 'sand-sunwell-altar': 'theme-boss',
+  camp: 'theme-brightwood', town: 'theme-town', 'forest-edge': 'theme-brightwood', 'mushroom-wood': 'theme-brightwood',
+  'red-ridge': 'theme-ridge', 'mine-gate': 'theme-ridge', 'guardian-arena': 'boss-guardian', 'frost-shore': 'theme-frost', 'frost-pine-pass': 'theme-frost', 'frost-tide-cavern': 'boss-frost', 'sand-glass-shore': 'theme-sands', 'sand-dune-pass': 'theme-sands', 'sand-sunwell-basin': 'theme-sands', 'sand-sunwell-altar': 'boss-sunwell',
 };
 
 function failure(message: string): Result<WorldCatalog> {

@@ -1,20 +1,38 @@
-import type { AssetAudio, AssetManifest } from '../contracts/asset-manifest.js';
-import type { AudioController } from '../contracts/ports.js';
+import type { AssetAudio, AssetManifest, AudioLayer } from '../contracts/asset-manifest.js';
+import type { AudioController, MusicIntensity } from '../contracts/ports.js';
 import type { Settings } from '../contracts/types.js';
+import { createAmbience, type Ambience } from './ambience.js';
 
-const CROSS_FADE_SECONDS = 0.4;
+/** Time constants (seconds) for setTargetAtTime: ~3× reaches the target. */
+const SET_FADE_IN = 0.7;
+const SET_FADE_OUT = 0.9;
+const FIRST_SET_FADE_IN = 0.15;
+const LAYER_RISE = 0.55;
+const LAYER_FALL = 1.1;
+const SET_RELEASE_SECONDS = 4;
 const MAX_SFX_VOICES_PER_KEY = 4;
+const AMBIENCE_LEVEL = 0.9;
+const COMBAT_AMBIENCE_DUCK = 0.3;
+const MENU_DUCK = 0.4;
 
 type AudioGraph = {
   master: GainNode;
+  /** User music volume. */
   music: GainNode;
+  /** Stinger ducking (victory fanfare etc.). */
+  stingerDuck: GainNode;
+  /** Music + ambience bed, lowered while a menu is open. */
+  atmosphere: GainNode;
+  ambience: GainNode;
   sfx: GainNode;
 };
 
-type MusicVoice = {
+type LayerVoice = { key: string; layer: AudioLayer; source: AudioBufferSourceNode; gain: GainNode };
+
+type MusicSet = {
   key: string;
-  source: AudioBufferSourceNode;
   gain: GainNode;
+  layers: LayerVoice[];
   released: boolean;
 };
 
@@ -31,6 +49,14 @@ function safeVolume(value: number): number {
   return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
 }
 
+/** Resolves after the next animation frame, or shortly anyway when frames are throttled (hidden tab, tests). */
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, 100);
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => { clearTimeout(timer); resolve(); });
+  });
+}
+
 function createContext(): AudioContext | null {
   const browser = globalThis as typeof globalThis & { webkitAudioContext?: AudioContextConstructor };
   const Constructor = browser.AudioContext ?? browser.webkitAudioContext;
@@ -42,24 +68,57 @@ function createContext(): AudioContext | null {
   }
 }
 
+/** Moves a gain smoothly; falls back to an immediate value where automation is unsupported. */
+function glide(parameter: AudioParam, value: number, at: number, timeConstant: number): void {
+  try {
+    parameter.cancelScheduledValues(at);
+    parameter.setValueAtTime(parameter.value, at);
+    parameter.setTargetAtTime(value, at, timeConstant);
+  } catch {
+    try { parameter.value = value; } catch { /* best-effort */ }
+  }
+}
+
+function layerLevel(layer: AudioLayer, intensity: MusicIntensity): number {
+  if (layer === 'base') return 1;
+  if (layer === 'combat') return intensity === 'explore' ? 0 : 1;
+  return intensity === 'phase2' ? 1 : 0;
+}
+
 /**
  * Creates a lazy Web Audio controller. It does not create an AudioContext or
  * play anything until the host calls unlock() from a player gesture.
+ *
+ * Music is organised in sets (a map's `musicKey`): every layer of a set starts on the same
+ * sample, loops with it, and fades in or out as the intensity changes. Only the playing set's
+ * buffers stay decoded (a 100 s stereo layer is ~38 MB of PCM), effects stay resident.
  */
 export function createAudio(manifest: AssetManifest, initialSettings: Settings): AudioController {
   const audioByKey = new Map(manifest.audio.map((entry) => [entry.key, entry]));
+  const layersBySet = new Map<string, AssetAudio[]>();
+  for (const entry of manifest.audio) {
+    if (entry.kind !== 'music') continue;
+    const set = entry.group ?? entry.key;
+    layersBySet.set(set, [...(layersBySet.get(set) ?? []), entry]);
+  }
+  const oneShots = manifest.audio.filter((entry) => entry.kind === 'sfx');
   const decoded = new Map<string, AudioBuffer>();
   const inflight = new Map<string, { context: AudioContext; promise: Promise<AudioBuffer | null> }>();
-  const musicVoices = new Set<MusicVoice>();
+  const sets = new Set<MusicSet>();
   const sfxVoices = new Map<string, SfxVoice[]>();
   let settings = { ...initialSettings };
   let context: AudioContext | null = null;
   let graph: AudioGraph | null = null;
+  let ambience: Ambience | null = null;
+  let ambienceTheme: string | null = null;
   let musicKey: string | null = null;
-  let currentMusic: MusicVoice | null = null;
+  let intensity: MusicIntensity = 'explore';
+  let currentSet: MusicSet | null = null;
   let unlocked = false;
   let paused = false;
+  let ducked = false;
   let disposed = false;
+  let stingerUntil = 0;
 
   function applySettings(): void {
     if (!context || !graph) return;
@@ -69,6 +128,8 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
       graph.master.gain.setValueAtTime(masterLevel, now);
       graph.music.gain.setValueAtTime(safeVolume(settings.musicVolume), now);
       graph.sfx.gain.setValueAtTime(safeVolume(settings.sfxVolume), now);
+      graph.ambience.gain.setValueAtTime(safeVolume(settings.sfxVolume) * AMBIENCE_LEVEL, now);
+      glide(graph.atmosphere.gain, ducked ? MENU_DUCK : 1, now, 0.2);
     } catch {
       // Audio settings are best-effort; a browser audio failure must not stop play.
     }
@@ -82,16 +143,32 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
     try {
       const master = context.createGain();
       const music = context.createGain();
+      const stingerDuck = context.createGain();
+      const atmosphere = context.createGain();
+      const ambienceBus = context.createGain();
       const sfx = context.createGain();
-      music.connect(master);
+      music.connect(stingerDuck);
+      stingerDuck.connect(atmosphere);
+      ambienceBus.connect(atmosphere);
+      atmosphere.connect(master);
       sfx.connect(master);
       master.connect(context.destination);
-      graph = { master, music, sfx };
+      graph = { master, music, stingerDuck, atmosphere, ambience: ambienceBus, sfx };
       applySettings();
       return true;
     } catch {
       graph = null;
       return false;
+    }
+  }
+
+  function ensureAmbience(): void {
+    if (ambience || !context || !graph || disposed) return;
+    try {
+      ambience = createAmbience(context, graph.ambience);
+      ambience.setDuck(intensity === 'explore' ? 0 : COMBAT_AMBIENCE_DUCK);
+    } catch {
+      ambience = null;
     }
   }
 
@@ -130,70 +207,110 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
     return buffer;
   }
 
-  async function loadAllBuffers(targetContext: AudioContext): Promise<void> {
-    await Promise.all(manifest.audio.map((entry) => loadBuffer(entry, targetContext)));
+  async function loadOneShots(targetContext: AudioContext): Promise<void> {
+    await Promise.all(oneShots.map((entry) => loadBuffer(entry, targetContext)));
   }
 
-  function releaseMusicVoice(voice: MusicVoice, stop: boolean): void {
-    if (voice.released) return;
-    voice.released = true;
-    voice.source.onended = null;
-    if (stop) {
-      try { voice.source.stop(); } catch { /* A source can already have ended. */ }
+  /** Frees decoded music that no playing or wanted set needs. */
+  function evictMusic(): void {
+    const keep = new Set<string>();
+    for (const set of sets) if (!set.released) for (const voice of set.layers) keep.add(voice.key);
+    for (const entry of layersBySet.get(musicKey ?? '') ?? []) keep.add(entry.key);
+    for (const [key] of decoded) {
+      const entry = audioByKey.get(key);
+      if (entry?.kind === 'music' && !keep.has(key)) decoded.delete(key);
     }
-    try { voice.source.disconnect(); } catch { /* Already disconnected. */ }
-    try { voice.gain.disconnect(); } catch { /* Already disconnected. */ }
-    musicVoices.delete(voice);
-    if (currentMusic === voice) currentMusic = null;
   }
 
-  function fadeMusicOut(voice: MusicVoice, now: number): void {
-    if (!context || voice.released) return;
+  function releaseSet(set: MusicSet, stop: boolean): void {
+    if (set.released) return;
+    set.released = true;
+    for (const voice of set.layers) {
+      voice.source.onended = null;
+      if (stop) {
+        try { voice.source.stop(); } catch { /* A source can already have ended. */ }
+      }
+      try { voice.source.disconnect(); } catch { /* Already disconnected. */ }
+      try { voice.gain.disconnect(); } catch { /* Already disconnected. */ }
+    }
+    try { set.gain.disconnect(); } catch { /* Already disconnected. */ }
+    sets.delete(set);
+    if (currentSet === set) currentSet = null;
+    evictMusic();
+  }
+
+  function fadeSetOut(set: MusicSet, now: number): void {
+    if (!context || set.released) return;
+    glide(set.gain.gain, 0, now, SET_FADE_OUT);
     try {
-      const parameter = voice.gain.gain;
-      parameter.cancelScheduledValues(now);
-      parameter.setValueAtTime(parameter.value, now);
-      parameter.linearRampToValueAtTime(0, now + CROSS_FADE_SECONDS);
-      voice.source.stop(now + CROSS_FADE_SECONDS);
+      for (const voice of set.layers) voice.source.stop(now + SET_RELEASE_SECONDS);
+      set.layers[0]!.source.onended = () => releaseSet(set, false);
     } catch {
-      releaseMusicVoice(voice, true);
+      releaseSet(set, true);
     }
+  }
+
+  function applyIntensity(): void {
+    if (!context) return;
+    const now = context.currentTime;
+    for (const voice of currentSet?.layers ?? []) {
+      const target = layerLevel(voice.layer, intensity);
+      glide(voice.gain.gain, target, now, target > voice.gain.gain.value ? LAYER_RISE : LAYER_FALL);
+    }
+    ambience?.setDuck(intensity === 'explore' ? 0 : COMBAT_AMBIENCE_DUCK);
   }
 
   async function startDesiredMusic(): Promise<void> {
     const targetContext = context;
     if (!targetContext || !graph || !unlocked || paused || disposed || !musicKey) return;
-    if (currentMusic?.key === musicKey) return;
-    const entry = audioByKey.get(musicKey);
-    if (!entry || entry.kind !== 'music') return;
-    const buffer = await loadBuffer(entry, targetContext);
-    if (!buffer || disposed || context !== targetContext || paused || musicKey !== entry.key) return;
+    if (currentSet?.key === musicKey) return;
+    const wanted = musicKey;
+    const entries = layersBySet.get(wanted);
+    if (!entries?.length) return;
+    const buffers = await Promise.all(entries.map((entry) => loadBuffer(entry, targetContext)));
+    if (disposed || context !== targetContext || paused || musicKey !== wanted || currentSet?.key === wanted || !graph) return;
+    const playable = entries.flatMap((entry, index) => (buffers[index] ? [{ entry, buffer: buffers[index]! }] : []));
+    if (!playable.some(({ entry }) => (entry.layer ?? 'base') === 'base')) return;
 
-    for (const voice of [...musicVoices]) {
-      if (voice !== currentMusic) releaseMusicVoice(voice, true);
-    }
-
-    const now = targetContext.currentTime;
-    const previous = currentMusic;
+    for (const set of [...sets]) if (set !== currentSet) releaseSet(set, true);
+    const previous = currentSet;
+    // Start every layer on the same sample a moment ahead, so they stay locked together.
+    const startAt = targetContext.currentTime + 0.06;
+    const set: MusicSet = { key: wanted, gain: targetContext.createGain(), layers: [], released: false };
     try {
-      const source = targetContext.createBufferSource();
-      const gain = targetContext.createGain();
-      source.buffer = buffer;
-      source.loop = entry.loop;
-      source.connect(gain);
-      gain.connect(graph.music);
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(1, now + CROSS_FADE_SECONDS);
-      const voice: MusicVoice = { key: entry.key, source, gain, released: false };
-      source.onended = () => releaseMusicVoice(voice, false);
-      musicVoices.add(voice);
-      source.start(now);
-      currentMusic = voice;
-      if (previous) fadeMusicOut(previous, now);
+      set.gain.connect(graph.music);
+      set.gain.gain.setValueAtTime(0, startAt);
+      set.gain.gain.setTargetAtTime(1, startAt, previous ? SET_FADE_IN : FIRST_SET_FADE_IN);
+      for (const { entry, buffer } of playable) {
+        const layer = entry.layer ?? 'base';
+        const source = targetContext.createBufferSource();
+        const gain = targetContext.createGain();
+        source.buffer = buffer;
+        source.loop = entry.loop;
+        gain.gain.setValueAtTime(layerLevel(layer, intensity), startAt);
+        source.connect(gain);
+        gain.connect(set.gain);
+        set.layers.push({ key: entry.key, layer, source, gain });
+      }
+      for (const voice of set.layers) voice.source.start(startAt);
+      set.layers[0]!.source.onended = () => releaseSet(set, false);
+      sets.add(set);
+      currentSet = set;
+      if (previous) fadeSetOut(previous, startAt);
+      evictMusic();
     } catch {
-      if (currentMusic && currentMusic !== previous) releaseMusicVoice(currentMusic, true);
-      currentMusic = previous;
+      releaseSet(set, true);
+      currentSet = previous;
     }
+  }
+
+  function duckForStinger(entry: AssetAudio, buffer: AudioBuffer): void {
+    if (!context || !graph || entry.duck === undefined) return;
+    const now = context.currentTime;
+    const until = now + Math.max(0.3, buffer.duration - 0.8);
+    stingerUntil = Math.max(stingerUntil, until);
+    glide(graph.stingerDuck.gain, entry.duck, now, 0.08);
+    try { graph.stingerDuck.gain.setTargetAtTime(1, stingerUntil, 0.7); } catch { /* best-effort */ }
   }
 
   function releaseSfxVoice(voice: SfxVoice, stop: boolean): void {
@@ -227,27 +344,38 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
       applySettings();
       return;
     }
-    await loadAllBuffers(targetContext);
-    if (disposed || context !== targetContext) return;
-    await startDesiredMusic();
+    ensureAmbience();
+    ambience?.setPreset(ambienceTheme);
+    // The click that unlocks audio usually also changes screens; wait for that frame so a set
+    // about to be replaced (e.g. the title theme on "continue") is never downloaded.
+    await Promise.all([loadOneShots(targetContext), nextFrame().then(startDesiredMusic)]);
   }
 
   return {
     unlock,
 
-    async setMusic(key: string): Promise<void> {
-      if (disposed) return;
-      const entry = audioByKey.get(key);
-      if (!entry || entry.kind !== 'music') return;
-      if (musicKey === key && currentMusic?.key === key) return;
+    async setMusic(key: string | null): Promise<void> {
+      if (disposed || (key !== null && !layersBySet.has(key))) return;
+      if (musicKey === key && currentSet?.key === key) return;
       musicKey = key;
       if (!unlocked || paused || !ensureGraph() || !context) return;
       try {
-        await loadBuffer(entry, context);
         await startDesiredMusic();
       } catch {
         // Missing or unsupported music degrades to silence.
       }
+    },
+
+    setMusicIntensity(level: MusicIntensity): void {
+      if (disposed || level === intensity) return;
+      intensity = level;
+      applyIntensity();
+    },
+
+    setAmbience(themeKey: string | null): void {
+      if (disposed) return;
+      ambienceTheme = themeKey;
+      if (unlocked && !paused) ambience?.setPreset(themeKey);
     },
 
     playSfx(key: string): void {
@@ -258,11 +386,14 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
       if (!buffer) return;
       try {
         const voices = sfxVoices.get(key) ?? [];
-        while (voices.length >= MAX_SFX_VOICES_PER_KEY) releaseSfxVoice(voices[0], true);
+        while (voices.length >= MAX_SFX_VOICES_PER_KEY) releaseSfxVoice(voices[0]!, true);
         const source = context.createBufferSource();
         const gain = context.createGain();
         source.buffer = buffer;
         source.loop = false;
+        if (entry.variance) {
+          try { source.playbackRate.value = 2 ** (((Math.random() * 2 - 1) * entry.variance) / 1200); } catch { /* fixed pitch */ }
+        }
         source.connect(gain);
         gain.connect(graph.sfx);
         gain.gain.setValueAtTime(1, context.currentTime);
@@ -271,6 +402,7 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
         sfxVoices.set(key, voices);
         source.onended = () => releaseSfxVoice(voice, false);
         source.start();
+        duckForStinger(entry, buffer);
       } catch {
         // A transient audio failure only drops this sound effect.
       }
@@ -302,8 +434,9 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
         unlocked = targetContext.state === 'running';
         applySettings();
         if (unlocked) {
-          await loadAllBuffers(targetContext);
-          await startDesiredMusic();
+          ensureAmbience();
+          ambience?.setPreset(ambienceTheme);
+          await Promise.all([loadOneShots(targetContext), startDesiredMusic()]);
         }
       }).catch(() => {
         unlocked = false;
@@ -311,19 +444,27 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
       });
     },
 
+    setDucked(nextDucked: boolean): void {
+      if (disposed || ducked === nextDucked) return;
+      ducked = nextDucked;
+      applySettings();
+    },
+
     dispose(): void {
       if (disposed) return;
       disposed = true;
       unlocked = false;
       paused = true;
-      for (const voice of [...musicVoices]) releaseMusicVoice(voice, true);
+      for (const set of [...sets]) releaseSet(set, true);
       for (const voices of [...sfxVoices.values()]) {
         for (const voice of [...voices]) releaseSfxVoice(voice, true);
       }
+      ambience?.dispose();
+      ambience = null;
       if (graph) {
-        try { graph.music.disconnect(); } catch { /* Already disconnected. */ }
-        try { graph.sfx.disconnect(); } catch { /* Already disconnected. */ }
-        try { graph.master.disconnect(); } catch { /* Already disconnected. */ }
+        for (const node of Object.values(graph)) {
+          try { node.disconnect(); } catch { /* Already disconnected. */ }
+        }
       }
       graph = null;
       decoded.clear();

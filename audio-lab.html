@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brightwood 音訊試聽室</title>
+  <!-- Dev-only audition page (npm run dev → /audio-lab.html). Not part of the build. -->
+  <style>
+    :root { color-scheme: dark; --bg: #16130f; --panel: #221d17; --line: #3a3128; --text: #efe6d6; --dim: #a8997f; --accent: #e0b25a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px 16px 48px; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, "Noto Sans TC", sans-serif; }
+    main { max-width: 980px; margin: 0 auto; display: grid; gap: 16px; }
+    h1 { margin: 0; font-size: 22px; }
+    p.hint { margin: 4px 0 0; color: var(--dim); }
+    section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+    h2 { margin: 0 0 10px; font-size: 16px; color: var(--accent); }
+    .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { background: #2d261e; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font: inherit; cursor: pointer; min-height: 40px; }
+    button:hover { border-color: var(--accent); }
+    button[aria-pressed="true"] { background: var(--accent); color: #1b1610; border-color: var(--accent); font-weight: 600; }
+    label { display: flex; align-items: center; gap: 10px; color: var(--dim); }
+    input[type=range] { flex: 1; max-width: 320px; }
+    .row { display: grid; gap: 8px; }
+    #status { color: var(--dim); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Brightwood 音訊試聽室</h1>
+    <p class="hint">點任何按鈕開始（瀏覽器要求先有操作才可出聲）。用的是遊戲同一個音訊控制器。建議戴耳機。</p>
+    <p id="status">尚未啟動</p>
+  </header>
+  <section>
+    <h2>音樂組</h2>
+    <div class="grid" id="music"></div>
+  </section>
+  <section>
+    <h2>強度（自適應音樂）</h2>
+    <div class="grid" id="intensity"></div>
+    <p class="hint">探索 = 只有主層；戰鬥 = 加入戰鬥層；第二階段 = Boss 加入合唱/鼓層。切換會淡入淡出。</p>
+  </section>
+  <section>
+    <h2>環境音</h2>
+    <div class="grid" id="ambience"></div>
+  </section>
+  <section>
+    <h2>音效與 Stinger</h2>
+    <div class="grid" id="sfx"></div>
+  </section>
+  <section class="row">
+    <h2>音量</h2>
+    <label>主音量 <input type="range" id="masterVolume" min="0" max="1" step="0.05" value="0.8"></label>
+    <label>音樂 <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.35"></label>
+    <label>音效/環境 <input type="range" id="sfxVolume" min="0" max="1" step="0.05" value="0.65"></label>
+  </section>
+</main>
+<script type="module">
+  import { createAudio } from '/src/audio/index.ts';
+  import { AMBIENCE_THEMES } from '/src/audio/ambience.ts';
+
+  const NAMES = {
+    'theme-title': '標題 · 首誓', 'theme-town': '木葉鎮', 'theme-brightwood': '林地（營地/林道/菌林）',
+    'theme-ridge': '岩嶺（赤岩/古礦）', 'theme-frost': '霜岸（海岸/松道）', 'theme-sands': '砂原（砂岸/砂丘/日井）',
+    'boss-guardian': 'Boss · 守衛', 'boss-frost': 'Boss · 冰潮守望獸', 'boss-sunwell': 'Boss · 日井守衛',
+  };
+  const settings = { masterVolume: 0.8, musicVolume: 0.35, sfxVolume: 0.65, muted: false, bindings: {} };
+  const manifest = await (await fetch('./assets/audio/manifest.json')).json();
+  const audio = createAudio(manifest, settings);
+  const status = document.getElementById('status');
+  let unlocked = false;
+  async function ensure() {
+    if (unlocked) return;
+    await audio.unlock();
+    unlocked = true;
+    status.textContent = '音訊已啟動';
+  }
+  function group(container, items, onPick, { toggle = true } = {}) {
+    const buttons = items.map(([value, label]) => {
+      const button = document.createElement('button');
+      button.textContent = label;
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', async () => {
+        await ensure();
+        if (toggle) for (const other of buttons) other.setAttribute('aria-pressed', String(other === button));
+        onPick(value);
+      });
+      document.getElementById(container).append(button);
+      return button;
+    });
+    return buttons;
+  }
+  const sets = [...new Set(manifest.audio.filter((e) => e.kind === 'music').map((e) => e.group ?? e.key))];
+  group('music', sets.map((key) => [key, NAMES[key] ?? key]), (key) => { status.textContent = `播放：${NAMES[key] ?? key}`; void audio.setMusic(key); });
+  group('intensity', [['explore', '探索'], ['combat', '戰鬥'], ['phase2', '第二階段（Boss）']], (level) => audio.setMusicIntensity(level))[0].setAttribute('aria-pressed', 'true');
+  group('ambience', [[null, '關閉'], ...AMBIENCE_THEMES.map((theme) => [theme, theme])], (theme) => audio.setAmbience(theme))[0].setAttribute('aria-pressed', 'true');
+  group('sfx', manifest.audio.filter((e) => e.kind === 'sfx').map((e) => [e.key, e.key]), (key) => audio.playSfx(key), { toggle: false });
+  for (const id of ['masterVolume', 'musicVolume', 'sfxVolume']) {
+    document.getElementById(id).addEventListener('input', (event) => {
+      settings[id] = Number(event.target.value);
+      audio.setSettings(settings);
+    });
+  }
+</script>
+</body>
+</html>

@@ -26,7 +26,17 @@ export type AssetAudio = {
   fallbackUrl?: string;
   kind: 'music' | 'sfx';
   loop: boolean;
+  /** Music only: the adaptive set this layer belongs to (a map's `musicKey`). */
+  group?: string;
+  /** Music only: 'base' always plays; 'combat'/'phase2' fade in with intensity, sample-synced to base. */
+  layer?: AudioLayer;
+  /** One-shots only: music bus gain (0..1) while this stinger plays. */
+  duck?: number;
+  /** One-shots only: random playback-rate variation in cents, so repeats never sound identical. */
+  variance?: number;
 };
+
+export type AudioLayer = 'base' | 'combat' | 'phase2';
 
 /** Pack manifests use entry-relative URLs; image dimensions must divide evenly by rows and columns. */
 export type AssetManifest = {

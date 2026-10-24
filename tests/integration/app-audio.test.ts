@@ -1,83 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
-import type { AudioController, AudioFactory } from '../../src/contracts/ports.js';
+import type { AudioController, AudioFactory, MusicIntensity } from '../../src/contracts/ports.js';
 import type { Settings } from '../../src/contracts/types.js';
 import { GameApp } from '../../src/app/app.js';
-import { createHeroAnchorFixture } from './asset-fixtures.js';
-
-const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
-  actors: [
-    'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
-    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:sunwell-oathblade',
-    'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel',
-    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
-  ],
-  environment: [
-    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell'] as const).flatMap((theme) =>
-      (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
-    'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
-    'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
-  ],
-  interface: [
-    ...[
-      'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
-      'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
-      'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell',
-      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell', 'sunwell-oathblade',
-    ].map((id) => `item:${id}`),
-    ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),
-    'marker:quest', 'marker:portal', 'marker:shop', 'marker:player', 'panel:frame',
-    'button:normal', 'button:hover', 'button:pressed', 'bar:hp', 'bar:mp', 'bar:exp',
-    'slot:normal', 'slot:selected', 'vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard',
-  ],
-};
-
-const audioKeys = [
-  'theme-town', 'theme-field', 'theme-boss', 'ui-click', 'jump', 'attack', 'hit', 'hurt',
-  'pickup', 'potion', 'equip', 'quest', 'levelup', 'portal', 'death', 'boss-win',
-];
-
-function validManifest(pack: AssetPack): unknown {
-  if (pack === 'audio') {
-    return {
-      version: 1,
-      pack,
-      images: [],
-      animations: [],
-      audio: audioKeys.map((key) => ({
-        key,
-        url: key.startsWith('theme-') ? `assets/audio/${key}.ogg` : `assets/audio/${key}.wav`,
-        ...(key.startsWith('theme-') ? { fallbackUrl: `assets/audio/${key}.m4a` } : {}),
-        kind: key.startsWith('theme-') ? 'music' : 'sfx',
-        loop: key.startsWith('theme-'),
-      })),
-    };
-  }
-  return {
-    version: 1,
-    pack,
-    images: imageKeys[pack].map((key, index) => ({
-      key,
-      url: `assets/${pack}/${index}.png`,
-      columns: 1,
-      rows: 1,
-      displayWidth: 64,
-      displayHeight: 64,
-      pivotX: 0.5,
-      pivotY: 0.5,
-    })),
-    animations: [],
-    audio: [],
-  };
-}
+import { requiredAssetKeys } from '../../src/app/assets.js';
+import { createHeroAnchorFixture, createManifestFixture } from './asset-fixtures.js';
 
 const fetchManifests = async (url: string) => {
   if (url.endsWith('/assets/actors/anchors.json')) {
     return { ok: true, status: 200, json: async () => createHeroAnchorFixture() };
   }
   const pack = url.split('/').at(-2) as AssetPack;
-  return { ok: true, status: 200, json: async () => validManifest(pack) };
+  return { ok: true, status: 200, json: async () => createManifestFixture(pack) };
 };
 
 function flushAudioUnlock(): Promise<void> {
@@ -87,10 +21,13 @@ function flushAudioUnlock(): Promise<void> {
 function createAudioRecorder() {
   const calls = {
     unlock: 0,
-    music: [] as string[],
+    music: [] as (string | null)[],
+    intensity: [] as MusicIntensity[],
+    ambience: [] as (string | null)[],
     sfx: [] as string[],
     settings: [] as Settings[],
     paused: [] as boolean[],
+    ducked: [] as boolean[],
     dispose: 0,
     manifestAudioCount: 0,
     initialSettings: null as Settings | null,
@@ -101,9 +38,12 @@ function createAudioRecorder() {
     const audio: AudioController = {
       unlock: async () => { calls.unlock += 1; },
       setMusic: async (key) => { calls.music.push(key); },
+      setMusicIntensity: (level) => { calls.intensity.push(level); },
+      setAmbience: (theme) => { calls.ambience.push(theme); },
       playSfx: (key) => { calls.sfx.push(key); },
       setSettings: (next) => { calls.settings.push(structuredClone(next)); },
       setPaused: (paused) => { calls.paused.push(paused); },
+      setDucked: (ducked) => { calls.ducked.push(ducked); },
       dispose: () => { calls.dispose += 1; },
     };
     return audio;
@@ -111,31 +51,31 @@ function createAudioRecorder() {
   return { calls, factory };
 }
 
-describe('T14 app audio wiring', () => {
-  it('waits for a UI gesture, follows gameplay lifecycle, and deduplicates attack events', async () => {
-    const { calls, factory } = createAudioRecorder();
-    const app = new GameApp({
-      baseUrl: './',
-      fetcher: fetchManifests,
-      audioFactory: factory,
-      seed: 1401,
-      sessionPrefix: 'audio-integration',
-    });
+async function startedApp(seed: number) {
+  const { calls, factory } = createAudioRecorder();
+  const app = new GameApp({ baseUrl: './', fetcher: fetchManifests, audioFactory: factory, seed, sessionPrefix: `audio-${seed}` });
+  const startup = await app.initialize();
+  expect(startup.ready).toBe(true);
+  return { app, calls };
+}
 
-    const startup = await app.initialize();
-    expect(startup.ready).toBe(true);
-    expect(calls.manifestAudioCount).toBe(16);
+describe('app audio wiring', () => {
+  it('waits for a UI gesture, follows gameplay lifecycle, and deduplicates attack events', async () => {
+    const { app, calls } = await startedApp(1401);
+    expect(calls.manifestAudioCount).toBe(requiredAssetKeys('audio').length);
     expect(calls.initialSettings).toMatchObject({ masterVolume: 0.8, musicVolume: 0.35, sfxVolume: 0.65, muted: false });
     expect(calls.unlock).toBe(0);
-    expect(calls.music).toEqual([]);
+    // The title theme is requested up front; the controller holds it until a gesture unlocks audio.
+    expect(calls.music).toEqual(['theme-title']);
 
     app.dispatchUi({ type: 'playTemporary', payload: {} });
     app.update(0);
     await flushAudioUnlock();
     expect(app.state.screen).toBe('playing');
     expect(calls.unlock).toBe(1);
-    expect(calls.music).toEqual(['theme-field']);
-    expect(calls.sfx).toEqual(['ui-click']);
+    expect(calls.music.at(-1)).toBe('theme-brightwood');
+    expect(calls.ambience.at(-1)).toBe('camp');
+    expect(calls.sfx).toContain('ui-click');
     expect(calls.paused.at(-1)).toBe(false);
 
     app.dispatch({ type: 'attack', payload: { skillId: 'basic' } });
@@ -157,9 +97,45 @@ describe('T14 app audio wiring', () => {
 
     app.state.gameplay!.pendingTransition = { mapId: 'guardian-arena', spawnId: 'entry', after: 'travel' };
     app.completeMapTransition();
-    expect(calls.music.at(-1)).toBe('theme-boss');
+    expect(calls.music.at(-1)).toBe('boss-guardian');
+    expect(calls.ambience.at(-1)).toBe('rock');
 
     app.dispose();
     expect(calls.dispose).toBe(1);
+  });
+
+  it('keeps music playing but ducked while the settings panel is open', async () => {
+    const { app, calls } = await startedApp(1402);
+    app.dispatchUi({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    await flushAudioUnlock();
+    const pausesBefore = calls.paused.length;
+
+    app.dispatchUi({ type: 'setPanel', payload: { panel: 'settings' } });
+    app.update(0);
+    await flushAudioUnlock();
+    expect(app.state.panels).toContain('settings');
+    expect(calls.ducked.at(-1)).toBe(true);
+    expect(calls.paused.slice(pausesBefore)).not.toContain(true);
+    expect(calls.sfx).toContain('panel-open');
+    app.dispose();
+  });
+
+  it('raises the boss to phase 2 music once it is below half health', async () => {
+    const { app, calls } = await startedApp(1403);
+    app.dispatchUi({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    await flushAudioUnlock();
+    app.state.gameplay!.pendingTransition = { mapId: 'guardian-arena', spawnId: 'entry', after: 'travel' };
+    app.completeMapTransition();
+    app.update(20);
+    const guardian = app.state.gameplay!.monsters.find(({ monsterId }) => monsterId === 'guardian');
+    expect(guardian).toBeDefined();
+    const maxHp = app.state.catalog!.rules.monsters.guardian!.maxHp;
+    guardian!.hp = Math.floor(maxHp / 2) - 1;
+    app.update(20);
+    expect(calls.intensity.at(-1)).toBe('phase2');
+    expect(calls.sfx).toContain('boss-phase');
+    app.dispose();
   });
 });

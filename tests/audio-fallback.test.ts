@@ -5,11 +5,11 @@ import type { Settings } from '../src/contracts/types.js';
 
 const settings = { masterVolume: 0.8, musicVolume: 0.35, sfxVolume: 0.65, muted: false } as Settings;
 
-const param = () => ({ value: 1, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn(), cancelScheduledValues: vi.fn() });
+const param = () => ({ value: 1, setValueAtTime: vi.fn(), setTargetAtTime: vi.fn(), linearRampToValueAtTime: vi.fn(), cancelScheduledValues: vi.fn() });
 const node = () => ({ connect: vi.fn(), disconnect: vi.fn() });
 
 /** Minimal Web Audio stand-in whose decoder rejects Ogg, like Safari before 18.4. */
-function installFakeAudio(started: unknown[]) {
+function installFakeAudio(started: unknown[], starts: (number | undefined)[] = []) {
   class FakeContext {
     state = 'suspended';
     currentTime = 0;
@@ -18,8 +18,8 @@ function installFakeAudio(started: unknown[]) {
     async close() { this.state = 'closed'; }
     createGain() { return { ...node(), gain: param() }; }
     createBufferSource() {
-      const source = { ...node(), buffer: null as unknown, loop: false, onended: null, stop: vi.fn(),
-        start: vi.fn(() => { started.push(source.buffer); }) };
+      const source = { ...node(), buffer: null as unknown, loop: false, onended: null, stop: vi.fn(), playbackRate: param(),
+        start: vi.fn((at?: number) => { started.push(source.buffer); starts.push(at); }) };
       return source;
     }
     async decodeAudioData(data: ArrayBuffer) {
@@ -43,6 +43,8 @@ const manifest: AssetManifest = {
   audio: [
     { key: 'theme-town', url: 'assets/audio/theme-town.ogg', fallbackUrl: 'assets/audio/theme-town.m4a', kind: 'music', loop: true },
     { key: 'ui-click', url: 'assets/audio/ui-click.wav', kind: 'sfx', loop: false },
+    { key: 'theme-wood', url: 'assets/audio/theme-wood.ogg', kind: 'music', loop: true, group: 'theme-wood', layer: 'base' },
+    { key: 'theme-wood:combat', url: 'assets/audio/theme-wood-combat.ogg', kind: 'music', loop: true, group: 'theme-wood', layer: 'combat' },
   ],
 };
 
@@ -82,6 +84,46 @@ describe('music loading', () => {
     await audio.unlock();
     await Promise.all([audio.setMusic('theme-town'), audio.unlock()]);
     expect(fetched.filter((url) => url.endsWith('theme-town.ogg'))).toHaveLength(1);
+    audio.dispose();
+  });
+});
+
+describe('adaptive music sets', () => {
+  it('starts every layer of a set on the same sample and frees the previous set', async () => {
+    const started: unknown[] = [];
+    const starts: (number | undefined)[] = [];
+    // This fake decodes Ogg too, so tag every body as playable.
+    installFakeAudio(started, starts);
+    const audio = createAudio({ ...manifest, audio: manifest.audio.map((entry) => ({ ...entry, url: entry.url.replace('.ogg', '.wav') })) }, settings);
+    await audio.unlock();
+    await audio.setMusic('theme-wood');
+    expect(started).toHaveLength(2);
+    expect(new Set(starts).size).toBe(1);
+    audio.setMusicIntensity('combat');
+    await audio.setMusic('theme-town');
+    expect(started).toHaveLength(3);
+    audio.dispose();
+  });
+
+  it('holds music without downloading anything when no set is wanted', async () => {
+    const started: unknown[] = [];
+    const fetched = installFakeAudio(started);
+    const audio = createAudio(manifest, settings);
+    await audio.setMusic('theme-town');
+    await audio.setMusic(null);
+    await audio.unlock();
+    expect(fetched.filter((url) => !url.endsWith('.wav'))).toEqual([]);
+    expect(started).toEqual([]);
+    audio.dispose();
+  });
+
+  it('ignores music keys it does not know', async () => {
+    const started: unknown[] = [];
+    installFakeAudio(started);
+    const audio = createAudio(manifest, settings);
+    await audio.unlock();
+    await audio.setMusic('theme-unknown');
+    expect(started).toEqual([]);
     audio.dispose();
   });
 });

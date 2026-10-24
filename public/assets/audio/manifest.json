@@ -5,25 +5,180 @@
   "animations": [],
   "audio": [
     {
+      "key": "theme-title",
+      "url": "assets/audio/theme-title.ogg",
+      "fallbackUrl": "assets/audio/theme-title.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-title",
+      "layer": "base"
+    },
+    {
       "key": "theme-town",
       "url": "assets/audio/theme-town.ogg",
       "fallbackUrl": "assets/audio/theme-town.m4a",
       "kind": "music",
-      "loop": true
+      "loop": true,
+      "group": "theme-town",
+      "layer": "base"
     },
     {
-      "key": "theme-field",
-      "url": "assets/audio/theme-field.ogg",
-      "fallbackUrl": "assets/audio/theme-field.m4a",
+      "key": "theme-brightwood",
+      "url": "assets/audio/theme-brightwood.ogg",
+      "fallbackUrl": "assets/audio/theme-brightwood.m4a",
       "kind": "music",
-      "loop": true
+      "loop": true,
+      "group": "theme-brightwood",
+      "layer": "base"
     },
     {
-      "key": "theme-boss",
-      "url": "assets/audio/theme-boss.ogg",
-      "fallbackUrl": "assets/audio/theme-boss.m4a",
+      "key": "theme-brightwood:combat",
+      "url": "assets/audio/theme-brightwood-combat.ogg",
+      "fallbackUrl": "assets/audio/theme-brightwood-combat.m4a",
       "kind": "music",
-      "loop": true
+      "loop": true,
+      "group": "theme-brightwood",
+      "layer": "combat"
+    },
+    {
+      "key": "theme-ridge",
+      "url": "assets/audio/theme-ridge.ogg",
+      "fallbackUrl": "assets/audio/theme-ridge.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-ridge",
+      "layer": "base"
+    },
+    {
+      "key": "theme-ridge:combat",
+      "url": "assets/audio/theme-ridge-combat.ogg",
+      "fallbackUrl": "assets/audio/theme-ridge-combat.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-ridge",
+      "layer": "combat"
+    },
+    {
+      "key": "theme-frost",
+      "url": "assets/audio/theme-frost.ogg",
+      "fallbackUrl": "assets/audio/theme-frost.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-frost",
+      "layer": "base"
+    },
+    {
+      "key": "theme-frost:combat",
+      "url": "assets/audio/theme-frost-combat.ogg",
+      "fallbackUrl": "assets/audio/theme-frost-combat.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-frost",
+      "layer": "combat"
+    },
+    {
+      "key": "theme-sands",
+      "url": "assets/audio/theme-sands.ogg",
+      "fallbackUrl": "assets/audio/theme-sands.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-sands",
+      "layer": "base"
+    },
+    {
+      "key": "theme-sands:combat",
+      "url": "assets/audio/theme-sands-combat.ogg",
+      "fallbackUrl": "assets/audio/theme-sands-combat.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-sands",
+      "layer": "combat"
+    },
+    {
+      "key": "boss-guardian",
+      "url": "assets/audio/boss-guardian.ogg",
+      "fallbackUrl": "assets/audio/boss-guardian.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-guardian",
+      "layer": "base"
+    },
+    {
+      "key": "boss-guardian:phase2",
+      "url": "assets/audio/boss-guardian-phase2.ogg",
+      "fallbackUrl": "assets/audio/boss-guardian-phase2.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-guardian",
+      "layer": "phase2"
+    },
+    {
+      "key": "boss-frost",
+      "url": "assets/audio/boss-frost.ogg",
+      "fallbackUrl": "assets/audio/boss-frost.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-frost",
+      "layer": "base"
+    },
+    {
+      "key": "boss-frost:phase2",
+      "url": "assets/audio/boss-frost-phase2.ogg",
+      "fallbackUrl": "assets/audio/boss-frost-phase2.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-frost",
+      "layer": "phase2"
+    },
+    {
+      "key": "boss-sunwell",
+      "url": "assets/audio/boss-sunwell.ogg",
+      "fallbackUrl": "assets/audio/boss-sunwell.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-sunwell",
+      "layer": "base"
+    },
+    {
+      "key": "boss-sunwell:phase2",
+      "url": "assets/audio/boss-sunwell-phase2.ogg",
+      "fallbackUrl": "assets/audio/boss-sunwell-phase2.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-sunwell",
+      "layer": "phase2"
+    },
+    {
+      "key": "boss-win",
+      "url": "assets/audio/boss-win.ogg",
+      "fallbackUrl": "assets/audio/boss-win.m4a",
+      "kind": "sfx",
+      "loop": false,
+      "duck": 0.25
+    },
+    {
+      "key": "death",
+      "url": "assets/audio/death.ogg",
+      "fallbackUrl": "assets/audio/death.m4a",
+      "kind": "sfx",
+      "loop": false,
+      "duck": 0.2
+    },
+    {
+      "key": "levelup",
+      "url": "assets/audio/levelup.ogg",
+      "fallbackUrl": "assets/audio/levelup.m4a",
+      "kind": "sfx",
+      "loop": false,
+      "duck": 0.55
+    },
+    {
+      "key": "quest",
+      "url": "assets/audio/quest.ogg",
+      "fallbackUrl": "assets/audio/quest.m4a",
+      "kind": "sfx",
+      "loop": false,
+      "duck": 0.6
     },
     {
       "key": "ui-click",
@@ -32,34 +187,72 @@
       "loop": false
     },
     {
+      "key": "panel-open",
+      "url": "assets/audio/panel-open.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "dialogue",
+      "url": "assets/audio/dialogue.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
       "key": "jump",
       "url": "assets/audio/jump.wav",
       "kind": "sfx",
-      "loop": false
+      "loop": false,
+      "variance": 40
     },
     {
       "key": "attack",
       "url": "assets/audio/attack.wav",
       "kind": "sfx",
-      "loop": false
+      "loop": false,
+      "variance": 45
+    },
+    {
+      "key": "attack-heavy",
+      "url": "assets/audio/attack-heavy.wav",
+      "kind": "sfx",
+      "loop": false,
+      "variance": 30
+    },
+    {
+      "key": "attack-sweep",
+      "url": "assets/audio/attack-sweep.wav",
+      "kind": "sfx",
+      "loop": false,
+      "variance": 35
     },
     {
       "key": "hit",
       "url": "assets/audio/hit.wav",
       "kind": "sfx",
-      "loop": false
+      "loop": false,
+      "variance": 60
+    },
+    {
+      "key": "crit-hit",
+      "url": "assets/audio/crit-hit.wav",
+      "kind": "sfx",
+      "loop": false,
+      "variance": 30
     },
     {
       "key": "hurt",
       "url": "assets/audio/hurt.wav",
       "kind": "sfx",
-      "loop": false
+      "loop": false,
+      "variance": 40
     },
     {
       "key": "pickup",
       "url": "assets/audio/pickup.wav",
       "kind": "sfx",
-      "loop": false
+      "loop": false,
+      "variance": 20
     },
     {
       "key": "potion",
@@ -74,32 +267,34 @@
       "loop": false
     },
     {
-      "key": "quest",
-      "url": "assets/audio/quest.wav",
+      "key": "guard",
+      "url": "assets/audio/guard.wav",
       "kind": "sfx",
       "loop": false
     },
     {
-      "key": "levelup",
-      "url": "assets/audio/levelup.wav",
+      "key": "monster-die",
+      "url": "assets/audio/monster-die.wav",
+      "kind": "sfx",
+      "loop": false,
+      "variance": 50
+    },
+    {
+      "key": "telegraph",
+      "url": "assets/audio/telegraph.wav",
+      "kind": "sfx",
+      "loop": false,
+      "variance": 25
+    },
+    {
+      "key": "boss-phase",
+      "url": "assets/audio/boss-phase.wav",
       "kind": "sfx",
       "loop": false
     },
     {
       "key": "portal",
       "url": "assets/audio/portal.wav",
-      "kind": "sfx",
-      "loop": false
-    },
-    {
-      "key": "death",
-      "url": "assets/audio/death.wav",
-      "kind": "sfx",
-      "loop": false
-    },
-    {
-      "key": "boss-win",
-      "url": "assets/audio/boss-win.wav",
       "kind": "sfx",
       "loop": false
     }
