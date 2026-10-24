@@ -281,6 +281,16 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:sand-scorpion",
+      "url": "assets/actors/monsters/sand-scorpion-atlas-v1.png",
+      "columns": 4,
+      "rows": 4,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -1494,6 +1504,41 @@
       "frames": [0, 1],
       "frameMs": [350, 350],
       "loop": true
+    },
+    {
+      "key": "sand-scorpion:idle",
+      "imageKey": "actor:sand-scorpion",
+      "frames": [0, 1],
+      "frameMs": [200, 200],
+      "loop": true
+    },
+    {
+      "key": "sand-scorpion:walk",
+      "imageKey": "actor:sand-scorpion",
+      "frames": [2, 3, 4, 5],
+      "frameMs": [120, 120, 120, 120],
+      "loop": true
+    },
+    {
+      "key": "sand-scorpion:attack",
+      "imageKey": "actor:sand-scorpion",
+      "frames": [6, 7, 8, 9],
+      "frameMs": [200, 200, 200, 200],
+      "loop": false
+    },
+    {
+      "key": "sand-scorpion:hurt",
+      "imageKey": "actor:sand-scorpion",
+      "frames": [10, 11],
+      "frameMs": [100, 100],
+      "loop": false
+    },
+    {
+      "key": "sand-scorpion:dead",
+      "imageKey": "actor:sand-scorpion",
+      "frames": [12, 13, 14, 15],
+      "frameMs": [100, 100, 100, 100],
+      "loop": false
     }
   ],
   "audio": []

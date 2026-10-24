@@ -52,7 +52,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:frost-tide-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden',
+    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden', 'actor:sand-scorpion',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
   ],
   environment: [

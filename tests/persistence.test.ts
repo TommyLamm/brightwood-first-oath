@@ -3,7 +3,8 @@ import type { CloudPort, CloudReady, CloudSaveInput, CloudSaved, SaveData, Stora
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { createPlayer } from '../src/domain/progression/index.js';
-import { createPersistence, localSaveKeyForGame, validateSave } from '../src/persistence/index.js';
+import { getQuestView } from '../src/domain/quests/index.js';
+import { createPersistence, localSaveKeyForGame, SAVE_FORMAT_VERSION, validateSave } from '../src/persistence/index.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -170,6 +171,38 @@ describe('persistence', () => {
     const result = validateSave(existingFormatSave, catalog);
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.value.location).toEqual({ mapId: 'frost-shore', spawnId: 'left' });
+  });
+  it('loads a format-1 save from before q12 existed and derives q12 without rewriting quest state', async () => {
+    const oldSave = makeSave();
+    oldSave.player.level = 30;
+    oldSave.player.ap = 145;
+    oldSave.visitedMaps.push('town');
+    const claimedQuests: SaveData['quests'] = {};
+    for (const questId of ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11'] as const) {
+      const quest = catalog.world.quests[questId]!;
+      const counters: Record<string, number> = {};
+      for (const objective of quest.objectives) {
+        if (objective.type === 'kill' || objective.type === 'reach') counters[objective.targetId] = objective.count;
+      }
+      claimedQuests[questId] = { status: 'claimed', counters };
+    }
+    oldSave.quests = claimedQuests;
+    const storage = new MemoryStorage();
+    const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
+    storage.entries.set(key, JSON.stringify({
+      formatVersion: SAVE_FORMAT_VERSION,
+      data: oldSave,
+      savedAt: new Date(0).toISOString(),
+    }));
+    const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
+
+    const outcome = await persistence.initialize();
+    expect(outcome).toMatchObject({ mode: 'local', status: 'ready' });
+    if (outcome.status === 'ready' && outcome.data) {
+      expect(outcome.data.quests).not.toHaveProperty('q12');
+      expect(getQuestView(outcome.data, 'q12', catalog).status).toBe('available');
+    }
+    persistence.dispose();
   });
   it('retries a lost cloud result with identical data, revision, and request ID', async () => {
     const statuses: SaveStatus[] = [];

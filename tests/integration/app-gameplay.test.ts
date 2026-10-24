@@ -892,56 +892,30 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.saveData.player.coins).toBe(coinsBeforeSale + rulesCatalog.items['frost-fang'].sellPrice);
   });
 
-  it('drops an amber scale from the test-placed sand scorpion, lets the player pick it up, and sell it', () => {
-    const sandMap = worldCatalog.maps['sand-glass-shore'];
+  it('drops and sells an amber scale from a production shore scorpion', () => {
+    const sandMap = catalog.world.maps['sand-glass-shore'];
     if (!sandMap) throw new Error('Expected the Gold Sand Shore map.');
-    const scorpionCatalog = {
-      rules: rulesCatalog,
-      world: {
-        ...worldCatalog,
-        maps: {
-          ...worldCatalog.maps,
-          'sand-glass-shore': {
-            ...sandMap,
-            monsters: [{
-              spawnId: 'sand-glass-shore:sand-scorpion:test',
-              monsterId: 'sand-scorpion',
-              x: 700,
-              y: 600,
-              roamLeft: 650,
-              roamRight: 750,
-            }],
-          },
-        },
-      },
-    };
+    const firstScorpionSpawn = sandMap.monsters.find(({ monsterId }) => monsterId === 'sand-scorpion');
+    if (!firstScorpionSpawn) throw new Error('Expected a production scorpion spawn.');
+    expect(firstScorpionSpawn.spawnId).toBe('sand-glass-shore:sand-scorpion:1');
     const nextEntityId = createNextEntityId('sand-scorpion-loot');
-    const started = startNewGame('旅人', scorpionCatalog, nextEntityId);
+    const started = startNewGame('旅人', catalog, nextEntityId);
     if ('error' in started) throw new Error(started.error);
     let gameplay = started.gameplay;
-    gameplay.saveData.quests.q11 = { status: 'claimed', counters: {} };
+    gameplay.saveData.quests.q11 = { status: 'claimed', counters: { 'frost-tide-warden': 1 } };
     gameplay.saveData.player = { ...gameplay.saveData.player, level: 30 };
     gameplay.pendingTransition = { mapId: 'sand-glass-shore', spawnId: 'left', after: 'travel' };
-    gameplay = completeMapTransition(gameplay, scorpionCatalog, nextEntityId, 1000).gameplay!;
-    const scorpion = gameplay.monsters.find(({ monsterId }) => monsterId === 'sand-scorpion');
-    if (!scorpion) throw new Error('Expected the test-placed sand scorpion.');
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+    const scorpion = gameplay.monsters.find(({ spawnId }) => spawnId === firstScorpionSpawn.spawnId);
+    if (!scorpion) throw new Error('Expected the production sand scorpion.');
+    gameplay.movement.position = { x: firstScorpionSpawn.x - 40, y: firstScorpionSpawn.y };
     gameplay.monsters = gameplay.monsters.map((monster) => monster.id === scorpion.id
-      ? {
-        ...monster,
-        hp: 1,
-        mode: 'idle',
-        movement: {
-          ...monster.movement,
-          position: { x: gameplay.movement.position.x + 40, y: 600 },
-          velocity: { x: 0, y: 0 },
-          mode: 'grounded',
-        },
-      }
+      ? { ...monster, hp: 1, mode: 'idle' }
       : monster);
     let nowMs = 2000;
     gameplay.combat.cooldowns[scorpion.id] = { 'sand-stinger': nowMs + 30_000 };
     const run = (state: typeof gameplay, commands: GameCommand[], at: number) => stepGameplay(state, {
-      catalog: scorpionCatalog,
+      catalog,
       commands,
       input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
       dtSeconds: 1 / 60,
@@ -962,15 +936,15 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'amber-scale')?.quantity).toBe(1);
 
     gameplay.pendingTransition = { mapId: 'town', spawnId: 'center', after: 'travel' };
-    gameplay = completeMapTransition(gameplay, scorpionCatalog, nextEntityId, nowMs + 100).gameplay!;
-    const merchant = scorpionCatalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'merchant')!;
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    const merchant = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'merchant')!;
     gameplay.movement.position = { x: merchant.x, y: merchant.y };
     const scaleIndex = gameplay.saveData.player.bag.findIndex(({ itemId }) => itemId === 'amber-scale');
     const coinsBeforeSale = gameplay.saveData.player.coins;
     gameplay = run(gameplay, [{ seq: 3, type: 'interact', payload: {} }], nowMs += 200);
     gameplay = run(gameplay, [{ seq: 4, type: 'sell', payload: { bagIndex: scaleIndex, quantity: 1 } }], nowMs += 200);
     expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'amber-scale')).toBe(false);
-    expect(gameplay.saveData.player.coins).toBe(coinsBeforeSale + rulesCatalog.items['amber-scale'].sellPrice);
+    expect(gameplay.saveData.player.coins).toBe(coinsBeforeSale + catalog.rules.items['amber-scale'].sellPrice);
   });
 
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {

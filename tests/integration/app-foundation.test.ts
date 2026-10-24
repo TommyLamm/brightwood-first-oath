@@ -9,6 +9,7 @@ import { KeyboardInputState } from '../../src/app/keyboard.js';
 import { applyPanelCommand, escCommandForPanels, isWorldFrozen } from '../../src/app/panels.js';
 import { createInitialAppState, createUiSnapshot, worldIsFrozen } from '../../src/app/state.js';
 import { startNewGame } from '../../src/app/gameplay.js';
+import { animationConformsToUse } from '../../src/render/animation-contract.js';
 
 describe('T14-a app foundation', () => {
   it('composes only the validated rules and world catalogs', () => {
@@ -16,8 +17,9 @@ describe('T14-a app foundation', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(Object.keys(result.value.rules.items)).toHaveLength(28);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(11);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(12);
       expect(result.value.world.maps['sand-glass-shore']).toBeDefined();
+      expect(result.value.world.maps['sand-dune-pass']).toBeDefined();
     }
   });
 
@@ -99,29 +101,41 @@ describe('T14-a app foundation', () => {
     })).toEqual({ command: null, preventDefault: false });
   });
 
-  it('requires all three Gold Sand environment layers', () => {
+  it('requires all Gold Sand biome environment layers', () => {
     const manifest = JSON.parse(readFileSync(
       new URL('../../public/assets/environment/manifest.json', import.meta.url),
       'utf-8',
     )) as { images: { key: string }[]; [key: string]: unknown };
     expect(() => parseAssetManifest(manifest, 'environment')).not.toThrow();
 
-    for (const layer of ['sky', 'far', 'mid']) {
-      const key = 'env:sand:' + layer;
-      const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== key) };
-      expect(() => parseAssetManifest(incomplete, 'environment')).toThrow(key);
+    for (const theme of ['sand', 'sand-dune']) {
+      for (const layer of ['sky', 'far', 'mid']) {
+        const key = 'env:' + theme + ':' + layer;
+        const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== key) };
+        expect(() => parseAssetManifest(incomplete, 'environment')).toThrow(key);
+      }
     }
   });
 
-  it('requires the Gold Sand amber-scale inventory icon', () => {
-    const manifest = JSON.parse(readFileSync(
-      new URL('../../public/assets/interface/manifest.json', import.meta.url),
+  it('accepts the production scorpion four-frame walk and preserves its animation contract', () => {
+    const manifest = parseAssetManifest(JSON.parse(readFileSync(
+      new URL('../../public/assets/actors/manifest.json', import.meta.url),
       'utf-8',
-    )) as { images: { key: string }[]; [key: string]: unknown };
-    expect(() => parseAssetManifest(manifest, 'interface')).not.toThrow();
-
-    const incomplete = { ...manifest, images: manifest.images.filter((image) => image.key !== 'item:amber-scale') };
-    expect(() => parseAssetManifest(incomplete, 'interface')).toThrow('item:amber-scale');
+    )), 'actors');
+    const walk = manifest.animations.find((animation) => animation.key === 'sand-scorpion:walk');
+    if (!walk) throw new Error('Expected the production sand scorpion walk animation.');
+    expect(walk.frames).toEqual([2, 3, 4, 5]);
+    expect(animationConformsToUse('actor:sand-scorpion', walk.key, walk)).toBe(true);
+    expect(animationConformsToUse('actor:snail', walk.key, walk)).toBe(false);
+    expect(animationConformsToUse('actor:sand-scorpion', walk.key, {
+      ...walk, frameMs: [121, 120, 120, 120],
+    })).toBe(false);
+    expect(animationConformsToUse('actor:sand-scorpion', walk.key, {
+      ...walk, loop: false,
+    })).toBe(false);
+    expect(animationConformsToUse('actor:sand-scorpion', walk.key, {
+      ...walk, frames: [2, 3, 4], frameMs: [120, 120, 120],
+    })).toBe(false);
   });
 
   it('rejects a present but incomplete manifest and reports all missing pack manifests', async () => {
