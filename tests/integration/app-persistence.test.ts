@@ -13,9 +13,9 @@ import { createHeroAnchorFixture } from './asset-fixtures.js';
 const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
   actors: [
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
-    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
+    'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:sunwell-oathblade',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion', 'actor:sunwell-beetle',
+    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
   ],
   environment: [
@@ -29,7 +29,7 @@ const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
       'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
       'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell',
-      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell',
+      'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell', 'sunwell-oathblade',
     ].map((id) => `item:${id}`),
     ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),
     'marker:quest', 'marker:portal', 'marker:shop', 'marker:player', 'panel:frame',

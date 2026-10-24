@@ -16,10 +16,11 @@ describe('T14-a app foundation', () => {
     const result = composeContentCatalog();
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(Object.keys(result.value.rules.items)).toHaveLength(29);
-      expect(Object.keys(result.value.world.maps)).toHaveLength(13);
+      expect(Object.keys(result.value.rules.items)).toHaveLength(30);
+      expect(Object.keys(result.value.world.maps)).toHaveLength(14);
       expect(result.value.world.maps['sand-glass-shore']).toBeDefined();
       expect(result.value.world.maps['sand-dune-pass']).toBeDefined();
+      expect(result.value.world.maps['sand-sunwell-altar']).toBeDefined();
     }
   });
 
