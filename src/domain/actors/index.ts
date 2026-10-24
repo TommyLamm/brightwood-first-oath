@@ -307,7 +307,7 @@ export function applyMonsterHit(
 }
 
 function isBossMonster(monsterId: string): boolean {
-  return monsterId === 'guardian' || monsterId === 'frost-tide-warden';
+  return monsterId === 'guardian' || monsterId === 'frost-tide-warden' || monsterId === 'sunwell-sentinel';
 }
 
 function isBoundedCharge(monster: MonsterState, skill: SkillDef): boolean {
@@ -319,6 +319,7 @@ function chooseSkillId(monster: MonsterState): string | null {
   if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
   if (monster.monsterId === 'sunwell-beetle') return 'sunwell-beetle-charge';
   if (monster.monsterId === 'sand-scorpion') return 'sand-stinger';
+  if (monster.monsterId === 'sunwell-sentinel') return 'sunwell-sentinel-slam';
   if (monster.monsterId === 'frost-tide-warden') {
     return monster.pendingSkillId === 'frost-tusk-slam' ? 'low-tide-wave' : 'frost-tusk-slam';
   }

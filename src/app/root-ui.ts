@@ -169,7 +169,11 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
     if (view.screen === 'dead') appendButton(actions, '返回安全地點', () => dispatch({ type: 'respawn', payload: {} }));
     if (view.screen === 'result') {
       appendButton(actions, '再戰首領', () => dispatch({ type: 'retryBoss', payload: {} }));
-      if (view.canReturnTown) appendButton(actions, '回城', () => dispatch({ type: 'returnTown', payload: {} }));
+      if (view.canReturnTown) {
+        const mapId = view.saveData?.location.mapId;
+        const returnLabel = mapId === 'sand-sunwell-altar' ? '返回日井盆地' : mapId === 'frost-tide-cavern' ? '返回雪痕海岸' : '回城';
+        appendButton(actions, returnLabel, () => dispatch({ type: 'returnTown', payload: {} }));
+      }
     }
 
     const status = document.createElement('span');

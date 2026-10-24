@@ -201,6 +201,27 @@ describe('actor domain', () => {
     });
   });
 
+  it('gives the Sunwell Sentinel a safe entry and a readable, knockback-immune slam', () => {
+    const map = worldCatalog.maps['sand-sunwell-altar'];
+    const spawn = map.monsters[0]!;
+    const sentinel = createMonster('sunwell-sentinel-run-1', spawn, map, rulesCatalog);
+    const safeEntry = stepActors([sentinel], player('sunwell-entry-player', 160), map, rulesCatalog, DT, 1000);
+    expect(safeEntry.attackRequests).toEqual([]);
+
+    const target = player('sunwell-boss-target', 1030);
+    const first = stepActors([sentinel], target, map, rulesCatalog, DT, 1000);
+    expect(first.attackRequests).toEqual([{ sourceId: sentinel.id, skillId: 'sunwell-sentinel-slam' }]);
+    expect(first.telegraphs[0]).toMatchObject({
+      rect: { x: spawn.x, y: 480, width: 190, height: 120 },
+      resolveAtMs: 1900,
+    });
+
+    const immune = applyMonsterHit([sentinel], hit(sentinel.id, 1), 400)[0]!;
+    expect(immune.movement.velocity).toEqual({ x: 0, y: 0 });
+    expect(createMonster('sunwell-sentinel-retry', spawn, map, rulesCatalog)).toMatchObject({
+      hp: rulesCatalog.monsters['sunwell-sentinel'].maxHp, mode: 'idle', pendingSkillId: null, deathReported: false,
+    });
+  });
   it('makes the guardian retaliate against a player hitting it from outside its roam bounds', () => {
     const map = worldCatalog.maps['guardian-arena'];
     const spawn = map.monsters[0]!;

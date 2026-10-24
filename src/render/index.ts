@@ -925,7 +925,7 @@ export function createWorldRenderer(
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
-      const isNamedBoss = monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden';
+      const isNamedBoss = monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel';
       const attack = attackStartedAt(snapshot, monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
@@ -1015,7 +1015,7 @@ export function createWorldRenderer(
     }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
-      const bossTelegraph = source?.monsterId === 'guardian' || source?.monsterId === 'frost-tide-warden';
+      const bossTelegraph = source?.monsterId === 'guardian' || source?.monsterId === 'frost-tide-warden' || source?.monsterId === 'sunwell-sentinel';
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
       const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;

@@ -913,17 +913,24 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       if (view.screen === 'result') {
         const frostResult = view.saveData?.location.mapId === 'frost-tide-cavern';
-        const card = makeScreenCard(document,
-          frostResult ? '冰潮守望獸已被擊敗！' : '古礦守衛已被擊敗！',
-          frostResult
-            ? '守望獸已沉入冰潮深處。返回雪痕海岸向雪芽回報，並可再次進入洞窟挑戰。'
-            : '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。');
-        card.append(makeButton(document, frostResult ? '返回雪痕海岸' : '返回城鎮', 'return-town', {
+        const sunwellResult = view.saveData?.location.mapId === 'sand-sunwell-altar';
+        const title = frostResult ? '冰潮守望獸已被擊敗！'
+          : sunwellResult ? '日井守衛已被擊敗！'
+            : '古礦守衛已被擊敗！';
+        const body = frostResult
+          ? '守望獸已沉入冰潮深處。返回雪痕海岸向雪芽回報，並可再次進入洞窟挑戰。'
+          : sunwellResult
+            ? '日井祭壇暫時歸於平靜。返回日井盆地後沿西路回琉砂手動領取日井誓刃與金幣，祭壇仍可再次挑戰。'
+            : '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。';
+        const returnLabel = frostResult ? '返回雪痕海岸' : sunwellResult ? '返回日井盆地' : '返回城鎮';
+        const retryLabel = frostResult ? '再次挑戰守望獸' : sunwellResult ? '再次挑戰日井守衛' : '再次挑戰守衛';
+        const card = makeScreenCard(document, title, body);
+        card.append(makeButton(document, returnLabel, 'return-town', {
           className: 'ms-button ms-button--primary',
           disabled: !view.canReturnTown,
-          title: view.canReturnTown ? (frostResult ? '返回雪痕海岸' : '返回木葉鎮') : '首領戰尚未結束，暫時不能返回。',
+          title: view.canReturnTown ? returnLabel : '首領戰尚未結束，暫時不能返回。',
         }));
-        card.append(makeButton(document, frostResult ? '再次挑戰守望獸' : '再次挑戰守衛', 'retry-boss', { className: 'ms-button ms-button--secondary' }));
+        card.append(makeButton(document, retryLabel, 'retry-boss', { className: 'ms-button ms-button--secondary' }));
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);

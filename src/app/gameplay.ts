@@ -631,8 +631,11 @@ function processCommand(
     }
     case 'returnTown': {
       const currentMapId = gameplay.saveData.location.mapId;
-      if ((currentMapId === 'guardian-arena' || currentMapId === 'frost-tide-cavern') && !gameplay.bossResult) {
+      if ((currentMapId === 'guardian-arena' || currentMapId === 'frost-tide-cavern' || currentMapId === 'sand-sunwell-altar') && !gameplay.bossResult) {
         return withToast(gameplay, '首領戰尚未結束，暫時不能返回安全地點。');
+      }
+      if (currentMapId === 'sand-sunwell-altar' && gameplay.bossResult) {
+        return requestTransition(gameplay, 'sand-sunwell-basin', 'right', 'travel', catalog);
       }
       if (currentMapId === 'frost-tide-cavern' && gameplay.bossResult) {
         return requestTransition(gameplay, 'frost-shore', 'left', 'travel', catalog);
@@ -932,7 +935,7 @@ function applyDeathEvent(
     }
   }
 
-  if (monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden') {
+  if (monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel') {
     const orderedDrops = [...drops].sort((a, b) => {
       const priority = (entry: typeof drops[number]) =>
         entry.itemId === null ? 0 : catalog.rules.items[entry.itemId]?.kind === 'quest' ? 1 : 2;
@@ -964,6 +967,8 @@ function applyDeathEvent(
     gameplay.bossResult = true;
     if (monster.monsterId === 'frost-tide-warden') {
       gameplay.toast = '冰潮守望獸已倒下，可返回雪痕海岸向雪芽回報。';
+    } else if (monster.monsterId === 'sunwell-sentinel') {
+      gameplay.toast = '日井守衛已倒下，可返回日井盆地並回琉砂完成誓約。';
     } else if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
       gameplay.toast = '背包空間不足，請先整理背包並拾取守衛核心。';
     } else if (remainingDrops.some(({ itemId }) => itemId !== null)) {
@@ -1036,7 +1041,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense, critChance: 0 },
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
-        knockbackImmune: monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden',
+        knockbackImmune: monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel',
         skillRanks: monster.pendingSkillId ? { [monster.pendingSkillId]: 1 } : {},
       };
     }),
