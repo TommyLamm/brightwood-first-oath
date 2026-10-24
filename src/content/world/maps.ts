@@ -196,9 +196,36 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'sand-glass-shore:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'sand-glass-shore:east', x: 1820, y: 600, targetMapId: 'sand-dune-pass', targetSpawnId: 'left', requiredQuestId: 'q12', minLevel: 30 },
+    ],
+    npcs: [{ npcId: 'sands-guide', x: 250, y: 600 }],
+    monsters: [
+      { monsterId: 'sand-scorpion', x: 520, roamLeft: 440, roamRight: 600 },
+      { monsterId: 'sand-scorpion', x: 1020, roamLeft: 930, roamRight: 1110 },
+      { monsterId: 'sand-scorpion', x: 1510, roamLeft: 1420, roamRight: 1600 },
+    ],
+  },
+  {
+    id: 'sand-dune-pass', name: '砂丘關道', width: 2600, themeKey: 'sand-dune', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[300, 520, 610, 520], [760, 455, 1080, 455], [1220, 500, 1510, 500], [1660, 420, 2010, 420], [2130, 490, 2400, 490]],
+    ladders: [
+      { x: 440, topY: 520, bottomY: 600 },
+      { x: 900, topY: 455, bottomY: 600 },
+      { x: 1360, topY: 500, bottomY: 600 },
+      { x: 1820, topY: 420, bottomY: 600 },
+      { x: 2260, topY: 490, bottomY: 600 },
+    ],
+    extraSpawns: [],
+    portals: [
+      { id: 'sand-dune-pass:west', x: 100, y: 600, targetMapId: 'sand-glass-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
     ],
     npcs: [],
-    monsters: [],
+    monsters: [
+      { monsterId: 'sand-scorpion', x: 560, roamLeft: 450, roamRight: 670 },
+      { monsterId: 'sand-scorpion', x: 1050, roamLeft: 940, roamRight: 1160 },
+      { monsterId: 'sand-scorpion', x: 1660, roamLeft: 1550, roamRight: 1770 },
+      { monsterId: 'sand-scorpion', x: 2200, roamLeft: 2080, roamRight: 2320 },
+    ],
   },
 ];
 

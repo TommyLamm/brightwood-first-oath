@@ -130,4 +130,17 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '冰潮洞窟深處的守望獸仍在守著航道。擊敗牠後回雪痕海岸找雪芽回報；她會為群島的旅人準備一份實用謝禮。',
     completeText: '冰潮守望獸已被擊敗，霜雪群島的航道也恢復平靜。請回雪痕海岸找雪芽完成最後回報，領取冰潮長鋒與金幣。',
   },
+  q12: {
+    id: 'q12', name: '琥珀鱗片的路標', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q11'], minLevel: 1,
+    objectives: [
+      { type: 'kill', targetId: 'sand-scorpion', count: 3 },
+      { type: 'collect', targetId: 'amber-scale', count: 3 },
+    ],
+    consumeItems: [{ itemId: 'amber-scale', quantity: 3 }],
+    reward: { exp: 1800, coins: 1400, items: [] },
+    summary: '替琉砂擊退琥珀砂岸的沙蠍並交付三枚琥珀鱗片，開通砂丘關道。',
+    acceptText: '琥珀砂岸的沙蠍會留下琥珀鱗片；請在接取後擊退三隻，並帶回三枚鱗片。完成後回琥珀砂岸找琉砂交付，安全的砂丘關道便會開放。',
+    progressText: '任務期間仍需擊退三隻沙蠍並持有三枚琥珀鱗片。琥珀砂岸的沙蠍會持續出沒，若曾售出鱗片可再收集，備齊後回琥珀砂岸找琉砂。',
+    completeText: '三隻沙蠍已擊退，三枚琥珀鱗片也已交給琉砂。琥珀砂岸通往砂丘關道的路線已解封，請回琥珀砂岸入口查看傳點，再沿高低交錯的風切沙脊探索。',
+  },
 };

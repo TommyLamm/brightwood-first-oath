@@ -1,19 +1,19 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
 
-const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore'];
-const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide'];
-const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11'];
+const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'sand-dune-pass'];
+const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide'];
+const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12'];
 const expectedNpcPlacements: Record<Id, Id> = {
-  guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore',
+  guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore', 'sands-guide': 'sand-glass-shore',
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
-  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand',
+  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand', 'sand-dune-pass': 'sand-dune',
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss', 'sand-glass-shore': 'theme-field',
+  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss', 'sand-glass-shore': 'theme-field', 'sand-dune-pass': 'theme-field',
 };
 
 function failure(message: string): Result<WorldCatalog> {
@@ -124,11 +124,11 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
     if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden') normalMonsterIds.add(monster.monsterId);
   }
-  if (normalMonsterIds.size !== 8 || !world.maps['guardian-arena']?.boss
+  if (normalMonsterIds.size !== 9 || !world.maps['guardian-arena']?.boss
     || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian'
     || !world.maps['frost-tide-cavern']?.boss
     || world.maps['frost-tide-cavern'].monsters.filter(({ monsterId }) => monsterId === 'frost-tide-warden').length !== 1) {
-    return failure('World must use eight ordinary monsters and one boss in each arena');
+    return failure('World must use nine ordinary monsters and one boss in each arena');
   }
 
   for (const [npcId, npc] of Object.entries(world.npcs)) {

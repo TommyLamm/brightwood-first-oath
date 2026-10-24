@@ -7,4 +7,5 @@ export const npcs: Record<Id, NpcDef> = {
   healer: { id: 'healer', name: '晨露', role: 'healer', dialogueId: 'healer-intro', actorKey: 'actor:healer' },
   keeper: { id: 'keeper', name: '礦道守望者', role: 'keeper', dialogueId: 'keeper-intro', actorKey: 'actor:keeper' },
   'frost-guide': { id: 'frost-guide', name: '雪芽', role: 'scout', dialogueId: 'frost-guide-intro', actorKey: 'actor:frost-guide' },
+  'sands-guide': { id: 'sands-guide', name: '琉砂', role: 'scout', dialogueId: 'sands-guide-intro', actorKey: 'actor:sands-guide' },
 };
