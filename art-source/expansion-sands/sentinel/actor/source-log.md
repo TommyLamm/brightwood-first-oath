@@ -12,7 +12,7 @@ Intended runtime asset: `public/assets/actors/monsters/sunwell-sentinel-atlas-v1
 - Preserved source: `sunwell-sentinel-identity-raw-v1.png` (1297×1213 RGBA), SHA-256 `B0AF84337881A9150F728D839C34EBCEF885C8A1B4B9F6F3209485C9F5BD2D45`.
 - Review files: `sunwell-sentinel-identity-preview-96px-sky-v1.png` and `sunwell-sentinel-identity-preview-192px-sky-v1.png`.
 - Exact prompt: `sunwell-sentinel-identity-prompt-v1.md`.
-- Final runtime atlas: pending assembly with all 16 poses.
+- Final runtime atlas: `public/assets/actors/monsters/sunwell-sentinel-atlas-v1.png` (384×384 RGBA), SHA-256 `2D38D260642684BA90D73A58FB8A1752A4664923285605715714C1C4111C6737`.
 
 ### Exact prompt text
 
@@ -34,3 +34,9 @@ Avoid: aura, halo, glow, bloom, light spill, rimlight, cast shadow, floor, groun
 - Hurt v1: 2026-10-24; built-in ImageGen with accepted identity reference and transparent background. Prompt/source/hash/provenance in sunwell-sentinel-hurt-prompt-v1.md and sunwell-sentinel-hurt-source-v1.md; both frames use a shared scale in export_hurt_previews_v1.py.
 
 - Dead v1: 2026-10-24; built-in ImageGen with accepted identity reference and transparent background; accepted one bounded retry. Prompt/source/hash/provenance in sunwell-sentinel-dead-prompt-v1.md and sunwell-sentinel-dead-source-v1.md; all frames use shared scale in export_dead_previews_v1.py.
+
+## Final atlas v1
+
+- Row-major atlas and exact per-cell transforms: `sunwell-sentinel-atlas-source-v1.md`; reproducible mechanical exporter: `export_sunwell_sentinel_atlas_v1.py`.
+- 96px overview is the runtime atlas; 192px game-display review boards: `sunwell-sentinel-atlas-preview-192px-v1.png` and `sunwell-sentinel-atlas-preview-192px-sky-v1.png`.
+- The atlas uses actor cells 0–15 according to the locked idle/walk/attack/hurt/dead frame timing contract. Collision and pivot remain integration metadata, not encoded in the pixels.

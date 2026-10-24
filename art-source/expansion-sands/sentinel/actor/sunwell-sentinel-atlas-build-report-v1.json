@@ -1,0 +1,1018 @@
+{
+  "runtime_asset": "public/assets/actors/monsters/sunwell-sentinel-atlas-v1.png",
+  "runtime_sha256": "2D38D260642684BA90D73A58FB8A1752A4664923285605715714C1C4111C6737",
+  "atlas_size": [
+    384,
+    384
+  ],
+  "mode": "RGBA",
+  "alpha_extrema": [
+    0,
+    255
+  ],
+  "cell_size": [
+    96,
+    96
+  ],
+  "display_size": [
+    192,
+    192
+  ],
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "baseline_y": 94,
+  "logic_collision": [
+    72,
+    84
+  ],
+  "target_core_height_px": 9,
+  "group_core_source_heights": {
+    "idle": [
+      88,
+      88
+    ],
+    "walk": [
+      65,
+      67,
+      66
+    ],
+    "attack": [
+      60,
+      60,
+      57,
+      60
+    ],
+    "hurt": [
+      82,
+      90
+    ],
+    "dead": [
+      61,
+      57,
+      55,
+      11
+    ]
+  },
+  "group_scales": {
+    "idle": 0.10227272727272728,
+    "walk": 0.13636363636363635,
+    "attack": 0.15,
+    "hurt": 0.10465116279069768,
+    "dead": 0.16071428571428573
+  },
+  "animation_contract": {
+    "idle": {
+      "frames": [
+        0,
+        1
+      ],
+      "frame_ms": 200,
+      "loop": true
+    },
+    "walk": {
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frame_ms": 120,
+      "loop": true
+    },
+    "attack": {
+      "frames": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "loop": false,
+      "warn_ms": 900,
+      "active_ms": 100,
+      "recovery_ms": 850
+    },
+    "hurt": {
+      "frames": [
+        10,
+        11
+      ],
+      "frame_ms": 100,
+      "loop": false
+    },
+    "dead": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_ms": 100,
+      "loop": false
+    }
+  },
+  "previews": {
+    "96px": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-atlas-preview-96px-v1.png",
+    "192px": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-atlas-preview-192px-v1.png",
+    "192px_sunwell_sky": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-atlas-preview-192px-sky-v1.png"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "frame": "idle 0",
+      "state": "idle",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-idle-pose-0-crop-v1.png",
+      "source_sha256": "5160FA2DF521BEE74F8AC593B882FA70783E0D65FB8B5F86A504E2D209D5D0A6",
+      "source_size": [
+        795,
+        789
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        771,
+        779
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        795,
+        789
+      ],
+      "mechanical_crop_size": [
+        795,
+        789
+      ],
+      "uniform_nearest_scale": 0.10227272727272728,
+      "core_source_bounds": [
+        443,
+        257,
+        521,
+        345
+      ],
+      "core_bounds_in_cell": [
+        52,
+        40,
+        60,
+        49
+      ],
+      "hard_bounds_in_cell": [
+        9,
+        16,
+        86,
+        94
+      ],
+      "hard_size_in_cell": [
+        77,
+        78
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 1,
+      "frame": "idle 1",
+      "state": "idle",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-idle-pose-1-crop-v1.png",
+      "source_sha256": "32F30B00C85ACC0EF82B0E8E4EB1BD137074D7AE978EAFFFFAEF6E682D00CF21",
+      "source_size": [
+        801,
+        792
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        777,
+        782
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        801,
+        792
+      ],
+      "mechanical_crop_size": [
+        801,
+        792
+      ],
+      "uniform_nearest_scale": 0.10227272727272728,
+      "core_source_bounds": [
+        445,
+        251,
+        523,
+        339
+      ],
+      "core_bounds_in_cell": [
+        53,
+        40,
+        60,
+        49
+      ],
+      "hard_bounds_in_cell": [
+        9,
+        16,
+        87,
+        94
+      ],
+      "hard_size_in_cell": [
+        78,
+        78
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 2,
+      "frame": "walk 0 (targeted edit)",
+      "state": "walk",
+      "source": "art-source/expansion-sands/sentinel/walk-fix/sunwell-sentinel-walk-pose-0-edited-raw-v1.png",
+      "source_sha256": "02AB63D4707462F32220490DD949BC365CA2C530FA310C5E90BD6ECDC580E002",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        50,
+        50,
+        1178,
+        1233
+      ],
+      "mechanical_crop_bounds": [
+        26,
+        26,
+        1202,
+        1243
+      ],
+      "mechanical_crop_size": [
+        1176,
+        1217
+      ],
+      "uniform_nearest_scale": 0.06818181818181818,
+      "core_source_bounds": [
+        710,
+        421,
+        826,
+        553
+      ],
+      "core_bounds_in_cell": [
+        55,
+        39,
+        63,
+        48
+      ],
+      "hard_bounds_in_cell": [
+        10,
+        14,
+        86,
+        94
+      ],
+      "hard_size_in_cell": [
+        76,
+        80
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 3,
+      "frame": "walk 1",
+      "state": "walk",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-walk-pose-1-crop-v1.png",
+      "source_sha256": "F3B4E61A22F87D3700DB6156F26B8AC100D608ACFD1D28B7C9957DF6AB502FB1",
+      "source_size": [
+        559,
+        610
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        0,
+        24,
+        559,
+        600
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        559,
+        610
+      ],
+      "mechanical_crop_size": [
+        559,
+        610
+      ],
+      "uniform_nearest_scale": 0.13636363636363635,
+      "core_source_bounds": [
+        328,
+        204,
+        385,
+        269
+      ],
+      "core_bounds_in_cell": [
+        55,
+        40,
+        62,
+        49
+      ],
+      "hard_bounds_in_cell": [
+        10,
+        15,
+        86,
+        94
+      ],
+      "hard_size_in_cell": [
+        76,
+        79
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 4,
+      "frame": "walk 2",
+      "state": "walk",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-walk-pose-2-crop-v1.png",
+      "source_sha256": "E484175F1CCB773B69A141693BEB0FA12E7AA4310ADBEA7EE1AEBF5268FA9367",
+      "source_size": [
+        599,
+        610
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        0,
+        24,
+        599,
+        600
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        599,
+        610
+      ],
+      "mechanical_crop_size": [
+        599,
+        610
+      ],
+      "uniform_nearest_scale": 0.13636363636363635,
+      "core_source_bounds": [
+        350,
+        205,
+        409,
+        272
+      ],
+      "core_bounds_in_cell": [
+        55,
+        40,
+        63,
+        49
+      ],
+      "hard_bounds_in_cell": [
+        7,
+        15,
+        89,
+        94
+      ],
+      "hard_size_in_cell": [
+        82,
+        79
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 5,
+      "frame": "walk 3",
+      "state": "walk",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-walk-pose-3-crop-v1.png",
+      "source_sha256": "79E3E20F3075E4A076DE3E61730BE6C538D6BC7D0E3867E817FD1CDF78FB6AE7",
+      "source_size": [
+        557,
+        610
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        0,
+        24,
+        544,
+        600
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        557,
+        610
+      ],
+      "mechanical_crop_size": [
+        557,
+        610
+      ],
+      "uniform_nearest_scale": 0.13636363636363635,
+      "core_source_bounds": [
+        340,
+        205,
+        397,
+        271
+      ],
+      "core_bounds_in_cell": [
+        57,
+        40,
+        65,
+        49
+      ],
+      "hard_bounds_in_cell": [
+        11,
+        15,
+        85,
+        94
+      ],
+      "hard_size_in_cell": [
+        74,
+        79
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 6,
+      "frame": "attack 6: wind-up low",
+      "state": "attack",
+      "source": "art-source/expansion-sands/sentinel/attack/sunwell-sentinel-attack-06-windup-low-crop-v1.png",
+      "source_sha256": "9781A1B67D30F884D29A5E89609DF9F258E81AB5BC68C1AD252D3A4C6ACDCB4B",
+      "source_size": [
+        577,
+        459
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        8,
+        9,
+        569,
+        459
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        577,
+        459
+      ],
+      "mechanical_crop_size": [
+        577,
+        459
+      ],
+      "uniform_nearest_scale": 0.15,
+      "core_source_bounds": [
+        340,
+        173,
+        394,
+        233
+      ],
+      "core_bounds_in_cell": [
+        55,
+        51,
+        63,
+        60
+      ],
+      "hard_bounds_in_cell": [
+        5,
+        26,
+        90,
+        94
+      ],
+      "hard_size_in_cell": [
+        85,
+        68
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 7,
+      "frame": "attack 7: fists high",
+      "state": "attack",
+      "source": "art-source/expansion-sands/sentinel/attack/sunwell-sentinel-attack-07-fists-high-crop-v1.png",
+      "source_sha256": "566AB7B8886A8E435FA113E76C0E89E104C6F01CC34C9E982E2154184E6C1107",
+      "source_size": [
+        489,
+        582
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        10,
+        9,
+        479,
+        582
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        489,
+        582
+      ],
+      "mechanical_crop_size": [
+        489,
+        582
+      ],
+      "uniform_nearest_scale": 0.15,
+      "core_source_bounds": [
+        261,
+        296,
+        314,
+        356
+      ],
+      "core_bounds_in_cell": [
+        50,
+        51,
+        58,
+        60
+      ],
+      "hard_bounds_in_cell": [
+        12,
+        8,
+        83,
+        94
+      ],
+      "hard_size_in_cell": [
+        71,
+        86
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 8,
+      "frame": "attack 8: low smash",
+      "state": "attack",
+      "source": "art-source/expansion-sands/sentinel/attack/sunwell-sentinel-attack-08-low-smash-crop-v1.png",
+      "source_sha256": "7CA2A23840AC49AF565CBF26478E013CBB93F630813593C0B14882E143E76DBA",
+      "source_size": [
+        609,
+        416
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        8,
+        10,
+        600,
+        406
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        609,
+        416
+      ],
+      "mechanical_crop_size": [
+        609,
+        416
+      ],
+      "uniform_nearest_scale": 0.15,
+      "core_source_bounds": [
+        375,
+        171,
+        425,
+        228
+      ],
+      "core_bounds_in_cell": [
+        58,
+        59,
+        66,
+        67
+      ],
+      "hard_bounds_in_cell": [
+        3,
+        34,
+        92,
+        94
+      ],
+      "hard_size_in_cell": [
+        89,
+        60
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 9,
+      "frame": "attack 9: recover",
+      "state": "attack",
+      "source": "art-source/expansion-sands/sentinel/attack/sunwell-sentinel-attack-09-recover-crop-v1.png",
+      "source_sha256": "E0691B73EDC9A8BCC545CB9885398A2745FDCC30CAE81061C1C7E35C6E741366",
+      "source_size": [
+        575,
+        487
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        8,
+        8,
+        567,
+        477
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        575,
+        487
+      ],
+      "mechanical_crop_size": [
+        575,
+        487
+      ],
+      "uniform_nearest_scale": 0.15,
+      "core_source_bounds": [
+        329,
+        170,
+        382,
+        230
+      ],
+      "core_bounds_in_cell": [
+        54,
+        48,
+        62,
+        56
+      ],
+      "hard_bounds_in_cell": [
+        6,
+        23,
+        90,
+        94
+      ],
+      "hard_size_in_cell": [
+        84,
+        71
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 10,
+      "frame": "hurt 0",
+      "state": "hurt",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-hurt-pose-0-crop-v1.png",
+      "source_sha256": "4B8136D62652685AA04AC5264E855442DF2F69C0223C8EFC5381CE53414F5015",
+      "source_size": [
+        766,
+        828
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        742,
+        818
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        766,
+        828
+      ],
+      "mechanical_crop_size": [
+        766,
+        828
+      ],
+      "uniform_nearest_scale": 0.10465116279069768,
+      "core_source_bounds": [
+        376,
+        226,
+        455,
+        308
+      ],
+      "core_bounds_in_cell": [
+        47,
+        32,
+        56,
+        40
+      ],
+      "hard_bounds_in_cell": [
+        11,
+        11,
+        85,
+        94
+      ],
+      "hard_size_in_cell": [
+        74,
+        83
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 11,
+      "frame": "hurt 1",
+      "state": "hurt",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-hurt-pose-1-crop-v1.png",
+      "source_sha256": "2DCCDEAB7C77D1F0629B470CBA96501F62017C8487D48442C6B30616D524D481",
+      "source_size": [
+        706,
+        759
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        682,
+        749
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        706,
+        759
+      ],
+      "mechanical_crop_size": [
+        706,
+        759
+      ],
+      "uniform_nearest_scale": 0.10465116279069768,
+      "core_source_bounds": [
+        400,
+        262,
+        477,
+        352
+      ],
+      "core_bounds_in_cell": [
+        53,
+        43,
+        61,
+        53
+      ],
+      "hard_bounds_in_cell": [
+        14,
+        18,
+        82,
+        94
+      ],
+      "hard_size_in_cell": [
+        68,
+        76
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 12,
+      "frame": "dead 0: fall",
+      "state": "dead",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-dead-pose-0-crop-v1.png",
+      "source_sha256": "1C4C5993801DDC5BE959C36E83F7AAFBE743DF4699769972FA80E0351E6052B0",
+      "source_size": [
+        574,
+        562
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        550,
+        552
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        574,
+        562
+      ],
+      "mechanical_crop_size": [
+        574,
+        562
+      ],
+      "uniform_nearest_scale": 0.16071428571428573,
+      "core_source_bounds": [
+        314,
+        196,
+        368,
+        257
+      ],
+      "core_bounds_in_cell": [
+        52,
+        38,
+        61,
+        47
+      ],
+      "hard_bounds_in_cell": [
+        6,
+        10,
+        90,
+        94
+      ],
+      "hard_size_in_cell": [
+        84,
+        84
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 13,
+      "frame": "dead 1: kneel",
+      "state": "dead",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-dead-pose-1-crop-v1.png",
+      "source_sha256": "DB27AE504AAE67C50BB468F40E97C3F07ACD7227EAB1EEAF9E021F1632CB3C6D",
+      "source_size": [
+        558,
+        471
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        24,
+        24,
+        558,
+        461
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        558,
+        471
+      ],
+      "mechanical_crop_size": [
+        558,
+        471
+      ],
+      "uniform_nearest_scale": 0.16071428571428573,
+      "core_source_bounds": [
+        292,
+        197,
+        346,
+        254
+      ],
+      "core_bounds_in_cell": [
+        48,
+        52,
+        57,
+        61
+      ],
+      "hard_bounds_in_cell": [
+        5,
+        24,
+        91,
+        94
+      ],
+      "hard_size_in_cell": [
+        86,
+        70
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 14,
+      "frame": "dead 2: collapse",
+      "state": "dead",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-dead-pose-2-crop-v1.png",
+      "source_sha256": "52A4F5D46CA6BA188EE156918002833B607630A3F0C9D4AD5E8EEF2B8ACC26B6",
+      "source_size": [
+        549,
+        353
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        0,
+        24,
+        549,
+        343
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        549,
+        353
+      ],
+      "mechanical_crop_size": [
+        549,
+        353
+      ],
+      "uniform_nearest_scale": 0.16071428571428573,
+      "core_source_bounds": [
+        299,
+        197,
+        353,
+        252
+      ],
+      "core_bounds_in_cell": [
+        52,
+        71,
+        61,
+        79
+      ],
+      "hard_bounds_in_cell": [
+        4,
+        43,
+        92,
+        94
+      ],
+      "hard_size_in_cell": [
+        88,
+        51
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    },
+    {
+      "index": 15,
+      "frame": "dead 3: prone",
+      "state": "dead",
+      "source": "art-source/expansion-sands/sentinel/actor/sunwell-sentinel-dead-pose-3-crop-v1.png",
+      "source_sha256": "AF0AA66435D51E70601838AD76E8FA56F19495F3DD3624D53D081166E61E5473",
+      "source_size": [
+        558,
+        265
+      ],
+      "hard_alpha_threshold": 32,
+      "source_hard_bounds": [
+        0,
+        24,
+        534,
+        255
+      ],
+      "mechanical_crop_bounds": [
+        0,
+        0,
+        558,
+        265
+      ],
+      "mechanical_crop_size": [
+        558,
+        265
+      ],
+      "uniform_nearest_scale": 0.16071428571428573,
+      "core_source_bounds": [
+        300,
+        188,
+        314,
+        199
+      ],
+      "core_bounds_in_cell": [
+        53,
+        83,
+        55,
+        85
+      ],
+      "hard_bounds_in_cell": [
+        5,
+        57,
+        91,
+        94
+      ],
+      "hard_size_in_cell": [
+        86,
+        37
+      ],
+      "baseline_y": 94,
+      "cell_size": [
+        96,
+        96
+      ]
+    }
+  ]
+}
