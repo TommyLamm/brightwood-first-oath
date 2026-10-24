@@ -84,9 +84,9 @@
 - 尚未做集中瀏覽器、build、pack/validate 或全路線遊玩。下一步依協調安排做一次集中驗收，使用隔離 profile/fixture，清楚標註起點，不稱為從頭通關。
 - 本包開始前已完整重讀模板與七份規格（game-development、command-contracts、game.schema、game-release、starter playroom-sdk.js、sdk-versioning、save-compatibility），香港時間約 2026-10-24 07:23。適用要求為相對資產 URL、iframe 子目錄相容及存檔 format 1 不遷移；沒有發布／push/tag/Release 授權。
 - Stage D 開始前於香港時間約 2026-10-24 07:30 再次完整讀取本地 AGENTS.md、線上模板及七份規格；對本輪適用的是保持相對資產路徑／子目錄 iframe 兼容及 format 1 存檔，完成真實 build 與固定工具 pack/validate；不建立 tag／Release、不發布。
-- Heartbeat 06-55-2 已於香港時間 2026-10-24 06:55 執行並刪除；非待執行排程。當時使用量 1%，ordinary usage allowed；goal 可能仍顯示 usageLimited，需使用者 /goal resume，現有工具無法代為恢復。
+- Historical heartbeat note: heartbeat 06-55-2 was deleted; the coordinator later confirmed the goal is active and ordinary usage is allowed. No user resume action is needed.
 
-## 2026-10-24 黃金沙海 Stage A current (IN_PROGRESS)
+## 2026-10-24 黃金沙海 Stage A initial snapshot (historical; superseded below)
 
 - 新區域已由 planned 黃金沙海轉為真實 MapDef。第一張「琥珀砂岸」sand-glass-shore 加入 mapOrder、world validator 與 sand environment theme；Frost Shore 東門要求 q11 claimed 且 Lv30，沙岸西門可無鎖返回 Frost Shore。SaveData format 1、q01–q11 與 Guardian flags/任務契約未改。
 - Regional atlas 現有獨立 sand scope、全域黃金沙海入口點、Frost↔Sand 真實 portal 連線及 q11 鎖定狀態；只有 catalog 真正存在的 maps 才繪出區域節點。當前沙海僅有 1 張可玩探索圖，沒有怪物、NPC、沙海任務或首領；其餘兩個圖位是座標資料、UI 不會假繪成可玩節點。
@@ -103,7 +103,7 @@
 - 3b541f3 新增 test-only sand-scorpion spawn 的完整遊戲流程：攻擊、擊殺、保證琥珀甲片掉落、拾取、回鎮出售；`npx.cmd vitest run tests/integration/app-gameplay.test.ts --exclude '**/.worktrees/**' -t 'amber scale'`通過1項（23 skipped），`npm.cmd run typecheck` exit 0。production MapDef仍無該怪物，不能視為實際遭遇驗收。
 - 上一進度快照記錄當時沒有可用沙蠍 runtime atlas；以下為使用者 2026-10-24 指定的目前範圍，取代先前擴展到 sunwell-basin、boss 或 q12–q14 的方向。
 
-### Current implementation snapshot (2026-10-24; code only, UNVERIFIED)
+### Historical implementation snapshot (before accepted art/runtime integration; superseded below)
 
 - Commit bb23360 adds three repeatable sand-scorpion spawns on sand-glass-shore, sands-guide and q12 (manual accept; three kills plus three amber-scale consumed at claim), and a q12-gated route to a 2,600px sand-dune-pass with five foothold levels, ladders, four repeatable scorpions and an unrestricted return portal. World catalog validation contracts and the existing Gold Sand atlas assertion were updated. git diff --check passed before commit.
 - No tests, build, pack, browser run or playable acceptance has been performed for this code stage. The scorpion runtime atlas and dune runtime wiring remain pending. Do not report either phase complete yet.
@@ -124,13 +124,24 @@
 
 | Agent | Workspace | Current responsibility |
 | --- | --- | --- |
-| /root | Coordinator | Holds the finite scope, coordinates the two art dependencies; no runtime code ownership. |
-| /root/sand_integration | repository main | Sole current owner of runtime, docs/status, focused checks, accepted asset integration, commits and main integration. Stop after Stage 3 in this plan. |
-| /root/expansion_art | .worktrees/expansion-art | Resumed scorpion art task; source poses are committed, runtime atlas and manifest contract remain pending for Stage 1. |
-| /root/sand_scene_art | isolated worktree | Delivered dune scenery and guide/NPC art in commit 1112506061ccdde51ffe82b509388135038f50c7; far/mid edge cleanup is requested before integration. |
+| /root | Coordinator | Owns the finite scope and final QA coordination. |
+| /root/sand_integration | repository main | Runtime/content implementation and focused checks are committed on main; beta.7 candidate build/package is ready. No browser access while final QA is delegated. |
+| /root/expansion_art | .worktrees/expansion-art | Art delivery complete; accepted source poses and runtime atlas are integrated on main. |
+| /root/sand_scene_art | isolated worktree | Art delivery integrated on main; sole owner of the remaining isolated browser route smoke. |
 
-Earlier agent rows and worktree states below are historical snapshots. In particular, the completed frost interface agent's old instruction not to edit world-map files/tests does not restrict this second-map task. Preserve existing .worktrees/ contents; do not stage .worktrees/.
-
+Earlier agent rows and worktree states below are historical. In particular, the completed frost interface agent's old instruction not to edit world-map files/tests does not restrict this second-map task. Preserve existing .worktrees/ contents; do not stage .worktrees/.
 ## 恢復方式
 
-Read this current scope and the finite plan above, then inspect git status/log and the existing worktrees before continuing. The documentation scope-setting commit is edd3cbd; it contains only plan/status.md and plan/reports/world-expansion-20261024.md. Stage D beta.6 build/pack/validate results apply only through runtime commit 288693e. Current Gold Sand commits still need the single final build, pinned pack/validate and isolated browser smoke described in Stage 3. Vitest commands exclude **/.worktrees/**. No push, tag, Release or platform listing.
+This finite task is in Stage 3. Code, focused checks, beta.7 build and pinned package validation are complete; the remaining browser smoke is assigned solely to /root/sand_scene_art. Read the authoritative provisional evidence section below. After the browser result is recorded in a final docs commit, stop at the user’s requested endpoint; do not start a third map, boss, new region, or follow-on work. No push, tag, Release, listing, or goal-resume action is needed.
+
+## 2026-10-24 黃金沙海三階段進度（暫記；browser QA pending）
+
+範圍固定為 production sand-glass-shore 沙蠍遭遇、sand-dune-pass 第二地圖與 q12 手動解鎖，Stage 3 完成後停止；不新增第三地圖、boss、新區域或後續功能。
+
+- Stage 1 code/assets 已整合：sand-glass-shore 使用正式 sand-scorpion production spawn、真實 atlas 與 amber-scale 掉落；stinger warning、低尾刺可跳躍閃避、死亡/拾取與既有商店出售機制沿用。相關 commits：9c2cfa5、1222369、cf79fc1、2a300f7、f46dcb6。
+- Stage 2 code/assets 已整合：sand-dune-pass 五層平台／梯子探索路線與自由回程；手動 q12 需三次擊殺及交付三片 amber-scale 才可 claim 並開門。dune scenery、sands-guide 與 scorpion runtime assets 均在 main。相關 commits：bb23360、4fdcd14、c6fd2d8、fe7ec30。
+- Focused checks passed at runtime commit f46dcb6: npm.cmd run typecheck; npm.cmd run check:content; npm exec -- vitest run --exclude '**/.worktrees/**' tests/integration/app-foundation.test.ts tests/integration/app-gameplay.test.ts tests/persistence.test.ts tests/world-map.test.ts (4 files, 56 tests); git diff --check. The focused persistence coverage accepts a format-1 save with q12 absent. Separate app-audio/app-persistence fixture attempts failed because their pre-existing mock asset manifests omit newer Frost Tide/Amber keys; those failures are not claimed as passing or attributed to runtime code.
+- Candidate metadata commit 9cf9b3d aligns package.json, package-lock.json and public/game.json at 1.0.0-beta.7; no tag was created.
+- Final candidate checks passed: npm.cmd run build (Vite 8.3.4, 63 modules); node tools/playroom/pack.mjs dist artifacts/game.zip; node tools/playroom/validate.mjs artifacts/game.zip. Official pinned Playroom tools 1.1.0 reported valid. ZIP is 52,258,660 bytes, 171 entries, 55,118,120 uncompressed bytes; SHA-256 93612A00CA3CE260A5DD6BAC8F1E223F1B32B8DBDFD88263E75365B27D83D280, under 64 MiB.
+- Browser smoke used an isolated disposable format-1 Lv30/q11-claimed save with q12 absent at start; it was not a from-scratch run or user save. q12 was manually accepted, two production sand-scorpions were killed and two guaranteed amber scales picked up. The player died on the third attempt; q12 stayed at 2/3 and normal Return to Town recovery restored full HP/MP while retaining quest progress. One screenshot from the first death is at C:/Users/Tommy/AppData/Local/Temp/brightwood-sand-smoke/.playwright-cli/page-2026-10-24T02-27-58-671Z.png. A location-only fixture change to frost-shore/left preserved all other save fields; the actual q11 portal and linked Frost portals were used. Town-to-Frost travel, q12 manual claim, sand-dune-pass traversal, free return and the final current browser result remain pending the sole browser owner, /root/sand_scene_art. No full-route pass is claimed here.
+- At this snapshot main is 9cf9b3d. Git status showed only .worktrees/ untracked; it was not staged. No publish, push, tag, Release, or platform API action occurred. See the final QA update below when appended.
