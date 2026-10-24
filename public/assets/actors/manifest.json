@@ -271,6 +271,16 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:sands-guide",
+      "url": "assets/actors/npcs/sands-guide-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -1476,6 +1486,13 @@
         350,
         350
       ],
+      "loop": true
+    },
+    {
+      "key": "npc:sands-guide:idle",
+      "imageKey": "actor:sands-guide",
+      "frames": [0, 1],
+      "frameMs": [350, 350],
       "loop": true
     }
   ],

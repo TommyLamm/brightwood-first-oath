@@ -321,6 +321,36 @@
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:sky",
+      "url": "assets/environment/env-sand-dune-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:far",
+      "url": "assets/environment/env-sand-dune-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:mid",
+      "url": "assets/environment/env-sand-dune-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
     }
   ],
   "animations": [],

@@ -16,10 +16,10 @@ const imageKeys: Record<Exclude<AssetPack, 'audio'>, string[]> = {
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
     'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab',
-    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide',
+    'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
   ],
   environment: [
-    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave'] as const).flatMap((theme) =>
+    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune'] as const).flatMap((theme) =>
       (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
     'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
