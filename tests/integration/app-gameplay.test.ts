@@ -1097,6 +1097,7 @@ describe('app gameplay vertical slice', () => {
     const beetleSpawns = pass?.monsters.filter(({ monsterId }) => monsterId === 'sunwell-beetle') ?? [];
     if (!pass || !basinGate) throw new Error('Expected the dune pass and locked Sunwell gate.');
     expect(beetleSpawns).toHaveLength(2);
+    expect(Math.min(...pass.monsters.map(({ roamRight }) => basinGate.x - roamRight))).toBeGreaterThan(360);
     expect(beetleSpawns.map(({ spawnId }) => spawnId)).toEqual([
       'sand-dune-pass:sunwell-beetle:1', 'sand-dune-pass:sunwell-beetle:2',
     ]);

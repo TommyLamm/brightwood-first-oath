@@ -225,7 +225,7 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'sand-scorpion', x: 560, roamLeft: 450, roamRight: 670 },
       { monsterId: 'sunwell-beetle', x: 1050, roamLeft: 940, roamRight: 1160 },
       { monsterId: 'sunwell-beetle', x: 1660, roamLeft: 1550, roamRight: 1770 },
-      { monsterId: 'sand-scorpion', x: 2200, roamLeft: 2080, roamRight: 2320 },
+      { monsterId: 'sand-scorpion', x: 2000, roamLeft: 1900, roamRight: 2120 },
     ],
   },
   {
