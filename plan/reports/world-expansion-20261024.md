@@ -89,7 +89,7 @@ Gold Sand commits: art c8997ed, playable map/atlas bf2cc2f, required asset-loade
 
 Commit c498dce adds the sand-scorpion Lv30 rules definition, the ranged telegraphed sand-stinger attack, and a guaranteed saleable amber-scale material drop. The scorpion uses a 190px × 44px locked telegraph with an 850ms warning and does not dash; this gives it a ranged tail-sting role distinct from the Frost crab charge. The scale sells for 42 coins and cannot be bought.
 
-The behavior and rules tests use a synthetic map placement so the new AI can be checked independently of art delivery. The monster is not yet in any real MapDef, and the actor atlas/icon are not in runtime manifests; therefore no live encounter or loot is claimed. Commit c498dce checks passed: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**' (2 files / 17 tests), and git diff --check. Follow-up a65b1d9 adds sand sky/far/mid to required asset keys and fixes foundation catalog counts; typecheck and npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**' (1 file / 10 tests) passed. No build, package validation or browser QA was run.
+The behavior and rules tests use a synthetic map placement so the new AI can be checked independently of art delivery. The monster is not yet in any real MapDef, and the actor atlas/icon are not in runtime manifests; therefore no live encounter or loot is claimed. Commit c498dce checks passed: npm.cmd run typecheck, npm.cmd run check:content, npx.cmd vitest run tests/rules.test.ts tests/actors.test.ts --exclude '**/.worktrees/**' (2 files / 17 tests), and git diff --check. Follow-up a65b1d9 adds sand sky/far/mid to required asset keys and fixes foundation catalog counts; typecheck and npx.cmd vitest run tests/integration/app-foundation.test.ts --exclude '**/.worktrees/**' (1 file / 10 tests) passed. Test commit 32d204a directly verifies the stinger hits a grounded target while a jumping target avoids the low attack band; tests/combat.test.ts passed 11/11, followed by typecheck. No build, package validation or browser QA was run.
 
 ## Next implementation slice
 
@@ -103,10 +103,10 @@ The behavior and rules tests use a synthetic map placement so the new AI can be 
 - /root/expansion_art 的 worktree .worktrees/expansion-art／codex/expansion-art 現正處理 Gold Sand sand-scorpion atlas 與 amber-scale icon；最新已知 HEAD 3e6643a，尚無 Gold Sand 圖像 commit。長鋒 sprite 原 commit 00fa553 已整合為 7838c1d，icon commit 3e6643a 已整合為 7137479；Warden source/runtime 整合為 4b5d3d9／3134390。
 - /root/frost_interface_art 的 worktree .worktrees/frost-region-map／codex/frost-region-map 位於 8301ef5；代理回報 clean。UI commit 3ec2b8d 與 focused test commit 8301ef5（main cherry-pick 後為 9c88e5c）已整合；不要重挑 8301ef5 或改 world-map model/view/style/test。
 - 舊 .worktrees/frost-interface-art／codex/frost-interface-art 位於 2b4bb2a，保留不清理。未追蹤 .worktrees/ 亦保留。
-- 上一份 docs checkpoint 為 e5110db；本 report 更新 Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9，且文件 commit 僅包含 plan/status.md 與本 report。
+- 上一份 docs checkpoint 為 a4bec97；本 report 更新 Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9/32d204a，且文件 commit 僅包含 plan/status.md 與本 report。
 
 ## Tools, heartbeat and resume
 
 PowerShell 的有效方法是 powershell.exe、login=false、窄範圍 require_escalated；普通 sandbox shell 曾卡住，apply_patch 曾卡住，故小文件使用 PowerShell。Vitest 一律使用 --exclude "**/.worktrees/**"，避免隔離工作樹中的測試副本被混入。
 
-Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
+Heartbeat 06-55-2 已於 2026-10-24 香港時間 06:55 執行並刪除，沒有待執行喚醒。用量恢復點曾回報 1%、ordinary usage allowed；goal 狀態仍可能回報 usageLimited，工具無法代為 resume，如中斷請使用者輸入 /goal resume。beta.6 build/pack/validate 只驗至 runtime commit 288693e，Gold Sand commits c8997ed/bf2cc2f/c498dce/a65b1d9/32d204a 尚未重新打包或 browser QA；等沙海內容完成後再做下一候選的一次集中驗證。Frost browser 仍為 PARTIAL；若再測僅補首領結果／重試／回岸／q11 手動領獎。禁止推送、發布、tag 或 Release。
