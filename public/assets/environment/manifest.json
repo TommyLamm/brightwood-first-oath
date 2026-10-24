@@ -351,6 +351,36 @@
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:sky",
+      "url": "assets/environment/env-sunwell-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:far",
+      "url": "assets/environment/env-sunwell-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:mid",
+      "url": "assets/environment/env-sunwell-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
     }
   ],
   "animations": [],
