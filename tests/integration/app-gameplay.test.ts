@@ -3,7 +3,7 @@ import type { GameCommand } from '../../src/contracts/commands.js';
 import { createNextEntityId, createSeededRandom } from '../../src/contracts/helpers.js';
 import { rulesCatalog } from '../../src/content/rules/index.js';
 import { worldCatalog } from '../../src/content/world/index.js';
-import { acceptQuest } from '../../src/domain/quests/index.js';
+import { acceptQuest, getQuestView } from '../../src/domain/quests/index.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -945,6 +945,111 @@ describe('app gameplay vertical slice', () => {
     gameplay = run(gameplay, [{ seq: 4, type: 'sell', payload: { bagIndex: scaleIndex, quantity: 1 } }], nowMs += 200);
     expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'amber-scale')).toBe(false);
     expect(gameplay.saveData.player.coins).toBe(coinsBeforeSale + catalog.rules.items['amber-scale'].sellPrice);
+  });
+
+  it('opens the Sand Dune Pass only after manually claiming the three-scorpion route quest', () => {
+    const nextEntityId = createNextEntityId('q12-sand-route');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    let gameplay = started.gameplay;
+    gameplay.saveData.quests.q11 = { status: 'claimed', counters: { 'frost-tide-warden': 1 } };
+    gameplay.saveData.player = { ...gameplay.saveData.player, level: 30 };
+    gameplay.pendingTransition = { mapId: 'sand-glass-shore', spawnId: 'left', after: 'travel' };
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, 1000).gameplay!;
+
+    const shore = catalog.world.maps['sand-glass-shore'];
+    if (!shore) throw new Error('Expected the Gold Sand Shore map.');
+    const guide = shore.npcs.find(({ npcId }) => npcId === 'sands-guide');
+    const eastPortal = shore.portals.find(({ targetMapId }) => targetMapId === 'sand-dune-pass');
+    const scorpionSpawns = shore.monsters.filter(({ monsterId }) => monsterId === 'sand-scorpion');
+    if (!guide || !eastPortal) throw new Error('Expected the Sands Guide and the route portal.');
+    expect(scorpionSpawns).toHaveLength(3);
+
+    let nowMs = 2000;
+    let seq = 1;
+    const run = (state: typeof gameplay, commands: GameCommand[], at: number) => stepGameplay(state, {
+      catalog,
+      commands,
+      input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 1 / 60,
+      nowMs: at,
+      random: createSeededRandom(46),
+      nextEntityId,
+    }).gameplay!;
+
+    gameplay.movement.position = { x: guide.x, y: guide.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'acceptQuest', payload: { questId: 'q12' } }], nowMs += 100);
+    expect(gameplay.saveData.quests.q12?.status).toBe('active');
+
+    for (const monster of gameplay.monsters) {
+      gameplay.combat.cooldowns[monster.id] = { 'sand-stinger': nowMs + 60_000 };
+    }
+    gameplay.movement.position = { x: eastPortal.x, y: eastPortal.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toBeNull();
+    expect(gameplay.saveData.location.mapId).toBe('sand-glass-shore');
+
+    for (const spawn of scorpionSpawns) {
+      const scorpion = gameplay.monsters.find(({ spawnId }) => spawnId === spawn.spawnId);
+      if (!scorpion) throw new Error('Expected production scorpion spawn ' + spawn.spawnId + '.');
+      const playerX = spawn.x - 40;
+      gameplay.movement.position = { ...gameplay.movement.position, x: playerX, y: 600 };
+      gameplay.monsters = gameplay.monsters.map((monster) => monster.id === scorpion.id
+        ? {
+          ...monster,
+          hp: 1,
+          mode: 'idle',
+          movement: {
+            ...monster.movement,
+            position: { x: playerX + 40, y: 600 },
+            velocity: { x: 0, y: 0 },
+            mode: 'grounded',
+          },
+        }
+        : monster);
+      gameplay.combat.cooldowns[scorpion.id] = { 'sand-stinger': nowMs + 60_000 };
+      for (let tick = 0; tick < 35; tick += 1) {
+        gameplay = run(gameplay, tick === 0 ? [{ seq: seq++, type: 'attack', payload: { skillId: 'basic' } }] : [], nowMs += 1000 / 60);
+      }
+      expect(gameplay.monsters.find(({ id }) => id === scorpion.id)?.mode).toBe('dead');
+
+      const scaleDrop = gameplay.drops.find(({ itemId }) => itemId === 'amber-scale');
+      if (!scaleDrop) throw new Error('Expected the guaranteed Amber Scale drop.');
+      gameplay.movement.position = { ...scaleDrop.position };
+      gameplay = run(gameplay, [{ seq: seq++, type: 'pickup', payload: {} }], nowMs += 200);
+      const scaleCount = gameplay.saveData.player.bag
+        .filter(({ itemId }) => itemId === 'amber-scale')
+        .reduce((sum, stack) => sum + stack.quantity, 0);
+      expect(scaleCount).toBe(gameplay.saveData.quests.q12?.counters['sand-scorpion']);
+    }
+
+    expect(gameplay.saveData.quests.q12?.counters['sand-scorpion']).toBe(3);
+    expect(gameplay.saveData.player.bag.find(({ itemId }) => itemId === 'amber-scale')?.quantity).toBe(3);
+    expect(getQuestView(gameplay.saveData, 'q12', catalog).status).toBe('ready');
+
+    gameplay.movement.position = { x: eastPortal.x, y: eastPortal.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toBeNull();
+    expect(getQuestView(gameplay.saveData, 'q12', catalog).status).toBe('ready');
+
+    gameplay.movement.position = { x: guide.x, y: guide.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'claimQuest', payload: { questId: 'q12' } }], nowMs += 100);
+    expect(gameplay.saveData.quests.q12?.status).toBe('claimed');
+    expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'amber-scale')).toBe(false);
+
+    gameplay.movement.position = { x: eastPortal.x, y: eastPortal.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toMatchObject({ mapId: 'sand-dune-pass', spawnId: 'left', after: 'travel' });
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    expect(gameplay.saveData.location.mapId).toBe('sand-dune-pass');
+
+    const returnPortal = catalog.world.maps['sand-dune-pass']!.portals.find(({ targetMapId }) => targetMapId === 'sand-glass-shore');
+    if (!returnPortal) throw new Error('Expected the free return portal from the pass.');
+    gameplay.movement.position = { x: returnPortal.x, y: returnPortal.y };
+    gameplay = run(gameplay, [{ seq: seq++, type: 'interact', payload: {} }], nowMs += 100);
+    expect(gameplay.pendingTransition).toMatchObject({ mapId: 'sand-glass-shore', spawnId: 'right', after: 'travel' });
+    gameplay = completeMapTransition(gameplay, catalog, nextEntityId, nowMs + 100).gameplay!;
+    expect(gameplay.saveData.location.mapId).toBe('sand-glass-shore');
   });
 
   it('requires merchant interaction to sell and falls back to large potions when small potions run out', () => {
