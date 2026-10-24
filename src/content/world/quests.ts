@@ -152,4 +152,13 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '日井甲蟲仍守在砂丘關道，請擊退兩隻後回琥珀砂岸找琉砂報告。完成後由你親自領取謝禮，才會開放東門。',
     completeText: '兩隻日井甲蟲已被擊退。請回琥珀砂岸找琉砂領取金幣與經驗，通往日井盆地的東門將在領獎後開放。',
   },
+  q14: {
+    id: 'q14', name: '日井守衛的誓約', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q13'], minLevel: 1,
+    objectives: [{ type: 'kill', targetId: 'sunwell-sentinel', count: 1 }], consumeItems: [],
+    reward: { exp: 0, coins: 1800, items: [{ itemId: 'sunwell-oathblade', quantity: 1 }] },
+    summary: '擊敗日井守衛並回琉砂處領取日井誓刃，完成黃金沙海的守望誓約。',
+    acceptText: '日井祭壇的日井守衛仍看守著古井誓約。請擊敗守衛，再回琥珀砂岸找琉砂領取誓刃。',
+    progressText: '日井守衛尚未倒下；請前往日井祭壇擊敗牠一次，再回琥珀砂岸找琉砂報告。',
+    completeText: '日井守衛已在本次誓約中被擊敗。請回琥珀砂岸找琉砂手動領取日井誓刃與一千八百金幣。',
+  },
 };

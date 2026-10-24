@@ -29,6 +29,12 @@ export const items: Record<Id, ItemDef> = {
     // Awarded once by the Frost Isles finale; the merchant cannot sell this reward.
     buyPrice: 0, sellPrice: 800, iconKey: 'item:frost-tide-sword', visualKey: 'equip:frost-tide-sword',
   },
+  'sunwell-oathblade': {
+    id: 'sunwell-oathblade', name: '日井誓刃', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 30, attack: 58, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    // Awarded once for completing q14; the merchant cannot sell this finale reward.
+    buyPrice: 0, sellPrice: 1000, iconKey: 'item:sunwell-oathblade', visualKey: 'equip:sunwell-oathblade',
+  },
   'cloth-shirt': {
     id: 'cloth-shirt', name: '旅行布衣', kind: 'body', slot: 'body', stackLimit: 1,
     minLevel: 1, attack: 0, defense: 2, hpBonus: 0, restoreHp: 0, restoreMp: 0,

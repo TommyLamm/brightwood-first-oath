@@ -241,6 +241,7 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'sand-sunwell-basin:west', x: 100, y: 600, targetMapId: 'sand-dune-pass', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'sand-sunwell-basin:east', x: 2700, y: 600, targetMapId: 'sand-sunwell-altar', targetSpawnId: 'entry', requiredQuestId: 'q13', minLevel: 30 },
     ],
     npcs: [],
     monsters: [
@@ -249,6 +250,17 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'sand-scorpion', x: 1810, roamLeft: 1700, roamRight: 1920 },
       { monsterId: 'sunwell-beetle', x: 2380, roamLeft: 2260, roamRight: 2500 },
     ],
+  },
+  {
+    id: 'sand-sunwell-altar', name: '日井祭壇', width: 1400, themeKey: 'sunwell', musicKey: 'theme-boss', safe: false, boss: true,
+    platforms: [],
+    ladders: [],
+    extraSpawns: [{ id: 'entry', x: 160, y: 600 }],
+    portals: [
+      { id: 'sand-sunwell-altar:west', x: 100, y: 600, targetMapId: 'sand-sunwell-basin', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [{ monsterId: 'sunwell-sentinel', x: 950, roamLeft: 650, roamRight: 1200 }],
   },
 ];
 

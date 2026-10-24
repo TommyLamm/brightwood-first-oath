@@ -79,6 +79,12 @@ export const skills: Record<Id, SkillDef> = {
     reach: 190, height: 120, targets: 1, multiplierBase: 1.3, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'sunwell-sentinel-slam': {
+    id: 'sunwell-sentinel-slam', name: '日井雙拳重擊', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 0, windupMs: 900, activeMs: 100, recoveryMs: 850,
+    reach: 190, height: 120, targets: 1, multiplierBase: 1.3, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
   'low-tide-wave': {
     id: 'low-tide-wave', name: '低潮湧浪', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 1100, activeMs: 100, recoveryMs: 800,

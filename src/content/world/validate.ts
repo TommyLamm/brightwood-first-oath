@@ -1,19 +1,19 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
 
-const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'sand-dune-pass', 'sand-sunwell-basin'];
+const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar'];
 const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide'];
-const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12', 'q13'];
+const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12', 'q13', 'q14'];
 const expectedNpcPlacements: Record<Id, Id> = {
   guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore', 'sands-guide': 'sand-glass-shore',
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
-  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand', 'sand-dune-pass': 'sand-dune', 'sand-sunwell-basin': 'sunwell',
+  'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand', 'sand-dune-pass': 'sand-dune', 'sand-sunwell-basin': 'sunwell', 'sand-sunwell-altar': 'sunwell',
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-field', town: 'theme-town', 'forest-edge': 'theme-field', 'mushroom-wood': 'theme-field',
-  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss', 'sand-glass-shore': 'theme-field', 'sand-dune-pass': 'theme-field', 'sand-sunwell-basin': 'theme-field',
+  'red-ridge': 'theme-field', 'mine-gate': 'theme-field', 'guardian-arena': 'theme-boss', 'frost-shore': 'theme-field', 'frost-pine-pass': 'theme-field', 'frost-tide-cavern': 'theme-boss', 'sand-glass-shore': 'theme-field', 'sand-dune-pass': 'theme-field', 'sand-sunwell-basin': 'theme-field', 'sand-sunwell-altar': 'theme-boss',
 };
 
 function failure(message: string): Result<WorldCatalog> {
@@ -58,7 +58,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     if (map.themeKey !== expectedThemes[mapId] || map.musicKey !== expectedMusic[mapId]) {
       return failure(`Map theme/music key invalid: ${mapId}`);
     }
-    if (map.boss !== (mapId === 'guardian-arena' || mapId === 'frost-tide-cavern') || map.safe !== (mapId === 'town')) {
+    if (map.boss !== (mapId === 'guardian-arena' || mapId === 'frost-tide-cavern' || mapId === 'sand-sunwell-altar') || map.safe !== (mapId === 'town')) {
       return failure(`Map safe/boss classification invalid: ${mapId}`);
     }
     const spawnIds = new Set(map.spawns.map(({ id }) => id));
@@ -122,12 +122,15 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
 
   const normalMonsterIds = new Set<Id>();
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
-    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden') normalMonsterIds.add(monster.monsterId);
+    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden' && monster.monsterId !== 'sunwell-sentinel') normalMonsterIds.add(monster.monsterId);
   }
   if (normalMonsterIds.size !== 10 || !world.maps['guardian-arena']?.boss
     || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian'
     || !world.maps['frost-tide-cavern']?.boss
-    || world.maps['frost-tide-cavern'].monsters.filter(({ monsterId }) => monsterId === 'frost-tide-warden').length !== 1) {
+    || world.maps['frost-tide-cavern'].monsters.filter(({ monsterId }) => monsterId === 'frost-tide-warden').length !== 1
+    || !world.maps['sand-sunwell-altar']?.boss
+    || world.maps['sand-sunwell-altar'].monsters.length !== 1 || world.maps['sand-sunwell-altar'].monsters[0]?.monsterId !== 'sunwell-sentinel'
+    || world.maps['sand-sunwell-basin']?.boss || world.maps['sand-sunwell-basin']?.monsters.length !== 4) {
     return failure('World must use ten ordinary monsters and one boss in each arena');
   }
 

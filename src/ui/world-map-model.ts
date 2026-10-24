@@ -26,6 +26,7 @@ export const GOLD_SAND_LANDMARKS: Record<string, MapLandmark> = {
   'sand-glass-shore': { x: 20, y: 70, description: '琥珀色海岸與淺灣在日光下交錯，回望可見霜雪群島的航路。' },
   'sand-dune-pass': { x: 50, y: 48, description: '風切沙脊環抱著狹窄山道，流沙深處傳來甲殼摩擦聲。' },
   'sand-sunwell-basin': { x: 80, y: 25, description: '日井遺跡立在盆地中央，清泉從古老石環間湧出，甲蟲沿著高低交錯的沙脊巡行。' },
+  'sand-sunwell-altar': { x: 92, y: 34, description: '日井祭壇矗立在盆地東側，砂岩守衛以雙拳守著青綠核心與古井誓約。' },
 };
 
 /** One global-chart marker stands for each playable region. */
