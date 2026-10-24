@@ -126,15 +126,15 @@ No tests, build, package validation or browser run has been performed for this c
 ## Current ownership (2026-10-24 finite Gold Sand task)
 
 - /root owns the finite scope and final QA coordination.
-- /root/sand_integration owns runtime/content implementation and focused checks; these are committed on main. The beta.7 candidate build/package is ready. Browser access is handed off.
+- /root/sand_integration owns runtime/content implementation and focused checks; these are committed on main. The beta.7 candidate build/package is ready. Browser QA is complete; no code follow-up remains.
 - /root/expansion_art completed the accepted scorpion source/runtime asset delivery; those commits are integrated on main.
-- /root/sand_scene_art completed dune scenery/guide assets, integrated on main, and currently owns the remaining isolated browser route smoke.
+- /root/sand_scene_art completed dune scenery/guide assets, integrated them on main, completed the isolated route smoke and cleaned up its disposable fixture.
 - Earlier agent/worktree states are historical. The completed frost interface agent's restriction against world-map edits/tests does not apply to this second-map task. Preserve .worktrees/ and never stage it.
 ## Tool and handoff notes
 
-On this Windows host use powershell.exe with login=false and narrow require_escalated for short file operations. Vitest commands exclude **/.worktrees/**. Heartbeat 06-55-2 was deleted; the coordinator confirmed the goal remains active with ordinary usage allowed, so no user resume action is needed. Stage D beta.6 package evidence is historical and applies only to its earlier runtime. The current beta.7 candidate evidence is recorded below. Browser QA is solely assigned to /root/sand_scene_art; keep its disposable session/fixture intact until that owner records the final route result. No push, tag, Release, or platform listing.
+On this Windows host use powershell.exe with login=false and narrow require_escalated for short file operations. Vitest commands exclude **/.worktrees/**. Heartbeat 06-55-2 was deleted; the coordinator confirmed the goal remains active and no user resume action was needed. Stage D beta.6 package evidence is historical and applies only to its earlier runtime. The beta.7 candidate and completed browser evidence are below. QA closed only the named sand-smoke session after removing its disposable save key; the shared server was left running. No push, tag, Release, or platform listing.
 
-## 2026-10-24 Gold Sand finite task — provisional integration evidence (browser QA pending)
+## 2026-10-24 Gold Sand finite task — final integration and acceptance evidence
 
 The user-defined endpoint remains three bounded stages: production sand-scorpion encounter; the second map sand-dune-pass with exploration, new ImageGen scenery, and manually claimed q12 unlock; then minimum focused validation, commits on main and stop. No third map, boss, new region, follow-on feature, push, tag, release, or listing is in scope.
 
@@ -147,6 +147,14 @@ The user-defined endpoint remains three bounded stages: production sand-scorpion
 - Passed at source commit f46dcb6: npm.cmd run typecheck; npm.cmd run check:content; npm exec -- vitest run --exclude '**/.worktrees/**' tests/integration/app-foundation.test.ts tests/integration/app-gameplay.test.ts tests/persistence.test.ts tests/world-map.test.ts (4 files / 56 tests); git diff --check.
 - Two separate app-audio/app-persistence fixture attempts failed because their existing mocked asset manifests omit newer Frost Tide/Amber required keys. They were outside the focused acceptance path, are not reported as passes, and were not changed as part of this task.
 
+### Direct q12 route integration case
+
+Commit 3bdf9f0 adds one end-to-end gameplay-harness case: opens the Sand Dune Pass only after manually claiming the three-scorpion route quest. It uses the actual three sand-glass-shore MapDef spawn definitions; the test brings each target to HP 1 and positions it beside the player to keep this logic-focused harness run short. It sends authoritative acceptQuest, attack, pickup, claimQuest and interact commands. The case verifies q12 remains active/locked until complete, reaches three kills and three scales, stays ready but the portal stays locked before manual claim, consumes all three scales at claim, enters sand-dune-pass, and returns through the free west portal. The only test run for this addition was:
+
+npm exec -- vitest run --exclude '**/.worktrees/**' tests/integration/app-gameplay.test.ts -t "opens the Sand Dune Pass only after manually claiming the three-scorpion route quest"
+
+Result: 1 passed, 24 skipped. npm.cmd run typecheck and git diff --check -- tests/integration/app-gameplay.test.ts also passed. Existing old-save coverage is tests/persistence.test.ts:175, “loads a format-1 save from before q12 existed and derives q12 without rewriting quest state”; it was part of the earlier four-file / 56-test focused run. The earlier run also includes the production-spawn Amber Scale pickup/sale integration case. No full suite was run.
+
 ### Candidate package
 
 - Commit 9cf9b3d aligns package.json, package-lock.json and public/game.json at 1.0.0-beta.7 without creating a tag.
@@ -155,10 +163,18 @@ The user-defined endpoint remains three bounded stages: production sand-scorpion
 - node tools/playroom/validate.mjs artifacts/game.zip reported Valid for brightwood-first-oath v1.0.0-beta.7 (tools 1.1.0).
 - Candidate path: C:/Users/Tommy/Desktop/brightwood-first-oath/artifacts/game.zip. Size 52,258,660 bytes; 171 entries; 55,118,120 uncompressed bytes; SHA-256 93612A00CA3CE260A5DD6BAC8F1E223F1B32B8DBDFD88263E75365B27D83D280. This is below 64 MiB. Nothing was published or uploaded.
 
-### Browser evidence still pending
+### Browser smoke result (route completed; full platform climb unverified)
 
-The isolated Playwright smoke began from a manually seeded disposable, validated format-1 Lv30/q11-claimed save with q12 absent; it was not a from-scratch playthrough or the user’s save. The player manually accepted q12, killed two production sand-scorpions, and picked up their guaranteed amber scales. On a third encounter the player died; q12 remained at 2/3, and normal Return to Town recovery restored full HP/MP while retaining the quest progress. One screenshot from the first death is retained at C:/Users/Tommy/AppData/Local/Temp/brightwood-sand-smoke/.playwright-cli/page-2026-10-24T02-27-58-671Z.png; it showed the real Sand Shore scene, third-fight death and quest counters. Console at that capture showed zero errors and warnings (Phaser v3.90 info only).
+The smoke used a disposable, validated format-1 Lv30/q11-claimed save with q12 absent at the beginning; it was not a from-scratch playthrough or the user's save. The player accepted q12 in game, initially reached two kills and two scales, and died during the third attempt. Normal Return to Town recovery preserved quest, bag and coin progress. To avoid repeating the old-map journey, the authorized fixture-only step changed only location to frost-shore/left; player stats, HP, inventory and quest data were preserved. This did not verify Town-to-Frost travel.
 
-A one-time location-only change in the isolated save moved the test fixture to frost-shore/left while preserving player and quest JSON; q12 state remained active at 2 kills. The open q11 portal was then used to enter Sand. Actual portal use also returned through Frost Pine and back to Frost Shore before re-entering Sand. No Town-to-Frost journey is claimed. A second genuine encounter attempt ended in death and the production Return to Town action was used; the browser is now handed off to /root/sand_scene_art with this disposable fixture intact. Q12 claim, sand-dune-pass traversal, return portal and the post-handoff final route result remain UNVERIFIED until that owner reports them.
+From Frost Shore the player used the real portal to Sand Glass Shore, defeated the third production sand-scorpion, picked up its guaranteed third amber scale with Z, spoke with Liusha and clicked the real “領取任務獎勵” button. The tracker changed to 自由探索, the guide dialogue confirmed all three scales were delivered and the pass route was open, and gold rose from 2,390 to 3,790. The player entered Sand Dune Pass through its real east portal, made a short safe left/right movement, then used the unrestricted west portal to return to Sand Glass Shore. Final state was q12 claimed/free exploration at Sand Glass Shore, HP 71/660 and 3,790 gold. The browser did not climb a ladder or traverse all five platform levels, and this is not described as a full map traversal or full-game playthrough.
 
-The initial Town movement attempt did not relocate the player; its cause was not diagnosed and no Town-control result is claimed. Later ordinary movement and portal inputs worked after reloading onto Frost Shore/Sand. During the live smoke no HP, inventory or quest state was edited; the only post-seed fixture change was the initial location fields used for route setup.
+The final browser console contained three messages: zero errors, zero warnings and one Phaser startup info line. Screenshots are retained at output/playwright/sand-beta7/sand-dune-pass-entry.png and output/playwright/sand-beta7/sand-glass-shore-return.png. The earlier death snapshot is retained at C:/Users/Tommy/AppData/Local/Temp/brightwood-sand-smoke/.playwright-cli/page-2026-10-24T02-27-58-671Z.png.
+
+QA cleanup removed only the disposable localStorage key maplewood-swordsman:save:v1:dev from the named sand-smoke session (existed=true, removed=true) and closed that session. The shared server on localhost:5173 was left running; an HTTP HEAD returned 200 after cleanup. No other save data or server was removed.
+
+The actual shop-sale interaction is not claimed as browser-verified; it is covered by the production-spawn Amber Scale integration test in the earlier focused run. Scorpion spawn/AI code was unchanged after the previously recorded beta.7 build, pack and validate. The additional commit 3bdf9f0 contains only a test file, so build/pack were not repeated.
+
+## Final state and stop condition
+
+The finite three-stage task is complete on main: production sand-scorpion encounter; sand-dune-pass, new scenery and manually claimed q12 route; focused validation, beta.7 build/package validation, route smoke and documentation. The implementation/test commit is 3bdf9f0; this final report is a docs-only commit after it. No runtime source changed after the candidate package was built. Final main status: tracked files clean after the report commit, with only the existing .worktrees/ directory untracked and preserved. No publish, push, tag, Release, listing, or platform action occurred. Stop here; no third map, boss, new region or follow-on feature is authorized by this finite task.

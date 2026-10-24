@@ -125,16 +125,16 @@
 | Agent | Workspace | Current responsibility |
 | --- | --- | --- |
 | /root | Coordinator | Owns the finite scope and final QA coordination. |
-| /root/sand_integration | repository main | Runtime/content implementation and focused checks are committed on main; beta.7 candidate build/package is ready. No browser access while final QA is delegated. |
+| /root/sand_integration | repository main | Runtime/content implementation and focused checks are committed on main; beta.7 candidate build/package is ready. Browser QA and fixture cleanup are complete. |
 | /root/expansion_art | .worktrees/expansion-art | Art delivery complete; accepted source poses and runtime atlas are integrated on main. |
-| /root/sand_scene_art | isolated worktree | Art delivery integrated on main; sole owner of the remaining isolated browser route smoke. |
+| /root/sand_scene_art | isolated worktree | Art delivery integrated on main; completed the browser route smoke and removed its disposable fixture. |
 
 Earlier agent rows and worktree states below are historical. In particular, the completed frost interface agent's old instruction not to edit world-map files/tests does not restrict this second-map task. Preserve existing .worktrees/ contents; do not stage .worktrees/.
 ## 恢復方式
 
-This finite task is in Stage 3. Code, focused checks, beta.7 build and pinned package validation are complete; the remaining browser smoke is assigned solely to /root/sand_scene_art. Read the authoritative provisional evidence section below. After the browser result is recorded in a final docs commit, stop at the user’s requested endpoint; do not start a third map, boss, new region, or follow-on work. No push, tag, Release, listing, or goal-resume action is needed.
+This finite three-stage task is complete. The implementation and focused checks are committed on main; the beta.7 build and pinned tools 1.1.0 package validation passed; the bounded browser route reached Sand Dune Pass and returned to Sand Glass Shore. Read the final evidence section for the exact fixture, route coverage, limits, package details and cleanup. Stop here: do not start a third map, boss, new region, or follow-on feature. No push, tag, Release, listing, or platform action was performed.
 
-## 2026-10-24 黃金沙海三階段進度（暫記；browser QA pending）
+## 2026-10-24 黃金沙海三階段完成（final acceptance）
 
 範圍固定為 production sand-glass-shore 沙蠍遭遇、sand-dune-pass 第二地圖與 q12 手動解鎖，Stage 3 完成後停止；不新增第三地圖、boss、新區域或後續功能。
 
@@ -143,5 +143,17 @@ This finite task is in Stage 3. Code, focused checks, beta.7 build and pinned pa
 - Focused checks passed at runtime commit f46dcb6: npm.cmd run typecheck; npm.cmd run check:content; npm exec -- vitest run --exclude '**/.worktrees/**' tests/integration/app-foundation.test.ts tests/integration/app-gameplay.test.ts tests/persistence.test.ts tests/world-map.test.ts (4 files, 56 tests); git diff --check. The focused persistence coverage accepts a format-1 save with q12 absent. Separate app-audio/app-persistence fixture attempts failed because their pre-existing mock asset manifests omit newer Frost Tide/Amber keys; those failures are not claimed as passing or attributed to runtime code.
 - Candidate metadata commit 9cf9b3d aligns package.json, package-lock.json and public/game.json at 1.0.0-beta.7; no tag was created.
 - Final candidate checks passed: npm.cmd run build (Vite 8.3.4, 63 modules); node tools/playroom/pack.mjs dist artifacts/game.zip; node tools/playroom/validate.mjs artifacts/game.zip. Official pinned Playroom tools 1.1.0 reported valid. ZIP is 52,258,660 bytes, 171 entries, 55,118,120 uncompressed bytes; SHA-256 93612A00CA3CE260A5DD6BAC8F1E223F1B32B8DBDFD88263E75365B27D83D280, under 64 MiB.
-- Browser smoke used an isolated disposable format-1 Lv30/q11-claimed save with q12 absent at start; it was not a from-scratch run or user save. q12 was manually accepted, two production sand-scorpions were killed and two guaranteed amber scales picked up. The player died on the third attempt; q12 stayed at 2/3 and normal Return to Town recovery restored full HP/MP while retaining quest progress. One screenshot from the first death is at C:/Users/Tommy/AppData/Local/Temp/brightwood-sand-smoke/.playwright-cli/page-2026-10-24T02-27-58-671Z.png. A location-only fixture change to frost-shore/left preserved all other save fields; the actual q11 portal and linked Frost portals were used. Town-to-Frost travel, q12 manual claim, sand-dune-pass traversal, free return and the final current browser result remain pending the sole browser owner, /root/sand_scene_art. No full-route pass is claimed here.
-- At this snapshot main is 9cf9b3d. Git status showed only .worktrees/ untracked; it was not staged. No publish, push, tag, Release, or platform API action occurred. See the final QA update below when appended.
+- Browser smoke has completed in the isolated disposable fixture. The final q12 claim, pass entry, short movement and free return, with the exact fixture setup and limits, are recorded in the final acceptance section below; no full platform climb or from-scratch game run is claimed.
+- The provisional snapshot above was at 9cf9b3d; test commit 3bdf9f0 and the final docs-only commit complete the task. The only untracked path is .worktrees/, preserved and never staged. No publish, push, tag, Release, or platform API action occurred.
+
+## 黃金沙海三階段最終驗收與停止點（2026-10-24）
+
+- 三階段均完成並已在 main 整合：正式沙蠍遭遇；sand-dune-pass、琉砂與手動 q12 解鎖；最小 focused checks、beta.7 build/package 驗證及一次隔離 browser smoke。實作／測試最後 commit 為 3bdf9f0；本狀態板與詳報由其後的 docs-only commit 收尾。沒有後續程式變更。
+- 新增 q12 直接 gameplay 整合案例於 tests/integration/app-gameplay.test.ts：單獨執行 1 passed（24 skipped），覆蓋手動接取、三個正式 MapDef 沙蠍 spawn 的擊殺與琥珀甲片拾取、ready 狀態仍鎖門、手動 claim 消耗三片、解鎖並進入砂丘關道、由免費 west portal 返回。測試用 Lv30/q11 claimed 前置存檔及 HP=1 的目標以縮短戰鬥；瀏覽器 smoke 則另驗證真實即時遭遇。npm.cmd run typecheck 與該檔 git diff --check 通過。
+- 舊 format 1 無 q12 欄位案例位於 tests/persistence.test.ts:175，並包含於原 focused run（4 files / 56 tests）；新增案例獨立執行後沒有重跑既有套件。既有 amber-scale 正式 MapDef 撿拾／出售案例也在 56 項內；出售不列為 browser 驗證。
+- Browser 使用一次性、format 1、Lv30/q11 claimed、起初缺 q12 的隔離存檔，不是從頭通關或使用者存檔。為免重走舊地圖，唯一後續 fixture 改動是把 location 設為 frost-shore/left；玩家、任務、背包、HP、能力與其餘資料保留。之後實際使用霜岸傳點進入沙岸、擊敗第三隻生產沙蠍並以 Z 撿到第三片、與琉砂對話並按「領取任務獎勵」、確認自由探索／金幣 2,390→3,790、實際進入砂丘關道、短暫左右移動並使用免費西側傳點回沙岸。沒有聲稱 Town→Frost 行程、完整五層平台／攀梯通關或完整從頭通關。
+- 同一 browser fixture 起初進度為 2/3，第三戰曾正常死亡；Return to Town 保留任務、背包及金幣進度。其後恢復到 Sand 的實際第三隻擊殺、撿取及 claim 均完成。最終狀態為琥珀砂岸、q12 已 claimed／自由探索、HP 71/660、金幣 3,790。Console 3 則訊息、0 errors、0 warnings（1 則 Phaser 啟動 info）。
+- Browser 圖片：output/playwright/sand-beta7/sand-dune-pass-entry.png、output/playwright/sand-beta7/sand-glass-shore-return.png；早期死亡截圖 C:/Users/Tommy/AppData/Local/Temp/brightwood-sand-smoke/.playwright-cli/page-2026-10-24T02-27-58-671Z.png。
+- QA 清理只移除 named sand-smoke 的 maplewood-swordsman:save:v1:dev（existed=true、removed=true）並關閉該 session。共用 localhost:5173 沒有終止；cleanup 後 HTTP HEAD 回 200。保留輸出圖片，沒有刪除其他存檔。
+- beta.7 候選包仍是 C:/Users/Tommy/Desktop/brightwood-first-oath/artifacts/game.zip，52,258,660 bytes、171 entries、55,118,120 uncompressed bytes，SHA-256 93612A00CA3CE260A5DD6BAC8F1E223F1B32B8DBDFD88263E75365B27D83D280；pinned tools 1.1.0 validate 通過且低於 64 MiB。新 commit 只含測試與文件，不改 production bundle；因此沒有重建或重複 pack。
+- 提交後 tracked worktree clean；唯一 untracked path 是 .worktrees/，保留且未 stage。沒有 publish、push、tag、Release 或平台 listing。此有限目標已完成；停止，不展開第三張地圖、首領、新區域或 follow-on 工作。
