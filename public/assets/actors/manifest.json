@@ -291,6 +291,16 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:sunwell-beetle",
+      "url": "assets/actors/monsters/sunwell-beetle-atlas-v1.png",
+      "columns": 4,
+      "rows": 4,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -1536,6 +1546,41 @@
     {
       "key": "sand-scorpion:dead",
       "imageKey": "actor:sand-scorpion",
+      "frames": [12, 13, 14, 15],
+      "frameMs": [100, 100, 100, 100],
+      "loop": false
+    },
+    {
+      "key": "sunwell-beetle:idle",
+      "imageKey": "actor:sunwell-beetle",
+      "frames": [0, 1],
+      "frameMs": [200, 200],
+      "loop": true
+    },
+    {
+      "key": "sunwell-beetle:walk",
+      "imageKey": "actor:sunwell-beetle",
+      "frames": [2, 3, 4, 5],
+      "frameMs": [120, 120, 120, 120],
+      "loop": true
+    },
+    {
+      "key": "sunwell-beetle:attack",
+      "imageKey": "actor:sunwell-beetle",
+      "frames": [6, 7, 8, 9],
+      "frameMs": [200, 200, 200, 200],
+      "loop": false
+    },
+    {
+      "key": "sunwell-beetle:hurt",
+      "imageKey": "actor:sunwell-beetle",
+      "frames": [10, 11],
+      "frameMs": [100, 100],
+      "loop": false
+    },
+    {
+      "key": "sunwell-beetle:dead",
+      "imageKey": "actor:sunwell-beetle",
       "frames": [12, 13, 14, 15],
       "frameMs": [100, 100, 100, 100],
       "loop": false

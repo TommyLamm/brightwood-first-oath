@@ -521,6 +521,16 @@
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
+    },
+    {
+      "key": "item:sunwell-shell",
+      "url": "assets/interface/item-sunwell-shell-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [

@@ -138,6 +138,17 @@ describe('T14-a app foundation', () => {
     })).toBe(false);
   });
 
+  it('accepts the production Sunwell beetle four-frame walk', () => {
+    const manifest = parseAssetManifest(JSON.parse(readFileSync(
+      new URL('../../public/assets/actors/manifest.json', import.meta.url),
+      'utf-8',
+    )), 'actors');
+    const walk = manifest.animations.find((animation) => animation.key === 'sunwell-beetle:walk');
+    if (!walk) throw new Error('Expected the production Sunwell beetle walk animation.');
+    expect(walk.frames).toEqual([2, 3, 4, 5]);
+    expect(animationConformsToUse('actor:sunwell-beetle', walk.key, walk)).toBe(true);
+  });
+
   it('rejects a present but incomplete manifest and reports all missing pack manifests', async () => {
     expect(() => parseAssetManifest({
       version: 1,
