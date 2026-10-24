@@ -49,6 +49,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 750, attackCooldownMs: 1950, respawnMs: 8000, actorKey: 'actor:frost-crab',
     drops: [{ itemId: 'ice-shell', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.18, min: 1, max: 1 }],
   },
+  'sand-scorpion': {
+    id: 'sand-scorpion', name: '琥珀蠍', level: 30, maxHp: 1180, attack: 52, defense: 22, exp: 560, coins: 90,
+    speed: 70, width: 52, height: 44, aggroRange: 360, attackRange: 190,
+    attackWindupMs: 850, attackCooldownMs: 2100, respawnMs: 9000, actorKey: 'actor:sand-scorpion',
+    drops: [{ itemId: 'amber-scale', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.15, min: 1, max: 1 }],
+  },
   guardian: {
     // T00 requires collision dimensions; 08 leaves the boss dimensions unspecified.
     // These are project-specific logical dimensions, not an original-game measurement.

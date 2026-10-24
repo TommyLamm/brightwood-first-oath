@@ -55,6 +55,12 @@ export const skills: Record<Id, SkillDef> = {
     reach: 220, height: 64, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'sand-stinger': {
+    id: 'sand-stinger', name: '砂棘尾刺', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 0, windupMs: 850, activeMs: 90, recoveryMs: 680,
+    reach: 190, height: 44, targets: 1, multiplierBase: 1.05, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
   'guardian-wave': {
     id: 'guardian-wave', name: '礦脈震波', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 1100, activeMs: 100, recoveryMs: 900,

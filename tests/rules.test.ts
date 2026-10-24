@@ -3,18 +3,18 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(27);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(28);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
-      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword',
+      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale',
     ]));
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(12);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(13);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
       'basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
-      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'sweep', 'vitality',
+      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'sand-stinger', 'sweep', 'vitality',
     ]);
     expect(playerSkillIds).toHaveLength(6);
     expect(playerLearnableIds).toHaveLength(5);
@@ -29,10 +29,10 @@ describe('rules catalog', () => {
     expect(rulesCatalog.skills.vitality.requiredLevel).toBe(10);
     expect(rulesCatalog.skills['rest-recovery'].requiredLevel).toBe(10);
     expect(Object.keys(rulesCatalog.skills).filter((id) => rulesCatalog.skills[id].requiredJob === 'enemy').sort()).toEqual([
-      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave',
+      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave', 'sand-stinger',
     ]);
     expect(Object.keys(rulesCatalog.monsters).sort()).toEqual([
-      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sentinel', 'slime', 'snail',
+      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sand-scorpion', 'sentinel', 'slime', 'snail',
     ]);
   });
 
@@ -71,6 +71,19 @@ describe('rules catalog', () => {
     expect(fang.buyPrice).toBe(0);
     expect(fang.sellPrice).toBeGreaterThan(0);
     expect(wolf.actorKey).toBe('actor:frost-wolf');
+  });
+
+  it('gives the level-30 sand scorpion a telegraphed ranged sting and saleable amber scale', () => {
+    const scorpion = rulesCatalog.monsters['sand-scorpion'];
+    const scale = rulesCatalog.items['amber-scale'];
+    expect(scorpion.level).toBe(30);
+    expect(scorpion.attackRange).toBe(190);
+    expect(scorpion.drops).toContainEqual({ itemId: 'amber-scale', chance: 1, min: 1, max: 1 });
+    expect(scale.kind).toBe('material');
+    expect(scale.buyPrice).toBe(0);
+    expect(scale.sellPrice).toBeGreaterThan(0);
+    expect(rulesCatalog.skills['sand-stinger'].windupMs).toBeGreaterThan(0);
+    expect(rulesCatalog.skills['sand-stinger'].height).toBeLessThan(50);
   });
 
   it('validates the production catalog and gives a specific missing-drop diagnostic', () => {

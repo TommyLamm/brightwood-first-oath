@@ -312,6 +312,7 @@ function isBossMonster(monsterId: string): boolean {
 
 function chooseSkillId(monster: MonsterState): string | null {
   if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
+  if (monster.monsterId === 'sand-scorpion') return 'sand-stinger';
   if (monster.monsterId === 'frost-tide-warden') {
     return monster.pendingSkillId === 'frost-tusk-slam' ? 'low-tide-wave' : 'frost-tusk-slam';
   }

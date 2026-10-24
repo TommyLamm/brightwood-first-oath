@@ -234,6 +234,31 @@ describe('actor domain', () => {
     expect(deathStep.respawnRequests).toEqual([]);
   });
 
+  it('keeps the sand scorpion in place for a readable low tail-sting telegraph', () => {
+    const sourceMap = worldCatalog.maps['sand-glass-shore'];
+    const spawn = {
+      spawnId: 'sand-glass-shore:sand-scorpion:test',
+      monsterId: 'sand-scorpion',
+      x: 850,
+      y: 600,
+      roamLeft: 800,
+      roamRight: 1100,
+    };
+    const testMap = { ...sourceMap, monsters: [spawn] };
+    const scorpion = createMonster('sand-scorpion-sting-test', spawn, testMap, rulesCatalog);
+    const windup = stepActors([scorpion], player('sand-sting-target', 1_000), testMap, rulesCatalog, DT, 1_000);
+
+    expect(windup.attackRequests).toEqual([{ sourceId: scorpion.id, skillId: 'sand-stinger' }]);
+    expect(windup.telegraphs[0]?.rect).toEqual({ x: 850, y: 556, width: 190, height: 44 });
+    expect(windup.monsters[0]).toMatchObject({ mode: 'windup', pendingSkillId: 'sand-stinger' });
+
+    const resolved = stepActors(windup.monsters, player('sand-sting-target', 1_000), testMap, rulesCatalog, DT, 1_850);
+    expect(resolved.monsters[0]).toMatchObject({
+      mode: 'recovery',
+      movement: { position: { x: 850, y: 600 } },
+    });
+  });
+
   it('locks the frost crab telegraph and bounds its charge by roam edges and walls', () => {
     const sourceMap = worldCatalog.maps['frost-pine-pass'];
     const spawn = sourceMap.monsters.find((entry) => entry.monsterId === 'frost-crab')!;
