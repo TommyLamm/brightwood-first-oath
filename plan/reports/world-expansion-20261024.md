@@ -275,9 +275,9 @@ beta.9 metadata 已在來源穩定後一次更新至 package.json、package-lock
 
 兩份 canonical 文件以文件-only commit 收尾。既有 .worktrees/ 保留且未 stage。沒有 push、tag、Release、上傳、listing 或平台發布。此有限包完成後停止。
 
-## 2026-10-24 有限續作：補首領外觀與預警證據（IN_PROGRESS）
+## 2026-10-24 有限續作：補首領外觀與預警證據（PARTIAL：地面 telegraph UNVERIFIED）
 
-此續作只補上日井守衛包未取得的兩項 browser 證據：beta.9 成品中可辨識的 `sunwell-sentinel` 遊戲外觀，以及 900ms 單區域重擊的地面 telegraph。驗收對象固定為 `artifacts/game-beta9.zip`，SHA-256 `101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A`。上一包已完成 build 與 pinned tools 1.1.0 pack/validate；本次不修改 production，不改版本、不重建或重打包。當前工作樹有未提交 audio／SDK／beta.10 更動，不以該工作樹或共用 5173 為驗收來源；結果只代表 beta.9 ZIP。既有免費回盆地 smoke 已確認，因此不重做回程、長路線、擊殺、q14 claim 或發布工作。上一輪錯誤截圖仍只代表該兩項未驗證，不推論為 production defect。
+此續作只補上日井守衛包未取得的兩項 browser 證據：beta.9 成品中可辨識的 `sunwell-sentinel` 遊戲外觀，以及 900ms 單區域重擊的地面 telegraph。驗收對象固定為 `artifacts/game-beta9.zip`，SHA-256 `101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A`。上一包已完成 build 與 pinned tools 1.1.0 pack/validate；本次不修改 production，不改版本、不重建或重打包。當前工作樹有未提交 audio／SDK／beta.10 更動，不以該工作樹或共用 5173 為驗收來源；結果只代表 beta.9 ZIP。既有免費回盆地 smoke 已確認，因此不重做回程、長路線、擊殺、q14 claim 或發布工作。上一輪錯誤截圖只代表該輪未驗證；本次已驗到 Boss 外觀，地面預警仍 UNVERIFIED，不據此推論為 production defect。
 
 開始前重讀本地 AGENTS、Playwright skill、canonical status/report、完整最新 game-agent template 與其七份規格。適用要求為 format-1 舊檔相容、相對資產／子目錄 iframe 契約；實際瀏覽器不能確認的項目標 UNVERIFIED；本次沒有 push、tag、Release 或 publish 授權。
 
@@ -285,4 +285,19 @@ beta.9 metadata 已在來源穩定後一次更新至 package.json、package-lock
 
 將固定 beta.9 ZIP 解至獨占 temp 目錄，並以隱藏的自有靜態 server 在啟動前確認閒置的 port（預定 5197）供應該目錄。記錄自有 server owner PID，結束時只停止該 PID；不連接、不終止共用 5173。建立一個新的獨立 named Playwright session，使用 beta.9 隔離 origin。先 snapshot 讀實際頁面與按鈕，再載入由 `tests/integration/sunwell-quests.test.ts` 對照的合法 format-1、Lv30 disposable fixture：祭壇 `sand-sunwell-altar`、q01–q13 claimed、q14 active 0/1、Guardian flags true/true、HP/MP 滿。這是人工設定起點，只驗證 beta.9 ZIP 的存檔載入及 boss 視覺，不代表 UI 任務通關。使用 public UI 輸入；以分段短移動取得可辨識首領畫面，另在實際重擊警示仍顯示時即時截圖，並立刻退離或暫停。任何按鍵在同一 bounded action 的 finally 釋放；不跨工具等待保持按鍵。最多兩張有意義截圖，不殺 boss、不領獎、不再走盆地回程。
 
-先從 beta.9 歷史來源或 ZIP 實際頁面確認 production localStorage key 與 format-1 envelope，再於隔離 session 讀取該 key。若原值存在，備份並在結束時還原；若不存在，清理只移除此 fixture 與本次建立的 backup marker。關閉本次 named session，清理獨占 temp 資料，僅停止自有 server PID。環境／工具失敗約 10 分鐘即有界停止；不為自動化失誤推斷 production 問題，如遇可重現產品問題回報 root，不自行改 production。驗收停止點：一張可辨識 boss 外觀與一張正在顯示地面 telegraph 的即時截圖，或如實記錄哪項未驗；記錄截圖路徑、console 摘要、beta.9 archive hash、fixture 與 cleanup，然後停止。
+先從 beta.9 歷史來源或 ZIP 實際頁面確認 production localStorage key 與 format-1 envelope，再於隔離 session 讀取該 key。若原值存在，備份並在結束時還原；若不存在，清理只移除此 fixture 與本次建立的 backup marker。關閉本次 named session，清理獨占 temp 資料，僅停止自有 server PID。環境／工具失敗約 10 分鐘即有界停止；不為自動化失誤推斷 production 問題，如遇可重現產品問題回報 root，不自行改 production。
+
+### 實際結果、證據與清理
+
+本次只驗收先前 build/pack/validate 的 beta.9 靜態包 `artifacts/game-beta9.zip`，SHA-256 `101407560111F6C8982043B5B5979167F40BC75D68CB3616E11BA0BA0E182F2A`。ZIP 解到獨占 temp 目錄，隱藏的自有靜態 server PID 1784 只供應 `http://127.0.0.1:5197/`；共用 5173 未連接、未停止。未改 production、版本、source、beta.10 dirty 工作樹，亦未重建或重打包。
+
+新的 named Playwright session `sentinel-beta9-qa-20261024` 先檢視實際標題頁、按鈕，再由 public UI 建立有效底檔。production localStorage key `maplewood-swordsman:save:v1` 在 seed 前不存在；format-1 envelope 為 `{formatVersion, data, savedAt}`。僅在隔離 origin 寫入一次性 fixture：Lv30、HP 660、MP 98、q01–q13 claimed、q14 active `sunwell-sentinel:0`、Guardian flags `true/true`、`sand-sunwell-altar`/`left`。reload 並按 Continue 後，DOM 確認實際位置為「日井祭壇」，q14 0/1。這是人工 preseed 起點，不代表 UI 完成前置任務。
+
+截圖只保留兩張：
+
+- `output/playwright/sentinel-beta9-qa-20261024/altar-boss.png`：祭壇左側角色與完整日井守衛同框；可辨認其名稱／血條、砂岩身軀、青綠核心與砂金細節。日井守衛外觀的 browser 驗收通過。
+- `output/playwright/sentinel-beta9-qa-20261024/altar-telegraph.png`：先以兩個分開的 bounded action 按 ArrowRight 1,400ms 與 1,200ms（各自在同 action finally keyup）；其後 DOM snapshot 工具呼叫耗時約 7.9 秒，期間沒有按鍵持續。再等 100ms 即時截圖，隨即點擊畫面實際的「暫停遊戲」按鈕。畫面仍可見角色與 Boss，但沒有可辨識的地面 telegraph；900ms 預警仍為 UNVERIFIED。兩張上限已用完，不再重試。此時 q14 仍 0/1、Boss 血條全滿、角色 HP 586/660；沒有擊殺、claim、返回盆地或其他任務操作。此 run 未檢查 console，因此不報告 console 結果。
+
+fixture 清理時確認 key 原先不存在，只移除本次 fixture、`__sentinel_qa_original_was_absent` 及 `__sentinel_qa_backup` 標記，並確認 key 不存在。Named session 已關閉；只停止可核對命令列為本次 server 的 PID 1784，5197 已無 listener；專屬 temp extraction 已移除。共用 5173 與其他存檔／程序未碰。
+
+本次 browser pass 已停止並完成清理；驗收狀態為 PARTIAL，地面 telegraph 尚未驗證。未跑測試、build、pack、validate，未改 beta.9 ZIP，也未建立發布內容。工作樹中其餘 audio／SDK／beta.10 使用者變更與 `.worktrees/` 保持原樣、未 stage。沒有 push、tag、Release、上傳或發布。
