@@ -3,7 +3,7 @@ import type { SaveData } from '../contracts/types.js';
 
 export type MapLandmark = { x: number; y: number; description: string };
 
-/** Landmarks for the original Leaf Isle areas on the global archipelago chart. */
+/** Landmarks for Leaf Isle on the global archipelago chart. */
 export const WORLD_LANDMARKS: Record<string, MapLandmark> = {
   camp: { x: 14, y: 60, description: '溪水與晨光環繞的小小營地。你的第一段冒險，從這裡啟程。' },
   town: { x: 23, y: 46, description: '森林中的溫暖城鎮。拜訪教官、補充藥水，在木葉間稍作歇息。' },
@@ -14,17 +14,25 @@ export const WORLD_LANDMARKS: Record<string, MapLandmark> = {
   'guardian-arena': { x: 52, y: 61, description: '古礦盡頭的石造祭壇。面對守衛，完成你的第一個誓約。' },
 };
 
-/** Coordinates belong to the Frost Isles artwork; the cave appears only after its map is in the catalog. */
+/** Coordinates belong to the Frost Isles chart; only real catalog maps are rendered. */
 export const FROST_LANDMARKS: Record<string, MapLandmark> = {
   'frost-shore': { x: 20, y: 70, description: '越過守衛祭壇後，霜雪群島的海岸在冰霧間展開。' },
   'frost-pine-pass': { x: 50, y: 48, description: '松林與冰蝕岩壁夾成的隘道，雪狼在風雪之間巡行。' },
   'frost-tide-cavern': { x: 80, y: 25, description: '潮汐洞窟藏在冰峰之下，洞口隨著寒潮吐出幽藍霧氣。' },
 };
 
-/** One global-chart marker stands for the whole Frost Isles region. */
-export const FROST_ISLES_WORLD_LANDMARK = { x: 82, y: 18 };
+/** Coordinates belong to the Gold Sand Sea chart; future nodes remain absent until playable. */
+export const GOLD_SAND_LANDMARKS: Record<string, MapLandmark> = {
+  'sand-glass-shore': { x: 20, y: 70, description: '琥珀色海岸與淺灣在日光下交錯，回望可見霜雪群島的航路。' },
+  'sand-dune-pass': { x: 50, y: 48, description: '風切沙脊環抱著狹窄山道，流沙深處傳來甲殼摩擦聲。' },
+  'sand-sunwell-basin': { x: 80, y: 25, description: '金色沙丘之間的綠洲湧出清泉，四周地勢像一座天然競技場。' },
+};
 
-export type AtlasScope = 'world' | 'frost';
+/** One global-chart marker stands for each playable region. */
+export const FROST_ISLES_WORLD_LANDMARK = { x: 82, y: 18 };
+export const GOLD_SAND_SEA_WORLD_LANDMARK = { x: 85, y: 53 };
+
+export type AtlasScope = 'world' | 'frost' | 'sand';
 export type AtlasViewModel = {
   scope: AtlasScope;
   /** Real catalog maps in this scope which have an authored chart coordinate. */
@@ -41,14 +49,26 @@ export function isFrostMapId(mapId: string): boolean {
   return mapId.startsWith('frost-');
 }
 
+export function isGoldSandMapId(mapId: string): boolean {
+  return mapId.startsWith('sand-');
+}
+
+export function atlasScopeForMapId(mapId: string): AtlasScope {
+  if (isFrostMapId(mapId)) return 'frost';
+  if (isGoldSandMapId(mapId)) return 'sand';
+  return 'world';
+}
+
+function landmarksForScope(scope: AtlasScope): Record<string, MapLandmark> {
+  return scope === 'frost' ? FROST_LANDMARKS : scope === 'sand' ? GOLD_SAND_LANDMARKS : WORLD_LANDMARKS;
+}
+
 export function atlasViewModel(catalog: ContentCatalog, data: SaveData, selectedId: string | null): AtlasViewModel {
   const allMaps = Object.values(catalog.world.maps);
   const explicitlySelected = selectedId ? catalog.world.maps[selectedId] : undefined;
-  const scope: AtlasScope = explicitlySelected
-    ? isFrostMapId(explicitlySelected.id) ? 'frost' : 'world'
-    : isFrostMapId(data.location.mapId) ? 'frost' : 'world';
-  const scopeMaps = allMaps.filter(({ id }) => isFrostMapId(id) === (scope === 'frost'));
-  const landmarks = scope === 'frost' ? FROST_LANDMARKS : WORLD_LANDMARKS;
+  const scope = explicitlySelected ? atlasScopeForMapId(explicitlySelected.id) : atlasScopeForMapId(data.location.mapId);
+  const scopeMaps = allMaps.filter(({ id }) => atlasScopeForMapId(id) === scope);
+  const landmarks = landmarksForScope(scope);
   const maps = scopeMaps.filter(({ id }) => Object.hasOwn(landmarks, id));
   const visitedMapIds = new Set([...data.visitedMaps, data.location.mapId]);
   const currentMap = maps.find(({ id }) => id === data.location.mapId) ?? null;
@@ -67,27 +87,35 @@ export function atlasViewModel(catalog: ContentCatalog, data: SaveData, selected
   };
 }
 
-export type FrostIslesOverview = {
+export type RegionOverview = {
   current: boolean;
   exploredCount: number;
   totalCount: number;
   entryRequirement: { open: boolean; text: string } | null;
 };
 
-export function frostIslesOverview(catalog: ContentCatalog, data: SaveData): FrostIslesOverview {
+function regionOverview(catalog: ContentCatalog, data: SaveData, scope: Exclude<AtlasScope, 'world'>, entryMapId: string, sourceScope: AtlasScope): RegionOverview {
   const maps = Object.values(catalog.world.maps);
-  const frostMaps = maps.filter(({ id }) => isFrostMapId(id));
+  const regionMaps = maps.filter(({ id }) => atlasScopeForMapId(id) === scope);
   const visited = new Set([...data.visitedMaps, data.location.mapId]);
   const entrance = maps
-    .filter(({ id }) => !isFrostMapId(id))
+    .filter(({ id }) => atlasScopeForMapId(id) === sourceScope)
     .flatMap(({ portals }) => portals)
-    .find(({ targetMapId }) => targetMapId === 'frost-shore');
+    .find(({ targetMapId }) => targetMapId === entryMapId);
   return {
-    current: isFrostMapId(data.location.mapId),
-    exploredCount: frostMaps.filter(({ id }) => visited.has(id)).length,
-    totalCount: frostMaps.length,
+    current: atlasScopeForMapId(data.location.mapId) === scope,
+    exploredCount: regionMaps.filter(({ id }) => visited.has(id)).length,
+    totalCount: regionMaps.length,
     entryRequirement: entrance ? portalRequirements(entrance, data, catalog) : null,
   };
+}
+
+export function frostIslesOverview(catalog: ContentCatalog, data: SaveData): RegionOverview {
+  return regionOverview(catalog, data, 'frost', 'frost-shore', 'world');
+}
+
+export function goldSandSeaOverview(catalog: ContentCatalog, data: SaveData): RegionOverview {
+  return regionOverview(catalog, data, 'sand', 'sand-glass-shore', 'frost');
 }
 
 export function mapLevelLabel(map: MapDef, catalog: ContentCatalog): string {

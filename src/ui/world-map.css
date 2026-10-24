@@ -106,3 +106,21 @@
   .ms-atlas-island-status { max-width: 92px; font-size: 7px; }
   .ms-atlas-chart--frost .ms-atlas-label { max-width: 92px; white-space: normal; }
 }
+
+/* The Gold Sand Sea keeps its own amber chart and markers, separate from Leaf Isle. */
+.ms-atlas-chart--sand { aspect-ratio: 16 / 9; border-color: #a77c3c; background: #e8cf8d; box-shadow: 0 2px 6px #57402a38, inset 0 0 24px #a9823b30; }
+.ms-atlas-banner--sand { border-color: #8c672f; background: linear-gradient(100deg, #dec07a, #fff0c4 45%, #d7b66f); box-shadow: 0 3px 0 #493d2855, inset 0 0 0 2px #fff3c5; }
+.ms-atlas-banner--sand > span { color: #87622d; }
+.ms-atlas-banner--sand h3 { color: #63461e; }
+.maple-ui .ms-atlas-landmark--sand .ms-atlas-label { border-color: #9b6f32; color: #61431d; background: linear-gradient(#fff2c8, #e8c982); }
+.maple-ui .ms-atlas-landmark--sand .ms-atlas-pin { border-color: #fff1c4; color: #fff3d4; background: #866534; }
+.ms-atlas-landmark--sand.is-visited .ms-atlas-pin { color: #fff9d6; background: #5e7950; }
+.ms-atlas-landmark--sand.is-current .ms-atlas-pin { color: #fff6c5; background: #b46c3c; }
+.ms-atlas-details--sand { border-color: #c5a15f; color: #60451f; background: #f3e5bd; }
+.ms-atlas-details--sand .ms-atlas-level { color: #735324; background: #e8d49e; }
+.ms-atlas-details--sand .ms-atlas-description,
+.ms-atlas-details--sand .ms-atlas-inhabitants { color: #796133; }
+.ms-atlas-details--sand .ms-atlas-path-heading { border-color: #dfca94; }
+.ms-atlas-details--sand .ms-atlas-condition { color: #9b5f32; }
+.ms-atlas-details--sand .ms-atlas-condition.is-open { color: #46704c; }
+.maple-ui .ms-atlas-landmark--island--sand .ms-atlas-label { border-color: #9b6f32; color: #61431d; background: linear-gradient(#fff2c8, #e8c982); }

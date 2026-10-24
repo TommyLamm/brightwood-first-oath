@@ -146,6 +146,7 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'frost-shore:south', x: 100, y: 600, targetMapId: 'guardian-arena', targetSpawnId: 'entry', requiredQuestId: null, minLevel: 1 },
+      { id: 'frost-shore:east', x: 1660, y: 600, targetMapId: 'sand-glass-shore', targetSpawnId: 'left', requiredQuestId: 'q11', minLevel: 30 },
       { id: 'frost-shore:north', x: 1820, y: 600, targetMapId: 'frost-pine-pass', targetSpawnId: 'left', requiredQuestId: 'q09', minLevel: 1 },
     ],
     npcs: [{ npcId: 'frost-guide', x: 250, y: 600 }],
@@ -187,6 +188,17 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'frost-crab', x: 1700, roamLeft: 1600, roamRight: 1800 },
       { monsterId: 'frost-tide-warden', x: 1900, roamLeft: 1770, roamRight: 2050 },
     ],
+  },
+  {
+    id: 'sand-glass-shore', name: '琥珀砂岸', width: 1920, themeKey: 'sand', musicKey: 'theme-field', safe: false, boss: false,
+    platforms: [[320, 500, 650, 500], [880, 445, 1180, 445], [1360, 490, 1650, 490]],
+    ladders: [{ x: 470, topY: 500, bottomY: 600 }, { x: 1020, topY: 445, bottomY: 600 }, { x: 1500, topY: 490, bottomY: 600 }],
+    extraSpawns: [],
+    portals: [
+      { id: 'sand-glass-shore:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [],
   },
 ];
 

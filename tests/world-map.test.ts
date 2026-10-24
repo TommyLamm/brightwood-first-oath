@@ -5,9 +5,12 @@ import { startNewGame } from '../src/app/gameplay.js';
 import {
   WORLD_LANDMARKS,
   FROST_LANDMARKS,
+  GOLD_SAND_LANDMARKS,
   PLANNED_REGIONS,
+  atlasScopeForMapId,
   atlasViewModel,
   frostIslesOverview,
+  goldSandSeaOverview,
   isFrostMapId,
   mapLevelLabel,
   portalRequirements,
@@ -22,7 +25,7 @@ function save() {
 
 describe('world atlas information', () => {
   it('keeps Leaf Isle coordinates separate and derives Frost Isles nodes from real catalog maps', () => {
-    const leafIds = Object.keys(worldCatalog.maps).filter((id) => !isFrostMapId(id)).sort();
+    const leafIds = Object.keys(worldCatalog.maps).filter((id) => atlasScopeForMapId(id) === 'world').sort();
     expect(Object.keys(WORLD_LANDMARKS).sort()).toEqual(leafIds);
     expect(Object.keys(FROST_LANDMARKS)).toEqual(['frost-shore', 'frost-pine-pass', 'frost-tide-cavern']);
     expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
@@ -57,6 +60,32 @@ describe('world atlas information', () => {
     expect(data.location.mapId).toBe('frost-pine-pass');
     expect(returned.allExploredCount).toBe(2);
     expect(returned.allMapCount).toBe(Object.keys(worldCatalog.maps).length);
+  });
+
+  it('keeps Gold Sand maps in a separate chart and shows the real q11-gated entry', () => {
+    expect(isFrostMapId('frost-shore')).toBe(true);
+    expect(atlasScopeForMapId('sand-glass-shore')).toBe('sand');
+    expect(Object.keys(GOLD_SAND_LANDMARKS)).toEqual(['sand-glass-shore', 'sand-dune-pass', 'sand-sunwell-basin']);
+
+    const data = save();
+    const sand = atlasViewModel(catalog, data, 'sand-glass-shore');
+    expect(sand.scope).toBe('sand');
+    expect(sand.maps.map(({ id }) => id)).toEqual(['sand-glass-shore']);
+    expect(sand.totalCount).toBe(1);
+    expect(sand.exploredCount).toBe(0);
+
+    const overview = goldSandSeaOverview(catalog, data);
+    expect(overview).toMatchObject({ current: false, exploredCount: 0, totalCount: 1 });
+    expect(overview.entryRequirement?.open).toBe(false);
+    data.player.level = 30;
+    data.quests.q11 = { status: 'claimed', counters: {} };
+    expect(goldSandSeaOverview(catalog, data).entryRequirement).toEqual({ open: true, text: '通道已開放' });
+
+    data.location.mapId = 'sand-glass-shore';
+    expect(goldSandSeaOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 1 });
+    const returnRoute = worldCatalog.maps['sand-glass-shore']!.portals.find(({ targetMapId }) => targetMapId === 'frost-shore')!;
+    expect(returnRoute.requiredQuestId).toBeNull();
+    expect(portalRequirements(returnRoute, data, catalog)).toEqual({ open: true, text: '通道已開放' });
   });
 
   it('shows true Frost Isles entry, exploration and quest-gate state', () => {

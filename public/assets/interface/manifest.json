@@ -500,6 +500,16 @@
       "displayHeight": 128,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "region:golden-sands-map",
+      "url": "assets/interface/region-golden-sands-map-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
     }
   ],
   "animations": [
