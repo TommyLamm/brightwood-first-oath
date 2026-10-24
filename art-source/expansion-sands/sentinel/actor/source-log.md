@@ -32,3 +32,5 @@ Avoid: aura, halo, glow, bloom, light spill, rimlight, cast shadow, floor, groun
 - Walk v1: 2026-10-24; built-in ImageGen with accepted identity reference and transparent background; accepted third bounded generation after two visible-mark drafts. Prompt/source/hash/provenance in sunwell-sentinel-walk-prompt-v1.md and sunwell-sentinel-walk-source-v1.md; all four frame crops use shared scale in export_walk_previews_v1.py.
 
 - Hurt v1: 2026-10-24; built-in ImageGen with accepted identity reference and transparent background. Prompt/source/hash/provenance in sunwell-sentinel-hurt-prompt-v1.md and sunwell-sentinel-hurt-source-v1.md; both frames use a shared scale in export_hurt_previews_v1.py.
+
+- Dead v1: 2026-10-24; built-in ImageGen with accepted identity reference and transparent background; accepted one bounded retry. Prompt/source/hash/provenance in sunwell-sentinel-dead-prompt-v1.md and sunwell-sentinel-dead-source-v1.md; all frames use shared scale in export_dead_previews_v1.py.
