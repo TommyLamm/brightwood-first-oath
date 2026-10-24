@@ -157,3 +157,21 @@ This finite three-stage task is complete. The implementation and focused checks 
 - QA 清理只移除 named sand-smoke 的 maplewood-swordsman:save:v1:dev（existed=true、removed=true）並關閉該 session。共用 localhost:5173 沒有終止；cleanup 後 HTTP HEAD 回 200。保留輸出圖片，沒有刪除其他存檔。
 - beta.7 候選包仍是 C:/Users/Tommy/Desktop/brightwood-first-oath/artifacts/game.zip，52,258,660 bytes、171 entries、55,118,120 uncompressed bytes，SHA-256 93612A00CA3CE260A5DD6BAC8F1E223F1B32B8DBDFD88263E75365B27D83D280；pinned tools 1.1.0 validate 通過且低於 64 MiB。新 commit 只含測試與文件，不改 production bundle；因此沒有重建或重複 pack。
 - 提交後 tracked worktree clean；唯一 untracked path 是 .worktrees/，保留且未 stage。沒有 publish、push、tag、Release 或平台 listing。此有限目標已完成；停止，不展開第三張地圖、首領、新區域或 follow-on 工作。
+
+## 2026-10-24 日井盆地有限續作（新一包；Stage 3 完成即停止）
+
+使用者最新指示「繼續實作下一個任務」授權一個新的有限開發包。前文 Gold Sand 三階段完成後的 STOP 是上一包的完成紀錄；此節記錄本次新授權並取代其作為目前任務範圍。這一包完成後停止，不建立下一個功能目標。
+
+開工前已完整讀取根目錄 `AGENTS.md`、線上 `templates/game-agent-template.md`，以及其列出的七份 main 規格：`docs/game-development.md`、`docs/command-contracts.md`、`templates/game.schema.json`、`templates/game-release.yml`、`examples/starter/playroom-sdk.js`、`docs/sdk-versioning.md`、`docs/save-compatibility.md`。適用要求：素材使用相對路徑並支援版本／預覽子目錄 iframe；SaveData format 1 保持舊檔相容；既有 q01–q12 與 Guardian 流程不變；沒有發布、push、tag、Release 或上架授權。
+
+本包只新增第三張真實黃金沙海地圖 `sand-sunwell-basin`「日井盆地」、Lv30 普通怪 `sunwell-beetle`「日井甲蟲」、可保證掉落且僅可出售的 `sunwell-shell`「日井甲殼」（售價約 55 金幣），及 q13 路線。q13 由既有琉砂在 q12 已 claim 後手動接取；玩家在砂丘關道擊敗兩隻日井甲蟲，再回琉砂手動 claim，才開通砂丘關道往日井盆地的東門。沒有材料交付要求。砂丘關道保留兩個原沙蠍生成點，另兩點改為甲蟲；新圖使用可辨識的甲蟲／沙蠍混合遭遇、約 2,800px 主地面與上層平台／梯路、中央日井遺跡，安全入口與無鎖西側回程。保留既有保留地標座標，只有加入真實 MapDef 後才由區域圖列為可玩節點。
+
+衝鋒沿用 Frost Crab 現有 bounded dash 行為與參數（750ms 預警、250ms active、最多 220px），直接沿用既有鎖定方向、命中、牆面、地圖邊界與 spawn roam 裁切規則；預警矩形須與實際衝鋒路徑一致。這是局部既有機制擴充，不新增戰鬥框架，也不把沙蠍尾刺改成衝鋒。
+
+| 階段 | 負責人 | 完成條件 |
+| --- | --- | --- |
+| 1. 本計畫與素材交付 | `/root/sunwell_integration` 負責 main 計畫和後續接線；`/root/sunwell_environment_art` 在隔離 worktree 製作 sky/far/mid；`/root/sunwell_beetle_art` 在隔離 worktree 製作甲蟲 atlas 及甲殼圖示。素材代理待本計畫 commit 後才開始生成。 | 環境層採現有相對 URL／960×540 背景契約並呈現日井遺跡；甲蟲 runtime atlas 為 384×384、4×4 個 96px 格，idle 0–1、walk 2–5、attack 6–9、hurt 10–11、dead 12–15，姿勢需對應實際動作；idle 200ms、dead 100ms。顯示 96×96、碰撞約 52×42。walk 的四格例外只限 sunwell-beetle，保留既有沙蠍及其他演員的檢查。圖示來源 128×128 RGBA、遊戲顯示 32×32。 |
+| 2. 程式與內容整合 | `/root/sunwell_integration` 是主程式、manifest、文件與測試唯一擁有者；素材代理只交付隔離工作樹 commit；`/root` 協調並可另派一次簡短瀏覽器 smoke。 | 新增地圖／怪物／物品／q13 和 required assets；真實生產點包含兩隻甲蟲及剩下的兩隻沙蠍；q13 由 q12 claimed、手動接受、兩次 kill、手動領獎控制東門。甲殼保證掉落、可經既有商人出售。區域圖、mapOrder 與 validator 只把真實 catalog 地圖算作節點；format 1 舊存檔可缺 q13 狀態並安全載入。 |
+| 3. 最小驗收、提交與停止 | `/root/sunwell_integration`。只 cherry-pick 通過檢視的素材 commit，保留 `.worktrees/` 且不 stage。 | 一個使用實際 world catalog／MapDef 生成點的 q13 路線案例覆蓋 q13 缺席舊檔、未手動 claim 前門鎖定、完成兩次甲蟲擊殺與手動 claim、進入新圖並無鎖返回；若新 charge 參數需要，增加一個聚焦邊界／牆面裁切／一次命中案例。只執行直接相關 typecheck、content check、focused tests（Vitest 排除 `**/.worktrees/**`）及 diff check。來源與版本穩定後 build 一次，使用固定 Playroom tools 1.1.0 pack/validate 一次；不跑完整測試套件、不發布或推送。完成後記錄真實結果並停止。 |
+
+基線是 main `90591ca`，tracked files clean；既有未追蹤 `.worktrees/` 保留。實作完成前先提交本計畫；此後由本整合代理獨自修改主程式、manifest、status/report 與測試。

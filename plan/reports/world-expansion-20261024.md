@@ -178,3 +178,15 @@ The actual shop-sale interaction is not claimed as browser-verified; it is cover
 ## Final state and stop condition
 
 The finite three-stage task is complete on main: production sand-scorpion encounter; sand-dune-pass, new scenery and manually claimed q12 route; focused validation, beta.7 build/package validation, route smoke and documentation. The implementation/test commit is 3bdf9f0; this final report is a docs-only commit after it. No runtime source changed after the candidate package was built. Final main status: tracked files clean after the report commit, with only the existing .worktrees/ directory untracked and preserved. No publish, push, tag, Release, listing, or platform action occurred. Stop here; no third map, boss, new region or follow-on feature is authorized by this finite task.
+
+## 2026-10-24 新授權有限續作：日井盆地
+
+使用者要求「繼續實作下一個任務」，授權一個有明確停止條件的新包。上一節記錄的 Gold Sand STOP 屬於已完成的前一包，不限制本次新授權；日井盆地包完成後立即停止。
+
+已完整讀取本地 `AGENTS.md`、最新 game-agent template 與七份指定 main 規格（game-development、command-contracts、game.schema、game-release、starter SDK、sdk-versioning、save-compatibility）。本包沿用相對資產路徑／子目錄 iframe 相容、SaveData format 1 舊檔相容；q01–q12 與 Guardian 不變，沒有發布／push／tag／Release／上架授權。
+
+唯一範圍是 `sand-sunwell-basin`「日井盆地」、Lv30 `sunwell-beetle`「日井甲蟲」、保證可出售的 `sunwell-shell`「日井甲殼」（sell 約 55）和 q13。琉砂於 q12 claimed 後供玩家手動接取 q13；砂丘關道的兩個沙蠍點保留、另外兩點改為甲蟲；擊殺兩隻甲蟲後仍須回琉砂手動 claim 才解鎖砂丘東門。沒有物品交付。第三圖約 2,800px，具安全入口、主地面、上層平台與梯路、中央日井遺跡、甲蟲／沙蠍混合遭遇及永遠開放的西側回程。區域圖只把新增真實 MapDef 顯示成節點。
+
+甲蟲沿用 Frost Crab 既有 bounded charge 行為與參數（750ms 預警、250ms active、最多 220px）：預警時鎖定方向，既有命中、map wall、map edge 與 spawn roam 裁切保持一致，警示路徑對應衝鋒攻擊路徑；新增甲蟲專屬技能資料，不複製沙蠍尾刺，也不新增 combat framework。美術契約為環境三層 sky/far/mid；甲蟲 384×384、4×4 個 96px 格（idle 0–1／walk 2–5／attack 6–9／hurt 10–11／dead 12–15），walk 格須為真實獨特姿勢，idle 200ms、dead 100ms，runtime 96×96、collision 約 52×42；甲殼 icon 128×128 RGBA，runtime 32×32。walk 四格特例僅給甲蟲，既有沙蠍檢查不放寬。
+
+`/root/sunwell_integration` 擁有全部 main 程式、manifest、文件及測試；`/root/sunwell_environment_art` 與 `/root/sunwell_beetle_art` 各自在隔離 worktree 交付素材。素材代理等計畫 commit 後開始生成。最小驗收是一個以實際 catalog spawn 的 q13 路線案例（q13 缺席舊 format 1 save、門在手動領獎前鎖定、兩次擊殺、claim、進圖和自由回程），及需要時一個 charge 碰撞／牆面／單次命中案例；另跑相關 typecheck、content、focused tests、diff check。固定工具 1.1.0 pack/validate 與 build 各一次，待來源和 metadata 穩定後執行；不跑 full suite、不發布。詳細範圍、責任、acceptance 和停止條件見 `plan/status.md` 新增的「日井盆地有限續作」。
