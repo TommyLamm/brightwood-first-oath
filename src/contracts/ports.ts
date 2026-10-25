@@ -48,7 +48,7 @@ export type CloudSaved = CloudRecord & { saved: true };
 export type CloudSaveInput = {
   data: SaveData;
   revision: number;
-  formatVersion: 1;
+  formatVersion: 3;
   requestId: string;
 };
 

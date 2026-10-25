@@ -1,0 +1,21 @@
+{
+  "frameId": "sfx:stele-tune",
+  "status": "accepted",
+  "source": "tools/audio/scores/sfx.mjs",
+  "recipe": "RECIPES['stele-tune']",
+  "generationCommand": "node tools/audio/generate-audio.mjs --only stele-tune",
+  "generationScope": "Only the stele-tune effect was rendered; existing music tracks and other effects were retained.",
+  "runtimeOutput": "public/assets/audio/stele-tune.wav",
+  "runtimeSha256": "AD167E3523B01A0D82E293439E5D3112C90713AF6972ED85EE87269DFB34C12F",
+  "runtimeBytes": 52844,
+  "format": {
+    "container": "WAV/RIFF",
+    "encoding": "PCM16 signed integer",
+    "sampleRateHz": 48000,
+    "channels": 1,
+    "frames": 26400,
+    "durationSeconds": 0.55
+  },
+  "acceptanceReason": "Accepted: short muted stone tap and paired mineral/copper partials with a soft echo tail, within the specified 0.35–0.65 second range.",
+  "rejectionReason": null
+}

@@ -1,0 +1,67 @@
+{
+  "frameId": "ruins-bell-prowler:idle-1",
+  "tool": "built-in image_gen",
+  "callId": "exec-0d7572f9-4f2c-4a21-a4b5-3456d830cb1c",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a17183-550e-7cb0-b888-6db90dabcd6a as C:\\Users\\Tommy\\.codex\\generated_images\\01a17183-550e-7cb0-b888-6db90dabcd6a\\exec-0d7572f9-4f2c-4a21-a4b5-3456d830cb1c.png by default.",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17183-550e-7cb0-b888-6db90dabcd6a\\exec-0d7572f9-4f2c-4a21-a4b5-3456d830cb1c.png",
+  "workspacePath": "art-source/ruins-b/prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+  "submittedPromptPath": "art-source/ruins-b/prowler-motion/prompts/ruins-bell-prowler-idle-1.txt",
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-bell-prowler-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-bell-prowler-attack-2-v2.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "rawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+  "accepted": true,
+  "acceptanceReason": "Complete right-facing quadruped with all four paws planted; subtle raised shoulder/head and shifted clapper produce a real breathing variation from idle-0 while preserving the accepted bell, stone and moss identity.",
+  "reviewPath": "art-source/ruins-b/prowler-motion/review/ruins-bell-prowler-idle-1-q70.jpg",
+  "reviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ]
+  },
+  "normalization": {
+    "output": "art-source/ruins-b/prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+    "size": [
+      96,
+      96
+    ],
+    "alphaBBoxGt8": [
+      5,
+      32,
+      91,
+      93
+    ],
+    "sha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+    "facing": "right",
+    "centerX": 48,
+    "bottomVisibleY": 92,
+    "minTransparentPadding": 3,
+    "method": "alpha>8 subject bounds with 3.5% margin, Lanczos downscale to fit 90x76, alpha-centered horizontally and bottom-aligned at visible y=92"
+  },
+  "unmappedPriorAttempt": {
+    "frameId": "ruins-bell-prowler:idle-1",
+    "tool": "built-in image_gen",
+    "status": "identified-not-used",
+    "callId": "exec-5e6fd880-0fcf-445c-92c4-c06b40183c87",
+    "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17183-550e-7cb0-b888-6db90dabcd6a\\exec-5e6fd880-0fcf-445c-92c4-c06b40183c87.png",
+    "revisedPrompt": "Use case: stylized-concept\nAsset type: one transparent 2D RPG monster animation frame, frame ID ruins-bell-prowler:idle-1\nInput images: Image 1 is the accepted Ruins Bell Prowler identity reference; preserve this exact creature. Image 2 is its accepted attack pose and is only a secondary reference for the same materials and pixel-art style.\nPrimary request: Create the second calm idle breathing pose for the exact same low, heavy four-legged stone prowler. Keep its chipped weathered copper bell shell strapped across its back, short dark clapper, slate-gray overlapping stone plates, and restrained moss-olive seams.\nPose: Side view facing right. All four short legs and paws remain firmly planted in the same general footprint. Show a gentle exhale-to-inhale change through articulation: raise the front shoulder and upper torso slightly, lift the blunt head a little, and let the hanging clapper angle shift subtly. Keep the pelvis and paws grounded. This must be a genuinely different pose from idle-0 at 96x96, created by small body-part changes rather than translating the whole creature.\nStyle/medium: crisp hand-crafted 2D pixel-art RPG sprite, matching the reference's chunky clean pixel clusters, limited muted palette, strong dark outline and sharp edges; no painterly haze, no 3D.\nComposition/framing: one complete side-view creature only, centered on a square transparent canvas with a bottom-centered pivot; head faces right; all four paws, tail, copper bell and clapper fully visible with generous transparent padding.\nConstraints: genuine transparent alpha; compact low quadruped silhouette; maintain the reference identity, proportions, palette and scale; no cast shadow.\nAvoid: left-facing orientation, identical idle stance, whole-sprite translation as the only change, extra creatures or poses, sheet, grid, scene, ground plane, text, watermark, UI, glow, blur, gradient, cropped feet, cropped bell, detached particles, weapons, blood, attack effects.",
+    "rawSha256": null,
+    "submittedPrompt": "Same exact prompt file as accepted attempt; caller did not retain it separately before writing the accepted prompt file.",
+    "promptPath": "art-source/ruins-b/prowler-motion/prompts/ruins-bell-prowler-idle-1.txt",
+    "referencePaths": [
+      "art-source/ruins-b/references/raw/ruins-bell-prowler-profile-v1.png",
+      "art-source/ruins-b/references/raw/ruins-bell-prowler-attack-2-v2.png"
+    ],
+    "reason": "Saved path and tool-returned revised prompt recovered from the specified prior prowler-motion rollout. The file was not copied into the workspace, visually reviewed, or normalized; it remains unused and is not marked visually rejected.",
+    "revisedPromptReturnedByTool": true,
+    "rolloutPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T13-23-14-01a17183-550e-7cb0-b888-6db90dabcd6a.jsonl"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "frameId": "ruins-string-puppet:walk-5",
+  "accepted": true,
+  "status": "accepted",
+  "acceptanceReason": "Distinct soft landing with the forward foot lowering ahead, rear leg bending to lift, torso shifting weight and arms continuing their counter-swing.",
+  "raw": "raw/ruins-string-puppet-walk-5-v1.png",
+  "rawSha256": "f4eab6c561b71872b4d82c0e6d583c16e408408ceb68844d88bc9219ae250f6a",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "alphaThreshold": 8,
+  "sourceAlphaBBoxGt8": [
+    251,
+    145,
+    1156,
+    1153
+  ],
+  "edgeAlphaGt8Pixels": 0,
+  "cropIncludingMargin": [
+    216,
+    110,
+    1191,
+    1188
+  ],
+  "marginRatio": 0.035,
+  "scale": 0.070501,
+  "resizedCrop": [
+    69,
+    76
+  ],
+  "output": "normalized/ruins-string-puppet-walk-5.png",
+  "outputSize": [
+    96,
+    96
+  ],
+  "outputAlphaBBoxAny": [
+    13,
+    17,
+    82,
+    93
+  ],
+  "outputAlphaBBoxGt8": [
+    15,
+    19,
+    80,
+    91
+  ],
+  "outputSha256": "f920464c3eac64da49c49f6df69aaf9d37d7e4959f1d7eeb471d440dec799177",
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "facing": "right",
+  "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale to max 90x76, center at x=48, lowest visible pixel y=92",
+  "reviewPath": "review/ruins-string-puppet-walk-5-v1-q70.jpg",
+  "reviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  "submittedPromptPath": "prompts/ruins-string-puppet-walk-5.txt",
+  "submittedPromptSha256": "d62b4f6df59aee8f5703ae56fba5359a4409439da902b9255c053bc271aefe0a",
+  "tool": "built-in image_gen",
+  "callId": "exec-66b94676-a75d-44bf-83ec-7a780ad89a5b",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171b1-a942-7253-9454-5cdec6310f48\\exec-66b94676-a75d-44bf-83ec-7a780ad89a5b.png",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "revisedPromptRecoveryNote": "The direct tool result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+  "resultKeysObserved": [
+    "image_url",
+    "output_hint"
+  ],
+  "rejectionReason": null
+}

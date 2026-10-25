@@ -1,0 +1,5 @@
+Use case: precise-object-edit
+Asset type: final 1920x540 2D parallax layer for a side-view fantasy game.
+Input images: Image 1 is the edit target, a normalized Root Causeway tree-canopy layer.
+Primary request: keep the old tree crown, broad branches, leaf clusters, hanging roots and pale broken column-cap accents, but fit the entire artwork into the top band only.
+Constraints: The target image already has exact 1920x540 dimensions. Keep all visible art within rows y=0..179; remove every pixel, feather, shadow, or stray alpha below that line. Rows y=180..539 must be exactly transparent alpha 0. Shorten the hanging roots cleanly to fit above y=180. Preserve the existing watercolor-pixel style and true RGBA alpha. Do not add any background fill, checkerboard, objects, text, floor, platform or walkable terrain.

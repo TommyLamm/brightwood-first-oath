@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one static transparent environment-actor sprite for two identical Echo Gallery steles in a 2D fantasy RPG.
+Primary request: create one complete upright echo stele, a slender ancient pale-limestone monument that can be reused at both western and eastern tablet placements.
+Subject: a single weathered standing stone slab on a compact stable foot, gently rounded broken shoulders, shallow concentric wave grooves and a few abstract non-letter carved marks. Add restrained blue-green mineral seams and two tiny oxidized-copper inlays. Keep the central face calm and mostly blank so runtime light can be added later.
+Style/medium: crisp polished 2D pixel-art RPG prop with chunky clean pixel clusters, limited palette, strong dark outline, sharp edges and readable stone facets; match high-quality 16-bit game art, no 3D and no painterly blur.
+Composition/framing: exactly one front-facing static monument, full object visible on a tall transparent canvas, centered on a bottom-centered pivot; intended to normalize to a 192x256 RGBA sprite displayed at 96x128.
+Lighting/mood: soft humid limestone daylight, quiet and sacred but not threatening.
+Color palette: ivory limestone, warm grey shadow, subdued sea-glass teal, tiny oxidized-copper accents.
+Constraints: genuine transparent alpha; one still pose only. No face, person, NPC, monster, text, legible writing, logos, watermark, UI, background, floor plane, cast shadow, flames, glow, pulsing light, particles, blur, gradient, extra objects or cropped edges.

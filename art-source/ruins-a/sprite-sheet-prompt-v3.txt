@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: corrected runtime monster sprite atlas, transparent PNG
+Input images: Image 1 shows the intended 苔陶蟲 identity and 30-frame action order. Image 2 is a pixel-art style reference only; do not copy that creature.
+Primary request: Recreate Image 1 as an actually cuttable atlas. Exactly 6 columns by 5 rows of square 96x96 cells (576x480 canvas). Every sprite must be centered in and fully contained within its own cell, separated from every cell boundary and neighboring sprite by transparent pixels.
+Subject: keep the squat ancient crawler with broken pale ceramic shell, subtle engraved bell, small moss patches and a few fine root feelers from Image 1; face right in every frame
+Style/medium: crisp low-resolution 16-bit RPG sprite art, chunky hard pixel clusters, limited flat palette, no painterly lighting or soft effects
+Composition/framing: invisible 6x5 cell grid; within each 96x96 cell, sprite silhouette must fit inside a maximum 70x58 pixel bounding box, centered horizontally, with at least 12 transparent pixels on all four sides and at least 8 transparent pixels between adjacent cell contents at the border. No part of roots, limbs, shell, or shadow crosses the boundary. Keep same bottom pivot and scale in every row. Do not put any sprite on a gridline.
+Color palette: pale weathered ivory ceramic, muted gray, jade and olive moss, very restrained copper
+Rows left to right: row1 two idle poses then exact duplicates of pose 2; row2 six distinct slow crawl frames; row3 four distinct one-bite poses (windup, lean, single bite, recover) then duplicate the last valid frame in the final two cells; row4 two distinct hurt recoils then duplicate pose 2; row5 four distinct collapse/death frames then duplicate the last valid frame in the final two cells.
+Constraints: genuine transparent alpha outside every character; exact equal grid spacing; no cast shadows; keep the icon silhouette low, readable and consistent; duplicate only the unused cells exactly as described
+Avoid: cell overlap, touching boundaries, cropped tendrils, neighboring frames bleeding together, background pixels, gradients, blur, semi-transparent haze, 3D rendering, labels, gridlines, text, borders, UI, watermark

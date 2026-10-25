@@ -1,0 +1,19 @@
+{
+  "frameId": "ruins-string-puppet:attack-1",
+  "tool": "built-in image_gen",
+  "callId": "exec-1a8e482d-bf9e-4f4f-ba1f-339ca94b930a",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-1a8e482d-bf9e-4f4f-ba1f-339ca94b930a.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812 as C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-1a8e482d-bf9e-4f4f-ba1f-339ca94b930a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent sprite frame for a 2D pixel-art RPG enemy\nInput images: Image 1 is the approved Ruins String Puppet identity anchor and is authoritative for character design, proportions, materials and palette. Image 2 is the approved active slap pose and is a secondary same-character action reference. Keep the same puppet from both images.\nCharacter identity: one slender marionette made from aged dark walnut wood, narrow carved mask-like head with dark eye slits, compact jointed torso, asymmetrical articulated limbs, one distinctly long forward/right arm ending in a broad wooden palm, shorter rear/left arm, a few snapped oxidized-copper strings hanging from back and shoulders, restrained moss-olive flecks, charcoal joints and muted warm highlights.\nStyle: crisp 2D pixel-art game sprite with clean dark outlines, sharp edges, readable chunky pixel clusters and a limited muted palette matching the references; no painterly haze and no 3D rendering.\nComposition: exactly one complete full-body side-view puppet, facing right with face toward the right, centered on a square canvas at the same character scale as Image 1; keep the whole head, every limb, feet, palm and snapped strings inside frame with generous transparent padding; no cropping.\nBackground and effects: genuine transparent alpha; no background, ground plane, cast shadow, floor, extra creature, duplicate, panel, frame, grid, labels, text, watermark, UI, glow, blur, gradient, motion streak, impact flash, particles, weapons or blood.\nSprite constraints: one clear static pose only, all body pieces remain attached to the puppet; preserve the original body proportions, long-arm asymmetry, wood grain, copper thread and small moss marks; do not add or remove body parts.\nPose request — attack-1, the final windup pose just before the slap: plant both feet in exactly the same place; compress and tip the torso slightly forward. Cock the unusually long forward/right arm high behind the shoulder, elbow sharply bent and wooden palm open near the back of the head, ready to swing to the right. The short rear arm balances close to the chest and the snapped copper strings arc loosely behind. This is a tense late preparation pose, clearly different from attack-0 and the already-extended attack-2; no forward strike has happened and there is no dash.",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "resultKeysObserved": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-string-puppet-attack-2-v1.png"
+  ],
+  "rawWorkspacePath": "art-source/ruins-b/puppet-actions/raw/ruins-string-puppet-attack-1-v1.png"
+}

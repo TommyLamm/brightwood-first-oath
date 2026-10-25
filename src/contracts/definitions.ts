@@ -163,7 +163,7 @@ export type NpcDef = {
   actorKey: string;
 };
 
-export type QuestObjectiveType = 'reach' | 'kill' | 'collect' | 'equip';
+export type QuestObjectiveType = 'reach' | 'kill' | 'collect' | 'equip' | 'inspect';
 
 export type QuestObjective = {
   type: QuestObjectiveType;

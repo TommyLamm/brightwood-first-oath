@@ -1,0 +1,13 @@
+Use case: stylized-concept
+Asset type: pixel-art 2D RPG creature profile and action review reference
+Primary request: Design one distinct low, slow ancient-ruin monster called 苔陶蟲: a squat crawling creature with a broken ceramic back shell, subtle bell-shaped engraving on the shell, and a few fine root tendrils. Show a clean side profile, a three-quarter silhouette view, a slow crawling pose, and a readable forward bite windup / bite pose as a coherent character sheet for later sprite-sheet production.
+Scene/backdrop: transparent, no environment
+Subject: one small low-bodied creature; pale weathered ceramic plates form a cracked shell, muted moss in the cracks, a few delicate green-brown root feelers, tiny sturdy legs; clearly readable creature silhouette at 96x96 game-sprite scale
+Style/medium: crisp hand-authored-looking pixel art for a 2D side-view fantasy RPG, controlled pixel clusters, restrained palette and sharp edges; same general fidelity as a polished classic pixel-RPG monster sprite
+Composition/framing: four small full-body views in a clean 2x2 grid, consistent proportions and markings, no cropped limbs, generous transparent spacing, clear left-facing side profile and attack direction
+Lighting/mood: soft neutral lighting, damp ancient stone mood without visible background
+Color palette: chalky ivory and pale gray ceramic, deep jade and muted olive moss, restrained oxidized-copper accents
+Materials/textures: chipped fired clay, hairline cracks, rough moss, fibrous root tendrils
+Text (verbatim): none
+Constraints: transparent background with genuine alpha; keep the shell bell motif subtle and non-glowing; the creature stays low and slow-looking; maintain the same design across all four views; no words, labels, grid lines, borders, cast shadow, watermark, UI, extra characters, or scenery
+Avoid: photorealism, smooth vector shapes, 3D render, large eyes, cute mascot proportions, upright humanoid pose, weapons, long tail, glowing danger effects

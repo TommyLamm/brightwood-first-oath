@@ -6,12 +6,16 @@ import {
   WORLD_LANDMARKS,
   FROST_LANDMARKS,
   GOLD_SAND_LANDMARKS,
+  ANCIENT_RUINS_LANDMARKS,
+  ANCIENT_RUINS_WORLD_LANDMARK,
   PLANNED_REGIONS,
+  ancientRuinsOverview,
   atlasScopeForMapId,
   atlasViewModel,
   frostIslesOverview,
   goldSandSeaOverview,
   isFrostMapId,
+  isAncientRuinsMapId,
   mapLevelLabel,
   portalRequirements,
 } from '../src/ui/world-map-model.js';
@@ -115,6 +119,33 @@ describe('world atlas information', () => {
     expect(portalRequirements(outbound, data, catalog).open).toBe(true);
     data.location.mapId = 'frost-shore';
     expect(frostIslesOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 3 });
+  });
+
+  it('shows only the three playable ruins maps, gates the chart entry on claimed q14, and keeps selection informational', () => {
+    expect(ANCIENT_RUINS_WORLD_LANDMARK).toEqual({ x: 69, y: 86 });
+    expect(Object.keys(ANCIENT_RUINS_LANDMARKS)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery']);
+    expect(ANCIENT_RUINS_LANDMARKS['ruins-echo-gallery']).toMatchObject({ x: 67, y: 39 });
+    expect(Object.keys(worldCatalog.maps).filter(isAncientRuinsMapId).sort()).toEqual(['ruins-echo-gallery', 'ruins-root-causeway', 'ruins-tide-camp']);
+    expect(atlasScopeForMapId('ruins-tide-camp')).toBe('ruins');
+
+    const data = save();
+    data.location.mapId = 'sand-glass-shore';
+    data.quests.q14 = { status: 'active', counters: {} };
+    const locked = ancientRuinsOverview(catalog, data);
+    expect(locked).toMatchObject({ current: false, exploredCount: 0, totalCount: 3 });
+    expect(locked.entryRequirement).toEqual({ open: false, text: '需完成「日井守衛的誓約」並領獎' });
+
+    data.quests.q14.status = 'claimed';
+    const open = ancientRuinsOverview(catalog, data);
+    expect(open.entryRequirement).toEqual({ open: true, text: '通道已開放' });
+    const beforeSelection = JSON.stringify(data);
+    const ruins = atlasViewModel(catalog, data, 'ruins-root-causeway');
+    expect(ruins.scope).toBe('ruins');
+    expect(ruins.maps.map(({ id }) => id)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery']);
+    expect(ruins.totalCount).toBe(3);
+    expect(ruins.selectedMap?.id).toBe('ruins-root-causeway');
+    expect(data.location.mapId).toBe('sand-glass-shore');
+    expect(JSON.stringify(data)).toBe(beforeSelection);
   });
 
   it('distinguishes town, monsters and boss and verifies the q09 Frost route gate', () => {

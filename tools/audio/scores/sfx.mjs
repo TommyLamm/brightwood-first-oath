@@ -259,6 +259,14 @@ const RECIPES = {
     mixInto(out, swell, 0, 0.5);
     return out;
   },
+  'stele-tune': (r) => {
+    const out = buffer(0.55);
+    // A muted stone tap under a pair of softly ringing mineral/copper partials.
+    mixInto(out, thump(0.16, 205, 92, { decay: 0.055, drive: 1.25 }), 0, 0.18);
+    mixInto(out, ring(r, 0.5, [[587.33, 0.46, 0.9], [880, 0.23, 0.68], [1174.66, 0.12, 0.52], [1760, 0.055, 0.38]], { decay: 0.23, level: 0.78 }), 0.008, 0.62);
+    mixInto(out, ring(r, 0.4, [[739.99, 0.16, 0.8], [1479.98, 0.065, 0.5]], { decay: 0.19, level: 0.68 }), 0.075, 0.24);
+    return out;
+  },
 };
 
 export const SFX_KEYS = Object.keys(RECIPES);
@@ -267,7 +275,7 @@ export const SFX_KEYS = Object.keys(RECIPES);
 const TRIM = {
   'ui-click': -9, 'panel-open': -8, dialogue: -7, jump: -6, attack: -3, 'attack-heavy': -1, 'attack-sweep': -2,
   hit: -2, 'crit-hit': -1, hurt: -2, pickup: -6, potion: -5, equip: -5, guard: -4, 'monster-die': -4,
-  telegraph: -3, 'boss-phase': 0, portal: -4,
+  telegraph: -3, 'boss-phase': 0, portal: -4, 'stele-tune': -5,
 };
 
 export function renderSfx(key) {

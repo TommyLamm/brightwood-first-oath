@@ -95,6 +95,24 @@
       "layer": "combat"
     },
     {
+      "key": "theme-ruins",
+      "url": "assets/audio/theme-ruins.ogg",
+      "fallbackUrl": "assets/audio/theme-ruins.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-ruins",
+      "layer": "base"
+    },
+    {
+      "key": "theme-ruins:combat",
+      "url": "assets/audio/theme-ruins-combat.ogg",
+      "fallbackUrl": "assets/audio/theme-ruins-combat.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "theme-ruins",
+      "layer": "combat"
+    },
+    {
       "key": "boss-guardian",
       "url": "assets/audio/boss-guardian.ogg",
       "fallbackUrl": "assets/audio/boss-guardian.m4a",
@@ -295,6 +313,12 @@
     {
       "key": "portal",
       "url": "assets/audio/portal.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "stele-tune",
+      "url": "assets/audio/stele-tune.wav",
       "kind": "sfx",
       "loop": false
     }

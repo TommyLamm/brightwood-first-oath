@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent 2D RPG monster animation frame, frame ID ruins-bell-prowler:idle-1
+Input images: Image 1 is the accepted Ruins Bell Prowler identity reference; preserve this exact creature. Image 2 is its accepted attack pose and is only a secondary reference for the same materials and pixel-art style.
+Primary request: Create the second calm idle breathing pose for the exact same low, heavy four-legged stone prowler. Keep its chipped weathered copper bell shell strapped across its back, short dark clapper, slate-gray overlapping stone plates, and restrained moss-olive seams.
+Pose: Side view facing right. All four short legs and paws remain firmly planted in the same general footprint. Show a gentle exhale-to-inhale change through articulation: raise the front shoulder and upper torso slightly, lift the blunt head a little, and let the hanging clapper angle shift subtly. Keep the pelvis and paws grounded. This must be a genuinely different pose from idle-0 at 96x96, created by small body-part changes rather than translating the whole creature.
+Style/medium: crisp hand-crafted 2D pixel-art RPG sprite, matching the reference's chunky clean pixel clusters, limited muted palette, strong dark outline and sharp edges; no painterly haze, no 3D.
+Composition/framing: one complete side-view creature only, centered on a square transparent canvas with a bottom-centered pivot; head faces right; all four paws, tail, copper bell and clapper fully visible with generous transparent padding.
+Constraints: genuine transparent alpha; compact low quadruped silhouette; maintain the reference identity, proportions, palette and scale; no cast shadow.
+Avoid: left-facing orientation, identical idle stance, whole-sprite translation as the only change, extra creatures or poses, sheet, grid, scene, ground plane, text, watermark, UI, glow, blur, gradient, cropped feet, cropped bell, detached particles, weapons, blood, attack effects.

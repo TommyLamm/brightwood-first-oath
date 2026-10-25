@@ -1,0 +1,5 @@
+Use case: precise-object-edit
+Asset type: final 1920x540 near-overhead parallax layer for a side-view fantasy game.
+Input images: Image 1 is the edit target, the current Root Causeway tree-canopy layer with the correct transparent lower region.
+Primary request: revise only the canopy's lower silhouette so it ends naturally instead of as a flat horizontal clipped strip.
+Constraints: preserve the existing broad old branches, leaf clusters, root tendrils, pale broken column-cap accents, colors, texture, lighting, and upper-corner framing. Keep all visible artwork entirely within rows y=0..179, using a ragged organic contour of foliage and root tips that finishes above y=180. The target is 1920x540; every pixel at y>=180 must be fully transparent alpha 0. Rows y=180..539 must contain no color or alpha. Preserve true RGBA transparency, no background fill or checkerboard. Do not add text, characters, floor, platform, or walkable terrain.

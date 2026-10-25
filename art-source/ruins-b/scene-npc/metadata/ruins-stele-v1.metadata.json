@@ -1,0 +1,73 @@
+{
+  "frameId": "actor:ruins-stele",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/ruins-stele-source.png",
+  "rawSha256": "EADE70EAB4830DB81A642F66A2B51B12B71A0021D4BCF3AB9A9EB362323EDA1B",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/ruins-stele-v1.txt",
+  "promptSha256": "69FB8322B3AEDF3DD8BB7A34A39CF5CFC05C9479B1A9713F3F8C27132C677AD2",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one static transparent environment-actor sprite for two identical Echo Gallery steles in a 2D fantasy RPG.\nPrimary request: create one complete upright echo stele, a slender ancient pale-limestone monument that can be reused at both western and eastern tablet placements.\nSubject: a single weathered standing stone slab on a compact stable foot, gently rounded broken shoulders, shallow concentric wave grooves and a few abstract non-letter carved marks. Add restrained blue-green mineral seams and two tiny oxidized-copper inlays. Keep the central face calm and mostly blank so runtime light can be added later.\nStyle/medium: crisp polished 2D pixel-art RPG prop with chunky clean pixel clusters, limited palette, strong dark outline, sharp edges and readable stone facets; match high-quality 16-bit game art, no 3D and no painterly blur.\nComposition/framing: exactly one front-facing static monument, full object visible on a tall transparent canvas, centered on a bottom-centered pivot; intended to normalize to a 192x256 RGBA sprite displayed at 96x128.\nLighting/mood: soft humid limestone daylight, quiet and sacred but not threatening.\nColor palette: ivory limestone, warm grey shadow, subdued sea-glass teal, tiny oxidized-copper accents.\nConstraints: genuine transparent alpha; one still pose only. No face, person, NPC, monster, text, legible writing, logos, watermark, UI, background, floor plane, cast shadow, flames, glow, pulsing light, particles, blur, gradient, extra objects or cropped edges.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_a90cf0a7531141fdb1b60793ddc84308",
+  "callId": "exec-1584f79b-099a-417d-ae07-1e0db760ec87",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-1584f79b-099a-417d-ae07-1e0db760ec87.png",
+  "savedPathSha256": "EADE70EAB4830DB81A642F66A2B51B12B71A0021D4BCF3AB9A9EB362323EDA1B",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: one complete upright monument with a calm blank center, wave grooves, teal mineral seams, copper inlays, and bottom pivot; both NPC IDs will share this static actor.",
+  "rejectionReason": null,
+  "normalization": {
+    "method": "Crop alpha>8 subject bounds with 3.5% margin; Lanczos fit within 164x236; center horizontally and align bottom pivot at y=255.",
+    "sourceAlphaBBoxGt8": [
+      242,
+      54,
+      843,
+      1416
+    ],
+    "cropIncludingMargin": [
+      194,
+      6,
+      891,
+      1448
+    ],
+    "resizedSize": [
+      114,
+      236
+    ],
+    "scale": 0.163662,
+    "output": "public/assets/actors/npcs/ruins-stele-v1.png",
+    "outputSize": [
+      192,
+      256
+    ],
+    "outputSha256": "E2BE80E40972563B62B5FB038DF98A4690CB2B62812770B9D31321D8D1AA9B4B",
+    "outputAlphaBBoxGt8": [
+      46,
+      27,
+      146,
+      250
+    ],
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/ruins-stele-runtime-q70.jpg",
+    "runtimeReviewSize": [
+      768,
+      1024
+    ]
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/ruins-stele-runtime-q70.jpg"
+  },
+  "visualReviewNote": "One upright, blank-faced monument with a stable base; the same runtime sprite is suitable for both stele IDs."
+}

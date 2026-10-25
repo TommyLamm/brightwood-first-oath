@@ -29,11 +29,19 @@ export const GOLD_SAND_LANDMARKS: Record<string, MapLandmark> = {
   'sand-sunwell-altar': { x: 92, y: 34, description: '日井祭壇矗立在盆地東側，砂岩守衛以雙拳守著青綠核心與古井誓約。' },
 };
 
+/** Coordinates belong to the Ancient Ruins chart; only real catalog maps are rendered. */
+export const ANCIENT_RUINS_LANDMARKS: Record<string, MapLandmark> = {
+  'ruins-tide-camp': { x: 16, y: 72, description: '潮濕石階與帆布營棚依著舊航標而建，斷鐘塔隱約立在海霧後方。' },
+  'ruins-root-causeway': { x: 40, y: 55, description: '青綠盤根攀上白石斷柱，梯路連起尚可通行的石道。' },
+  'ruins-echo-gallery': { x: 67, y: 39, description: '兩座回聲碑立於高台之間，長廊深處仍有巡鈴石獸守著舊航標。' },
+};
+
 /** One global-chart marker stands for each playable region. */
 export const FROST_ISLES_WORLD_LANDMARK = { x: 82, y: 18 };
 export const GOLD_SAND_SEA_WORLD_LANDMARK = { x: 85, y: 53 };
+export const ANCIENT_RUINS_WORLD_LANDMARK = { x: 69, y: 86 };
 
-export type AtlasScope = 'world' | 'frost' | 'sand';
+export type AtlasScope = 'world' | 'frost' | 'sand' | 'ruins';
 export type AtlasViewModel = {
   scope: AtlasScope;
   /** Real catalog maps in this scope which have an authored chart coordinate. */
@@ -54,23 +62,30 @@ export function isGoldSandMapId(mapId: string): boolean {
   return mapId.startsWith('sand-');
 }
 
+export function isAncientRuinsMapId(mapId: string): boolean {
+  return mapId.startsWith('ruins-');
+}
+
 export function atlasScopeForMapId(mapId: string): AtlasScope {
   if (isFrostMapId(mapId)) return 'frost';
   if (isGoldSandMapId(mapId)) return 'sand';
+  if (isAncientRuinsMapId(mapId)) return 'ruins';
   return 'world';
 }
 
 function landmarksForScope(scope: AtlasScope): Record<string, MapLandmark> {
-  return scope === 'frost' ? FROST_LANDMARKS : scope === 'sand' ? GOLD_SAND_LANDMARKS : WORLD_LANDMARKS;
+  if (scope === 'frost') return FROST_LANDMARKS;
+  if (scope === 'sand') return GOLD_SAND_LANDMARKS;
+  if (scope === 'ruins') return ANCIENT_RUINS_LANDMARKS;
+  return WORLD_LANDMARKS;
 }
 
 export function atlasViewModel(catalog: ContentCatalog, data: SaveData, selectedId: string | null): AtlasViewModel {
   const allMaps = Object.values(catalog.world.maps);
   const explicitlySelected = selectedId ? catalog.world.maps[selectedId] : undefined;
   const scope = explicitlySelected ? atlasScopeForMapId(explicitlySelected.id) : atlasScopeForMapId(data.location.mapId);
-  const scopeMaps = allMaps.filter(({ id }) => atlasScopeForMapId(id) === scope);
   const landmarks = landmarksForScope(scope);
-  const maps = scopeMaps.filter(({ id }) => Object.hasOwn(landmarks, id));
+  const maps = allMaps.filter(({ id }) => atlasScopeForMapId(id) === scope && Object.hasOwn(landmarks, id));
   const visitedMapIds = new Set([...data.visitedMaps, data.location.mapId]);
   const currentMap = maps.find(({ id }) => id === data.location.mapId) ?? null;
   const selectedMap = explicitlySelected && maps.some(({ id }) => id === explicitlySelected.id)
@@ -81,8 +96,8 @@ export function atlasViewModel(catalog: ContentCatalog, data: SaveData, selected
     maps,
     selectedMap,
     visitedMapIds,
-    exploredCount: scopeMaps.filter(({ id }) => visitedMapIds.has(id)).length,
-    totalCount: scopeMaps.length,
+    exploredCount: maps.filter(({ id }) => visitedMapIds.has(id)).length,
+    totalCount: maps.length,
     allExploredCount: allMaps.filter(({ id }) => visitedMapIds.has(id)).length,
     allMapCount: allMaps.length,
   };
@@ -97,7 +112,8 @@ export type RegionOverview = {
 
 function regionOverview(catalog: ContentCatalog, data: SaveData, scope: Exclude<AtlasScope, 'world'>, entryMapId: string, sourceScope: AtlasScope): RegionOverview {
   const maps = Object.values(catalog.world.maps);
-  const regionMaps = maps.filter(({ id }) => atlasScopeForMapId(id) === scope);
+  const landmarks = landmarksForScope(scope);
+  const regionMaps = maps.filter(({ id }) => atlasScopeForMapId(id) === scope && Object.hasOwn(landmarks, id));
   const visited = new Set([...data.visitedMaps, data.location.mapId]);
   const entrance = maps
     .filter(({ id }) => atlasScopeForMapId(id) === sourceScope)
@@ -117,6 +133,10 @@ export function frostIslesOverview(catalog: ContentCatalog, data: SaveData): Reg
 
 export function goldSandSeaOverview(catalog: ContentCatalog, data: SaveData): RegionOverview {
   return regionOverview(catalog, data, 'sand', 'sand-glass-shore', 'frost');
+}
+
+export function ancientRuinsOverview(catalog: ContentCatalog, data: SaveData): RegionOverview {
+  return regionOverview(catalog, data, 'ruins', 'ruins-tide-camp', 'sand');
 }
 
 export function mapLevelLabel(map: MapDef, catalog: ContentCatalog): string {

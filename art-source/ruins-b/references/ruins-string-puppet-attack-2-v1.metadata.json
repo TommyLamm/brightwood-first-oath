@@ -1,0 +1,39 @@
+{
+  "frameId": "ruins-string-puppet:attack-2",
+  "tool": "built-in image_gen",
+  "callId": "exec-61de5b77-b0d6-4306-81b8-bb8569f75aab",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17175-9243-7a91-bab6-464cafba1cf7\\exec-61de5b77-b0d6-4306-81b8-bb8569f75aab.png",
+  "workspacePath": "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-b/references/raw/ruins-string-puppet-attack-2-v1.png",
+  "submittedPromptPath": "art-source/ruins-b/references/prompts/ruins-string-puppet-attack-2-v1.txt",
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+    "art-source/ruins-a/actors/review/monster-style-ref.jpg"
+  ],
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "sha256": "0A19D4D7F0A846788933EE1808B051E86E58827CDB494EA2006F9E529B3BC247",
+  "notes": "Wrapper returned output_hint with savedPath but no revisedPrompt field; exact submitted prompt is archived.",
+  "accepted": true,
+  "acceptanceReason": "Right-facing active slap; extended long wooden arm reads clearly; one complete pose with no dash or effects.",
+  "reviewPath": "references/review/ruins-string-puppet-attack-2-v1-q70.jpg",
+  "normalized": {
+    "output": "references/normalized/ruins-string-puppet-attack-2.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      6,
+      19,
+      90,
+      91
+    ],
+    "outputSha256": "37bc6ef2997fa6952dbd8f99fde3fc37de6152a0f01558fca744f7bedfc71240",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92"
+  }
+}

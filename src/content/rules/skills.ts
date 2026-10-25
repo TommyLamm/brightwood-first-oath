@@ -43,6 +43,12 @@ export const skills: Record<Id, SkillDef> = {
     reach: 55, height: 70, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'ruins-carapace-bite': {
+    id: 'ruins-carapace-bite', name: '陶殼咬擊', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 1400, windupMs: 550, activeMs: 80, recoveryMs: 770,
+    reach: 60, height: 70, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
   'guardian-slam': {
     id: 'guardian-slam', name: '守衛重擊', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 900, activeMs: 100, recoveryMs: 800,
@@ -89,6 +95,18 @@ export const skills: Record<Id, SkillDef> = {
     id: 'low-tide-wave', name: '低潮湧浪', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
     mpCost: 0, cooldownMs: 0, windupMs: 1100, activeMs: 100, recoveryMs: 800,
     reach: 380, height: 30, targets: 1, multiplierBase: 1.15, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
+  'ruins-puppet-slap': {
+    id: 'ruins-puppet-slap', name: '斷弦拍擊', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 2200, windupMs: 1000, activeMs: 100, recoveryMs: 900,
+    reach: 160, height: 100, targets: 1, multiplierBase: 1.1, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
+  'ruins-prowler-sweep': {
+    id: 'ruins-prowler-sweep', name: '鈴影低掃', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 2400, windupMs: 1100, activeMs: 100, recoveryMs: 900,
+    reach: 260, height: 30, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
 };

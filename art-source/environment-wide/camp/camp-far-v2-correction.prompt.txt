@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:camp:far for an original 2D side-scrolling adventure.
+Primary request: create a completely new, clean panoramic distant countryside for a peaceful first camp at dawn. Use a simple composition with two or three low, gently overlapping blue-green hill ridges and one sparse, fine far treeline. Keep it quiet and far away.
+Input images:
+- Image 1, approved camp sky: use only for pale blue and warm dawn color temperature.
+- Image 2, forest style board: use only for its clean pixel-cluster rendering and soft atmospheric depth. Do not copy its trees, mountains, layout, or composition.
+Scene/backdrop: open countryside at early morning.
+Subject: distant low hills and a delicate, very restrained mist layer within the distant landscape; no close scenery.
+Style/medium: crisp 2D pixel-art with deliberate simple stepped silhouettes and broad controlled color clusters. Use a consistent visible pixel scale. Keep the shading smooth within a few clean color groups, with no brush speckle, fine grain, noise, or scattered flecks.
+Composition/framing: intended final canvas 1440x540 (8:3 panoramic). Keep all landscape artwork within the lower 30% of the final frame, with most of the frame truly transparent and with a transparent band below the hills. Use low, rounded ridges rather than tall mountain peaks. If native output is a different size, leave enough empty transparent margin for a centered 8:3 crop; do not stretch the scene.
+Lighting/mood: quiet, airy morning light, subtle and low contrast behind gameplay.
+Color palette: muted sage, blue-teal, gray-green, and small soft cream-gold notes away from silhouette edges.
+Transparency: genuine alpha channel; every pixel outside the natural scenery silhouette is fully transparent. Edges are clean pixel edges in the neighboring natural hill colors.
+Constraints: no background fill, no checkerboard, no opaque backdrop, no glow, no outline, no halo, no bright rim, no cyan/yellow/red/magenta fringe, no stray colored pixels. No characters, people, animals, buildings, tents, props, ground plane, walkable platforms, ledges, collision surfaces, text, lettering, logo, border, or watermark. Do not mirror, repeat, or tile the image.

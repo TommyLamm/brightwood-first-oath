@@ -14,20 +14,20 @@
     },
     {
       "key": "env:camp:far",
-      "url": "assets/environment/env-camp-far-v1.png",
+      "url": "assets/environment/env-camp-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:camp:mid",
-      "url": "assets/environment/env-camp-mid-v1.png",
+      "url": "assets/environment/env-camp-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -44,20 +44,20 @@
     },
     {
       "key": "env:town:far",
-      "url": "assets/environment/env-town-far-v1.png",
+      "url": "assets/environment/env-town-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:town:mid",
-      "url": "assets/environment/env-town-mid-v1.png",
+      "url": "assets/environment/env-town-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -74,20 +74,20 @@
     },
     {
       "key": "env:forest:far",
-      "url": "assets/environment/env-forest-far-v1.png",
+      "url": "assets/environment/env-forest-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:forest:mid",
-      "url": "assets/environment/env-forest-mid-v1.png",
+      "url": "assets/environment/env-forest-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -104,20 +104,20 @@
     },
     {
       "key": "env:rock:far",
-      "url": "assets/environment/env-rock-far-v1.png",
+      "url": "assets/environment/env-rock-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:rock:mid",
-      "url": "assets/environment/env-rock-mid-v1.png",
+      "url": "assets/environment/env-rock-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -134,20 +134,20 @@
     },
     {
       "key": "env:frost:far",
-      "url": "assets/environment/env-frost-far-v1.png",
+      "url": "assets/environment/env-frost-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:frost:mid",
-      "url": "assets/environment/env-frost-mid-v1.png",
+      "url": "assets/environment/env-frost-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -164,20 +164,20 @@
     },
     {
       "key": "env:frost-pine:far",
-      "url": "assets/environment/env-frost-pine-far-v1.png",
+      "url": "assets/environment/env-frost-pine-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:frost-pine:mid",
-      "url": "assets/environment/env-frost-pine-mid-v1.png",
+      "url": "assets/environment/env-frost-pine-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -194,20 +194,20 @@
     },
     {
       "key": "env:frost-cave:far",
-      "url": "assets/environment/env-frost-cave-far-v1.png",
+      "url": "assets/environment/env-frost-cave-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:frost-cave:mid",
-      "url": "assets/environment/env-frost-cave-mid-v1.png",
+      "url": "assets/environment/env-frost-cave-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -304,20 +304,20 @@
     },
     {
       "key": "env:sand:far",
-      "url": "assets/environment/env-sand-far-v1.png",
+      "url": "assets/environment/env-sand-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:sand:mid",
-      "url": "assets/environment/env-sand-mid-v1.png",
+      "url": "assets/environment/env-sand-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -334,20 +334,20 @@
     },
     {
       "key": "env:sand-dune:far",
-      "url": "assets/environment/env-sand-dune-far-v1.png",
+      "url": "assets/environment/env-sand-dune-far-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1440,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
     },
     {
       "key": "env:sand-dune:mid",
-      "url": "assets/environment/env-sand-dune-mid-v1.png",
+      "url": "assets/environment/env-sand-dune-mid-v2.png",
       "columns": 1,
       "rows": 1,
-      "displayWidth": 960,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
@@ -364,7 +364,27 @@
     },
     {
       "key": "env:sunwell:far",
-      "url": "assets/environment/env-sunwell-far-v1.png",
+      "url": "assets/environment/env-sunwell-far-v2.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1440,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:mid",
+      "url": "assets/environment/env-sunwell-mid-v2.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-camp:sky",
+      "url": "assets/environment/env-ruins-camp-sky-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 960,
@@ -373,11 +393,81 @@
       "pivotY": 0
     },
     {
-      "key": "env:sunwell:mid",
-      "url": "assets/environment/env-sunwell-mid-v1.png",
+      "key": "env:ruins-camp:far",
+      "url": "assets/environment/env-ruins-camp-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1440,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-camp:mid",
+      "url": "assets/environment/env-ruins-camp-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-root:sky",
+      "url": "assets/environment/env-ruins-root-sky-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-root:far",
+      "url": "assets/environment/env-ruins-root-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1440,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-root:mid",
+      "url": "assets/environment/env-ruins-root-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-gallery:sky",
+      "url": "assets/environment/env-ruins-gallery-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-gallery:far",
+      "url": "assets/environment/env-ruins-gallery-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1440,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-gallery:mid",
+      "url": "assets/environment/env-ruins-gallery-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0

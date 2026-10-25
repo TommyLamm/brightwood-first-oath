@@ -40,6 +40,11 @@ import {
   segmentTileGeometry,
   WORLD_DEPTH,
 } from './geometry.js';
+import {
+  tileSpriteBottomAnchoredTilePositionY,
+  tileSpriteParallaxTilePositionX,
+  tileSpriteSourceDisplayWidth,
+} from './parallax.js';
 
 type RendererAssets = {
   images: Map<string, AssetImage>;
@@ -114,6 +119,8 @@ const HERO_ANCHOR_FRAME_COUNTS: Record<HeroAnchorPose, number> = {
   buff: 4,
 };
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
+const AUTHORED_ATTACK_FRAME_MONSTER_IDS = new Set(['ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler']);
+const STELE_NPC_IDS = new Set(['ruins-stele-west', 'ruins-stele-east']);
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
 /**
  * Maps that share a background theme get a light colour wash over the parallax layers so they
@@ -126,17 +133,21 @@ const MAP_ATMOSPHERE: Readonly<Record<string, { color: number; alpha: number }>>
   'guardian-arena': { color: 0x3b1222, alpha: 0.3 },
 };
 /**
- * The layers are pinned to the screen (scroll factor 0). They must not be repositioned from
- * `camera.scrollX`: that value is read before the follow camera rounds its scroll for the frame,
- * so a scroll-derived position lands on a different sub-pixel every frame and, with smoothing
- * off, flips by a whole pixel while the hero moves.
+ * The layers stay at a fixed screen position (scroll factor 0); their texture phase supplies
+ * parallax after Phaser has rounded and clamped the follow camera for the current frame.
  */
 const BACKGROUND_LAYERS = [
-  { name: 'sky', depth: WORLD_DEPTH.sky },
-  { name: 'far', depth: WORLD_DEPTH.far },
-  { name: 'mid', depth: WORLD_DEPTH.mid },
+  { name: 'sky', depth: WORLD_DEPTH.sky, parallaxFactor: 0 },
+  { name: 'far', depth: WORLD_DEPTH.far, parallaxFactor: 0.2 },
+  { name: 'mid', depth: WORLD_DEPTH.mid, parallaxFactor: 0.5 },
 ] as const;
 type BackgroundLayer = (typeof BACKGROUND_LAYERS)[number];
+// Phaser 3.90 creates displayFrame at runtime, but omits it from the TileSprite declaration.
+type TileSpriteWithDisplayFrame = Phaser.GameObjects.TileSprite & {
+  displayFrame: { width: number; height: number };
+};
+const tileSpriteWithDisplayFrame = (sprite: Phaser.GameObjects.TileSprite): TileSpriteWithDisplayFrame =>
+  sprite as TileSpriteWithDisplayFrame;
 // Enlarge Sunwell's far layer around its bottom edge so the basin clears the ground without floating.
 const BACKGROUND_THEME_TILE_SCALE_Y: Readonly<Record<string, Partial<Record<BackgroundLayer['name'], number>>>> = {
   sunwell: { far: 1.6 },
@@ -369,6 +380,7 @@ export function createWorldRenderer(
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
+  const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
     color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
@@ -620,14 +632,39 @@ export function createWorldRenderer(
     const themeScales = BACKGROUND_THEME_TILE_SCALE_Y[activeVisual.map.themeKey];
     activeVisual.backgrounds.forEach((background, index) => {
       const layer = BACKGROUND_LAYERS[index]!;
+      const source = tileSpriteWithDisplayFrame(background);
       const themeScaleY = themeScales?.[layer.name] ?? 1;
       if (themeScaleY !== 1) {
-        const anchoredTilePositionY = background.frame.height - worldHeight / background.tileScaleY;
-        background.setTilePosition(0, anchoredTilePositionY);
+        background.tilePositionY = tileSpriteBottomAnchoredTilePositionY(source, worldHeight);
       }
-      background.setSize(worldWidth, worldHeight);
+      // A wider-than-source viewport may reveal the fixed sky at the right edge; never repeat
+      // a far/mid cluster to fill it.
+      const sourceDisplayWidth = tileSpriteSourceDisplayWidth(source);
+      const backgroundWidth = layer.name === 'sky' ? worldWidth : Math.min(worldWidth, sourceDisplayWidth);
+      background.setSize(backgroundWidth, worldHeight);
     });
   };
+
+  const updateBackgroundParallax = (camera = scene.cameras.main, cameraScrollX = camera.scrollX): void => {
+    if (!activeVisual) return;
+    const worldWidth = camera.width / camera.zoom;
+    const maxCameraScrollX = Math.max(0, activeVisual.map.width - worldWidth);
+    activeVisual.backgrounds.forEach((background, index) => {
+      const layer = BACKGROUND_LAYERS[index]!;
+      background.tilePositionX = tileSpriteParallaxTilePositionX(tileSpriteWithDisplayFrame(background), {
+        cameraScrollX,
+        maxCameraScrollX,
+        factor: layer.parallaxFactor,
+        cameraZoom: camera.zoom,
+      });
+    });
+  };
+
+  const handleCameraFollowUpdate = (camera: Phaser.Cameras.Scene2D.Camera): void => {
+    updateBackgroundParallax(camera);
+  };
+  const camera = scene.cameras.main;
+  camera.on(Phaser.Cameras.Scene2D.Events.FOLLOW_UPDATE, handleCameraFollowUpdate);
 
   const isInViewport = (position: Vec2, margin = 180): boolean => {
     const camera = scene.cameras.main;
@@ -665,8 +702,7 @@ export function createWorldRenderer(
       const themeScaleY = BACKGROUND_THEME_TILE_SCALE_Y[map.themeKey]?.[name] ?? 1;
       background.setTileScale(scale.x, scale.y * themeScaleY);
       if (themeScaleY !== 1) {
-        const anchoredTilePositionY = background.frame.height - background.height / background.tileScaleY;
-        background.setTilePosition(0, anchoredTilePositionY);
+        background.tilePositionY = tileSpriteBottomAnchoredTilePositionY(tileSpriteWithDisplayFrame(background), background.height);
       }
       backgrounds.push(background);
       environmentTextureKeys.add(key);
@@ -841,6 +877,7 @@ export function createWorldRenderer(
     for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
+    steleGlowGraphics.clear();
     bossNameText.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
@@ -909,12 +946,23 @@ export function createWorldRenderer(
     playerSprite.setAlpha(heroAlpha);
     for (const sprite of gearSprites.values()) sprite.setAlpha(heroAlpha);
     const questNpcIds = questMarkerNpcIds(snapshot.questViews, catalog.world.quests);
+    const q17View = snapshot.questViews.find(({ questId }) => questId === 'q17');
+    const tunedSteleIds = new Set(q17View?.status === 'claimed'
+      ? [...STELE_NPC_IDS]
+      : q17View?.objectives
+        .filter((objective) => objective.type === 'inspect' && objective.current >= objective.required)
+        .map(({ targetId }) => targetId) ?? []);
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
       if (!npc || !npcVisual) continue;
       const image = assets.images.get(npcVisual.imageKey)!;
       const npcSprite = drawActor(`npc:${placement.npcId}`, npcVisual.imageKey, `npc:${npc.id}:idle`, { x: placement.x, y: placement.y }, 1, snapshot.nowMs).sprite;
+      if (STELE_NPC_IDS.has(placement.npcId) && tunedSteleIds.has(placement.npcId)) {
+        const glowY = placement.y - image.displayHeight * 0.58;
+        steleGlowGraphics.fillStyle(0xffd979, 0.2).fillCircle(placement.x, glowY, 16);
+        steleGlowGraphics.lineStyle(2, 0xffe9a8, 0.72).strokeCircle(placement.x, glowY, 16);
+      }
       const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
       npcVisual.nameText.setVisible(npcInViewport);
@@ -943,7 +991,10 @@ export function createWorldRenderer(
         monster.movement.facing,
         snapshot.nowMs,
         dead ? monster.deadAtMs ?? snapshot.nowMs : monsterIsAttacking ? attack?.startedAtMs : undefined,
-        monsterIsAttacking && attack ? skillDuration(attack, catalog) : undefined,
+        // These four-frame attacks use authored frame times so the active pose matches the 100 ms hit window.
+        monsterIsAttacking && attack && !AUTHORED_ATTACK_FRAME_MONSTER_IDS.has(monster.monsterId)
+          ? skillDuration(attack, catalog)
+          : undefined,
       ).sprite;
       if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
       if (!dead && isInViewport(monster.movement.position)) {
@@ -1274,10 +1325,13 @@ export function createWorldRenderer(
         for (const sprite of attackEffectSprites.values()) sprite.destroy();
         attackEffectSprites.clear();
         hpGraphics.clear();
+        steleGlowGraphics.clear();
         telegraphGraphics.clear();
         attackGraphics.clear();
         scene.cameras.main.stopFollow();
         scene.cameras.main.setBounds(0, 0, map.width, map.height, true).setDeadzone(200, 120);
+        updateBackgroundPositions();
+        updateBackgroundParallax(scene.cameras.main, 0);
         if (old) {
           destroyVisual(old);
           for (const key of old.environmentTextureKeys) {
@@ -1301,6 +1355,7 @@ export function createWorldRenderer(
       camera.setViewport(0, 0, width, height);
       camera.setZoom(viewport.zoom);
       updateBackgroundPositions();
+      updateBackgroundParallax(camera);
     },
     dispose(): void {
       if (disposed) return;
@@ -1320,10 +1375,12 @@ export function createWorldRenderer(
       for (const effect of eventTexts.values()) effect.object.destroy();
       eventTexts.clear();
       hpGraphics.destroy();
+      steleGlowGraphics.destroy();
       bossNameText.destroy();
       destroyMonsterNames();
       telegraphGraphics.destroy();
       attackGraphics.destroy();
+      scene.cameras.main.off(Phaser.Cameras.Scene2D.Events.FOLLOW_UPDATE, handleCameraFollowUpdate);
       scene.cameras.main.stopFollow();
       for (const label of dropLabels.values()) label.destroy();
       dropLabels.clear();

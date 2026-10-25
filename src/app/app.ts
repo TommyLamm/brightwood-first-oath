@@ -60,6 +60,7 @@ const COMBAT_MUSIC_RANGE_PX = 720;
 const COMBAT_MUSIC_HOLD_MS = 4500;
 const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel']);
 const ATTACK_SOUND_BY_SKILL: Record<string, string> = { 'heavy-strike': 'attack-heavy', sweep: 'attack-sweep' };
+const TUNABLE_STELE_IDS = ['ruins-stele-west', 'ruins-stele-east'] as const;
 
 /** Owns one app state, command sequence, game clock, RNG and EntityId sequence. */
 export class GameApp {
@@ -792,6 +793,22 @@ export class GameApp {
     this.audioMonsterStates = monsterStates;
 
     if (!before) return;
+    const previousSteleQuest = before.saveData.quests.q17;
+    const currentSteleQuest = gameplay.saveData.quests.q17;
+    if (previous.screen === 'playing' && next.screen === 'playing'
+      && gameplay.playerEntityId === before.playerEntityId
+      && before.pendingTransition === null && gameplay.pendingTransition === null
+      && before.saveData.location.mapId === 'ruins-echo-gallery'
+      && gameplay.saveData.location.mapId === 'ruins-echo-gallery'
+      && previousSteleQuest?.status === 'active' && currentSteleQuest?.status === 'active') {
+      for (const targetId of TUNABLE_STELE_IDS) {
+        if (before.interaction?.npcId !== targetId || gameplay.interaction?.npcId !== targetId) continue;
+        if ((previousSteleQuest.counters[targetId] ?? 0) === 0
+          && (currentSteleQuest.counters[targetId] ?? 0) === 1) {
+          this.playAudioOnce(`stele-tune:${gameplay.playerEntityId}:${targetId}`, 'stele-tune');
+        }
+      }
+    }
     if (!before.interaction && gameplay.interaction) {
       this.playAudioOnce(`dialogue:${gameplay.interaction.npcId}:${next.gameTimeMs}`, 'dialogue');
     }

@@ -1,0 +1,85 @@
+{
+  "frameId": "ruins-string-puppet:walk-4",
+  "accepted": true,
+  "status": "accepted",
+  "acceptanceReason": "Distinct opposite stride with the other leg reaching forward and the first leg stretching back, torso straighter and arms counter-swinging.",
+  "raw": "raw/ruins-string-puppet-walk-4-v1.png",
+  "rawSha256": "087ac6bd07309294efb65475720d60ad0a474071a675d11d3a4005cf11355d77",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "alphaThreshold": 8,
+  "sourceAlphaBBoxGt8": [
+    155,
+    166,
+    1100,
+    1142
+  ],
+  "edgeAlphaGt8Pixels": 0,
+  "cropIncludingMargin": [
+    121,
+    132,
+    1134,
+    1176
+  ],
+  "marginRatio": 0.035,
+  "scale": 0.072797,
+  "resizedCrop": [
+    74,
+    76
+  ],
+  "output": "normalized/ruins-string-puppet-walk-4.png",
+  "outputSize": [
+    96,
+    96
+  ],
+  "outputAlphaBBoxAny": [
+    11,
+    17,
+    85,
+    93
+  ],
+  "outputAlphaBBoxGt8": [
+    13,
+    19,
+    83,
+    91
+  ],
+  "outputSha256": "f7dfc8bb8cd8ead8066c5ff6c4f57e353571fc954bbeefc86ae558f5dc0e3ea5",
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "facing": "right",
+  "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale to max 90x76, center at x=48, lowest visible pixel y=92",
+  "reviewPath": "review/ruins-string-puppet-walk-4-v1-q70.jpg",
+  "reviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  "submittedPromptPath": "prompts/ruins-string-puppet-walk-4.txt",
+  "submittedPromptSha256": "6925d4a0f14a94c4fea81fa89183e595249b598ab8f49bec5abaf4c3bfd3c259",
+  "tool": "built-in image_gen",
+  "callId": "exec-1cb52ddf-e284-41d5-9324-7cacea09df47",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171b1-a942-7253-9454-5cdec6310f48\\exec-1cb52ddf-e284-41d5-9324-7cacea09df47.png",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "revisedPromptRecoveryNote": "The direct tool result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+  "resultKeysObserved": [
+    "image_url",
+    "output_hint"
+  ],
+  "rejectionReason": null
+}

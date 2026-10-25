@@ -10,7 +10,14 @@ import type {
   SaveStatus,
   StorageLike,
 } from '../contracts/index.js';
-import { cloneSaveData, measureSaveData, prepareSave, SAVE_FORMAT_VERSION, SAVE_WARNING_BYTES } from './validate.js';
+import {
+  cloneSaveData,
+  measureSaveData,
+  prepareSave,
+  READABLE_SAVE_FORMATS,
+  SAVE_FORMAT_VERSION,
+  SAVE_WARNING_BYTES,
+} from './validate.js';
 
 const ORDINARY_INTERVAL_MS = 15_000;
 const CLOUD_WINDOW_MS = 60_000;
@@ -123,6 +130,10 @@ function isValidRevision(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 }
 
+function isSupportedSaveFormat(value: unknown): value is typeof READABLE_SAVE_FORMATS[number] {
+  return READABLE_SAVE_FORMATS.some((format) => format === value);
+}
+
 export function createPersistence(options: PersistenceOptions): Persistence {
   const key = localSaveKeyForGame(options.gameId);
   const runtime: Runtime = {
@@ -212,7 +223,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       setStatus('loadError', '本機存檔封套結構無效；原始資料已保留。');
       return { mode: 'memory', status: 'loadError', data: null };
     }
-    if (envelope.formatVersion !== SAVE_FORMAT_VERSION) {
+    if (!isSupportedSaveFormat(envelope.formatVersion)) {
       runtime.mode = 'memory';
       runtime.initialized = false;
       setStatus('incompatible', '本機存檔版本不相容；原始資料已保留。');
@@ -243,7 +254,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
   const validateCloudRecord = (record: unknown): { data: SaveData; revision: number; repaired: boolean; repairMessage?: string } | null => {
     if (!isRecord(record) || !isValidRevision(record.revision)) throw new Error('雲端存檔 revision 無效。');
-    if (record.formatVersion !== SAVE_FORMAT_VERSION) {
+    if (!isSupportedSaveFormat(record.formatVersion)) {
       const error = new Error('雲端存檔格式版本不相容。') as CloudError;
       error.machineCode = 'SAVE_FORMAT_INCOMPATIBLE';
       throw error;
@@ -328,6 +339,66 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (!options.storage) {
       setStatus('unavailable', '尚未提供本機儲存介面。');
       return;
+    }
+    let previousRaw: string | null;
+    try {
+      previousRaw = options.storage.getItem(key);
+    } catch (error) {
+      runtime.retryLocal = cloneSaveData(snapshot);
+      setStatus('saveError', errorMessage(error, '檢查本機原存檔失敗；原始資料已保留。'));
+      return;
+    }
+    if (previousRaw !== null) {
+      let previousEnvelope: unknown;
+      try {
+        previousEnvelope = JSON.parse(previousRaw) as unknown;
+      } catch {
+        runtime.mode = 'memory';
+        runtime.initialized = false;
+        stopWrites();
+        setStatus('incompatible', '本機存檔已改變且無法解析；原始資料已保留，已停止寫入。');
+        return;
+      }
+      if (!isRecord(previousEnvelope) || typeof previousEnvelope.formatVersion !== 'number'
+        || !Number.isSafeInteger(previousEnvelope.formatVersion)
+        || !isSupportedSaveFormat(previousEnvelope.formatVersion)
+        || !hasExactKeys(previousEnvelope, ['formatVersion', 'data', 'savedAt'])
+        || typeof previousEnvelope.savedAt !== 'string') {
+        runtime.mode = 'memory';
+        runtime.initialized = false;
+        stopWrites();
+        setStatus('incompatible', '本機存檔格式不相容；原始資料已保留，已停止寫入。');
+        return;
+      }
+      const previousSave = prepareSave(previousEnvelope.data, options.catalog);
+      if (!previousSave.ok) {
+        runtime.mode = 'memory';
+        runtime.initialized = false;
+        stopWrites();
+        setStatus('incompatible', `${previousSave.message} 原始資料已保留，已停止寫入。`);
+        return;
+      }
+      if (previousEnvelope.formatVersion === 1 || previousEnvelope.formatVersion === 2) {
+        const backupKey = `${key}:format${previousEnvelope.formatVersion}-backup`;
+        try {
+          const backupRaw = options.storage.getItem(backupKey);
+          if (backupRaw !== null && backupRaw !== previousRaw) {
+            runtime.mode = 'memory';
+            runtime.initialized = false;
+            stopWrites();
+            setStatus('incompatible', `已有不同的 format ${previousEnvelope.formatVersion} 備份；原始資料已保留，已停止寫入。`);
+            return;
+          }
+          if (backupRaw === null) options.storage.setItem(backupKey, previousRaw);
+          if (options.storage.getItem(backupKey) !== previousRaw) {
+            throw new Error(`format ${previousEnvelope.formatVersion} 備份未能完整確認。`);
+          }
+        } catch (error) {
+          runtime.retryLocal = cloneSaveData(snapshot);
+          setStatus('saveError', `format ${previousEnvelope.formatVersion} 備份失敗；原始存檔未覆寫。${errorMessage(error, '')}`);
+          return;
+        }
+      }
     }
     const envelope = {
       formatVersion: SAVE_FORMAT_VERSION,
@@ -579,6 +650,7 @@ export {
   measureSaveData,
   prepareSave,
   MAX_SAVE_BYTES,
+  READABLE_SAVE_FORMATS,
   SAVE_FORMAT_VERSION,
   SAVE_WARNING_BYTES,
 } from './validate.js';

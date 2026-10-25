@@ -1,0 +1,75 @@
+{
+  "frameId": "environment:ruins-gallery-far",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/ruins-gallery-far-source.png",
+  "rawSha256": "62D4CA1F826954ACBA4ACCC922A4B5C80AAF1C138F83EAEBDDAF864F56216D9F",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/ruins-gallery-far-v1.txt",
+  "promptSha256": "1E4E76DE17A2B78E89A62C64A6716F86C42C6D1CA5DF0F36433E0AE8E4AC8805",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: formal transparent far-parallax layer for a 2D side-view fantasy RPG, Ruins Echo Gallery.\nPrimary request: create only disconnected distant scenery for a spacious ancient echo gallery beyond the root-grown causeway.\nScene/backdrop: isolated weathered pale-limestone rear architecture: broken colonnade pieces, a few partial arches and recessed wall fragments, distant root loops caught around stone, sparse oxidized-copper braces. The forms should feel old, quiet, and acoustically resonant, with atmospheric depth.\nSubject: distant scenery silhouettes only, arranged in separated clusters with broad transparent gaps; no foreground set dressing.\nStyle/medium: crisp hand-painted pixel-art-inspired 2D game background, chunky coherent pixel clusters, broad clean color masses, restrained layered texture; match polished 16-bit RPG scenery, no photorealism, no 3D and no painterly blur.\nComposition/framing: wide horizontal 8:3 panorama intended to normalize to 1440x540. Keep the architecture mostly in the lower half, with irregular broken tops and visible openings. Vary the heights of the separated groups; leave transparent space between every group.\nLighting/mood: pale humid daylight slipping through old stone, cool soft shadows, subdued and contemplative.\nColor palette: limestone ivory and warm grey, blue-grey haze, quiet sea-glass teal roots, tiny restrained oxidized copper.\nConstraints: true transparent background, preserve alpha. No sky or filled backdrop. Do not form a continuous horizontal strip, floor, ground plane, walkable ledge, platform, path, stairway, or road. No characters, NPCs, monsters, text, UI, signs, symbols, watermark, bells, furniture, or foreground objects.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_9755aa1c2cec474e993a69945e53cfea",
+  "callId": "exec-bebb97ca-c98e-4a3e-a42a-efd53a04c074",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-bebb97ca-c98e-4a3e-a42a-efd53a04c074.png",
+  "savedPathSha256": "62D4CA1F826954ACBA4ACCC922A4B5C80AAF1C138F83EAEBDDAF864F56216D9F",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: distant broken colonnade is separated into transparent clusters with a readable lower silhouette for parallax.",
+  "rejectionReason": null,
+  "normalization": {
+    "frameId": "env:ruins-gallery:far",
+    "raw": "raw/ruins-gallery-far-source.png",
+    "rawSha256": "62D4CA1F826954ACBA4ACCC922A4B5C80AAF1C138F83EAEBDDAF864F56216D9F",
+    "rawSize": [
+      2048,
+      768
+    ],
+    "rawMode": "RGBA",
+    "rawAlphaBBoxGt8": [
+      26,
+      36,
+      2028,
+      737
+    ],
+    "output": "public/assets/environment/env-ruins-gallery-far-v1.png",
+    "outputSha256": "B607FEED03F0988685F36523EA96F989A7E787B399D156BE3394496CF1226E6D",
+    "outputBytes": 817828,
+    "outputSize": [
+      1440,
+      540
+    ],
+    "outputMode": "RGBA",
+    "outputAlphaBBoxGt8": [
+      18,
+      25,
+      1425,
+      519
+    ],
+    "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+    "clearedAlphaPixels": 0,
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-far-v1-q70.jpg",
+    "runtimeReviewSize": [
+      1280,
+      480
+    ],
+    "accepted": true,
+    "acceptanceReason": "Accepted: distant broken colonnade is separated into transparent clusters with a readable lower silhouette for parallax."
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-far-v1-q70.jpg"
+  },
+  "visualReviewNote": "Separated distant columns and transparent gaps read well for parallax. Surface texture is more hand-painted than the strict pixel-cluster prompt; retained from the recovered source without re-generation."
+}

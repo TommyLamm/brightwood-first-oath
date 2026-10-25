@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG parallax sky layer for the Ruins Echo Gallery.
+Primary request: create only a calm atmospheric sky/background plate for the long Echo Gallery, where wet ancient limestone ruins open into a misty high vault.
+Scene/backdrop: a broad pale blue-grey vault of humid air with a luminous opening far above, soft mineral haze and a few quiet cloudlike mist bands; the gallery should feel spacious, old and resonant, continuing inland from the root-grown causeway.
+Subject: atmosphere only: empty high air, diffuse light, soft mist. No architecture or landforms.
+Style/medium: crisp hand-painted pixel-art-inspired 2D game background, chunky coherent color clusters, restrained palette, visible pixel-group texture, clean broad shapes; match polished 16-bit RPG scenery, not photoreal, not 3D, no painterly blur.
+Composition/framing: wide horizontal 16:9 side-scrolling panorama intended to normalize to 960x540; quiet open center with subtle variation across the width.
+Lighting/mood: muted daylight filtered through pale stone and sea mist; quiet, reverberant, slightly mysterious but safe to explore.
+Color palette: weathered limestone light, misty blue-grey, subdued sea-glass teal, tiny restrained oxidized-copper warmth.
+Constraints: opaque full-bleed sky layer. Keep strictly sky and atmospheric haze. No buildings, arches, columns, cliffs, sea, trees, roots, characters, NPCs, monsters, platforms, walkable floors, paths, text, symbols, UI, signage or watermark.

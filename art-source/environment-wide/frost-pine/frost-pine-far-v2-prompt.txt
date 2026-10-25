@@ -1,0 +1,15 @@
+Use case: stylized-concept
+Asset type: Production 1440x540 RGBA far-parallax background for Frostpine Pass in the original 2D side-scrolling pixel-art adventure.
+Input images:
+- Image 1, env-frost-pine-far-source.png: Frostpine Pass subject, snow-softened rock, layered ridge detail and existing finish; use as guidance only and redraw a new full-width composition.
+- Image 2, env-frost-pine-sky-v1.png: cold morning powder-blue light with a subtle pale-amber glow near the horizon.
+- Image 3, forest-style-reference-v1.png: accepted game-art guide for painterly pixel texture scale, softened contours, simple shading and restrained contrast; do not copy its forest layout.
+Primary request: Create one original continuous 8:3 side-view panorama for the production far layer. Make Frostpine Pass feel higher, more enclosed and denser than the open Frost Shore. Recompose across the full width with varied natural silhouettes; do not stretch, mirror, tile, duplicate or paste parts of any reference.
+Scene/backdrop: Overlapping pale snowy mountain shoulders and muted blue-gray rock ridges enclosing a distant alpine pass, with a low-contrast band of snow-covered pine forest fading into cold mist.
+Style/medium: Warm painterly pixel-textured 2D game background, softened outlines, broad readable forms, gentle depth haze and restrained contrast. No realism or 3D.
+Composition/framing: Very wide 8:3 landscape, fixed side view, not isometric or top-down. Keep the tallest ridge and distant treetops mostly in the middle and lower bands, tapering naturally into fully transparent sky above. Let the bottom edge dissolve in broken snow haze with varied organic silhouettes; never form a straight walkable ground line. Avoid symmetry and repeated segment patterns.
+Lighting/mood: Clear cold morning, with subtle pale-amber rim light matching Image 2 and cool blue-gray shadows.
+Color palette: Powder blue, pale ivory, muted teal, soft blue-gray and lavender-gray shadow; amber only as a tiny restrained glint.
+Materials/textures: Snow-softened granite, powder snow and distant conifer silhouettes with crisp pixel-textured edges.
+Constraints: Request true alpha transparency for empty sky and gaps; preserve genuine alpha with no painted sky, black matte or checkerboard. Keep silhouettes readable at runtime size; this is a decorative far layer, not a walkable floor.
+Avoid: Foreground tree clusters, coastlines, sea, platform, flat floor, ladder, roots suggesting a landing, path, portal, characters, enemies, structures, text, UI, border, logo, watermark, neon, 3D, photorealism, poster layout, mirror symmetry or tiled motifs.

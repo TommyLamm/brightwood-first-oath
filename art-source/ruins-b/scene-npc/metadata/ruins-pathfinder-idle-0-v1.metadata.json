@@ -1,0 +1,85 @@
+{
+  "frameId": "npc:ruins-pathfinder:idle-0",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/ruins-pathfinder-idle-0-source.png",
+  "rawSha256": "8EFA24486966C82EBD0FD7666E633E6A32C08DFDA2E5EDEB6F528562283EB703",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/ruins-pathfinder-idle-0-v1.txt",
+  "promptSha256": "949D9A7C7C02896C4EFB9FF6AA433F6FAA5544804BE4395A6D0C8CCF8011A13C",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent 2D RPG NPC sprite frame for the Ruins Echo Gallery.\nPrimary request: create one neutral idle frame of 行舟, a calm young adult pathfinder who records tides and echoes at the old signal route.\nSubject: full-body human scout, three-quarter side view facing right, relaxed but attentive stance, closed mouth, short dark brown hair, pale sea-glass teal scarf and travel mantle over an ivory tunic, dark slate trousers, practical boots, a small folded tide-map and copper compass tag at the belt. Keep hands relaxed; no weapon.\nStyle/medium: crisp polished 2D pixel-art RPG sprite with chunky clean pixel clusters, limited coordinated palette, strong dark outline and sharp edges; match high-quality 16-bit adventure game character art, no painterly haze, no 3D render.\nComposition/framing: exactly one person, one pose on a square transparent canvas; full body, head and both boots completely visible, centered over a bottom-centered pivot, with generous transparent padding; suitable to normalize into one 96x96 runtime frame.\nLighting/mood: soft diffuse humid daylight, warm limestone bounce, quiet and trustworthy.\nConstraints: genuine transparent alpha; mouth closed; neutral idle, not speaking; simple compact silhouette readable when displayed at 96x96. No extra people, multiple poses, frames, grid, backdrop, ground plane, shadow, text, symbols, watermark, UI, magic, glow, blur, gradient, oversized props, cropped head or feet.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_7207cf1efe5843c8a3ec4e77b0c1899b",
+  "callId": "exec-309927a5-e863-425f-aae6-c7aaa1274af9",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-309927a5-e863-425f-aae6-c7aaa1274af9.png",
+  "savedPathSha256": "8EFA24486966C82EBD0FD7666E633E6A32C08DFDA2E5EDEB6F528562283EB703",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: full-body right-facing scout retains closed mouth and calm pose; shared crop/scale keeps the subtle breathing pair aligned and suitable for the 350ms idle loop.",
+  "rejectionReason": null,
+  "normalization": {
+    "method": "Combine alpha>8 bounds from both raw poses; add 3.5% margin; same crop and Lanczos scale for both frames; center x and align the lowest visible pixel to y=95 in each 96x96 cell.",
+    "sourceFrames": [
+      "ruins-pathfinder-idle-0-source.png",
+      "ruins-pathfinder-idle-1-source.png"
+    ],
+    "sourceAlphaBBoxesGt8": [
+      [
+        327,
+        49,
+        879,
+        1214
+      ],
+      [
+        324,
+        46,
+        882,
+        1215
+      ]
+    ],
+    "cropIncludingMargin": [
+      283,
+      5,
+      923,
+      1254
+    ],
+    "resizedFrameSize": [
+      45,
+      88
+    ],
+    "scale": 0.070456,
+    "output": "public/assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+    "outputSize": [
+      192,
+      96
+    ],
+    "outputSha256": "3C7919590974573F4E86616718ADB5E317E69B9D7217DB61162D09D936F98F91",
+    "outputAlphaBBoxGt8": [
+      28,
+      9,
+      164,
+      93
+    ],
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/ruins-pathfinder-idle-runtime-q70.jpg",
+    "runtimeReviewSize": [
+      1152,
+      576
+    ]
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/ruins-pathfinder-idle-runtime-q70.jpg"
+  },
+  "visualReviewNote": "Full-body scout, right-facing, closed mouth; paired pose is subtle enough for a restrained idle loop."
+}

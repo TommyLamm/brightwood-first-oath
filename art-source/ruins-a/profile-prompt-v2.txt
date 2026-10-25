@@ -1,0 +1,10 @@
+Use case: style-transfer
+Asset type: character-profile and action-review reference for a small 2D RPG creature
+Input images: Image 1 is the current 苔陶蟲 design reference. Preserve its squat creature anatomy, broken ceramic shell, subtle bell engraving, moss and root feelers.
+Primary request: Re-render the same four-view design sheet as crisp side-view pixel art suitable for a 96x96 game sprite. Keep four poses: side profile, three-quarter idle, slow crawl, and forward bite. Use the previous image for subject identity only.
+Style/medium: sharp pixel-art clusters with deliberate pixel edges, no painterly texture, no smooth gradients, no 3D render; restrained classic RPG game-sprite detail
+Composition/framing: four uncropped full-body creatures arranged in a clean 2x2 review sheet with generous spacing, consistent scale and proportions
+Lighting/mood: simple pixel highlights only, no cast shadows
+Color palette: chalky ivory and pale gray ceramic, deep jade and muted olive moss, restrained oxidized-copper details
+Constraints: remove the entire backdrop; genuine transparent alpha around every silhouette; no halo, haze, background pixels, floor, labels, grid lines, borders, text, watermark, UI, extra characters, or scenery
+Avoid: photorealism, painterly brushwork, soft airbrush, blur, photographic depth of field, background gradients

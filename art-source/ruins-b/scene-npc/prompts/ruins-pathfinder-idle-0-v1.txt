@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: one transparent 2D RPG NPC sprite frame for the Ruins Echo Gallery.
+Primary request: create one neutral idle frame of 行舟, a calm young adult pathfinder who records tides and echoes at the old signal route.
+Subject: full-body human scout, three-quarter side view facing right, relaxed but attentive stance, closed mouth, short dark brown hair, pale sea-glass teal scarf and travel mantle over an ivory tunic, dark slate trousers, practical boots, a small folded tide-map and copper compass tag at the belt. Keep hands relaxed; no weapon.
+Style/medium: crisp polished 2D pixel-art RPG sprite with chunky clean pixel clusters, limited coordinated palette, strong dark outline and sharp edges; match high-quality 16-bit adventure game character art, no painterly haze, no 3D render.
+Composition/framing: exactly one person, one pose on a square transparent canvas; full body, head and both boots completely visible, centered over a bottom-centered pivot, with generous transparent padding; suitable to normalize into one 96x96 runtime frame.
+Lighting/mood: soft diffuse humid daylight, warm limestone bounce, quiet and trustworthy.
+Constraints: genuine transparent alpha; mouth closed; neutral idle, not speaking; simple compact silhouette readable when displayed at 96x96. No extra people, multiple poses, frames, grid, backdrop, ground plane, shadow, text, symbols, watermark, UI, magic, glow, blur, gradient, oversized props, cropped head or feet.

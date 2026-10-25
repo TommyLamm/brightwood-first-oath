@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: 960x540 transparent parallax far-background layer for the side-scrolling map frost-shore
+Input images: Image 1 is the accepted forest environment style reference; Image 2 shows the snow-island palette and geography in the existing world map; Image 3 is the newly generated frost-shore sky and must match its lighting.
+Primary request: Production game asset for the existing original 2D side-scrolling adventure. Match the supplied accepted local assets for pixel scale, outline weight, simple shading, proportions and finish. Extend the same world into a snow-covered coastal island: powder blue, pale ivory, muted teal and small warm amber accents. Preserve clear silhouettes at the actual runtime size. No realism, 3D render, neon glow, text, UI, labels, logos or watermarks. Do not copy or include the reference characters.
+Scene/backdrop: a distant chain of small snowbound islands, glacier-blue sea haze, and layered snow-capped mountain silhouettes.
+Style/medium: warm, painterly pixel-textured 2D game background with soft depth haze and clear simple silhouettes.
+Composition/framing: exact 16:9 960x540 layer; fixed side-view, never isometric; island peaks occupy the lower 35-60% of the canvas while the upper sky stays fully transparent; varied gentle mountain silhouettes with no single dominant focal object; edges continue naturally beyond the canvas.
+Lighting/mood: bright clear cold morning with soft pale-gold light from the same direction as Image 3.
+Color palette: powder blue, pale ivory, muted teal, lavender-gray shadows, tiny restrained warm amber accents.
+Materials/textures: snow-softened granite and glacial ice, rendered with broad readable pixel-textured shapes.
+Constraints: request actual alpha transparency; transparent sky and gaps only, no painted checkerboard or matte; this is a decorative far background, not a walkable floor; no foreground trees or shrubs, no land platform, ladders, portal, characters, enemies, structures, text, or watermark. Production game asset for the existing original 2D side-scrolling adventure. Match the supplied accepted local assets for pixel scale, outline weight, simple shading, proportions and finish. Extend the same world into a snow-covered coastal island: powder blue, pale ivory, muted teal and small warm amber accents. Preserve clear silhouettes at the actual runtime size. No realism, 3D render, neon glow, text, UI, labels, logos or watermarks. Do not copy or include the reference characters.
+
+Generated with built-in image_gen. Reference images: art-source/environment/forest-style-reference-v1.png, art-source/world-map/brightwood-world-map-main-v2.png, and public/assets/environment/env-frost-sky-v1.png.
+Source: env-frost-far-source.png (1672 x 941). Runtime asset is resampled to 960 x 540 for the environment canvas.

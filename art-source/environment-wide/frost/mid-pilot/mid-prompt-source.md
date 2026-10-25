@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 960x540 transparent parallax middle-background layer for the side-scrolling map frost-shore
+Input images: Image 1 is an accepted local environment style reference; Image 2 is an accepted local world-map style and snow-island palette reference; Image 3 is the frost-shore sky layer whose morning light and colors this artwork must match.
+Primary request: Production game asset for the existing original 2D side-scrolling adventure. Match the supplied accepted local assets for pixel scale, outline weight, simple shading, proportions and finish. Extend the same world into a snow-covered coastal island: powder blue, pale ivory, muted teal and small warm amber accents. Preserve clear silhouettes at the actual runtime size. No realism, 3D render, neon glow, text, UI, labels, logos or watermarks. Do not copy or include the reference characters.
+Scene/backdrop: a few separate clusters of wind-shaped snow-covered spruce trees and ice-eroded coastal reef rocks, like decorative mid-distance scenery in a 2D platform adventure.
+Style/medium: warm, painterly pixel-textured 2D game background with simple readable shapes and soft layered shading.
+Composition/framing: horizontal 16:9 960x540 canvas; strict fixed side view, never isometric. Put one tree-and-reef cluster at each far edge and one smaller cluster near each outer third; leave the center 55% of the canvas open and transparent. Each cluster sits on its own small irregular rock outcrop that reaches the bottom edge, with wide transparent gaps between outcrops. Keep the bottom central 65% fully transparent for the real gameplay floor and actors; upper 35% is transparent.
+Lighting/mood: clear cold morning, gentle pale-amber rim light consistent with Image 3.
+Color palette: powder blue, pale ivory, muted teal and lavender-gray shadow, with tiny warm amber accents.
+Materials/textures: rounded wind-eroded granite, blue ice facets, compact snow and spruce needles, all with crisp pixel-textured edges.
+Constraints: actual alpha transparency; no painted checkerboard or matte, no sky, horizon, sea, fog, continuous ground strip or connected shore across the bottom; no walkable floor, platforms, ladders, portals, structures, characters, enemies, text or watermark. The open central play corridor and bottom 65% must remain transparent.

@@ -1,0 +1,627 @@
+{
+  "status": "runtime",
+  "atlas": {
+    "size": [
+      576,
+      480
+    ],
+    "mode": "RGBA",
+    "columns": 6,
+    "rows": 5,
+    "cellSize": [
+      96,
+      96
+    ]
+  },
+  "contactSheet": {
+    "path": "art-source/ruins-a/assembly/moss-carapace-contact-sheet.jpg",
+    "size": [
+      768,
+      610
+    ],
+    "jpegQuality": 70
+  },
+  "sourceFrames": [
+    {
+      "frame": 0,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-00.png",
+      "sha256": "aaed95a72b6c16f5c781e82bea45add27c64cf44cf84ecc201f15640cd5fc010",
+      "pixelSha256": "8f0e606c7b1e1b23f525f56a2ff4bf7cb0d87b9bb8f095f2ed6e29420834f730",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        53,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1952,
+      "alphaMean": 49.07
+    },
+    {
+      "frame": 1,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-01.png",
+      "sha256": "550bd14a0b63ac6ffe961583bf59c09929b66f0a3b99355335ea6f067b53b2ed",
+      "pixelSha256": "e65d2d383dd1c2137bc1f08a1ea980150410a6a72e4e3a9d26c7b7a0faf125c5",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        53,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1851,
+      "alphaMean": 46.85
+    },
+    {
+      "frame": 6,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-06.png",
+      "sha256": "cd8b4e11ff67d11d798e0bb9cd1d78ca9bc987f7e7a624db8436a453549cba56",
+      "pixelSha256": "6ed3d019ee8cc10c4ad2b60fc3c0f695727ccb372e842f70d9b039b50fede433",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        56,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        56,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        56,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1793,
+      "alphaMean": 44.58
+    },
+    {
+      "frame": 7,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-07.png",
+      "sha256": "57676e1c01c98e7bef2466840a4452d051dd54f65e3b1fd78814358109ee02bc",
+      "pixelSha256": "bdee18023b5d89b71c152fd82eda8eafaf6a2a44e4da04b0d256e6580b2c01bd",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        56,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        56,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        56,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1715,
+      "alphaMean": 42.69
+    },
+    {
+      "frame": 8,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-08.png",
+      "sha256": "9403a02cfa38b579d1cda4228953ba60e3006d63414bdad66434cc53a8f62474",
+      "pixelSha256": "ea1e551133ac30492042f51f14985612b2a3137775079aceb9c1af71960413eb",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        53,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        53,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1861,
+      "alphaMean": 46.05
+    },
+    {
+      "frame": 9,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-09.png",
+      "sha256": "a898dfd6675e183bedb4b8504cead8e893dd0da3924738d511ee0f3aab31b6dd",
+      "pixelSha256": "dd79bc8183441cd9afca71bb43fbbc5a92794d0084f1b543e8195225018b2848",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        52,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        52,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        52,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 2009,
+      "alphaMean": 50.37
+    },
+    {
+      "frame": 10,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-10.png",
+      "sha256": "8c01cea7c0e55b9b193acda66ebeaa33cc59d5ace8bd345ccff78c107811e03e",
+      "pixelSha256": "39589b7483a0bee05f5dc48301709b111c9397f61a12cd41634e7ca5959f513e",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        55,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        55,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        55,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1839,
+      "alphaMean": 46.17
+    },
+    {
+      "frame": 11,
+      "source": "art-source/ruins-a/motion-frames/normalized/frame-11.png",
+      "sha256": "ffe7124c6737afcd5f1d04b55c1ede740c8e3973d0da44080072ddbc6042ae5b",
+      "pixelSha256": "42a0d22b07c70d81ac48672b55040360c562482ef6df6461a5703e5d49f86b82",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        11,
+        55,
+        85,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        11,
+        55,
+        85,
+        93
+      ],
+      "transparentMarginsAtThreshold0": [
+        11,
+        55,
+        11,
+        3
+      ],
+      "alphaPixelsAbove8": 1775,
+      "alphaMean": 44.22
+    },
+    {
+      "frame": 12,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-12.png",
+      "sha256": "a76215fc35bc264e5e018f070569bf43571463374667c552231c7e18d976dbc4",
+      "pixelSha256": "8121214d32ae69516ab3e7e20bae9a4664d5556f273d1385c078b19684b9d11e",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        53,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        54,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        53,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1914,
+      "alphaMean": 48.0
+    },
+    {
+      "frame": 13,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-13.png",
+      "sha256": "60542b304fa652b52ca6dc6b06539a32fc6ace33f956111d413218c9dd818629",
+      "pixelSha256": "b7517ccdbe0bf2cf0474deed8abd514218ed86b36e666c2a465f8648819cf01e",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        52,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        53,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        52,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1891,
+      "alphaMean": 46.8
+    },
+    {
+      "frame": 14,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-14.png",
+      "sha256": "9691b398b7d0f7a1eb8e4f9ca4ae5c71b2dcc5e174e347ee98b891c0d68345d1",
+      "pixelSha256": "eb4a72800d71332341916fad7040085f5c5e7b533bce1eae2478bc0d53e79045",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        57,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        58,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        57,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1486,
+      "alphaMean": 35.76
+    },
+    {
+      "frame": 15,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-15.png",
+      "sha256": "e12beb91f8d256e7ab99649d9b2ded7991390130df7a1398b1ec7706e372eb93",
+      "pixelSha256": "e563febbc50f67a98bd407e17800b21bd26572b6078beacbd211c141b9599f12",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        52,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        53,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        52,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1744,
+      "alphaMean": 43.16
+    },
+    {
+      "frame": 18,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-18.png",
+      "sha256": "20f6e53f98328f6ef6b1c5372aee75333edb888f4a35b587a46da62df8cf1b17",
+      "pixelSha256": "661437498a2b34179b7016f06f9051725b60138dc811df74f6a4e287f576a038",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        48,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        49,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        48,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1913,
+      "alphaMean": 47.26
+    },
+    {
+      "frame": 19,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-19.png",
+      "sha256": "1210733d33febae67b5be2f62f91ab5343bc59123befe09981e1a20391a4f2d9",
+      "pixelSha256": "944efd5a607c482d1806688a0e281544ddbe7c6f47f4f013539a93cb53ee2c6e",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        54,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        55,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        54,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1710,
+      "alphaMean": 42.39
+    },
+    {
+      "frame": 24,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-24.png",
+      "sha256": "83b2c9d835b5182c6cf4f1ff4cdf11e2864a730beb64dd6aca07f5740b1bdfea",
+      "pixelSha256": "e25e7f65ccbae13d2a7e5db0062d2ae40ed374b14682a0c34dd8f37652297308",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        51,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        52,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        51,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1831,
+      "alphaMean": 45.72
+    },
+    {
+      "frame": 25,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-25.png",
+      "sha256": "896c5e67c8709a054c17c6ddd4e21838963d3b52620c9b66cde5086b93f06c9c",
+      "pixelSha256": "48495baf51e42e2c95492ef633dde378352e2159a1c217e6581a4b306c73b496",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        52,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        53,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        52,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1774,
+      "alphaMean": 44.36
+    },
+    {
+      "frame": 26,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-26.png",
+      "sha256": "c7df97bd6e1551726da92cbda5db762e333f81ce888ccd6300cea501f55fe019",
+      "pixelSha256": "ed0d0111d5077a1d8617c05e4a26a5c71ac6b136e4a180bdf138bfcca3b21587",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        58,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        59,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        58,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1395,
+      "alphaMean": 34.61
+    },
+    {
+      "frame": 27,
+      "source": "art-source/ruins-a/action-frames/normalized/frame-27.png",
+      "sha256": "26590675399a212390d2da18b7122dbf08267a52150b65a8bdb7c6b838c26c7f",
+      "pixelSha256": "9878c360560954cbebcb9d2257d833debf35af3505c3f662177d8ac580d3961f",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaBBoxAtThreshold0": [
+        10,
+        59,
+        87,
+        93
+      ],
+      "alphaBBoxAtThreshold8": [
+        12,
+        60,
+        85,
+        92
+      ],
+      "transparentMarginsAtThreshold0": [
+        10,
+        59,
+        9,
+        3
+      ],
+      "alphaPixelsAbove8": 1345,
+      "alphaMean": 33.25
+    }
+  ],
+  "cellSources": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "10": 10,
+    "11": 11,
+    "12": 12,
+    "13": 13,
+    "14": 14,
+    "15": 15,
+    "16": 15,
+    "17": 15,
+    "18": 18,
+    "19": 19,
+    "20": 19,
+    "21": 19,
+    "22": 19,
+    "23": 19,
+    "24": 24,
+    "25": 25,
+    "26": 26,
+    "27": 27,
+    "28": 27,
+    "29": 27
+  },
+  "unusedCellCopiesVerifiedInMemory": true,
+  "fullAtlasHasTransparentPixels": true,
+  "runtimeAtlas": {
+    "path": "public/assets/actors/monster-ruins-moss-carapace.png",
+    "sha256": "a7e65b227217540f8a2d43037e86b3de244f1c6f5d0f17e7637503eb3cd1a12e",
+    "size": [
+      576,
+      480
+    ],
+    "mode": "RGBA"
+  }
+}

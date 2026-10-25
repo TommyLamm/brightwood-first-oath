@@ -1,0 +1,8 @@
+Use case: style-transfer
+Asset type: one transparent idle-sprite identity anchor for a 2D RPG
+Input images: Image 1 is the generated moss-carapace sprite identity reference.
+Primary request: Keep the same single complete ancient crawler, its pixel-art palette, broken pale ceramic shell with subtle bell engraving, moss patches, root feelers and low segmented legs. Change only its horizontal facing direction so the front pincers and feelers clearly point to the RIGHT, with the decorated shell body trailing to the LEFT. This is a horizontal orientation correction, not a new character design.
+Style/medium: preserve Image 1's crisp pixel-art sprite look and hard clean edges.
+Composition/framing: one full-body side-view creature only on a square transparent canvas, no sheet, no second pose, centered with complete feet, shell and roots visible; bottom-centered pivot; leave transparent padding around the character.
+Constraints: genuinely transparent background, no shadow; keep all body parts intact and in the same pose. The front end must be visibly on the right.
+Avoid: left-facing creature, extra frames, other creatures, text, symbols, watermark, background, checkerboard, blur, glow, cropping, 3D rendering.

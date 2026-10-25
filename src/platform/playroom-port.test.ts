@@ -53,7 +53,7 @@ describe('createPlayroomCloudPort', () => {
     const input: CloudSaveInput = {
       data: { marker: 'snapshot' } as unknown as CloudSaveInput['data'],
       revision: 4,
-      formatVersion: 1,
+      formatVersion: 3,
       requestId: '018f47a0-0d75-7d5b-a3d1-62df8fb76d18',
     };
     const port = createPlayroomCloudPort(async () => instance);
@@ -75,7 +75,7 @@ describe('createPlayroomCloudPort', () => {
     const input = {
       data: { marker: 'snapshot' } as unknown as CloudSaveInput['data'],
       revision: 4,
-      formatVersion: 1 as const,
+      formatVersion: 3 as const,
       requestId: '018f47a0-0d75-7d5b-a3d1-62df8fb76d18',
     };
 

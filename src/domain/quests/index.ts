@@ -12,7 +12,8 @@ import type {
 
 export type QuestEvent =
   | { type: 'reached'; mapId: Id }
-  | { type: 'killed'; monsterId: Id };
+  | { type: 'killed'; monsterId: Id }
+  | { type: 'inspected'; targetId: Id };
 
 function cloneQuests(quests: Record<Id, QuestState>): Record<Id, QuestState> {
   return Object.fromEntries(Object.entries(quests).map(([id, state]) => [id, {
@@ -41,6 +42,8 @@ function objectiveCount(
 ): number {
   switch (objective.type) {
     case 'kill':
+      return data.quests[questId]?.counters[objective.targetId] ?? 0;
+    case 'inspect':
       return data.quests[questId]?.counters[objective.targetId] ?? 0;
     case 'reach':
       return data.visitedMaps.includes(objective.targetId)
@@ -111,7 +114,9 @@ export function acceptQuest(data: SaveData, questId: Id, catalog: ContentCatalog
   const nextQuests = cloneQuests(data.quests);
   const counters: Record<Id, number> = {};
   for (const objective of quest.objectives) {
-    if (objective.type === 'kill' || objective.type === 'reach') counters[objective.targetId] = 0;
+    if (objective.type === 'kill' || objective.type === 'reach' || objective.type === 'inspect') {
+      counters[objective.targetId] = 0;
+    }
   }
   nextQuests[questId] = { status: 'active', counters };
   return { ok: true, value: { ...data, quests: nextQuests } };
@@ -129,7 +134,8 @@ export function recordQuestEvent(
     if (!quest) continue;
     for (const objective of quest.objectives) {
       const matches = (event.type === 'killed' && objective.type === 'kill' && objective.targetId === event.monsterId)
-        || (event.type === 'reached' && objective.type === 'reach' && objective.targetId === event.mapId);
+        || (event.type === 'reached' && objective.type === 'reach' && objective.targetId === event.mapId)
+        || (event.type === 'inspected' && objective.type === 'inspect' && objective.targetId === event.targetId);
       if (matches) state.counters[objective.targetId] = Math.min(
         objective.count,
         (state.counters[objective.targetId] ?? 0) + 1,

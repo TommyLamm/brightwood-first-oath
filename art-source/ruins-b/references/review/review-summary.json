@@ -1,0 +1,142 @@
+[
+  {
+    "source": "references/raw/ruins-string-puppet-profile-v1.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaBBoxAlphaGt8": [
+      400,
+      139,
+      1078,
+      1128
+    ],
+    "edgeAlphaGt8Pixels": 0,
+    "preview": "references/review/ruins-string-puppet-profile-v1-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "7f6bb180bf8f45ccc16053ab5eec7e94c6849e30bc634157d2ca632304744922"
+  },
+  {
+    "source": "references/raw/ruins-string-puppet-attack-2-v1.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaBBoxAlphaGt8": [
+      97,
+      192,
+      1222,
+      1144
+    ],
+    "edgeAlphaGt8Pixels": 0,
+    "preview": "references/review/ruins-string-puppet-attack-2-v1-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "0a19d4d7f0a846788933ee1808b051e86e58827cdb494ea2006f9e529b3bc247"
+  },
+  {
+    "source": "references/raw/ruins-bell-prowler-profile-v1.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaBBoxAlphaGt8": [
+      41,
+      233,
+      1219,
+      1066
+    ],
+    "edgeAlphaGt8Pixels": 0,
+    "preview": "references/review/ruins-bell-prowler-profile-v1-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "90d7bb502f0d20d7151a74db66d20b731dc00a73d505b8b0b856a3de5148519d"
+  },
+  {
+    "source": "references/raw/ruins-bell-prowler-attack-2-v1.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaBBoxAlphaGt8": [
+      20,
+      243,
+      1239,
+      1069
+    ],
+    "edgeAlphaGt8Pixels": 0,
+    "preview": "references/review/ruins-bell-prowler-attack-2-v1-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "f26fd7ed680db5c151f6c7cc48ded59a23de1f29d47d240121373a35d25b81e2"
+  },
+  {
+    "source": "references/raw/ruins-bell-prowler-attack-2-v2.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaBBoxAlphaGt8": [
+      25,
+      302,
+      1240,
+      1069
+    ],
+    "edgeAlphaGt8Pixels": 0,
+    "preview": "references/review/ruins-bell-prowler-attack-2-v2-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "248010595d3b68148711a28fc1ba641d918447839c7804d778867188af178664"
+  }
+]

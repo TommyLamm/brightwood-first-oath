@@ -541,6 +541,36 @@
       "displayHeight": 32,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "item:moss-ceramic",
+      "url": "assets/interface/item-moss-ceramic-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:broken-copper-thread",
+      "url": "assets/interface/item-broken-copper-thread-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:muted-bell-fragment",
+      "url": "assets/interface/item-muted-bell-fragment-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [

@@ -1,0 +1,15 @@
+Use case: stylized-concept
+Asset type: runtime 2D RPG monster sprite atlas, transparent PNG
+Input images: Image 1 is the approved 苔陶蟲 profile/action reference. Preserve the same low ceramic-backed creature, bell engraving, moss and root feelers.
+Primary request: Produce one exact 6-column by 5-row sprite atlas for a side-view action RPG. Canvas must be exactly 576x480 pixels; every cell exactly 96x96 pixels, with all sprite pixels contained inside their own cell and no cell overlap. The creature faces right in every frame so the game can flip it for left-facing attacks.
+Scene/backdrop: fully transparent; no ground or scenery
+Subject: one squat, slow crawler with a broken pale ceramic shell, visible engraved bell motif on the shell, moss in its cracks, a few fine root tendrils, compact body and tiny legs; readable silhouette at 96x96 display size
+Style/medium: crisp pixel art with deliberate hard-edged pixel clusters, limited palette, no painterly effects or soft gradients; match a polished classic pixel-RPG actor atlas
+Composition/framing: strict row-major grid with invisible boundaries, consistent scale and bottom foot pivot; leave small transparent padding inside each cell; no grid lines, gutters, borders, captions, numbering or sheet labels
+Lighting/mood: simple high-contrast pixel highlights, damp ancient-ruin mood only through the character palette
+Color palette: chalky ivory and weathered pale gray ceramic, deep jade and muted olive moss, restrained oxidized-copper accent pixels
+Materials/textures: chipped clay shell, hairline cracks, compact moss tufts, thin fibrous roots
+Text (verbatim): none
+Rows, left to right: row 1 idle has 2 subtle breathing poses in columns 1-2, then columns 3-6 are exact duplicates of pose 2; row 2 walk has 6 distinct slow crawling poses in columns 1-6; row 3 attack has 4 sequential short forward-bite poses in columns 1-4 (windup, lean/coil, single bite contact, recovery), then columns 5-6 are exact duplicates of pose 4; row 4 hurt has 2 readable flinch poses in columns 1-2, then columns 3-6 are exact duplicates of pose 2; row 5 dead has 4 sequential collapse poses in columns 1-4, then columns 5-6 are exact duplicates of pose 4.
+Constraints: every cell stays exactly 96x96; keep the same creature identity and shell marking in all poses; idle/walk/hurt/dead rows remain low and bottom-aligned; attack is a small single bite with no projectile; preserve genuine transparent alpha across the whole background
+Avoid: any backdrop, haze, glow, cast shadow outside the creature, text, UI, watermark, different creature designs, alternate colors, extra characters, perspective sheet collage, inconsistent grid spacing, cell outlines, blurred edges, photorealism, smooth vector shapes, 3D rendering

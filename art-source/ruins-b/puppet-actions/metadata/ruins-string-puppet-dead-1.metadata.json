@@ -1,0 +1,94 @@
+{
+  "frameId": "ruins-string-puppet:dead-1",
+  "tool": "built-in image_gen",
+  "callId": "exec-197ed44c-eaf7-4c8b-bb3e-ff432226719e",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-197ed44c-eaf7-4c8b-bb3e-ff432226719e.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812 as C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-197ed44c-eaf7-4c8b-bb3e-ff432226719e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent sprite frame for a 2D pixel-art RPG enemy\nInput images: Image 1 is the approved Ruins String Puppet identity anchor and is authoritative for character design, proportions, materials and palette. Image 2 is the approved active slap pose and is a secondary same-character action reference. Keep the same puppet from both images.\nCharacter identity: one slender marionette made from aged dark walnut wood, narrow carved mask-like head with dark eye slits, compact jointed torso, asymmetrical articulated limbs, one distinctly long forward/right arm ending in a broad wooden palm, shorter rear/left arm, a few snapped oxidized-copper strings hanging from back and shoulders, restrained moss-olive flecks, charcoal joints and muted warm highlights.\nStyle: crisp 2D pixel-art game sprite with clean dark outlines, sharp edges, readable chunky pixel clusters and a limited muted palette matching the references; no painterly haze and no 3D rendering.\nComposition: exactly one complete full-body side-view puppet, facing right with face toward the right, centered on a square canvas at the same character scale as Image 1; keep the whole head, every limb, feet, palm and snapped strings inside frame with generous transparent padding; no cropping.\nBackground and effects: genuine transparent alpha; no background, ground plane, cast shadow, floor, extra creature, duplicate, panel, frame, grid, labels, text, watermark, UI, glow, blur, gradient, motion streak, impact flash, particles, weapons or blood.\nSprite constraints: one clear static pose only, all body pieces remain attached to the puppet; preserve the original body proportions, long-arm asymmetry, wood grain, copper thread and small moss marks; do not add or remove body parts.\nPose request — dead-1, a deeper stage of collapse: sink the puppet into a clear low crouch with both knees bent, torso slumping farther forward and head lowered. Let the long forward/right arm droop toward the ground and the short rear arm hang limp; snapped copper strings dangle. The feet remain in place. This is visibly lower and weaker than dead-0, but all wood pieces, joints, feet and strings remain present, attached and fully opaque.",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "resultKeysObserved": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-string-puppet-attack-2-v1.png"
+  ],
+  "rawWorkspacePath": "art-source/ruins-b/puppet-actions/raw/ruins-string-puppet-dead-1-v1.png",
+  "rawSha256": "f2f28654e6c5764dc16283de0db61d54e395b09d24ba7ebf08a543e33097a975",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "alphaThreshold": 8,
+  "sourceAlphaBBoxGt8": [
+    295,
+    357,
+    1126,
+    1134
+  ],
+  "marginRatio": 0.035,
+  "cropIncludingMargin": [
+    266,
+    328,
+    1155,
+    1163
+  ],
+  "referenceScale": 0.072776,
+  "resizedCrop": [
+    65,
+    61
+  ],
+  "output": "normalized/ruins-string-puppet-dead-1.png",
+  "outputSize": [
+    96,
+    96
+  ],
+  "outputAlphaBBoxAny": [
+    15,
+    32,
+    80,
+    93
+  ],
+  "outputAlphaBBoxGt8": [
+    17,
+    34,
+    78,
+    91
+  ],
+  "outputSha256": "0f260842da294e479192eb115c837ec972d3a5ffbb36dbd5180d251d16e4f952",
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "facing": "right",
+  "normalization": "alpha>8 bbox with 3.5% margin; fixed scale 0.072776 derived from accepted puppet idle-0/attack-2 references; Lanczos; centered at x=48; lowest nontransparent alpha pixel at y=92",
+  "submittedPromptPath": "prompts/ruins-string-puppet-dead-1.txt",
+  "submittedPromptSha256": "5ddb331819e57f0654d4f0ec425b3f5fc03bb52bb7d69d9bc6d752d2c6ff18d0",
+  "accepted": true,
+  "status": "accepted",
+  "acceptanceReason": "Deeper crouched collapse is visibly lower than dead-0 with a forward-slumped torso and limp limbs; the body remains complete and opaque.",
+  "rejectionReason": null,
+  "rawReviewPath": "review/ruins-string-puppet-dead-1-q70.jpg",
+  "rawReviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  "frameID": "ruins-string-puppet:dead-1",
+  "rawSHA": "f2f28654e6c5764dc16283de0db61d54e395b09d24ba7ebf08a543e33097a975",
+  "reviewContactSheetPath": "review/puppet-actions-contact-q70.jpg",
+  "reviewMethod": "Single visual review of normalized contact sheet, including the accepted idle-0 and attack-2 anchors; neutral matte, JPEG quality 70.",
+  "reviewDate": "2026-10-25"
+}

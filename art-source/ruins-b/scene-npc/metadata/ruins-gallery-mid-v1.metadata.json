@@ -1,0 +1,75 @@
+{
+  "frameId": "environment:ruins-gallery-mid",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/ruins-gallery-mid-source.png",
+  "rawSha256": "8AD640C2CC999EC2FC4FCBAA3E2AC076681BFFADA89269C599096F2AC4F231F2",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/ruins-gallery-mid-v1.txt",
+  "promptSha256": "852C752C7DB26CC3D1BA3E88E2ADE5E8AD7A7F225E29B94F9670287D4644E1EF",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: formal transparent near-foreground mid-parallax canopy/arch layer for a 2D side-view fantasy RPG, Ruins Echo Gallery.\nPrimary request: create an upper-edge framing layer for the Echo Gallery, a long ancient stone hall open to pale humid light.\nScene/backdrop: a few partial pale limestone arch ribs and short dangling teal root tendrils enter from the top edge, with small broken carved stone fragments caught in the roots; frame only the upper left and right corners around a large open center.\nSubject: near-foreground overhead arch and root details only. The silhouette is irregular and broken, with clear gaps and no roof spanning the whole image.\nStyle/medium: crisp hand-painted pixel-art-inspired 2D game environment, chunky clean pixel clusters, strong readable silhouette, restrained texture and palette; polished 16-bit RPG scenery, not photorealistic, not 3D, no painterly blur.\nComposition/framing: extra-wide 8:3 landscape intended to normalize to 1920x540. All visible artwork must stay within the top 180 pixels of the final canvas; everything below y=180 must be exactly transparent. Anchor fragments to the upper edge, hang details only a short distance, and leave a very wide central opening.\nLighting/mood: soft cool daylight filtering through weathered stone, quiet and resonant.\nColor palette: pale wet limestone, blue-grey shadow, subdued sea-glass teal roots, tiny oxidized-copper accents.\nConstraints: request genuine transparent background and preserve alpha. No background plate, checkerboard, floor, platform, walkable terrain, continuous ceiling, lower wall, columns descending below the top band, characters, NPCs, monsters, text, UI, signs, symbols, watermark, glow, or detached particles.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_a05abdabc8be4ce18d9a3dcfed18f69a",
+  "callId": "exec-5f5e9b2d-23de-4f69-a017-7fa1ba86922b",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-5f5e9b2d-23de-4f69-a017-7fa1ba86922b.png",
+  "savedPathSha256": "8AD640C2CC999EC2FC4FCBAA3E2AC076681BFFADA89269C599096F2AC4F231F2",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: upper arch/root framing reads clearly; rows y>=180 are exactly transparent as specified. Source pixels below that cutoff were intentionally cleared by the requested layer contract.",
+  "rejectionReason": null,
+  "normalization": {
+    "frameId": "env:ruins-gallery:mid",
+    "raw": "raw/ruins-gallery-mid-source.png",
+    "rawSha256": "8AD640C2CC999EC2FC4FCBAA3E2AC076681BFFADA89269C599096F2AC4F231F2",
+    "rawSize": [
+      2048,
+      768
+    ],
+    "rawMode": "RGBA",
+    "rawAlphaBBoxGt8": [
+      0,
+      0,
+      2048,
+      444
+    ],
+    "output": "public/assets/environment/env-ruins-gallery-mid-v1.png",
+    "outputSha256": "162E9875F6889C1AA68350DF20EF7DBF2A1F66393BF5963C3D0FCFD6724A8D5D",
+    "outputBytes": 454456,
+    "outputSize": [
+      1920,
+      540
+    ],
+    "outputMode": "RGBA",
+    "outputAlphaBBoxGt8": [
+      0,
+      0,
+      1920,
+      180
+    ],
+    "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+    "clearedAlphaPixels": 19282,
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-mid-v1-q70.jpg",
+    "runtimeReviewSize": [
+      1280,
+      360
+    ],
+    "accepted": true,
+    "acceptanceReason": "Accepted: upper arch/root framing reads clearly; rows y>=180 are exactly transparent as specified. Source pixels below that cutoff were intentionally cleared by the requested layer contract."
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-mid-v1-q70.jpg"
+  },
+  "visualReviewNote": "Upper arch/root trim frames the top edge; runtime alpha is clear from y=180 down. Some source details continue below the required cutoff and were intentionally cleared. Surface is more hand-painted than strict pixel clusters."
+}

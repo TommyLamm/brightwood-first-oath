@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: Production 1440x540 RGBA far-parallax background for the Frost Tide Cavern in the original 2D side-scrolling adventure.
+Input images:
+- Image 1, env-frost-cave-far-source.png: reference for natural glacial rock arches, deep blue pixel-art texture and the current cave finish; redraw a new full composition and do not copy its exact edge shapes or layout.
+- Image 2, env-frost-cave-sky-v1.png: reference for the cavern's deep navy, muted sea-blue, teal, blue-violet and faint scattered ice-cyan ambient light.
+Primary request: Create one original, continuous 8:3 side-view cavern panorama for a production far layer. Make it feel like depth inside a huge underground ice cave, clearly different from the alpine pass. Keep all empty openings genuinely transparent; no glowing rings, magical doorways or portal-like focal lights.
+Scene/backdrop: Distant natural glacial archways, irregular curved ice-rock apertures and receding blue stone ribs, layered across the far left and right with a broad open central gameplay corridor and transparent bottom.
+Style/medium: Warm painterly pixel-textured 2D game background with clear contour definition, broad faceted rock shapes, soft depth haze and restrained contrast. No realism or 3D rendering.
+Composition/framing: Very wide 8:3 landscape, fixed side view, not isometric. Keep formations mostly in upper and side regions, with organic broken silhouettes and several irregular transparent openings. Leave the center and bottom open and transparent for gameplay; do not form a horizontal shelf, floor, or continuous lower wall. Use naturally varied arches, no mirror symmetry, no repeated or tiled segment.
+Lighting/mood: Cool, quiet underground ambient light. Use faint irregular ice-cyan reflections diffused across distant rock, never concentrated circles or luminous doorways. No sunlight.
+Color palette: Deep navy, muted sea-blue, teal and blue-violet, with only faint ice-cyan highlights.
+Materials/textures: Layered glacial stone and ice with broad readable pixel-textured facets and soft blue depth haze.
+Constraints: Request actual alpha transparency in every empty opening and along the transparent bottom; preserve real alpha, not a painted background, black matte or checkerboard. Keep silhouettes readable at runtime size.
+Avoid: Foreground icicles, floor, platform, ladder, bridge, man-made doorway, masonry, altar, castle, treasure, portal, characters, enemies, text, UI, logo, watermark, neon, 3D, realism, border, poster framing, circular glows, rings, mirrored forms or tiled motifs.

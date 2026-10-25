@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: 2D game inventory material icon, final canvas 128×128 PNG with real alpha; runtime display 32×32
+Primary request: one small wet ceramic shard from an ancient ruin, a collectible item called moss-ceramic
+Input images: Image 1 is an existing inventory item pixel-art style reference only; Image 2 is an existing NPC pixel-art style reference only. Do not include the referenced seed or NPC in the output.
+Scene/backdrop: transparent background
+Subject: a single broken piece of pale ivory-white pottery with rich green moss growing in the crack and along one edge; a small simple bell-shaped embossed motif is clearly visible on the ceramic face
+Style/medium: cute classic 2D pixel-art game icon with a crisp dark outline, tactile hand-pixelled shading, readable silhouette and color treatment consistent with the references
+Composition/framing: isolated side-view three-quarter angle; one complete shard centered and filling about 80% of the square, large simple shapes that remain legible at 32×32
+Lighting/mood: soft cool wet highlights, calm ancient-fantasy collectible
+Color palette: damp ivory, muted jade and moss green, a restrained warm stone shadow
+Materials/textures: glazed chipped ceramic, subtle water sheen, tiny moss leaves, carved bell mark
+Text (verbatim): none
+Constraints: exactly one shard; actual transparent pixels outside the object; keep the bell motif as a simple pictorial emboss, not a letter or word
+Avoid: extra items, characters, scenery, frame, labels, UI, watermark, checkerboard transparency preview, photorealism, 3D render, overly fine detail

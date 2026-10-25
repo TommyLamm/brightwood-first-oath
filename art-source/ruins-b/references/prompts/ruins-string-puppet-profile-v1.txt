@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent identity-anchor sprite for a 2D RPG monster
+Input images: Image 1 is the existing moss-carapace monster used only for pixel-art style and game scale; do not copy its snail design or multi-frame sheet.
+Primary request: Create one complete neutral idle identity anchor for the Ruins String Puppet: a thin asymmetrical marionette-like construct made from aged dark walnut wood, with a narrow carved head, simple dark eye slits, compact torso, jointed wooden limbs, and a few snapped oxidized-copper strings hanging from its back and shoulders. Its defining feature is one unusually long wooden arm on the forward/right side, held ready but relaxed; the other arm is shorter. Keep the silhouette slender and eerie but readable at small game size, planted on its feet.
+Style/medium: crisp 2D pixel-art RPG sprite matching Image 1's chunky clean pixel clusters, limited palette, strong outline and sharp edges; polished game art, no painterly haze and no 3D rendering.
+Composition/framing: one full-body side-view monster only, facing right with face and forward arm toward the right, on a square transparent canvas; centered with bottom-centered pivot; complete feet, strings and arm visible; generous transparent padding; suitable to normalize into one 96x96 runtime frame. One neutral pose only, not a sheet.
+Color palette: deep weathered wood browns, muted charcoal joints, aged copper wire, restrained moss-olive accents and warm muted highlights consistent with the ruins monsters.
+Constraints: genuine transparent alpha; one complete creature; no cast shadow; clear compact silhouette; all parts intact inside the canvas.
+Avoid: left-facing orientation, multiple poses or creatures, frames, grid, background, ground plane, text, symbols, watermark, UI, glow, blur, gradient, cropped strings or feet, detached particles, weapons, blood, visual attack effects.

@@ -1,0 +1,91 @@
+{
+  "frameId": "ruins-bell-prowler:hurt-0",
+  "tool": "built-in image_gen",
+  "callId": "exec-3d451aa8-3891-40a3-b3d0-931c9dccea28",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-5db8-7932-bdc3-f87a53156918\\exec-3d451aa8-3891-40a3-b3d0-931c9dccea28.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-5db8-7932-bdc3-f87a53156918 as C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-5db8-7932-bdc3-f87a53156918\\exec-3d451aa8-3891-40a3-b3d0-931c9dccea28.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "workspacePath": "art-source/ruins-b/prowler-actions/raw/ruins-bell-prowler-hurt-0-v1.png",
+  "submittedPrompt": "Use case: identity-preserve\nAsset type: one isolated source image for a single 96x96 runtime character frame in a 2D pixel-art RPG\nInput images: Image 1 is the accepted Ruins Bell Prowler neutral profile and locks the exact identity, proportions, palette, and materials. Image 2 is the accepted attack-2-v2 and confirms the same character's construction and pixel-art finish; use its pose only where this frame description explicitly calls for it.\nSubject: The same low, heavy four-legged stone beast facing RIGHT, with overlapping slate-gray stone plates, restrained olive moss seams, broad short legs and feet, a blunt lowered head, a cracked chipped weathered copper bell shell strapped across its back, and one short chain with a single small dark clapper. Preserve the exact accepted character identity and compact scale.\nStyle/medium: crisp 2D pixel-art RPG sprite; stepped pixel edges, clean readable pixel clusters, chunky dark outlines, limited muted palette, sharp contrast and hard edges, consistent with both references; no painterly rendering, no 3D.\nComposition/framing: a single complete side-view beast, head toward the RIGHT, centered on a square transparent canvas, bottom-centered pivot, all four legs, tail, full bell and clapper inside the canvas, generous transparent padding, same visual size as the profile reference. One frozen pose only, never a sheet.\nConstraints: genuinely transparent background; preserve the same body and bell construction; clear limb silhouette at small game size; no crop; body stays fully opaque and intact.\nAvoid: other creatures, duplicate limbs, separate parts, motion streaks, fake projectile, impact flash, magic, glow, cast shadow, ground plane, background, scenery, text, lettering, symbols, watermark, grid, blur, gradients, blood, left-facing view.\nPrimary request: Create hurt-0, the first brief recoil from a hit. The beast flinches while staying planted and facing RIGHT: tuck the blunt head slightly back, hunch the shoulder plates and lower the chest, with the near-side front leg lifting defensively a small amount and the other three feet still supporting the body. Make the recoil visible in silhouette but preserve the complete body and bell. No attacker, hit effect, flash, or damage overlay.",
+  "submittedPromptPath": "art-source/ruins-b/prowler-actions/prompts/ruins-bell-prowler-hurt-0.txt",
+  "referencePaths": [
+    "art-source/ruins-b/references/review/ruins-bell-prowler-profile-v1-q70.jpg",
+    "art-source/ruins-b/references/review/ruins-bell-prowler-attack-2-v2-q70.jpg"
+  ],
+  "transparentBackgroundRequested": true,
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "rawSHA": "132dc763b14ad0ce9334eda7b2ad985a1f369fdf7e392f0bf43d4788579d1dd6",
+  "adoptionDecision": "accepted after normalized contact-sheet review",
+  "accepted": true,
+  "acceptanceReason": "Accepted in the normalized contact sheet: head tucked and near foreleg lifted in a compact recoil; complete body and bell remain visible.",
+  "reviewPath": "art-source/ruins-b/prowler-actions/review/ruins-bell-prowler-hurt-0-v1-q70.jpg",
+  "sourceImage": {
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaBBoxGt8": [
+      57,
+      242,
+      1139,
+      1048
+    ],
+    "edgeVisiblePixelsGt8": {
+      "left": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0
+    }
+  },
+  "normalization": {
+    "output": "art-source/ruins-b/prowler-actions/normalized/ruins-bell-prowler-hurt-0-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "alphaBBoxGt8": [
+      6,
+      28,
+      91,
+      93
+    ],
+    "sha256": "370c5f550192ba981fbcf92593e0b591061a7a74c1dd4961eb20f826e5f65db6",
+    "resizedCrop": [
+      90,
+      69
+    ],
+    "facing": "right",
+    "centerX": 48,
+    "bottomVisibleY": 92,
+    "minTransparentPadding": 3,
+    "method": "alpha>8 source bbox with 3.5% margin; Lanczos downscale to fit 90x76; center at x=48 and bottom-align visible y=92"
+  },
+  "visualReview": {
+    "contactSheet": "art-source/ruins-b/prowler-actions/review/ruins-bell-prowler-actions-contact-q70.jpg",
+    "format": "JPEG",
+    "quality": 70,
+    "size": [
+      1224,
+      984
+    ],
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "displayScale": 3,
+    "reviewedFrames": [
+      "idle-0 reference",
+      "attack-0",
+      "attack-1",
+      "attack-2 accepted reference",
+      "attack-3",
+      "hurt-0",
+      "hurt-1",
+      "dead-0",
+      "dead-1",
+      "dead-2",
+      "dead-3"
+    ]
+  }
+}

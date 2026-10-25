@@ -3,18 +3,20 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(30);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(33);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
-      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade',
+      'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
+      'broken-copper-thread', 'muted-bell-fragment',
     ]));
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(15);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(18);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
       'basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
-      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam', 'sweep', 'vitality',
+      'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'ruins-carapace-bite', 'ruins-prowler-sweep', 'ruins-puppet-slap',
+      'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam', 'sweep', 'vitality',
     ]);
     expect(playerSkillIds).toHaveLength(6);
     expect(playerLearnableIds).toHaveLength(5);
@@ -29,11 +31,31 @@ describe('rules catalog', () => {
     expect(rulesCatalog.skills.vitality.requiredLevel).toBe(10);
     expect(rulesCatalog.skills['rest-recovery'].requiredLevel).toBe(10);
     expect(Object.keys(rulesCatalog.skills).filter((id) => rulesCatalog.skills[id].requiredJob === 'enemy').sort()).toEqual([
-      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave', 'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam',
+      'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave', 'low-tide-wave', 'ruins-carapace-bite',
+      'ruins-prowler-sweep', 'ruins-puppet-slap', 'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam',
     ]);
+    expect(Object.keys(rulesCatalog.monsters)).toHaveLength(16);
     expect(Object.keys(rulesCatalog.monsters).sort()).toEqual([
-      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'sand-scorpion', 'sentinel', 'slime', 'snail', 'sunwell-beetle', 'sunwell-sentinel',
+      'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'ruins-bell-prowler',
+      'ruins-moss-carapace', 'ruins-string-puppet', 'sand-scorpion', 'sentinel', 'slime', 'snail', 'sunwell-beetle', 'sunwell-sentinel',
     ]);
+  });
+
+  it('defines the Ruins moss carapace with its guaranteed ceramic drop and bite timings', () => {
+    const monster = rulesCatalog.monsters['ruins-moss-carapace'];
+    const bite = rulesCatalog.skills['ruins-carapace-bite'];
+    const material = rulesCatalog.items['moss-ceramic'];
+    expect(monster).toMatchObject({
+      level: 30, maxHp: 1100, attack: 48, defense: 20, speed: 42, exp: 0, coins: 90,
+      attackRange: 60, attackWindupMs: 550, attackCooldownMs: 1400, respawnMs: 9000,
+      actorKey: 'actor:ruins-moss-carapace',
+      drops: [{ itemId: 'moss-ceramic', chance: 1, min: 1, max: 1 }],
+    });
+    expect(bite).toMatchObject({
+      kind: 'attack', requiredJob: 'enemy', cooldownMs: 1400, windupMs: 550, activeMs: 80,
+      recoveryMs: 770, reach: 60, height: 70, targets: 1, multiplierBase: 1,
+    });
+    expect(material).toMatchObject({ kind: 'material', buyPrice: 0, sellPrice: 45, iconKey: 'item:moss-ceramic' });
   });
 
   it('uses the specified levels, progression curve, equipment visuals, and conditional quest drops', () => {

@@ -1,0 +1,5 @@
+Use case: precise-object-edit
+Asset type: the second single-frame idle sprite for the same Ruins Echo Gallery NPC, 行舟.
+Input images: Image 1 is the edit target and identity reference: the accepted transparent sprite of 行舟.
+Primary request: create frame 2 of a restrained breathing idle. Change only a tiny breathing motion: lift the shoulders and upper chest slightly, shift one scarf fold and the mantle edge by a few pixels, keeping both hands relaxed.
+Constraints: preserve the exact same character identity, face, eye, short dark-brown hair, closed mouth, body proportions, right-facing three-quarter side view, outfit, map pouch, compass tag, colors, pixel clusters, outline, lighting, crop, scale, and position. Keep the complete figure and both boots inside the same square transparent canvas. This is a subtle idle pose, not a speaking pose or gesture; do not add or remove anything. Preserve genuine transparent alpha.

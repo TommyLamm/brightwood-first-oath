@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG near-overhead parallax canopy layer, PNG with true transparency.
+Input images: Image 1 is only a project style reference; Image 2 is only a reference for the existing environment pack's transparent upper-edge layer structure. Do not reproduce either scene.
+Primary request: an overhead canvas-shelter fringe for Tide Camp, a humid coastal ruin outpost.
+Scene/backdrop: isolated pale sailcloth awnings and short hanging ropes clipped to the upper frame edge, with a few oxidized-copper rings and tiny salt-worn vine leaves; this is a near foreground canopy, not a tent body.
+Subject: two partial canvas awning edges framing the upper corners, softly varied folds, clean readable silhouette, large central opening.
+Style/medium: charming softly painted pixel-art-inspired 2D game environment, clustered brush pixels, restrained detail; not 3D or photorealistic.
+Composition/framing: exact target 1920x540; composition is only the top 180px of a very wide landscape strip. All artwork must stay in rows y=0 through y=179. Every pixel at y>=180 is fully transparent. Anchor cloth and ropes to the top edge and let them hang only a short distance.
+Lighting/mood: soft humid daylight after rain.
+Color palette: pale wet canvas, sage and sea-glass teal, subtle oxidized copper.
+Constraints: genuine alpha transparency, no background plate or checkerboard; transparent below the top fringe. No people, characters, NPCs, monsters, text, symbols, signs, watermark, sky, cliffs, tower, furniture, floor, path, ground, platform or walkable terrain.

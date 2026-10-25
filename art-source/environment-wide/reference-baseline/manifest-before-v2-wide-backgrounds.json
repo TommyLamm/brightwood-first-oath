@@ -1,0 +1,388 @@
+{
+  "version": 1,
+  "pack": "environment",
+  "images": [
+    {
+      "key": "env:camp:sky",
+      "url": "assets/environment/env-camp-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:camp:far",
+      "url": "assets/environment/env-camp-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:camp:mid",
+      "url": "assets/environment/env-camp-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:sky",
+      "url": "assets/environment/env-town-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:far",
+      "url": "assets/environment/env-town-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:town:mid",
+      "url": "assets/environment/env-town-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:sky",
+      "url": "assets/environment/env-forest-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:far",
+      "url": "assets/environment/env-forest-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:mid",
+      "url": "assets/environment/env-forest-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:sky",
+      "url": "assets/environment/env-rock-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:far",
+      "url": "assets/environment/env-rock-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:rock:mid",
+      "url": "assets/environment/env-rock-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:sky",
+      "url": "assets/environment/env-frost-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:far",
+      "url": "assets/environment/env-frost-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:mid",
+      "url": "assets/environment/env-frost-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-pine:sky",
+      "url": "assets/environment/env-frost-pine-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-pine:far",
+      "url": "assets/environment/env-frost-pine-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-pine:mid",
+      "url": "assets/environment/env-frost-pine-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:sky",
+      "url": "assets/environment/env-frost-cave-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:far",
+      "url": "assets/environment/env-frost-cave-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:mid",
+      "url": "assets/environment/env-frost-cave-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:tile-ground",
+      "url": "assets/environment/env-tile-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:tile-platform",
+      "url": "assets/environment/env-tile-platform-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:tile-slope",
+      "url": "assets/environment/env-tile-slope-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ladder",
+      "url": "assets/environment/env-ladder-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "env:portal",
+      "url": "assets/environment/env-portal-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:town-sign",
+      "url": "assets/environment/env-town-sign-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:mine-door",
+      "url": "assets/environment/env-mine-door-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 160,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:altar",
+      "url": "assets/environment/env-altar-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 112,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "env:sand:sky",
+      "url": "assets/environment/env-sand-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand:far",
+      "url": "assets/environment/env-sand-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand:mid",
+      "url": "assets/environment/env-sand-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:sky",
+      "url": "assets/environment/env-sand-dune-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:far",
+      "url": "assets/environment/env-sand-dune-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand-dune:mid",
+      "url": "assets/environment/env-sand-dune-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:sky",
+      "url": "assets/environment/env-sunwell-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:far",
+      "url": "assets/environment/env-sunwell-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:mid",
+      "url": "assets/environment/env-sunwell-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    }
+  ],
+  "animations": [],
+  "audio": []
+}

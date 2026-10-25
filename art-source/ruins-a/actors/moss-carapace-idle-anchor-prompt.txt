@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent single-frame monster sprite design anchor for a 2D RPG
+Input images: Image 1 is the approved moss-carapace creature design reference. Image 2 is an existing project monster used only for crisp pixel-art style and scale; do not copy the snail design.
+Primary request: Create one complete neutral idle sprite of the same squat ancient crawler: a broken pale ceramic shell with a subtle engraved bell motif, small moss patches in cracks, a few fine root feelers, and short segmented legs. It is low to the ground, calm and alert, and faces right.
+Style/medium: clean 2D pixel-art game sprite with chunky readable clusters, limited palette and sharp sprite edges, consistent with Image 2; not a painterly concept sheet or 3D render.
+Composition/framing: a single character only on a square transparent canvas, full silhouette visible, bottom-centered pivot, with enough empty margin around every root, leg, feeler and shell edge. Make it suitable to normalize to a 96x96 runtime frame; the visual body should be squat and low, not enlarged to fill the whole canvas.
+Color palette: weathered ivory ceramic, muted stone gray, moss green and olive, restrained warm brown root details.
+Constraints: genuine transparent alpha, no cast shadow; preserve all body parts; no additional frames, no sheet, no cell grid, no environment.
+Avoid: text, labels, symbols, watermark, UI, checkerboard, background, detached effects, glow, blur, gradients, cropping, extra creatures, weapons, 3D rendering.

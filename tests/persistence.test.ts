@@ -120,7 +120,7 @@ describe('persistence', () => {
     expect(storage.entries.get(key)).toBe(malformed);
     malformedPersistence.dispose();
 
-    const unsupported = JSON.stringify({ formatVersion: 2, data: makeSave(), savedAt: new Date(0).toISOString() });
+    const unsupported = JSON.stringify({ formatVersion: 7, data: makeSave(), savedAt: new Date(0).toISOString() });
     storage.entries.set(key, unsupported);
     const unsupportedPersistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     const unsupportedOutcome = await unsupportedPersistence.initialize();
@@ -144,7 +144,7 @@ describe('persistence', () => {
     expect(raw).toBeDefined();
     const envelope = JSON.parse(raw!) as { formatVersion: number; data: SaveData; savedAt: string };
     expect(Object.keys(envelope).sort()).toEqual(['data', 'formatVersion', 'savedAt']);
-    expect(envelope).toMatchObject({ formatVersion: 1, data: savedData });
+    expect(envelope).toMatchObject({ formatVersion: 3, data: savedData });
     expect(typeof envelope.savedAt).toBe('string');
     persistence.dispose();
 
@@ -190,7 +190,7 @@ describe('persistence', () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     storage.entries.set(key, JSON.stringify({
-      formatVersion: SAVE_FORMAT_VERSION,
+      formatVersion: 1,
       data: oldSave,
       savedAt: new Date(0).toISOString(),
     }));
@@ -218,7 +218,7 @@ describe('persistence', () => {
     })) as SaveData['quests'];
 
     const result = validateSave(legacy, catalog);
-    expect(SAVE_FORMAT_VERSION).toBe(1);
+    expect(SAVE_FORMAT_VERSION).toBe(3);
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value.quests).not.toHaveProperty('q13');

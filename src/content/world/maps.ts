@@ -47,9 +47,10 @@ const blueprints: MapBlueprint[] = [
     id: 'town', name: '木葉鎮', width: 1920, themeKey: 'town', musicKey: 'theme-town', safe: true, boss: false,
     platforms: [[500, 500, 800, 500], [1250, 500, 1550, 500]],
     ladders: [{ x: 650, topY: 500, bottomY: 600 }],
-    extraSpawns: [{ id: 'center', x: 960, y: 600 }],
+    extraSpawns: [{ id: 'center', x: 960, y: 600 }, { id: 'ruins-camp', x: 1650, y: 600 }],
     portals: [
       { id: 'town:west', x: 100, y: 600, targetMapId: 'camp', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'town:ruins', x: 1650, y: 600, targetMapId: 'ruins-tide-camp', targetSpawnId: 'town-entry', requiredQuestId: 'q15', minLevel: 1 },
       { id: 'town:east', x: 1820, y: 600, targetMapId: 'forest-edge', targetSpawnId: 'left', requiredQuestId: 'q02', minLevel: 1 },
     ],
     npcs: [
@@ -191,11 +192,12 @@ const blueprints: MapBlueprint[] = [
   },
   {
     id: 'sand-glass-shore', name: '琥珀砂岸', width: 1920, themeKey: 'sand', musicKey: 'theme-sands', safe: false, boss: false,
-    platforms: [[320, 500, 650, 500], [880, 445, 1180, 445], [1360, 490, 1650, 490]],
-    ladders: [{ x: 470, topY: 500, bottomY: 600 }, { x: 1020, topY: 445, bottomY: 600 }, { x: 1500, topY: 490, bottomY: 600 }],
-    extraSpawns: [],
+    platforms: [[120, 480, 360, 480], [400, 500, 650, 500], [880, 445, 1180, 445], [1360, 490, 1650, 490]],
+    ladders: [{ x: 160, topY: 480, bottomY: 600 }, { x: 470, topY: 500, bottomY: 600 }, { x: 1020, topY: 445, bottomY: 600 }, { x: 1500, topY: 490, bottomY: 600 }],
+    extraSpawns: [{ id: 'ruins-return', x: 280, y: 480 }],
     portals: [
       { id: 'sand-glass-shore:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'sand-glass-shore:ruins-south', x: 160, y: 480, targetMapId: 'ruins-tide-camp', targetSpawnId: 'shore-entry', requiredQuestId: 'q14', minLevel: 1 },
       { id: 'sand-glass-shore:east', x: 1820, y: 600, targetMapId: 'sand-dune-pass', targetSpawnId: 'left', requiredQuestId: 'q12', minLevel: 30 },
     ],
     npcs: [{ npcId: 'sands-guide', x: 250, y: 600 }],
@@ -203,6 +205,70 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'sand-scorpion', x: 520, roamLeft: 440, roamRight: 600 },
       { monsterId: 'sand-scorpion', x: 1020, roamLeft: 930, roamRight: 1110 },
       { monsterId: 'sand-scorpion', x: 1510, roamLeft: 1420, roamRight: 1600 },
+    ],
+  },
+  {
+    id: 'ruins-tide-camp', name: '潮痕營站', width: 960, themeKey: 'ruins-camp', musicKey: 'theme-ruins', safe: true, boss: false,
+    platforms: [],
+    ladders: [],
+    extraSpawns: [
+      { id: 'shore-entry', x: 240, y: 600 },
+      { id: 'town-entry', x: 480, y: 600 },
+    ],
+    portals: [
+      { id: 'ruins-tide-camp:shore', x: 100, y: 600, targetMapId: 'sand-glass-shore', targetSpawnId: 'ruins-return', requiredQuestId: null, minLevel: 1 },
+      { id: 'ruins-tide-camp:town', x: 280, y: 600, targetMapId: 'town', targetSpawnId: 'ruins-camp', requiredQuestId: null, minLevel: 1 },
+      { id: 'ruins-tide-camp:east', x: 860, y: 600, targetMapId: 'ruins-root-causeway', targetSpawnId: 'left', requiredQuestId: 'q15', minLevel: 1 },
+    ],
+    npcs: [
+      { npcId: 'ruins-archivist', x: 420, y: 600 },
+      { npcId: 'ruins-medic', x: 660, y: 600 },
+    ],
+    monsters: [],
+  },
+  {
+    id: 'ruins-root-causeway', name: '盤根石道', width: 2400, themeKey: 'ruins-root', musicKey: 'theme-ruins', safe: false, boss: false,
+    platforms: [[300, 500, 560, 500], [780, 430, 1040, 430], [1150, 480, 1420, 480], [1570, 410, 1850, 410], [1950, 490, 2180, 490]],
+    ladders: [
+      { x: 430, topY: 500, bottomY: 600 },
+      { x: 910, topY: 430, bottomY: 600 },
+      { x: 1280, topY: 480, bottomY: 600 },
+      { x: 1710, topY: 410, bottomY: 600 },
+      { x: 2060, topY: 490, bottomY: 600 },
+    ],
+    extraSpawns: [],
+    portals: [
+      { id: 'ruins-root-causeway:west', x: 100, y: 600, targetMapId: 'ruins-tide-camp', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'ruins-root-causeway:east', x: 2300, y: 600, targetMapId: 'ruins-echo-gallery', targetSpawnId: 'left', requiredQuestId: 'q16', minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [
+      { monsterId: 'ruins-moss-carapace', x: 700, roamLeft: 640, roamRight: 760 },
+      { monsterId: 'ruins-moss-carapace', x: 1250, roamLeft: 1190, roamRight: 1310 },
+      { monsterId: 'ruins-moss-carapace', x: 1850, roamLeft: 1790, roamRight: 1910 },
+    ],
+  },
+  {
+    id: 'ruins-echo-gallery', name: '回聲長廊', width: 2600, themeKey: 'ruins-gallery', musicKey: 'theme-ruins', safe: false, boss: false,
+    platforms: [[820, 420, 1020, 420], [1900, 360, 2120, 360]],
+    ladders: [
+      { x: 900, topY: 420, bottomY: 600 },
+      { x: 2000, topY: 360, bottomY: 600 },
+    ],
+    extraSpawns: [],
+    portals: [
+      { id: 'ruins-echo-gallery:west', x: 100, y: 600, targetMapId: 'ruins-root-causeway', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [
+      { npcId: 'ruins-pathfinder', x: 300, y: 600 },
+      { npcId: 'ruins-stele-west', x: 900, y: 420 },
+      { npcId: 'ruins-stele-east', x: 2000, y: 360 },
+    ],
+    monsters: [
+      { monsterId: 'ruins-string-puppet', x: 780, roamLeft: 720, roamRight: 850 },
+      { monsterId: 'ruins-bell-prowler', x: 1170, roamLeft: 1100, roamRight: 1240 },
+      { monsterId: 'ruins-string-puppet', x: 1570, roamLeft: 1510, roamRight: 1630 },
+      { monsterId: 'ruins-bell-prowler', x: 2000, roamLeft: 1940, roamRight: 2070 },
     ],
   },
   {

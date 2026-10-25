@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: transparent two-frame NPC idle sprite strip for a 2D RPG
+Input images: Image 1 and Image 2 are existing project NPCs used only as style and scale references; do not copy their characters or outfits.
+Primary request: Create a new camp medic named Qinghe: a kind young adult healer in a simple sea-green and white field tunic, with a compact medicine satchel and one small visible herb pouch or vial. Keep the outline clean and distinct from the archivist reference. Show the same character in two subtly different idle breathing poses, with a small shoulder and hand movement while resting.
+Style/medium: match the existing cute big-head side-view RPG pixel sprite style and clear silhouette of the reference NPCs; crisp hand-placed-looking pixel clusters and restrained shading, not a 3D render.
+Composition/framing: exactly two equal square frames arranged left to right in one row, full body visible, facing right, same scale and baseline, both frames isolated and complete. Preserve generous transparent padding; no frame boundary lines.
+Color palette: muted sea-green and teal, clean warm white cloth, natural dark hair, small restrained leather-brown satchel details.
+Constraints: genuine transparent alpha; keep the figure recognizable at 96x96; exactly one character per frame; medicine satchel and herb pouch/vial must read as healer supplies; no scene backdrop.
+Avoid: weapons, armor, staff, readable marks, text, labels, logos, watermark, UI, checkerboard, background, floor shadow, cropped feet or head, extra people, glow, blur, gradients, 3D rendering.

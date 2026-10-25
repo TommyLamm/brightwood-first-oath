@@ -321,6 +321,76 @@
       "displayHeight": 192,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-archivist",
+      "url": "assets/actors/npc-ruins-archivist-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-medic",
+      "url": "assets/actors/npc-ruins-medic-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-moss-carapace",
+      "url": "assets/actors/monster-ruins-moss-carapace.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-pathfinder",
+      "url": "assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+      "columns": 2,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-stele",
+      "url": "assets/actors/npcs/ruins-stele-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-string-puppet",
+      "url": "assets/actors/monster-ruins-string-puppet.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-bell-prowler",
+      "url": "assets/actors/monster-ruins-bell-prowler.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -1367,71 +1437,163 @@
     {
       "key": "frost-crab:idle",
       "imageKey": "actor:frost-crab",
-      "frames": [0, 1],
-      "frameMs": [200, 200],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
       "loop": true
     },
     {
       "key": "frost-crab:walk",
       "imageKey": "actor:frost-crab",
-      "frames": [6, 7, 8, 9, 10, 11],
-      "frameMs": [120, 120, 120, 120, 120, 120],
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
       "loop": true
     },
     {
       "key": "frost-crab:attack",
       "imageKey": "actor:frost-crab",
-      "frames": [12, 13, 14, 15],
-      "frameMs": [190, 190, 190, 190],
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        190,
+        190,
+        190,
+        190
+      ],
       "loop": false
     },
     {
       "key": "frost-crab:hurt",
       "imageKey": "actor:frost-crab",
-      "frames": [18, 19],
-      "frameMs": [100, 100],
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "frost-crab:dead",
       "imageKey": "actor:frost-crab",
-      "frames": [24, 25, 26, 27],
-      "frameMs": [100, 100, 100, 100],
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "frost-tide-warden:idle",
       "imageKey": "actor:frost-tide-warden",
-      "frames": [0, 1],
-      "frameMs": [200, 200],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
       "loop": true
     },
     {
       "key": "frost-tide-warden:walk",
       "imageKey": "actor:frost-tide-warden",
-      "frames": [6, 7, 8, 9, 10, 11],
-      "frameMs": [120, 120, 120, 120, 120, 120],
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
       "loop": true
     },
     {
       "key": "frost-tide-warden:attack",
       "imageKey": "actor:frost-tide-warden",
-      "frames": [12, 13, 14, 15],
-      "frameMs": [250, 250, 250, 250],
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        250,
+        250,
+        250,
+        250
+      ],
       "loop": false
     },
     {
       "key": "frost-tide-warden:hurt",
       "imageKey": "actor:frost-tide-warden",
-      "frames": [18, 19],
-      "frameMs": [100, 100],
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "frost-tide-warden:dead",
       "imageKey": "actor:frost-tide-warden",
-      "frames": [24, 25, 26, 27],
-      "frameMs": [100, 100, 100, 100],
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
       "loop": false
     },
     {
@@ -1531,113 +1693,553 @@
     {
       "key": "npc:sands-guide:idle",
       "imageKey": "actor:sands-guide",
-      "frames": [0, 1],
-      "frameMs": [350, 350],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
       "loop": true
     },
     {
       "key": "sand-scorpion:idle",
       "imageKey": "actor:sand-scorpion",
-      "frames": [0, 1],
-      "frameMs": [200, 200],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
       "loop": true
     },
     {
       "key": "sand-scorpion:walk",
       "imageKey": "actor:sand-scorpion",
-      "frames": [2, 3, 4, 5],
-      "frameMs": [120, 120, 120, 120],
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
       "loop": true
     },
     {
       "key": "sand-scorpion:attack",
       "imageKey": "actor:sand-scorpion",
-      "frames": [6, 7, 8, 9],
-      "frameMs": [200, 200, 200, 200],
+      "frames": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "frameMs": [
+        200,
+        200,
+        200,
+        200
+      ],
       "loop": false
     },
     {
       "key": "sand-scorpion:hurt",
       "imageKey": "actor:sand-scorpion",
-      "frames": [10, 11],
-      "frameMs": [100, 100],
+      "frames": [
+        10,
+        11
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "sand-scorpion:dead",
       "imageKey": "actor:sand-scorpion",
-      "frames": [12, 13, 14, 15],
-      "frameMs": [100, 100, 100, 100],
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "sunwell-beetle:idle",
       "imageKey": "actor:sunwell-beetle",
-      "frames": [0, 1],
-      "frameMs": [200, 200],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
       "loop": true
     },
     {
       "key": "sunwell-beetle:walk",
       "imageKey": "actor:sunwell-beetle",
-      "frames": [2, 3, 4, 5],
-      "frameMs": [120, 120, 120, 120],
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
       "loop": true
     },
     {
       "key": "sunwell-beetle:attack",
       "imageKey": "actor:sunwell-beetle",
-      "frames": [6, 7, 8, 9],
-      "frameMs": [200, 200, 200, 200],
+      "frames": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "frameMs": [
+        200,
+        200,
+        200,
+        200
+      ],
       "loop": false
     },
     {
       "key": "sunwell-beetle:hurt",
       "imageKey": "actor:sunwell-beetle",
-      "frames": [10, 11],
-      "frameMs": [100, 100],
+      "frames": [
+        10,
+        11
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "sunwell-beetle:dead",
       "imageKey": "actor:sunwell-beetle",
-      "frames": [12, 13, 14, 15],
-      "frameMs": [100, 100, 100, 100],
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "sunwell-sentinel:idle",
       "imageKey": "actor:sunwell-sentinel",
-      "frames": [0, 1],
-      "frameMs": [200, 200],
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
       "loop": true
     },
     {
       "key": "sunwell-sentinel:walk",
       "imageKey": "actor:sunwell-sentinel",
-      "frames": [2, 3, 4, 5],
-      "frameMs": [120, 120, 120, 120],
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120
+      ],
       "loop": true
     },
     {
       "key": "sunwell-sentinel:attack",
       "imageKey": "actor:sunwell-sentinel",
-      "frames": [6, 7, 8, 9],
-      "frameMs": [250, 250, 250, 250],
+      "frames": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "frameMs": [
+        250,
+        250,
+        250,
+        250
+      ],
       "loop": false
     },
     {
       "key": "sunwell-sentinel:hurt",
       "imageKey": "actor:sunwell-sentinel",
-      "frames": [10, 11],
-      "frameMs": [100, 100],
+      "frames": [
+        10,
+        11
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
       "loop": false
     },
     {
       "key": "sunwell-sentinel:dead",
       "imageKey": "actor:sunwell-sentinel",
-      "frames": [12, 13, 14, 15],
-      "frameMs": [100, 100, 100, 100],
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:ruins-archivist:idle",
+      "imageKey": "actor:ruins-archivist",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:ruins-medic:idle",
+      "imageKey": "actor:ruins-medic",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-moss-carapace:idle",
+      "imageKey": "actor:ruins-moss-carapace",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-moss-carapace:walk",
+      "imageKey": "actor:ruins-moss-carapace",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-moss-carapace:attack",
+      "imageKey": "actor:ruins-moss-carapace",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        275,
+        275,
+        80,
+        770
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-moss-carapace:hurt",
+      "imageKey": "actor:ruins-moss-carapace",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-moss-carapace:dead",
+      "imageKey": "actor:ruins-moss-carapace",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:ruins-pathfinder:idle",
+      "imageKey": "actor:ruins-pathfinder",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:ruins-stele-west:idle",
+      "imageKey": "actor:ruins-stele",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:ruins-stele-east:idle",
+      "imageKey": "actor:ruins-stele",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-string-puppet:idle",
+      "imageKey": "actor:ruins-string-puppet",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-string-puppet:walk",
+      "imageKey": "actor:ruins-string-puppet",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-string-puppet:attack",
+      "imageKey": "actor:ruins-string-puppet",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        500,
+        500,
+        100,
+        900
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-string-puppet:hurt",
+      "imageKey": "actor:ruins-string-puppet",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-string-puppet:dead",
+      "imageKey": "actor:ruins-string-puppet",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-prowler:idle",
+      "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-prowler:walk",
+      "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-prowler:attack",
+      "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        550,
+        550,
+        100,
+        900
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-prowler:hurt",
+      "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-prowler:dead",
+      "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
       "loop": false
     }
   ],

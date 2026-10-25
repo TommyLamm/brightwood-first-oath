@@ -1,0 +1,14 @@
+Use case: illustration-story
+Asset type: 960×540 fantasy RPG region map background for UI; the game draws two real nodes at (16,72) and (40,55)
+Primary request: a hand-painted fantasy parchment map of the ancient ruins coast, with damp white stone, teal-green roots and oxidized copper details
+Input images: Image 1 is a forest environment palette/style reference only; Image 2 is an existing game region map reference for geographic richness and painterly game-map detail only. Do not include ice, snow, UI, or any symbols from either image.
+Scene/backdrop: a wide, aged parchment chart viewed from above at a gentle isometric angle, showing a coastal ruin region
+Subject: along the southwest coast, a small canvas expedition camp beside tide-worn steps and a broken coastal watchtower; across the center-left, an old stone causeway winding among thick green roots and several broken pillars; in the far distance, a faint dark silhouette of a sealed ruin enclosed by cliffs
+Style/medium: richly hand-painted 2D fantasy map illustration on warm weathered parchment, soft brush texture and clear readable landforms, consistent with a charming classic RPG world map
+Composition/framing: wide 16:9 landscape; keep the southwest camp and center-left root-stone causeway distinct; leave natural clear parchment/terrain around the upper-left and middle-left for later UI nodes; no cartographic overlays
+Lighting/mood: cool damp coastal haze with subtle warm parchment light, mysterious but welcoming
+Color palette: ivory limestone, muted teal water, moss and jade roots, restrained oxidized copper, parchment tan and soft slate shadows
+Materials/textures: fibrous aged parchment, wet pale stone, tangled roots, worn canvas, sea haze
+Text (verbatim): none
+Constraints: background art only; do not draw playable nodes, routes, dotted paths, labels, lettering, symbols, icons, compass, legend, borders, or UI; preserve open regions where nodes can be added by the UI
+Avoid: modern map conventions, text, readable marks, numbers, badges, quest markers, bright fantasy portals, oversized foreground props, photorealism, 3D rendering, snow/ice theme

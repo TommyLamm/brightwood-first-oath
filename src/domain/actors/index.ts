@@ -318,6 +318,9 @@ function isBoundedCharge(monster: MonsterState, skill: SkillDef): boolean {
 function chooseSkillId(monster: MonsterState): string | null {
   if (monster.monsterId === 'frost-crab') return 'frost-crab-charge';
   if (monster.monsterId === 'sunwell-beetle') return 'sunwell-beetle-charge';
+  if (monster.monsterId === 'ruins-moss-carapace') return 'ruins-carapace-bite';
+  if (monster.monsterId === 'ruins-string-puppet') return 'ruins-puppet-slap';
+  if (monster.monsterId === 'ruins-bell-prowler') return 'ruins-prowler-sweep';
   if (monster.monsterId === 'sand-scorpion') return 'sand-stinger';
   if (monster.monsterId === 'sunwell-sentinel') return 'sunwell-sentinel-slam';
   if (monster.monsterId === 'frost-tide-warden') {

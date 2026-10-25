@@ -1,0 +1,16 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:camp:far for an original 2D side-scrolling adventure.
+Primary request: completely re-create one calm, extra-wide distant countryside panorama beyond a small dawn camp. This is one coherent newly generated picture, not an extension or collage.
+Input images:
+- Image 1, existing camp far v1: visual reference only for a low distant-hill scene and morning atmosphere. Redraw the full frame; do not preserve pixels or copy its cyan, yellow, white, or magenta edge fringe.
+- Image 2, local hero style reference: use only for gentle classic-adventure mood and warm muted color; do not depict or copy the hero.
+- Image 3, forest style board: use only for pixel-cluster rendering and atmospheric depth.
+- Image 4, approved camp sky: use only for pale warm dawn light.
+Scene/backdrop: far countryside at quiet dawn.
+Subject: two or three broad overlapping low blue-green hills with a faint, sparse distant treeline along the far ridge and very restrained cream morning mist tucked inside the hill shapes. Only distant scenery.
+Style/medium: clean pixel-art illustration with deliberate readable clusters and soft limited shading. Keep a consistent coarse pixel scale suitable for a 1440x540 layer displayed on a 960x540 game canvas. Low contrast behind gameplay. Avoid photographic detail, painterly speckles, random grain, and noise.
+Composition/framing: intended final canvas is exactly 1440x540 (8:3 panoramic). Place the distant hill silhouettes only in the lower portion, roughly the lower 28–34% of the final frame, with broad genuinely transparent open space above and a clear transparent margin below the hills. Keep all important silhouettes well inside a safe crop to 8:3 if the tool chooses a different native size. Make left and right landscape edges calm and naturally continuable for horizontal scrolling; do not mirror, repeat, or tile a section.
+Lighting/mood: soft early morning, peaceful and airy.
+Color palette: muted sage, blue-teal, warm gray-green, and a few soft cream-gold light notes. Keep chroma restrained and consistent with the references.
+Transparency: real alpha, transparent everywhere outside the hill and treeline artwork. Keep any alpha transition confined to the immediate natural silhouette edge.
+Constraints: no ground plane, walkable platform, ledge, collision surface, foreground tree, building, tent, props, character, NPC, text, logo, border, watermark, glow, outline, halo, chromatic fringe, or opaque backdrop. Do not simulate transparency with a checkerboard.

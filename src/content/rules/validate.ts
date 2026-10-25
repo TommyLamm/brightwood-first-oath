@@ -1,6 +1,28 @@
 import type { Id, Result, RulesCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from './monsters.js';
 
+const approvedItemIds: readonly Id[] = [
+  'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
+  'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
+  'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard',
+  'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell',
+  'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
+  'broken-copper-thread', 'muted-bell-fragment',
+];
+
+const approvedSkillIds: readonly Id[] = [
+  'basic', 'heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery', 'enemy-melee',
+  'ruins-carapace-bite', 'guardian-slam', 'frost-crab-charge', 'sunwell-beetle-charge',
+  'sand-stinger', 'guardian-wave', 'frost-tusk-slam', 'sunwell-sentinel-slam', 'low-tide-wave',
+  'ruins-puppet-slap', 'ruins-prowler-sweep',
+];
+
+const approvedMonsterIds: readonly Id[] = [
+  'snail', 'slime', 'mushroom', 'boar', 'golem', 'sentinel', 'frost-wolf', 'frost-crab',
+  'sand-scorpion', 'sunwell-beetle', 'ruins-moss-carapace', 'guardian', 'sunwell-sentinel',
+  'frost-tide-warden', 'ruins-string-puppet', 'ruins-bell-prowler',
+];
+
 const invalid = (message: string): Result<RulesCatalog> => ({
   ok: false,
   code: 'INVALID',
@@ -15,14 +37,22 @@ const hasMatchingIds = <T extends { id: Id }>(
 ): boolean =>
   Object.entries(definitions).every(([key, definition]) => key === definition.id);
 
+const hasApprovedIds = <T>(definitions: Record<Id, T>, approvedIds: readonly Id[]): boolean => {
+  const ids = Object.keys(definitions);
+  return ids.length === approvedIds.length && ids.every((id) => approvedIds.includes(id));
+};
+
 export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const itemIds = Object.keys(catalog.items);
   const skillIds = Object.keys(catalog.skills);
   const monsterIds = Object.keys(catalog.monsters);
 
-  if (itemIds.length !== 30) return invalid('items 數量錯誤：預期 30，實際 ' + itemIds.length);
-  if (skillIds.length !== 15) return invalid('skills 數量錯誤：預期 15，實際 ' + skillIds.length);
-  if (monsterIds.length !== 13) return invalid('monsters 數量錯誤：預期 13，實際 ' + monsterIds.length);
+  if (itemIds.length !== 33) return invalid('items 數量錯誤：預期 33，實際 ' + itemIds.length);
+  if (skillIds.length !== 18) return invalid('skills 數量錯誤：預期 18，實際 ' + skillIds.length);
+  if (monsterIds.length !== 16) return invalid('monsters 數量錯誤：預期 16，實際 ' + monsterIds.length);
+  if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid('items ID 清單不符核准的 33 件物品');
+  if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid('skills ID 清單不符核准的 18 個技能');
+  if (!hasApprovedIds(catalog.monsters, approvedMonsterIds)) return invalid('monsters ID 清單不符核准的 16 隻怪物');
   if (!hasMatchingIds(catalog.items)) return invalid('items 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.skills)) return invalid('skills 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.monsters)) return invalid('monsters 定義 id 必須與 Record key 完全相同');
@@ -102,7 +132,7 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const learnableCount = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'swordsman').length;
   const enemySkills = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'enemy');
   if (learnableCount !== 5) return invalid(`可學劍士技能數量錯誤：預期 5，實際 ${learnableCount}`);
-  if (enemySkills.length !== 9) return invalid('敵人技能數量錯誤：預期 9，實際 ' + enemySkills.length);
+  if (enemySkills.length !== 12) return invalid('敵人技能數量錯誤：預期 12，實際 ' + enemySkills.length);
   if (catalog.skills.basic?.requiredJob !== 'any') return invalid('basic 必須存在且可由任意職業使用');
   if (enemySkills.some((skill) => skill.maxRank !== 1 || skill.mpCost !== 0)) {
     return invalid('敵人技能必須 maxRank=1 且 mpCost=0');

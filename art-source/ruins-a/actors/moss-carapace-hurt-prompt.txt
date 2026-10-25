@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent sprite-action row for a 2D RPG runtime atlas
+Input images: Image 1 is the approved moss-carapace design reference only. Image 2 is an existing project monster used only for pixel-art style and scale; do not copy its snail design.
+Primary request: Create a single horizontal strip of exactly six equally sized frame slots for the hurt animation of the same squat ancient crawler in Image 1. Preserve the shell silhouette, bell engraving, moss and root feelers. Show two distinct brief recoil poses: frame 1 flinches backward and tucks the front legs; frame 2 settles into a low recoiled crouch. Slots 3–6 must be exact repeats of frame 2.
+Style/medium: crisp pixel-art RPG sprite matching Image 2's chunky clean pixel clusters and limited palette, with readable solid shapes and no painterly haze.
+Composition/framing: one row, six equal-width square frame slots laid out left to right; the complete creature is fully inside every slot, at identical scale and bottom pivot, facing right. Keep each silhouette comfortably inset from all slot edges with transparent gaps. Each frame must depict one complete separate creature; do not draw borders or grid lines.
+Color palette: weathered ivory ceramic, muted stone-gray, jade and olive moss, restrained warm brown root details.
+Constraints: transparent background and genuine alpha; no visible injury or gore; no cast shadow; no incoming projectile. Duplicate only unused slots 3–6 exactly.
+Avoid: extra creature copies, text, symbols, UI, watermark, background, checkerboard, cell overlap, cropped body parts, detached particles, glow, blur, gradients, 3D rendering.

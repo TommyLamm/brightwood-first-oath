@@ -109,7 +109,7 @@ export type SaveData = {
 };
 
 export type SaveEnvelope = {
-  formatVersion: 1;
+  formatVersion: 3;
   data: SaveData;
   savedAt: string;
 };

@@ -1,0 +1,15 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:rock:far for an original 2D side-scrolling adventure.
+Primary request: create one new panoramic view of a quiet rugged highland seen from far away at dusk.
+Input images:
+- Image 1, approved rock sky: use only for the pale turquoise and dusty-peach evening light.
+- Image 2, forest style board: use only for clean pixel-cluster rendering; do not copy its foreground trees or composition.
+- Image 3, accepted town far v2: use only for its crisp natural silhouette edges and restrained low-distance scale. Do not copy its village, trees, or roofs.
+Scene/backdrop: far rocky hills under the separately supplied sky layer.
+Subject: a few low, distant slate-teal rock ridges with gently broken natural skylines, softened by distance; at most sparse tiny scrub silhouettes. No close cliffs or canyon walls.
+Style/medium: clean classic pixel-art with deliberate broad clusters and restrained soft shading; low contrast behind gameplay. No fine grain, brush speckles, or noise.
+Composition/framing: target 1440x540 (8:3 panoramic). Keep all distant ridge silhouettes in the lower 28–34% of the frame, with large transparent open space above and a clear transparent margin below. Use irregular, naturally rising and falling ridge groups with small transparent breaks; no level horizontal base. Keep both ends calm for horizontal scrolling. One continuous full-frame scene, not a collage; do not mirror or tile any section. Preserve proportions if the native size differs; never stretch.
+Lighting/mood: still, cool dusk with soft warm light in the distance.
+Color palette: muted blue-teal, slate, sage-gray stone, and a few dusty-peach highlights away from the silhouette edges.
+Transparency: genuine alpha; only the distant ridge/scrub silhouettes are visible, with transparent pixels everywhere else. Keep edges clean in neighboring stone colors.
+Constraints: no ground plane, plateau floor, foreground cliff, platform, ledge, collision surface, continuous opaque band, mist sheet, glow, outline, halo, chromatic fringe, bright edge, stray pixels, checkerboard, or opaque background. No characters, people, animals, buildings, props, text, signs, lettering, logo, border, or watermark.

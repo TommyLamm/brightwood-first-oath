@@ -1,0 +1,5 @@
+Use case: precise-object-edit
+Asset type: correction to a formal 2D game parallax layer.
+Input images: Image 1 is the edit target, the generated Root Causeway tree-canopy mid layer.
+Primary request: make only the required transparent-area correction while preserving the existing artwork and its composition.
+Constraints: keep the old tree crown, branches, leaf clusters, hanging roots, and pale broken column-cap details, colors, texture, lighting, and upper-edge placement unchanged. The final target canvas is 1920x540. Recompose or shorten the hanging roots so all artwork stays within the top 180 pixels; every pixel at y>=180 must be fully transparent RGBA alpha 0. Preserve genuinely transparent pixels elsewhere; do not add a background plate, checkerboard, floor, platform, text, or new objects.

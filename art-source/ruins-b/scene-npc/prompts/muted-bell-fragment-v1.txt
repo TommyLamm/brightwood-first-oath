@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent 128x128 RPG inventory material icon, runtime displayed at 32x32.
+Primary request: depict one muted fragment from a cracked ancient copper bell.
+Subject: a single curved shard broken from a small heavy bell, with a clearly jagged chipped rim, weathered bronze-copper surface, and one tiny dark clapper nub still attached. It should read as a bell fragment, not a whole bell.
+Style/medium: crisp polished 2D pixel-art RPG item icon, chunky coherent pixel clusters, limited palette, strong outline, sharp edges, high contrast at small size; match high-quality 16-bit inventory art, no 3D, no painterly blur.
+Composition/framing: one compact centered fragment only, large enough to read at 32x32, on a square transparent canvas with comfortable clear margins.
+Lighting/mood: muted warm copper highlight and cool shadow; old, silent, and sturdy.
+Color palette: oxidized copper, dark bronze, restrained sea-glass teal patina and charcoal outline.
+Constraints: request genuine transparent alpha. No background, checkerboard, floor, cast shadow, text, label, symbol, watermark, UI, whole intact bell, extra shards, people, monsters, glow, blur, gradient, detached particles or cropped edges.

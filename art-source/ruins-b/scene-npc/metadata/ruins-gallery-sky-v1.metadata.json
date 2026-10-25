@@ -1,0 +1,72 @@
+{
+  "frameId": "environment:ruins-gallery-sky",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/ruins-gallery-sky-source.png",
+  "rawSha256": "481A94884088DCE663C85230F41E8D9692E1270B93BA1B86BE5ABC0F681FF4E2",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/ruins-gallery-sky-v1.txt",
+  "promptSha256": "2BA0B8CCAA89199813BF0913203BB60B4AE9D08D191B85390A0ABF11EC24A1A0",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: formal 2D side-view fantasy RPG parallax sky layer for the Ruins Echo Gallery.\nPrimary request: create only a calm atmospheric sky/background plate for the long Echo Gallery, where wet ancient limestone ruins open into a misty high vault.\nScene/backdrop: a broad pale blue-grey vault of humid air with a luminous opening far above, soft mineral haze and a few quiet cloudlike mist bands; the gallery should feel spacious, old and resonant, continuing inland from the root-grown causeway.\nSubject: atmosphere only: empty high air, diffuse light, soft mist. No architecture or landforms.\nStyle/medium: crisp hand-painted pixel-art-inspired 2D game background, chunky coherent color clusters, restrained palette, visible pixel-group texture, clean broad shapes; match polished 16-bit RPG scenery, not photoreal, not 3D, no painterly blur.\nComposition/framing: wide horizontal 16:9 side-scrolling panorama intended to normalize to 960x540; quiet open center with subtle variation across the width.\nLighting/mood: muted daylight filtered through pale stone and sea mist; quiet, reverberant, slightly mysterious but safe to explore.\nColor palette: weathered limestone light, misty blue-grey, subdued sea-glass teal, tiny restrained oxidized-copper warmth.\nConstraints: opaque full-bleed sky layer. Keep strictly sky and atmospheric haze. No buildings, arches, columns, cliffs, sea, trees, roots, characters, NPCs, monsters, platforms, walkable floors, paths, text, symbols, UI, signage or watermark.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_f9aff30b6be8448fb122a8dfc19928bd",
+  "callId": "exec-0563c136-a8bf-4a7d-904b-dec61596f86a",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-0563c136-a8bf-4a7d-904b-dec61596f86a.png",
+  "savedPathSha256": "481A94884088DCE663C85230F41E8D9692E1270B93BA1B86BE5ABC0F681FF4E2",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: full-width calm open vault, correct opaque sky treatment, and the 960x540 source aspect match the gallery plate.",
+  "rejectionReason": null,
+  "normalization": {
+    "frameId": "env:ruins-gallery:sky",
+    "raw": "raw/ruins-gallery-sky-source.png",
+    "rawSha256": "481A94884088DCE663C85230F41E8D9692E1270B93BA1B86BE5ABC0F681FF4E2",
+    "rawSize": [
+      1672,
+      941
+    ],
+    "rawMode": "RGB",
+    "rawAlphaBBoxGt8": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "output": "public/assets/environment/env-ruins-gallery-sky-v1.png",
+    "outputSha256": "FDF350581377D51C6206DE02DE62596544255E17238014B390CF5032A671CA2B",
+    "outputBytes": 717145,
+    "outputSize": [
+      960,
+      540
+    ],
+    "outputMode": "RGBA",
+    "outputAlphaBBoxGt8": [
+      0,
+      0,
+      960,
+      540
+    ],
+    "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+    "clearedAlphaPixels": 0,
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-sky-v1-q70.jpg",
+    "runtimeReviewSize": [
+      960,
+      540
+    ],
+    "accepted": true,
+    "acceptanceReason": "Accepted: full-width calm open vault, correct opaque sky treatment, and the 960x540 source aspect match the gallery plate."
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-sky-v1-q70.jpg"
+  },
+  "visualReviewNote": "Open sky reads calm and spacious. Surface texture is soft hand-painted rather than strictly chunky pixel clusters; retained from the recovered source without re-generation."
+}

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG parallax sky background, one landscape PNG layer.
+Input images: Image 1 is only a style reference for the project's softly painted, clustered game-background texture; do not copy its forest scene.
+Primary request: create the open sky layer above Root Causeway, transitioning inland from the coast toward ancient ruins overtaken by tree roots.
+Scene/backdrop: luminous humid sky, thin mist, pale distant limestone air and a few soft cloud banks visible through a broad opening above the forest canopy.
+Subject: only atmosphere and sky; no tree silhouettes or architecture.
+Style/medium: charming hand-painted pixel-art-inspired 2D game background, softly clustered brush pixels and calm atmospheric depth; not 3D, not photorealistic.
+Composition/framing: exact target 960x540 landscape 16:9, open brighter area toward the center and subtle humid haze across the width.
+Lighting/mood: filtered daylight after rain, tranquil but ancient.
+Color palette: pale limestone light, misty turquoise, blue-grey cloud shadows, very restrained oxidized copper.
+Constraints: opaque sky image; no transparency, text, signage or watermark. Keep this strictly a sky layer. Avoid cliffs, sea, shore, rocks, buildings, columns, roots, tree crowns, characters, NPCs, monsters, platforms, paths, ground or any walkable terrain.

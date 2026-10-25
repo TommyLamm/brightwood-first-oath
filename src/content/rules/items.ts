@@ -150,9 +150,24 @@ export const items: Record<Id, ItemDef> = {
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
     buyPrice: 0, sellPrice: 42, iconKey: 'item:amber-scale', visualKey: null,
   },
+  'moss-ceramic': {
+    id: 'moss-ceramic', name: '苔紋陶片', kind: 'material', slot: null, stackLimit: 999,
+    minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 45, iconKey: 'item:moss-ceramic', visualKey: null,
+  },
   'guardian-core': {
     id: 'guardian-core', name: '守衛核心', kind: 'quest', slot: null, stackLimit: 99,
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
     buyPrice: 0, sellPrice: 0, iconKey: 'item:guardian-core', visualKey: null,
+  },
+  'broken-copper-thread': {
+    id: 'broken-copper-thread', name: '斷裂銅弦', kind: 'material', slot: null, stackLimit: 999,
+    minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 50, iconKey: 'item:broken-copper-thread', visualKey: null,
+  },
+  'muted-bell-fragment': {
+    id: 'muted-bell-fragment', name: '失聲鈴片', kind: 'material', slot: null, stackLimit: 999,
+    minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 55, iconKey: 'item:muted-bell-fragment', visualKey: null,
   },
 };

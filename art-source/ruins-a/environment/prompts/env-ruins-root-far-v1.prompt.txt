@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG far-parallax scenery layer, PNG with true transparency.
+Input images: Image 1 is only a style reference for the project's softly painted, clustered game-background texture; do not copy its forest scene.
+Primary request: create distant scenery for Root Causeway, where ancient coastal ruins transition into a root-filled inland passage.
+Scene/backdrop: separate distant silhouettes of a massive old tree crown, looping and broken teal roots arching through the air as a background landmark, and several weathered white-stone column fragments; traces of coastal haze remain at the far edge.
+Subject: the root bridge landmark is distant scenery only: irregular tangled roots with a broken, uneven underside and visible gaps, clearly not a flat walkable bridge; scattered broken columns; no continuous ground.
+Style/medium: charming hand-painted pixel-art-inspired 2D game background, broad silhouettes, clustered brush pixels, mist-softened depth; not 3D, not photorealistic.
+Composition/framing: exact target 1440x540 landscape 8:3; transparent gaps between separated lower-half forms, high irregular crown silhouette, no full-width strip.
+Lighting/mood: humid daylight through old foliage after rain.
+Color palette: weathered pale limestone, deep sage and sea-glass teal roots, muted blue-grey mist, restrained oxidized copper.
+Constraints: request genuine transparent background and preserve alpha. No sky plate, no background fill, no flat horizontal top, no walkable ledge, platform, path, stairs, floor, road or ground plane. No characters, NPCs, monsters, text, UI, signage or watermark.

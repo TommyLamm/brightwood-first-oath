@@ -1,0 +1,73 @@
+{
+  "frameId": "item:broken-copper-thread",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/broken-copper-thread-source.png",
+  "rawSha256": "6F99B3F19A81C6CCF5BDAAD7A0C33AE405442490A7A577B6308769F56EAB8EDB",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/broken-copper-thread-v1.txt",
+  "promptSha256": "3A8111E87D2E2A6555FB1447822F05E2CA856AF1EC2C90056550C142CD4E3416",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent 128x128 RPG inventory material icon, runtime displayed at 32x32.\nPrimary request: depict one broken copper thread dropped by an old wooden marionette.\nSubject: a single short, visibly snapped strand of thin oxidized-copper wire, gently curled into one compact loop with two clearly broken ends; a tiny muted teal patina fleck is acceptable, but no attached object.\nStyle/medium: crisp polished 2D pixel-art RPG item icon, chunky coherent pixel clusters, limited palette, strong outline, sharp edges, high contrast at small size; match high-quality 16-bit inventory art, no 3D, no painterly blur.\nComposition/framing: one centered item only, large enough to read at 32x32, on a square transparent canvas with comfortable clear margins.\nLighting/mood: small warm highlights on aged copper, restrained and practical.\nColor palette: dark copper, muted orange-bronze, a few blue-green oxidized pixels, dark outline.\nConstraints: request genuine transparent alpha. No background, checkerboard, floor, cast shadow, text, label, symbol, watermark, UI, extra strands, wood pieces, hands, characters, glow, blur, gradient or cropped ends.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_dec6f3b059df4883bcbbba09176e6489",
+  "callId": "exec-ec2e11de-3f27-4dae-8cf3-7276a68a5cff",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-ec2e11de-3f27-4dae-8cf3-7276a68a5cff.png",
+  "savedPathSha256": "6F99B3F19A81C6CCF5BDAAD7A0C33AE405442490A7A577B6308769F56EAB8EDB",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: one centered, readable transparent material icon with a clean silhouette and enough margin for 32x32 runtime display.",
+  "rejectionReason": null,
+  "normalization": {
+    "method": "Crop alpha>8 subject bounds with 4.5% margin; Lanczos fit within 104x104 and center on a transparent 128x128 canvas.",
+    "sourceAlphaBBoxGt8": [
+      243,
+      255,
+      1080,
+      1011
+    ],
+    "cropIncludingMargin": [
+      205,
+      217,
+      1118,
+      1049
+    ],
+    "resizedSize": [
+      104,
+      95
+    ],
+    "scale": 0.11391,
+    "output": "public/assets/interface/item-broken-copper-thread-v1.png",
+    "outputSize": [
+      128,
+      128
+    ],
+    "outputSha256": "74225A3287E551C6EEE1B1612076D689200C1DBC7175631959E1E442FB57EE83",
+    "outputAlphaBBoxGt8": [
+      16,
+      20,
+      112,
+      107
+    ],
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/item-broken-copper-thread-runtime-q70.jpg",
+    "runtimeReviewSize": [
+      640,
+      640
+    ]
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/item-broken-copper-thread-runtime-q70.jpg"
+  },
+  "visualReviewNote": "Copper loop with two visible broken ends remains legible at 32x32 display size."
+}

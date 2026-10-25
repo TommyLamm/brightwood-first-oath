@@ -1,0 +1,3440 @@
+{
+  "date": "2026-10-25",
+  "requirements": {
+    "atlasSize": [
+      576,
+      480
+    ],
+    "cellSize": [
+      96,
+      96
+    ],
+    "columns": 6,
+    "rows": 5,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "minimumAlphaPaddingPx": 3,
+    "visibleBottomY": 92,
+    "alphaBBoxCenterX": 48,
+    "centerTolerancePx": 0.5
+  },
+  "manifestAppend": {
+    "path": "public/assets/actors/manifest.json",
+    "originalImages": 37,
+    "appendedImages": 2,
+    "originalAnimations": 106,
+    "appendedAnimations": 10
+  },
+  "atlases": [
+    {
+      "monster": "ruins-string-puppet",
+      "imageKey": "actor:ruins-string-puppet",
+      "atlasPath": "public/assets/actors/monster-ruins-string-puppet.png",
+      "atlasSha256": "6ee355fa72616776a6effb5bf263d653331c15a7015949d696319eae0d8400cd",
+      "atlasPixelSha256": "a52683757448b134f68e5669c7a564013af32c818bbd424c64a0cc93d13dd8bb",
+      "atlasSize": [
+        576,
+        480
+      ],
+      "mode": "RGBA",
+      "cellSize": [
+        96,
+        96
+      ],
+      "columns": 6,
+      "rows": 5,
+      "pivot": [
+        0.5,
+        1
+      ],
+      "displaySize": [
+        96,
+        96
+      ],
+      "imageEntry": {
+        "key": "actor:ruins-string-puppet",
+        "url": "assets/actors/monster-ruins-string-puppet.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animationEntries": [
+        {
+          "key": "ruins-string-puppet:idle",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-string-puppet:walk",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-string-puppet:attack",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            500,
+            500,
+            100,
+            900
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-string-puppet:hurt",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-string-puppet:dead",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "effectivePoseCount": 18,
+      "effectivePosePixelDistinctCount": 18,
+      "cellMappings": [
+        {
+          "index": 0,
+          "column": 0,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-0",
+          "pose": "idle-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "bd344c30df1b48efdb336574a41c9d0f010ea4206b6a2c8466fbc62563196760",
+          "sourceNormalizedPath": "references/normalized/ruins-string-puppet-idle-0.png",
+          "sourceNormalizedSha256": "0820c1afefa7ea773286e0963dc17ed94312caacfe3e2aa2b7b94ac682c8cab4",
+          "sourceRawPath": "references/raw/ruins-string-puppet-profile-v1.png",
+          "sourceRawSha256": "7f6bb180bf8f45ccc16053ab5eec7e94c6849e30bc634157d2ca632304744922",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            17,
+            74,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            21,
+            17,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 1,
+          "column": 1,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 2,
+          "column": 2,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 3,
+          "column": 3,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 4,
+          "column": 4,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 5,
+          "column": 5,
+          "row": 0,
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 6,
+          "column": 0,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-0",
+          "pose": "walk-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "976a2faebd1fee33fc53763a9006394e1e9631a0e17b74d199019f161ade86d5",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-0.png",
+          "sourceNormalizedSha256": "d4eee7947420e09974ef36cedb1ec2cada46253f6c4e366a3531d990fc0e2e5a",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-0-v1.png",
+          "sourceRawSha256": "8cf925a25e88586d5a61c3d51c5021e85cc36605fe61046a0d459c7c93bf3ea1",
+          "sourceAlphaBBoxAnyInclusive": [
+            14,
+            17,
+            80,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            15,
+            17,
+            81,
+            92
+          ]
+        },
+        {
+          "index": 7,
+          "column": 1,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-1",
+          "pose": "walk-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "e6f74e50874f68095d67e85598cd36ec98a03e9f4bdc844fe1e4e5157567c6c0",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-1.png",
+          "sourceNormalizedSha256": "415b2c34dc36318c8c14f6917629e7db9eff485527fdd06a4c69eea8bfbe65ab",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-1-v1.png",
+          "sourceRawSha256": "7c59ff817663268a0016a28a0361e7987862550c7a83e857b77cc5f41c262403",
+          "sourceAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            82,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            82,
+            92
+          ]
+        },
+        {
+          "index": 8,
+          "column": 2,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-2",
+          "pose": "walk-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "7288d176bcee40dc2328d072e2432a8cf2129f9d4f75691d6e061e70adde345e",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-2.png",
+          "sourceNormalizedSha256": "99e717cee3a1be9bc450f17b63b74d9e5a6d3dc504344bc72d789c902e41cb62",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-2-v1.png",
+          "sourceRawSha256": "015651cb4bc9060040418d2037b993614536d497c25aa79dc5f14363fd15afd4",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            83,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-2.png",
+          "packedAlphaBBoxAnyInclusive": [
+            12,
+            17,
+            84,
+            92
+          ]
+        },
+        {
+          "index": 9,
+          "column": 3,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-3",
+          "pose": "walk-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "413741f6516a9f9396bf8de683751ab0a19968580e43b196d716c94667acabcb",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-3.png",
+          "sourceNormalizedSha256": "3931f3d6f938f369df8c9ba9b704bd867bf0ea8175c885f04c7c138d6670275b",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-3-v1.png",
+          "sourceRawSha256": "4a68844eb61d4bf8d8e6e4716bd172d0c6c2178b061249de577e361f4c9fb30e",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ]
+        },
+        {
+          "index": 10,
+          "column": 4,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-4",
+          "pose": "walk-4",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "6253d90dcd8dfcc39ed72e4e5059eb062075a408f031bbfe626455d32152cfb5",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-4.png",
+          "sourceNormalizedSha256": "f7dfc8bb8cd8ead8066c5ff6c4f57e353571fc954bbeefc86ae558f5dc0e3ea5",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-4-v1.png",
+          "sourceRawSha256": "087ac6bd07309294efb65475720d60ad0a474071a675d11d3a4005cf11355d77",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ]
+        },
+        {
+          "index": 11,
+          "column": 5,
+          "row": 1,
+          "frameId": "ruins-string-puppet:walk-5",
+          "pose": "walk-5",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "a745abcc1149b3589232b96e54f01cfdca103d6193557ba246f23ed4729f2bfe",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-5.png",
+          "sourceNormalizedSha256": "f920464c3eac64da49c49f6df69aaf9d37d7e4959f1d7eeb471d440dec799177",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-5-v1.png",
+          "sourceRawSha256": "f4eab6c561b71872b4d82c0e6d583c16e408408ceb68844d88bc9219ae250f6a",
+          "sourceAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            81,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-5.png",
+          "packedAlphaBBoxAnyInclusive": [
+            14,
+            17,
+            82,
+            92
+          ]
+        },
+        {
+          "index": 12,
+          "column": 0,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-0",
+          "pose": "attack-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "44a3019fa0b558810dea027e2f6c5bfbeae62120698e62c9bd9a4ccb0d2d764e",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-0.png",
+          "sourceNormalizedSha256": "6efd01d4d50397f91c20776ada899aa76be922c8bf12c804938899e9b95fb99c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-0-v1.png",
+          "sourceRawSha256": "d670b4b8b59c562e9d8117a5161c130ada88dba14b8c15f04714e55a2658d01e",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            18,
+            76,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            18,
+            76,
+            92
+          ]
+        },
+        {
+          "index": 13,
+          "column": 1,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-1",
+          "pose": "attack-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "dc45049ee07eaca5a194d9422d30a680b6b9c1c2ec9e523e9b736f27fbca1814",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-1.png",
+          "sourceNormalizedSha256": "838ce43da7bb767bfb485855a278987d680c7ccf2c6d58af9307bfd0c1bbef56",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-1-v1.png",
+          "sourceRawSha256": "fdcecf289a16ff1ffc1c8241296a14abf917ca68114d1573eed28a012f3e7925",
+          "sourceAlphaBBoxAnyInclusive": [
+            24,
+            8,
+            70,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            25,
+            8,
+            71,
+            92
+          ]
+        },
+        {
+          "index": 14,
+          "column": 2,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-2",
+          "pose": "attack-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "a56a1eddab0c180c01fab9a8535977f8efd034eeea5f386c13921a3fb2b04ba4",
+          "sourceNormalizedPath": "references/normalized/ruins-string-puppet-attack-2.png",
+          "sourceNormalizedSha256": "37bc6ef2997fa6952dbd8f99fde3fc37de6152a0f01558fca744f7bedfc71240",
+          "sourceRawPath": "references/raw/ruins-string-puppet-attack-2-v1.png",
+          "sourceRawSha256": "0a19d4d7f0a846788933ee1808b051e86e58827cdb494ea2006f9e529b3bc247",
+          "sourceAlphaBBoxAnyInclusive": [
+            4,
+            17,
+            91,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            4,
+            17,
+            91,
+            92
+          ]
+        },
+        {
+          "index": 15,
+          "column": 3,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-3",
+          "pose": "attack-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "5f866884ac73278beb22d3505be8cd7fceeb00d35f040c5726f8599ec51243cb",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-3.png",
+          "sourceNormalizedSha256": "0e47cb10e1e77f1bfebe08675abf1197d8b054f11d29f017c1d43b820d57f552",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-3-v1.png",
+          "sourceRawSha256": "b12ebf15d6d07c23ea65635c64cbc9b7db4c422310c6dd73a9d92e3254058410",
+          "sourceAlphaBBoxAnyInclusive": [
+            18,
+            14,
+            76,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            14,
+            77,
+            92
+          ]
+        },
+        {
+          "index": 16,
+          "column": 4,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-3",
+          "pose": "attack-3",
+          "effectivePose": false,
+          "copiedFromCell": 15,
+          "pixelSha256": "5f866884ac73278beb22d3505be8cd7fceeb00d35f040c5726f8599ec51243cb",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-3.png",
+          "sourceNormalizedSha256": "0e47cb10e1e77f1bfebe08675abf1197d8b054f11d29f017c1d43b820d57f552",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-3-v1.png",
+          "sourceRawSha256": "b12ebf15d6d07c23ea65635c64cbc9b7db4c422310c6dd73a9d92e3254058410",
+          "sourceAlphaBBoxAnyInclusive": [
+            18,
+            14,
+            76,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            14,
+            77,
+            92
+          ]
+        },
+        {
+          "index": 17,
+          "column": 5,
+          "row": 2,
+          "frameId": "ruins-string-puppet:attack-3",
+          "pose": "attack-3",
+          "effectivePose": false,
+          "copiedFromCell": 15,
+          "pixelSha256": "5f866884ac73278beb22d3505be8cd7fceeb00d35f040c5726f8599ec51243cb",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-3.png",
+          "sourceNormalizedSha256": "0e47cb10e1e77f1bfebe08675abf1197d8b054f11d29f017c1d43b820d57f552",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-3-v1.png",
+          "sourceRawSha256": "b12ebf15d6d07c23ea65635c64cbc9b7db4c422310c6dd73a9d92e3254058410",
+          "sourceAlphaBBoxAnyInclusive": [
+            18,
+            14,
+            76,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            14,
+            77,
+            92
+          ]
+        },
+        {
+          "index": 18,
+          "column": 0,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-0",
+          "pose": "hurt-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "ca3fe515b3f11fef1063ec6697caac6367106021bb80702bc757e676652df2b4",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-0.png",
+          "sourceNormalizedSha256": "ac0a2268b68caff8a1c3ddb633f90b6721b6cfd796bd69379bb27a5d02ab786c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-0-v1.png",
+          "sourceRawSha256": "f0746177cbe0226e9db17339ce0ceb0c29e6565ca363c2b42f5717b119e76393",
+          "sourceAlphaBBoxAnyInclusive": [
+            16,
+            14,
+            78,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            17,
+            14,
+            79,
+            92
+          ]
+        },
+        {
+          "index": 19,
+          "column": 1,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 20,
+          "column": 2,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 21,
+          "column": 3,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 22,
+          "column": 4,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 23,
+          "column": 5,
+          "row": 3,
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ]
+        },
+        {
+          "index": 24,
+          "column": 0,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-0",
+          "pose": "dead-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "0f2b9d2592c903eb70ca7fd9bbb1903847d89fa3607ac7314065f02a28503523",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-0.png",
+          "sourceNormalizedSha256": "5df5f0f1f593921f3e056f3ade13814e2f8668a3521976747887787385628988",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-0-v1.png",
+          "sourceRawSha256": "d156b3994e98a9d307c1c194d55b4343fb0bd4196e0203801692748ef1cb01d6",
+          "sourceAlphaBBoxAnyInclusive": [
+            20,
+            23,
+            75,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            20,
+            23,
+            75,
+            92
+          ]
+        },
+        {
+          "index": 25,
+          "column": 1,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-1",
+          "pose": "dead-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "8ee3ea592f4de57c1d06e4fb26dca390adf0788eee619b7088d6bec2cde446b6",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-1.png",
+          "sourceNormalizedSha256": "0f260842da294e479192eb115c837ec972d3a5ffbb36dbd5180d251d16e4f952",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-1-v1.png",
+          "sourceRawSha256": "f2f28654e6c5764dc16283de0db61d54e395b09d24ba7ebf08a543e33097a975",
+          "sourceAlphaBBoxAnyInclusive": [
+            15,
+            32,
+            79,
+            92
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/dead-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            16,
+            32,
+            80,
+            92
+          ]
+        },
+        {
+          "index": 26,
+          "column": 2,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-2",
+          "pose": "dead-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "bc957061fb157318f66af918e438dd7b3aa650728d5e167716ac4e6a33f31619",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-2.png",
+          "sourceNormalizedSha256": "6f9ba1638e99de0589b99238a9c19934d6f144f2359535bb1da998c5b6c0509f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-2-v1.png",
+          "sourceRawSha256": "5faf50e8405ac2a737b203f731a2f857e8af0a6ff63a2909e1aca89310a32443",
+          "sourceAlphaBBoxAnyInclusive": [
+            6,
+            39,
+            89,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            6,
+            39,
+            89,
+            92
+          ]
+        },
+        {
+          "index": 27,
+          "column": 3,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-3",
+          "pose": "dead-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "2ad4b71b4d8689bd39a3aa25fa4c65a90a370ddcecb7f6be21acd7ec118d415d",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-3.png",
+          "sourceNormalizedSha256": "d82f8f47b8ac32b44f000a139c7b4fdc58cf1c11c2ee9b2d998b2eea23fca06c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-3-v1.png",
+          "sourceRawSha256": "5dacbdd6f351c313e6fd74071cdfd7c2ce69244fc410d25933ef300855118638",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 28,
+          "column": 4,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-3",
+          "pose": "dead-3",
+          "effectivePose": false,
+          "copiedFromCell": 27,
+          "pixelSha256": "2ad4b71b4d8689bd39a3aa25fa4c65a90a370ddcecb7f6be21acd7ec118d415d",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-3.png",
+          "sourceNormalizedSha256": "d82f8f47b8ac32b44f000a139c7b4fdc58cf1c11c2ee9b2d998b2eea23fca06c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-3-v1.png",
+          "sourceRawSha256": "5dacbdd6f351c313e6fd74071cdfd7c2ce69244fc410d25933ef300855118638",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 29,
+          "column": 5,
+          "row": 4,
+          "frameId": "ruins-string-puppet:dead-3",
+          "pose": "dead-3",
+          "effectivePose": false,
+          "copiedFromCell": 27,
+          "pixelSha256": "2ad4b71b4d8689bd39a3aa25fa4c65a90a370ddcecb7f6be21acd7ec118d415d",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-3.png",
+          "sourceNormalizedSha256": "d82f8f47b8ac32b44f000a139c7b4fdc58cf1c11c2ee9b2d998b2eea23fca06c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-3-v1.png",
+          "sourceRawSha256": "5dacbdd6f351c313e6fd74071cdfd7c2ce69244fc410d25933ef300855118638",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ]
+        }
+      ],
+      "frames": [
+        {
+          "frameId": "ruins-string-puppet:idle-0",
+          "pose": "idle-0",
+          "sourceNormalizedPath": "references/normalized/ruins-string-puppet-idle-0.png",
+          "sourceNormalizedSha256": "0820c1afefa7ea773286e0963dc17ed94312caacfe3e2aa2b7b94ac682c8cab4",
+          "sourceRawPath": "references/raw/ruins-string-puppet-profile-v1.png",
+          "sourceRawSha256": "7f6bb180bf8f45ccc16053ab5eec7e94c6849e30bc634157d2ca632304744922",
+          "sourcePromptPath": "references/prompts/ruins-string-puppet-profile-v1.txt",
+          "sourcePromptSha256": "57dcaee58fefa2ca596c2b9c639bbc0efd27db586fd2c9750f022738af5878d9",
+          "sourceMetadataPath": "references/ruins-string-puppet-profile-v1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            17,
+            74,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "bd344c30df1b48efdb336574a41c9d0f010ea4206b6a2c8466fbc62563196760",
+          "packedAlphaBBoxAnyInclusive": [
+            21,
+            17,
+            74,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 21,
+            "top": 17,
+            "right": 21,
+            "bottom": 3
+          },
+          "cells": [
+            0
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:idle-1",
+          "pose": "idle-1",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-idle-1.png",
+          "sourceNormalizedSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+          "sourceRawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-idle-1.txt",
+          "sourcePromptSha256": "06360aefa0d9a0c2bcb6dbc32558fe6115c51592b13751dc7b6348da5b103929",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-idle-1.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "1a18b3ce90c8936905f4c3939cc1a9b5fceb0759e3a2fffcc59435e83a5dccef",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            17,
+            76,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 19,
+            "top": 17,
+            "right": 19,
+            "bottom": 3
+          },
+          "cells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-0",
+          "pose": "walk-0",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-0.png",
+          "sourceNormalizedSha256": "d4eee7947420e09974ef36cedb1ec2cada46253f6c4e366a3531d990fc0e2e5a",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-0-v1.png",
+          "sourceRawSha256": "8cf925a25e88586d5a61c3d51c5021e85cc36605fe61046a0d459c7c93bf3ea1",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-0.txt",
+          "sourcePromptSha256": "971f7b9975c965f8770fb0896818aba213e7add47e571cf608bb6b7b7b809673",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-0.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            14,
+            17,
+            80,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-0.png",
+          "packedFrameSha256": "976a2faebd1fee33fc53763a9006394e1e9631a0e17b74d199019f161ade86d5",
+          "packedAlphaBBoxAnyInclusive": [
+            15,
+            17,
+            81,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 15,
+            "top": 17,
+            "right": 14,
+            "bottom": 3
+          },
+          "cells": [
+            6
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-1",
+          "pose": "walk-1",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-1.png",
+          "sourceNormalizedSha256": "415b2c34dc36318c8c14f6917629e7db9eff485527fdd06a4c69eea8bfbe65ab",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-1-v1.png",
+          "sourceRawSha256": "7c59ff817663268a0016a28a0361e7987862550c7a83e857b77cc5f41c262403",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-1.txt",
+          "sourcePromptSha256": "22c76192008ad446037de1f6d3f7d5217e189ec421e02504f6b86a38b37d2ffd",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-1.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            82,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "e6f74e50874f68095d67e85598cd36ec98a03e9f4bdc844fe1e4e5157567c6c0",
+          "packedAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            82,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 13,
+            "top": 17,
+            "right": 13,
+            "bottom": 3
+          },
+          "cells": [
+            7
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-2",
+          "pose": "walk-2",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-2.png",
+          "sourceNormalizedSha256": "99e717cee3a1be9bc450f17b63b74d9e5a6d3dc504344bc72d789c902e41cb62",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-2-v1.png",
+          "sourceRawSha256": "015651cb4bc9060040418d2037b993614536d497c25aa79dc5f14363fd15afd4",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-2.txt",
+          "sourcePromptSha256": "5f5c6d08cb026677db23936bf9d110333c6b545f0abb3a25e4358f219cfa2ee6",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-2.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            83,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-2.png",
+          "packedFrameSha256": "7288d176bcee40dc2328d072e2432a8cf2129f9d4f75691d6e061e70adde345e",
+          "packedAlphaBBoxAnyInclusive": [
+            12,
+            17,
+            84,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 12,
+            "top": 17,
+            "right": 11,
+            "bottom": 3
+          },
+          "cells": [
+            8
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-3",
+          "pose": "walk-3",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-3.png",
+          "sourceNormalizedSha256": "3931f3d6f938f369df8c9ba9b704bd867bf0ea8175c885f04c7c138d6670275b",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-3-v1.png",
+          "sourceRawSha256": "4a68844eb61d4bf8d8e6e4716bd172d0c6c2178b061249de577e361f4c9fb30e",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-3.txt",
+          "sourcePromptSha256": "96e0f9eaa8184c460922b4b4fb3c065b6355cc0d34228a7b4359c4881665474b",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-3.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "413741f6516a9f9396bf8de683751ab0a19968580e43b196d716c94667acabcb",
+          "packedAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 11,
+            "top": 17,
+            "right": 11,
+            "bottom": 3
+          },
+          "cells": [
+            9
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-4",
+          "pose": "walk-4",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-4.png",
+          "sourceNormalizedSha256": "f7dfc8bb8cd8ead8066c5ff6c4f57e353571fc954bbeefc86ae558f5dc0e3ea5",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-4-v1.png",
+          "sourceRawSha256": "087ac6bd07309294efb65475720d60ad0a474071a675d11d3a4005cf11355d77",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-4.txt",
+          "sourcePromptSha256": "6925d4a0f14a94c4fea81fa89183e595249b598ab8f49bec5abaf4c3bfd3c259",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-4.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "6253d90dcd8dfcc39ed72e4e5059eb062075a408f031bbfe626455d32152cfb5",
+          "packedAlphaBBoxAnyInclusive": [
+            11,
+            17,
+            84,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 11,
+            "top": 17,
+            "right": 11,
+            "bottom": 3
+          },
+          "cells": [
+            10
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:walk-5",
+          "pose": "walk-5",
+          "sourceNormalizedPath": "puppet-motion/normalized/ruins-string-puppet-walk-5.png",
+          "sourceNormalizedSha256": "f920464c3eac64da49c49f6df69aaf9d37d7e4959f1d7eeb471d440dec799177",
+          "sourceRawPath": "puppet-motion/raw/ruins-string-puppet-walk-5-v1.png",
+          "sourceRawSha256": "f4eab6c561b71872b4d82c0e6d583c16e408408ceb68844d88bc9219ae250f6a",
+          "sourcePromptPath": "puppet-motion/prompts/ruins-string-puppet-walk-5.txt",
+          "sourcePromptSha256": "d62b4f6df59aee8f5703ae56fba5359a4409439da902b9255c053bc271aefe0a",
+          "sourceMetadataPath": "puppet-motion/metadata/ruins-string-puppet-walk-5.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            13,
+            17,
+            81,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/walk-5.png",
+          "packedFrameSha256": "a745abcc1149b3589232b96e54f01cfdca103d6193557ba246f23ed4729f2bfe",
+          "packedAlphaBBoxAnyInclusive": [
+            14,
+            17,
+            82,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 14,
+            "top": 17,
+            "right": 13,
+            "bottom": 3
+          },
+          "cells": [
+            11
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:attack-0",
+          "pose": "attack-0",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-0.png",
+          "sourceNormalizedSha256": "6efd01d4d50397f91c20776ada899aa76be922c8bf12c804938899e9b95fb99c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-0-v1.png",
+          "sourceRawSha256": "d670b4b8b59c562e9d8117a5161c130ada88dba14b8c15f04714e55a2658d01e",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-attack-0.txt",
+          "sourcePromptSha256": "ea9064f6d520d4a0f1bf9469a01702747d856c1de78b3a28e1c606bd3bf3cb14",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-attack-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            19,
+            18,
+            76,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "44a3019fa0b558810dea027e2f6c5bfbeae62120698e62c9bd9a4ccb0d2d764e",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            18,
+            76,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 19,
+            "top": 18,
+            "right": 19,
+            "bottom": 3
+          },
+          "cells": [
+            12
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:attack-1",
+          "pose": "attack-1",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-1.png",
+          "sourceNormalizedSha256": "838ce43da7bb767bfb485855a278987d680c7ccf2c6d58af9307bfd0c1bbef56",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-1-v1.png",
+          "sourceRawSha256": "fdcecf289a16ff1ffc1c8241296a14abf917ca68114d1573eed28a012f3e7925",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-attack-1.txt",
+          "sourcePromptSha256": "58daa499b343bb8fa9e48404049be29f0e2d823ba3026bb9a1f3393a892230dd",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-attack-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            24,
+            8,
+            70,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-1.png",
+          "packedFrameSha256": "dc45049ee07eaca5a194d9422d30a680b6b9c1c2ec9e523e9b736f27fbca1814",
+          "packedAlphaBBoxAnyInclusive": [
+            25,
+            8,
+            71,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 25,
+            "top": 8,
+            "right": 24,
+            "bottom": 3
+          },
+          "cells": [
+            13
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:attack-2",
+          "pose": "attack-2",
+          "sourceNormalizedPath": "references/normalized/ruins-string-puppet-attack-2.png",
+          "sourceNormalizedSha256": "37bc6ef2997fa6952dbd8f99fde3fc37de6152a0f01558fca744f7bedfc71240",
+          "sourceRawPath": "references/raw/ruins-string-puppet-attack-2-v1.png",
+          "sourceRawSha256": "0a19d4d7f0a846788933ee1808b051e86e58827cdb494ea2006f9e529b3bc247",
+          "sourcePromptPath": "references/prompts/ruins-string-puppet-attack-2-v1.txt",
+          "sourcePromptSha256": "e1dc4ab65f327a18e39fe3690f69a5e4d4fd5ee50fb008087864d2f205b4005a",
+          "sourceMetadataPath": "references/ruins-string-puppet-attack-2-v1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            4,
+            17,
+            91,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "a56a1eddab0c180c01fab9a8535977f8efd034eeea5f386c13921a3fb2b04ba4",
+          "packedAlphaBBoxAnyInclusive": [
+            4,
+            17,
+            91,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 4,
+            "top": 17,
+            "right": 4,
+            "bottom": 3
+          },
+          "cells": [
+            14
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:attack-3",
+          "pose": "attack-3",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-attack-3.png",
+          "sourceNormalizedSha256": "0e47cb10e1e77f1bfebe08675abf1197d8b054f11d29f017c1d43b820d57f552",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-attack-3-v1.png",
+          "sourceRawSha256": "b12ebf15d6d07c23ea65635c64cbc9b7db4c422310c6dd73a9d92e3254058410",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-attack-3.txt",
+          "sourcePromptSha256": "6e6eaf43442b4dd6088da4ea354c6241e53705b39d755c88b46e9bedd5869356",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-attack-3.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            18,
+            14,
+            76,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/attack-3.png",
+          "packedFrameSha256": "5f866884ac73278beb22d3505be8cd7fceeb00d35f040c5726f8599ec51243cb",
+          "packedAlphaBBoxAnyInclusive": [
+            19,
+            14,
+            77,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 19,
+            "top": 14,
+            "right": 18,
+            "bottom": 3
+          },
+          "cells": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:hurt-0",
+          "pose": "hurt-0",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-0.png",
+          "sourceNormalizedSha256": "ac0a2268b68caff8a1c3ddb633f90b6721b6cfd796bd69379bb27a5d02ab786c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-0-v1.png",
+          "sourceRawSha256": "f0746177cbe0226e9db17339ce0ceb0c29e6565ca363c2b42f5717b119e76393",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-hurt-0.txt",
+          "sourcePromptSha256": "acc694cd28e377cba9c751d96b776d53faab2afe5a89985d9a7ccde9502cf320",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-hurt-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            16,
+            14,
+            78,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-0.png",
+          "packedFrameSha256": "ca3fe515b3f11fef1063ec6697caac6367106021bb80702bc757e676652df2b4",
+          "packedAlphaBBoxAnyInclusive": [
+            17,
+            14,
+            79,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 17,
+            "top": 14,
+            "right": 16,
+            "bottom": 3
+          },
+          "cells": [
+            18
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:hurt-1",
+          "pose": "hurt-1",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-hurt-1.png",
+          "sourceNormalizedSha256": "dc17c2571af3eff99fd8b21571f80d68b0a80c1f5f2370546fce533c1228ac8f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-hurt-1-v1.png",
+          "sourceRawSha256": "6076a9d923ca9008000a6247f5bc11841e1793d9107a5888af74b5624d9e3651",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-hurt-1.txt",
+          "sourcePromptSha256": "5764cc8206b7b66b026b2c090888de2b96b747dd8cb5ae9baa52b1880d57727d",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-hurt-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            21,
+            20,
+            73,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/hurt-1.png",
+          "packedFrameSha256": "bba215a189f3552fd9cca68fe1f2ff6bc83da5d622da9e52a506f41ff59f9428",
+          "packedAlphaBBoxAnyInclusive": [
+            22,
+            20,
+            74,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 22,
+            "top": 20,
+            "right": 21,
+            "bottom": 3
+          },
+          "cells": [
+            19,
+            20,
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:dead-0",
+          "pose": "dead-0",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-0.png",
+          "sourceNormalizedSha256": "5df5f0f1f593921f3e056f3ade13814e2f8668a3521976747887787385628988",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-0-v1.png",
+          "sourceRawSha256": "d156b3994e98a9d307c1c194d55b4343fb0bd4196e0203801692748ef1cb01d6",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-dead-0.txt",
+          "sourcePromptSha256": "9e83a99371283dbf887ef6e4754fa8943f686b1e967195ecc443700283961c7e",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-dead-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            20,
+            23,
+            75,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "0f2b9d2592c903eb70ca7fd9bbb1903847d89fa3607ac7314065f02a28503523",
+          "packedAlphaBBoxAnyInclusive": [
+            20,
+            23,
+            75,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 20,
+            "top": 23,
+            "right": 20,
+            "bottom": 3
+          },
+          "cells": [
+            24
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:dead-1",
+          "pose": "dead-1",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-1.png",
+          "sourceNormalizedSha256": "0f260842da294e479192eb115c837ec972d3a5ffbb36dbd5180d251d16e4f952",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-1-v1.png",
+          "sourceRawSha256": "f2f28654e6c5764dc16283de0db61d54e395b09d24ba7ebf08a543e33097a975",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-dead-1.txt",
+          "sourcePromptSha256": "b3626e895ceba6ffd80d9c89f22a905454d859310c688b89b16fecc3da7c9056",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-dead-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            15,
+            32,
+            79,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 1,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-string-puppet/dead-1.png",
+          "packedFrameSha256": "8ee3ea592f4de57c1d06e4fb26dca390adf0788eee619b7088d6bec2cde446b6",
+          "packedAlphaBBoxAnyInclusive": [
+            16,
+            32,
+            80,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 16,
+            "top": 32,
+            "right": 15,
+            "bottom": 3
+          },
+          "cells": [
+            25
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:dead-2",
+          "pose": "dead-2",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-2.png",
+          "sourceNormalizedSha256": "6f9ba1638e99de0589b99238a9c19934d6f144f2359535bb1da998c5b6c0509f",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-2-v1.png",
+          "sourceRawSha256": "5faf50e8405ac2a737b203f731a2f857e8af0a6ff63a2909e1aca89310a32443",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-dead-2.txt",
+          "sourcePromptSha256": "43b4626fd9cc383bb3395116f28a3b25a8e1948535c8264dd98d4a0b4b9c9b6b",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-dead-2.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            6,
+            39,
+            89,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "bc957061fb157318f66af918e438dd7b3aa650728d5e167716ac4e6a33f31619",
+          "packedAlphaBBoxAnyInclusive": [
+            6,
+            39,
+            89,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 6,
+            "top": 39,
+            "right": 6,
+            "bottom": 3
+          },
+          "cells": [
+            26
+          ]
+        },
+        {
+          "frameId": "ruins-string-puppet:dead-3",
+          "pose": "dead-3",
+          "sourceNormalizedPath": "puppet-actions/normalized/ruins-string-puppet-dead-3.png",
+          "sourceNormalizedSha256": "d82f8f47b8ac32b44f000a139c7b4fdc58cf1c11c2ee9b2d998b2eea23fca06c",
+          "sourceRawPath": "puppet-actions/raw/ruins-string-puppet-dead-3-v1.png",
+          "sourceRawSha256": "5dacbdd6f351c313e6fd74071cdfd7c2ce69244fc410d25933ef300855118638",
+          "sourcePromptPath": "puppet-actions/prompts/ruins-string-puppet-dead-3.txt",
+          "sourcePromptSha256": "545e50d50576a711e657011f1a0888f2abceda9a1b880578f59ffd2d75504426",
+          "sourceMetadataPath": "puppet-actions/metadata/ruins-string-puppet-dead-3.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "2ad4b71b4d8689bd39a3aa25fa4c65a90a370ddcecb7f6be21acd7ec118d415d",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            53,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 53,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            27,
+            28,
+            29
+          ]
+        }
+      ],
+      "reviewContactSheetPath": "art-source/ruins-b/assembly/review/ruins-string-puppet-atlas-contact-q70.jpg"
+    },
+    {
+      "monster": "ruins-bell-prowler",
+      "imageKey": "actor:ruins-bell-prowler",
+      "atlasPath": "public/assets/actors/monster-ruins-bell-prowler.png",
+      "atlasSha256": "584f61edce84c15262e19cf80e2202a519a7d10113e38acb716f334648c7bf2d",
+      "atlasPixelSha256": "ab0ae5c8ffe9350537fbfe83c0fb4ed77edbf55b76ec1aa7dee76f885634be5f",
+      "atlasSize": [
+        576,
+        480
+      ],
+      "mode": "RGBA",
+      "cellSize": [
+        96,
+        96
+      ],
+      "columns": 6,
+      "rows": 5,
+      "pivot": [
+        0.5,
+        1
+      ],
+      "displaySize": [
+        96,
+        96
+      ],
+      "imageEntry": {
+        "key": "actor:ruins-bell-prowler",
+        "url": "assets/actors/monster-ruins-bell-prowler.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animationEntries": [
+        {
+          "key": "ruins-bell-prowler:idle",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-prowler:walk",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-prowler:attack",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            550,
+            550,
+            100,
+            900
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-prowler:hurt",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-prowler:dead",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "effectivePoseCount": 18,
+      "effectivePosePixelDistinctCount": 18,
+      "cellMappings": [
+        {
+          "index": 0,
+          "column": 0,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-0",
+          "pose": "idle-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "6b80155a56331bf7545ff774d2f4571f99993dcdfdf2777f554df6ce6dd99098",
+          "sourceNormalizedPath": "references/normalized/ruins-bell-prowler-idle-0.png",
+          "sourceNormalizedSha256": "7fc35ca7fec315a105a06ee70671932df8cc6337f5c47124e5dbb21611a1a8d0",
+          "sourceRawPath": "references/raw/ruins-bell-prowler-profile-v1.png",
+          "sourceRawSha256": "90d7bb502f0d20d7151a74db66d20b731dc00a73d505b8b0b856a3de5148519d",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            27,
+            92,
+            92
+          ],
+          "adjustedFramePath": null,
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            27,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 1,
+          "column": 1,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 2,
+          "column": 2,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 3,
+          "column": 3,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 4,
+          "column": 4,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 5,
+          "column": 5,
+          "row": 0,
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "effectivePose": false,
+          "copiedFromCell": 1,
+          "pixelSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 6,
+          "column": 0,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-0",
+          "pose": "walk-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "016de0fe11e2f957259bcb5ac055231b634bfec8429fa7c8fc958ee1fdb3757c",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-0.png",
+          "sourceNormalizedSha256": "b1552dc2490d5c26a0f556f896a11606833fd2313110cc4ccbebda1a2f2bac56",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-0.png",
+          "sourceRawSha256": "3eb3e31833d12bb2c8843a86f162044fbfd6957659752e203d66851e97bf5a97",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 7,
+          "column": 1,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-1",
+          "pose": "walk-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "96a6c5abd803c472cf327d0c909d9e3c701083913f0f0b4dd4d7e201854d330c",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-1.png",
+          "sourceNormalizedSha256": "151572337771ef4f11951234ca0649886cae756b00e470a4d1765a34f67dd0c2",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-1.png",
+          "sourceRawSha256": "848a10739e79ffa06d1b455815e098bf5c2eba903e3f9ce6b5f238965b9df828",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 8,
+          "column": 2,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-2",
+          "pose": "walk-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "7f666a6b3c829748b3c89f66c2c994b15e6a85ab8aa1cc3a8c1b2e0b1d272442",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-2.png",
+          "sourceNormalizedSha256": "40bc26ec75101f74a365e5a761956b43113104da8f8108dce894f12a55cae4a4",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-2.png",
+          "sourceRawSha256": "68eb147924d308ea25bf087791e4d6c00c25690c1f13d8ff340f971d91abd0f1",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-2.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 9,
+          "column": 3,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-3",
+          "pose": "walk-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "94bfb8d08b3f3030f5364ad51785dff56973f54bb4a563ed84f1bddd1934f52b",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-3.png",
+          "sourceNormalizedSha256": "d9ff5518675a79c48d5ad40161acd7a7950bba2fa04ea8e16df6535068375c85",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-3.png",
+          "sourceRawSha256": "b21f9aaccb30f374b24399636fb7e047304a4f5f6132b9e05f9ae5b0aac1a124",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 10,
+          "column": 4,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-4",
+          "pose": "walk-4",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "eda42676802f17e6e9ab63b11044560151a50ee21b13d7fe9863ff15ca75b6bf",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-4.png",
+          "sourceNormalizedSha256": "15d1b398911e137523a981e6ed85128b61c6e4a1ed43b158657877efc57b503f",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-4.png",
+          "sourceRawSha256": "dfe932b3f94d3a01c5102ab96a7ca665a45a5317c03b4bbbf917bfe1a959f1d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-4.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 11,
+          "column": 5,
+          "row": 1,
+          "frameId": "ruins-bell-prowler:walk-5",
+          "pose": "walk-5",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "1f0a5ac39b9a15451cc8f1da754197b3a29d851ccad8d8bc51633e614706a022",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-5.png",
+          "sourceNormalizedSha256": "7d7e0554afd2b2c549dd395e6d9a6328fdab74785802d3945c9f24a46a602cd4",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-5.png",
+          "sourceRawSha256": "4b2d86c6630d9860c7bf7d369b8421d329239869c08e778165af3ec8f7414b8a",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-5.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 12,
+          "column": 0,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-0",
+          "pose": "attack-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "07c1fc1618a584e2c7b6a82179ac6519a203337cd2e32da7ca11b66cb2633621",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-0-v1.png",
+          "sourceNormalizedSha256": "8e03ffe7d8f4ab7ba1b1bd1f5152a2c146cbaa1e616cc1971988e701f112a5c3",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-0-v1.png",
+          "sourceRawSha256": "e23a95a16af48c6782f77d92fbbcbd557d2ca9f42a8ed83a9ff02f147bad6db2",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 13,
+          "column": 1,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-1",
+          "pose": "attack-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "f7e788d9bf4f316059f27fb3057be498f333c1df9631862dfd11ee510b5d2034",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-1-v1.png",
+          "sourceNormalizedSha256": "dfc113bc0586db2ff401b5213c1e0ed89ba2a359c262bb32f11ee0a267e80477",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-1-v1.png",
+          "sourceRawSha256": "ae152def4dad28b52f66ccaabd2a39574a8bcf23ac9fbd496e4772eb8d8f1850",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 14,
+          "column": 2,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-2",
+          "pose": "attack-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "6d39fe80a5e7175f59f964e56dab05e0e97fc4cf410acf4260e6fd3326dc1ff7",
+          "sourceNormalizedPath": "references/normalized/ruins-bell-prowler-attack-2.png",
+          "sourceNormalizedSha256": "b0106d1d377b4a46bde387e106ee66dc1b20276e31a5ad13afd9132c3ccb40a9",
+          "sourceRawPath": "references/raw/ruins-bell-prowler-attack-2-v2.png",
+          "sourceRawSha256": "248010595d3b68148711a28fc1ba641d918447839c7804d778867188af178664",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            91
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-2.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 15,
+          "column": 3,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-3",
+          "pose": "attack-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "c8a6368914b604f51ca9297ea5b271a208eb5dfdd504471f340cccce4fd6278d",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-3-v1.png",
+          "sourceNormalizedSha256": "966e991c2cc37aaf01321c06e046222b2d99eea14c20f81669489e3ea989c838",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-3-v1.png",
+          "sourceRawSha256": "41948b1373b9d1b00f5a7d5b61bc5410668392c2a5b048e8f36400e8b544ffd4",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 16,
+          "column": 4,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-3",
+          "pose": "attack-3",
+          "effectivePose": false,
+          "copiedFromCell": 15,
+          "pixelSha256": "c8a6368914b604f51ca9297ea5b271a208eb5dfdd504471f340cccce4fd6278d",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-3-v1.png",
+          "sourceNormalizedSha256": "966e991c2cc37aaf01321c06e046222b2d99eea14c20f81669489e3ea989c838",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-3-v1.png",
+          "sourceRawSha256": "41948b1373b9d1b00f5a7d5b61bc5410668392c2a5b048e8f36400e8b544ffd4",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 17,
+          "column": 5,
+          "row": 2,
+          "frameId": "ruins-bell-prowler:attack-3",
+          "pose": "attack-3",
+          "effectivePose": false,
+          "copiedFromCell": 15,
+          "pixelSha256": "c8a6368914b604f51ca9297ea5b271a208eb5dfdd504471f340cccce4fd6278d",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-3-v1.png",
+          "sourceNormalizedSha256": "966e991c2cc37aaf01321c06e046222b2d99eea14c20f81669489e3ea989c838",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-3-v1.png",
+          "sourceRawSha256": "41948b1373b9d1b00f5a7d5b61bc5410668392c2a5b048e8f36400e8b544ffd4",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 18,
+          "column": 0,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-0",
+          "pose": "hurt-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "e742b58aa257cd0907f0bac9da20edc3686165f4dce8973f8c21c4304174f59d",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-0-v1.png",
+          "sourceNormalizedSha256": "370c5f550192ba981fbcf92593e0b591061a7a74c1dd4961eb20f826e5f65db6",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-0-v1.png",
+          "sourceRawSha256": "132dc763b14ad0ce9334eda7b2ad985a1f369fdf7e392f0bf43d4788579d1dd6",
+          "sourceAlphaBBoxAnyInclusive": [
+            4,
+            26,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            4,
+            26,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 19,
+          "column": 1,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 20,
+          "column": 2,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 21,
+          "column": 3,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 22,
+          "column": 4,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 23,
+          "column": 5,
+          "row": 3,
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "effectivePose": false,
+          "copiedFromCell": 19,
+          "pixelSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 24,
+          "column": 0,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-0",
+          "pose": "dead-0",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "9ad5f122f65c51322bef3d4431a143b40d3259015c0c0415a65d216a357ce359",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-0-v1.png",
+          "sourceNormalizedSha256": "ea1dec81b752d212ca2082673f07a818a54b8b9fd05f2703efeae2a56d746a43",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-0-v1.png",
+          "sourceRawSha256": "9a90dc4bc5e32dd3cdae49c0af0bb29dcf92ef84733882bdc38e0035b9287a82",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            37,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-0.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            37,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 25,
+          "column": 1,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-1",
+          "pose": "dead-1",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "c152aa9ef8e1337461061e30b47030627b08a9730b95315e14907cb13f83f86f",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-1-v1.png",
+          "sourceNormalizedSha256": "0ff8c1a72b971d08ac6f2f075057ea27547eed549308f51463af6655ce0dadc1",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-1-v1.png",
+          "sourceRawSha256": "d03fe136dfb3aecbfbeddd114478d5c2e2e69d932b9af5a94d42b770544fe2ee",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            39,
+            92,
+            94
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-1.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            39,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 26,
+          "column": 2,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-2",
+          "pose": "dead-2",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "5960614ea16cde7314d59c8a89dd474b7775fc72a8c763261ae2b51010599628",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-2-v1.png",
+          "sourceNormalizedSha256": "7ea9e072819b7e2d7316d1017879445b52635b6b45ed8055118a573d67666f08",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-2-v1.png",
+          "sourceRawSha256": "a042020f6f223e0d03f3ccbfd3d2ca678ed3600e3ac62446a033ef5488c2eadd",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            41,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-2.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            41,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 27,
+          "column": 3,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-3",
+          "pose": "dead-3",
+          "effectivePose": true,
+          "copiedFromCell": null,
+          "pixelSha256": "3727ba068c246b442e283ba72d71d34ab08c1820f8e961ff43627a3a307ff059",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-3-v1.png",
+          "sourceNormalizedSha256": "262ac356e46e38b996201d3e764cdeffe09ad35223625983dbe6342a67e500da",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-3-v1.png",
+          "sourceRawSha256": "2b5328215624facffa3c9a29822fea0f60686955fe848c24e285125c6e76fbd5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 28,
+          "column": 4,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-3",
+          "pose": "dead-3",
+          "effectivePose": false,
+          "copiedFromCell": 27,
+          "pixelSha256": "3727ba068c246b442e283ba72d71d34ab08c1820f8e961ff43627a3a307ff059",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-3-v1.png",
+          "sourceNormalizedSha256": "262ac356e46e38b996201d3e764cdeffe09ad35223625983dbe6342a67e500da",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-3-v1.png",
+          "sourceRawSha256": "2b5328215624facffa3c9a29822fea0f60686955fe848c24e285125c6e76fbd5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            92
+          ]
+        },
+        {
+          "index": 29,
+          "column": 5,
+          "row": 4,
+          "frameId": "ruins-bell-prowler:dead-3",
+          "pose": "dead-3",
+          "effectivePose": false,
+          "copiedFromCell": 27,
+          "pixelSha256": "3727ba068c246b442e283ba72d71d34ab08c1820f8e961ff43627a3a307ff059",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-3-v1.png",
+          "sourceNormalizedSha256": "262ac356e46e38b996201d3e764cdeffe09ad35223625983dbe6342a67e500da",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-3-v1.png",
+          "sourceRawSha256": "2b5328215624facffa3c9a29822fea0f60686955fe848c24e285125c6e76fbd5",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            95
+          ],
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-3.png",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            92
+          ]
+        }
+      ],
+      "frames": [
+        {
+          "frameId": "ruins-bell-prowler:idle-0",
+          "pose": "idle-0",
+          "sourceNormalizedPath": "references/normalized/ruins-bell-prowler-idle-0.png",
+          "sourceNormalizedSha256": "7fc35ca7fec315a105a06ee70671932df8cc6337f5c47124e5dbb21611a1a8d0",
+          "sourceRawPath": "references/raw/ruins-bell-prowler-profile-v1.png",
+          "sourceRawSha256": "90d7bb502f0d20d7151a74db66d20b731dc00a73d505b8b0b856a3de5148519d",
+          "sourcePromptPath": "references/prompts/ruins-bell-prowler-profile-v1.txt",
+          "sourcePromptSha256": "18f392b1a3ee7f2d4872c6d6f99fb188dcf321c7c3b4e2337e534088094e3353",
+          "sourceMetadataPath": "references/ruins-bell-prowler-profile-v1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            27,
+            92,
+            92
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": null,
+          "packedFrameSha256": "6b80155a56331bf7545ff774d2f4571f99993dcdfdf2777f554df6ce6dd99098",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            27,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 27,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            0
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:idle-1",
+          "pose": "idle-1",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-idle-1.png",
+          "sourceNormalizedSha256": "07244232448b2cdf70212f5a78bf186225583ba09234f6cb5dd275b555b992cd",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-idle-1.png",
+          "sourceRawSha256": "1393ea9f2a605b71eca625d9a74d87631b96c77c1634ff6ef1e009e14dbd00a7",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-idle-1.txt",
+          "sourcePromptSha256": "b9f28d0c702e660b75e9ca71cb67d4488c67c57daf34cc615f3d4da19c328888",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-idle-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            94
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 25,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/idle-1.png",
+          "packedFrameSha256": "cfe1cb5dbe51cd4827a9963e47c82eb420a410da1066ee3a0be5d193f1ed3687",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            29,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 29,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-0",
+          "pose": "walk-0",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-0.png",
+          "sourceNormalizedSha256": "b1552dc2490d5c26a0f556f896a11606833fd2313110cc4ccbebda1a2f2bac56",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-0.png",
+          "sourceRawSha256": "3eb3e31833d12bb2c8843a86f162044fbfd6957659752e203d66851e97bf5a97",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-0.txt",
+          "sourcePromptSha256": "821fb3c53f173549255418d9acac940ffb604d34856015daf71e4b471aaa0e40",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            94
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 18,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-0.png",
+          "packedFrameSha256": "016de0fe11e2f957259bcb5ac055231b634bfec8429fa7c8fc958ee1fdb3757c",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 30,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            6
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-1",
+          "pose": "walk-1",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-1.png",
+          "sourceNormalizedSha256": "151572337771ef4f11951234ca0649886cae756b00e470a4d1765a34f67dd0c2",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-1.png",
+          "sourceRawSha256": "848a10739e79ffa06d1b455815e098bf5c2eba903e3f9ce6b5f238965b9df828",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-1.txt",
+          "sourcePromptSha256": "be1f1e66bba046d7015c69a012802ab149e1149d62abf3324b0ce80e9a618dfd",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            94
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 15,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-1.png",
+          "packedFrameSha256": "96a6c5abd803c472cf327d0c909d9e3c701083913f0f0b4dd4d7e201854d330c",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 30,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            7
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-2",
+          "pose": "walk-2",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-2.png",
+          "sourceNormalizedSha256": "40bc26ec75101f74a365e5a761956b43113104da8f8108dce894f12a55cae4a4",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-2.png",
+          "sourceRawSha256": "68eb147924d308ea25bf087791e4d6c00c25690c1f13d8ff340f971d91abd0f1",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-2.txt",
+          "sourcePromptSha256": "a9a03dfab46057e40e5e7177c4836929156e76ed82a61f57655baed5c19429bc",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-2.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 39,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-2.png",
+          "packedFrameSha256": "7f666a6b3c829748b3c89f66c2c994b15e6a85ab8aa1cc3a8c1b2e0b1d272442",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 34,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            8
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-3",
+          "pose": "walk-3",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-3.png",
+          "sourceNormalizedSha256": "d9ff5518675a79c48d5ad40161acd7a7950bba2fa04ea8e16df6535068375c85",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-3.png",
+          "sourceRawSha256": "b21f9aaccb30f374b24399636fb7e047304a4f5f6132b9e05f9ae5b0aac1a124",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-3.txt",
+          "sourcePromptSha256": "d3787a4f77131842cc6df32e75cbf857bda2cefe4a39ad639c4af23c7b5bde09",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-3.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 33,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-3.png",
+          "packedFrameSha256": "94bfb8d08b3f3030f5364ad51785dff56973f54bb4a563ed84f1bddd1934f52b",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 32,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            9
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-4",
+          "pose": "walk-4",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-4.png",
+          "sourceNormalizedSha256": "15d1b398911e137523a981e6ed85128b61c6e4a1ed43b158657877efc57b503f",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-4.png",
+          "sourceRawSha256": "dfe932b3f94d3a01c5102ab96a7ca665a45a5317c03b4bbbf917bfe1a959f1d5",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-4.txt",
+          "sourcePromptSha256": "b3ac1208b3be921b3c4f3d89853e0dc77728ab1e9aa3e6f53614b7d1b1884500",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-4.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 40,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-4.png",
+          "packedFrameSha256": "eda42676802f17e6e9ab63b11044560151a50ee21b13d7fe9863ff15ca75b6bf",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 31,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            10
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:walk-5",
+          "pose": "walk-5",
+          "sourceNormalizedPath": "prowler-motion/normalized/ruins-bell-prowler-walk-5.png",
+          "sourceNormalizedSha256": "7d7e0554afd2b2c549dd395e6d9a6328fdab74785802d3945c9f24a46a602cd4",
+          "sourceRawPath": "prowler-motion/raw/ruins-bell-prowler-walk-5.png",
+          "sourceRawSha256": "4b2d86c6630d9860c7bf7d369b8421d329239869c08e778165af3ec8f7414b8a",
+          "sourcePromptPath": "prowler-motion/prompts/ruins-bell-prowler-walk-5.txt",
+          "sourcePromptSha256": "01f68c3efcd2cd73a70529b3e74c966c887264ce2a29de9accc74db7241adfe6",
+          "sourceMetadataPath": "prowler-motion/metadata/ruins-bell-prowler-walk-5.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 46,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/walk-5.png",
+          "packedFrameSha256": "1f0a5ac39b9a15451cc8f1da754197b3a29d851ccad8d8bc51633e614706a022",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 33,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            11
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:attack-0",
+          "pose": "attack-0",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-0-v1.png",
+          "sourceNormalizedSha256": "8e03ffe7d8f4ab7ba1b1bd1f5152a2c146cbaa1e616cc1971988e701f112a5c3",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-0-v1.png",
+          "sourceRawSha256": "e23a95a16af48c6782f77d92fbbcbd557d2ca9f42a8ed83a9ff02f147bad6db2",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-attack-0.txt",
+          "sourcePromptSha256": "8aaf075a7d4daa0e18b77ff818b9953bc67da124f911b7fc7805acaad158e294",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-attack-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 37,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-0.png",
+          "packedFrameSha256": "07c1fc1618a584e2c7b6a82179ac6519a203337cd2e32da7ca11b66cb2633621",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 33,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            12
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:attack-1",
+          "pose": "attack-1",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-1-v1.png",
+          "sourceNormalizedSha256": "dfc113bc0586db2ff401b5213c1e0ed89ba2a359c262bb32f11ee0a267e80477",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-1-v1.png",
+          "sourceRawSha256": "ae152def4dad28b52f66ccaabd2a39574a8bcf23ac9fbd496e4772eb8d8f1850",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-attack-1.txt",
+          "sourcePromptSha256": "53fba175978e1002d4fc3e04e0531d6413729335725df6ac972c4fe917892586",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-attack-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 36,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-1.png",
+          "packedFrameSha256": "f7e788d9bf4f316059f27fb3057be498f333c1df9631862dfd11ee510b5d2034",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            31,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 31,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            13
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:attack-2",
+          "pose": "attack-2",
+          "sourceNormalizedPath": "references/normalized/ruins-bell-prowler-attack-2.png",
+          "sourceNormalizedSha256": "b0106d1d377b4a46bde387e106ee66dc1b20276e31a5ad13afd9132c3ccb40a9",
+          "sourceRawPath": "references/raw/ruins-bell-prowler-attack-2-v2.png",
+          "sourceRawSha256": "248010595d3b68148711a28fc1ba641d918447839c7804d778867188af178664",
+          "sourcePromptPath": "references/prompts/ruins-bell-prowler-attack-2-v2.txt",
+          "sourcePromptSha256": "8c0dc2b458fe27986aa9dad37728aa655cae539f48baad305b1fc031e093362f",
+          "sourceMetadataPath": "references/ruins-bell-prowler-attack-2-v2.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            32,
+            92,
+            91
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 1
+            },
+            "lowAlphaTailPixelsCleared": 0,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-2.png",
+          "packedFrameSha256": "6d39fe80a5e7175f59f964e56dab05e0e97fc4cf410acf4260e6fd3326dc1ff7",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            33,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 33,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            14
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:attack-3",
+          "pose": "attack-3",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-attack-3-v1.png",
+          "sourceNormalizedSha256": "966e991c2cc37aaf01321c06e046222b2d99eea14c20f81669489e3ea989c838",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-attack-3-v1.png",
+          "sourceRawSha256": "41948b1373b9d1b00f5a7d5b61bc5410668392c2a5b048e8f36400e8b544ffd4",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-attack-3.txt",
+          "sourcePromptSha256": "cff53824e82462c56aa0adc75f598d41f89652bd0147e4a759a19192c8bf3e72",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-attack-3.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 50,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/attack-3.png",
+          "packedFrameSha256": "c8a6368914b604f51ca9297ea5b271a208eb5dfdd504471f340cccce4fd6278d",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            30,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 30,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:hurt-0",
+          "pose": "hurt-0",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-0-v1.png",
+          "sourceNormalizedSha256": "370c5f550192ba981fbcf92593e0b591061a7a74c1dd4961eb20f826e5f65db6",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-0-v1.png",
+          "sourceRawSha256": "132dc763b14ad0ce9334eda7b2ad985a1f369fdf7e392f0bf43d4788579d1dd6",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-hurt-0.txt",
+          "sourcePromptSha256": "ba8141841fba34b41a3374110ff7a29f1ad4f6be040c97bbec2e9823c6287302",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-hurt-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            4,
+            26,
+            92,
+            94
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 15,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-0.png",
+          "packedFrameSha256": "e742b58aa257cd0907f0bac9da20edc3686165f4dce8973f8c21c4304174f59d",
+          "packedAlphaBBoxAnyInclusive": [
+            4,
+            26,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 4,
+            "top": 26,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            18
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:hurt-1",
+          "pose": "hurt-1",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceNormalizedSha256": "1d41b7e02d809ccd4eebe64cafca4aa605c1b6da8e437fdbcea928142d83b7f4",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-hurt-1-v1.png",
+          "sourceRawSha256": "56bec7270c8e9ec52fbb692ed785a3c08d016166b4ecc14b8d7336c9d71316d5",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-hurt-1.txt",
+          "sourcePromptSha256": "73072fb9a41f0976d72a9fcaeaae0a8a0bd428be0ef88e0406b9a30da4e4848b",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-hurt-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 50,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/hurt-1.png",
+          "packedFrameSha256": "6ed4022f8d63116057906657c087986619ae137393d3979962939fabf1888f98",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            34,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 34,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            19,
+            20,
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:dead-0",
+          "pose": "dead-0",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-0-v1.png",
+          "sourceNormalizedSha256": "ea1dec81b752d212ca2082673f07a818a54b8b9fd05f2703efeae2a56d746a43",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-0-v1.png",
+          "sourceRawSha256": "9a90dc4bc5e32dd3cdae49c0af0bb29dcf92ef84733882bdc38e0035b9287a82",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-dead-0.txt",
+          "sourcePromptSha256": "f9c30138abe516a77ead8dc3ac8a2b31825fa2299f24ca3067aa8945f4701b56",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-dead-0.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            37,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 46,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-0.png",
+          "packedFrameSha256": "9ad5f122f65c51322bef3d4431a143b40d3259015c0c0415a65d216a357ce359",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            37,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 37,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            24
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:dead-1",
+          "pose": "dead-1",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-1-v1.png",
+          "sourceNormalizedSha256": "0ff8c1a72b971d08ac6f2f075057ea27547eed549308f51463af6655ce0dadc1",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-1-v1.png",
+          "sourceRawSha256": "d03fe136dfb3aecbfbeddd114478d5c2e2e69d932b9af5a94d42b770544fe2ee",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-dead-1.txt",
+          "sourcePromptSha256": "7de6b64f2a0ffd1fe6679e9a13335ed4cc06f32ad908f972bf3a9df33ffa9ec6",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-dead-1.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            39,
+            92,
+            94
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 53,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-1.png",
+          "packedFrameSha256": "c152aa9ef8e1337461061e30b47030627b08a9730b95315e14907cb13f83f86f",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            39,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 39,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            25
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:dead-2",
+          "pose": "dead-2",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-2-v1.png",
+          "sourceNormalizedSha256": "7ea9e072819b7e2d7316d1017879445b52635b6b45ed8055118a573d67666f08",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-2-v1.png",
+          "sourceRawSha256": "a042020f6f223e0d03f3ccbfd3d2ca678ed3600e3ac62446a033ef5488c2eadd",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-dead-2.txt",
+          "sourcePromptSha256": "d84a9794b4a7ebbfd258c11ec12176256403d65251d424ded57e554e94b6fce5",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-dead-2.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            41,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 42,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-2.png",
+          "packedFrameSha256": "5960614ea16cde7314d59c8a89dd474b7775fc72a8c763261ae2b51010599628",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            41,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 41,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            26
+          ]
+        },
+        {
+          "frameId": "ruins-bell-prowler:dead-3",
+          "pose": "dead-3",
+          "sourceNormalizedPath": "prowler-actions/normalized/ruins-bell-prowler-dead-3-v1.png",
+          "sourceNormalizedSha256": "262ac356e46e38b996201d3e764cdeffe09ad35223625983dbe6342a67e500da",
+          "sourceRawPath": "prowler-actions/raw/ruins-bell-prowler-dead-3-v1.png",
+          "sourceRawSha256": "2b5328215624facffa3c9a29822fea0f60686955fe848c24e285125c6e76fbd5",
+          "sourcePromptPath": "prowler-actions/prompts/ruins-bell-prowler-dead-3.txt",
+          "sourcePromptSha256": "a9eafe11ebd62f981c77682a57bfcb7174d14bc2402e2e857742e5233b3bc446",
+          "sourceMetadataPath": "prowler-actions/metadata/ruins-bell-prowler-dead-3.metadata.json",
+          "sourceAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            95
+          ],
+          "adjustment": {
+            "translationPx": {
+              "x": 0,
+              "y": 0
+            },
+            "lowAlphaTailPixelsCleared": 54,
+            "lowAlphaTailRule": "alpha <= 8 at y > 92 set to 0; no alpha > 8 pixel cleared"
+          },
+          "adjustedFramePath": "art-source/ruins-b/assembly/adjusted/ruins-bell-prowler/dead-3.png",
+          "packedFrameSha256": "3727ba068c246b442e283ba72d71d34ab08c1820f8e961ff43627a3a307ff059",
+          "packedAlphaBBoxAnyInclusive": [
+            3,
+            45,
+            92,
+            92
+          ],
+          "packedTransparentPadding": {
+            "left": 3,
+            "top": 45,
+            "right": 3,
+            "bottom": 3
+          },
+          "cells": [
+            27,
+            28,
+            29
+          ]
+        }
+      ],
+      "reviewContactSheetPath": "art-source/ruins-b/assembly/review/ruins-bell-prowler-atlas-contact-q70.jpg"
+    }
+  ]
+}

@@ -61,6 +61,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 750, attackCooldownMs: 1950, respawnMs: 8000, actorKey: 'actor:sunwell-beetle',
     drops: [{ itemId: 'sunwell-shell', chance: 1, min: 1, max: 1 }, { itemId: 'small-red', chance: 0.18, min: 1, max: 1 }],
   },
+  'ruins-moss-carapace': {
+    id: 'ruins-moss-carapace', name: '苔陶蟲', level: 30, maxHp: 1100, attack: 48, defense: 20, exp: 0, coins: 90,
+    speed: 42, width: 56, height: 38, aggroRange: 320, attackRange: 60,
+    attackWindupMs: 550, attackCooldownMs: 1400, respawnMs: 9000, actorKey: 'actor:ruins-moss-carapace',
+    drops: [{ itemId: 'moss-ceramic', chance: 1, min: 1, max: 1 }],
+  },
   guardian: {
     // T00 requires collision dimensions; 08 leaves the boss dimensions unspecified.
     // These are project-specific logical dimensions, not an original-game measurement.
@@ -80,6 +86,18 @@ export const monsters: Record<Id, MonsterDef> = {
     speed: 44, width: 72, height: 72, aggroRange: 460, attackRange: 420,
     attackWindupMs: 900, attackCooldownMs: 900, respawnMs: 0, actorKey: 'actor:frost-tide-warden',
     drops: [],
+  },
+  'ruins-string-puppet': {
+    id: 'ruins-string-puppet', name: '斷弦木偶', level: 30, maxHp: 1280, attack: 54, defense: 23, exp: 0, coins: 95,
+    speed: 56, width: 44, height: 64, aggroRange: 360, attackRange: 160,
+    attackWindupMs: 1000, attackCooldownMs: 2200, respawnMs: 9000, actorKey: 'actor:ruins-string-puppet',
+    drops: [{ itemId: 'broken-copper-thread', chance: 1, min: 1, max: 1 }],
+  },
+  'ruins-bell-prowler': {
+    id: 'ruins-bell-prowler', name: '巡鈴石獸', level: 30, maxHp: 1360, attack: 56, defense: 24, exp: 0, coins: 100,
+    speed: 48, width: 56, height: 40, aggroRange: 360, attackRange: 260,
+    attackWindupMs: 1100, attackCooldownMs: 2400, respawnMs: 9000, actorKey: 'actor:ruins-bell-prowler',
+    drops: [{ itemId: 'muted-bell-fragment', chance: 1, min: 1, max: 1 }],
   },
 };
 

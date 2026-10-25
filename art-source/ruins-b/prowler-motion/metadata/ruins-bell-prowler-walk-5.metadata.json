@@ -1,0 +1,71 @@
+{
+  "frameId": "ruins-bell-prowler:walk-5",
+  "tool": "built-in image_gen",
+  "callId": "exec-3d27ee65-8eaf-4efb-9d4a-84eed75b50fb",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a171b1-e5a9-7660-ab9b-f4842d413471 as C:\\Users\\Tommy\\.codex\\generated_images\\01a171b1-e5a9-7660-ab9b-f4842d413471\\exec-3d27ee65-8eaf-4efb-9d4a-84eed75b50fb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171b1-e5a9-7660-ab9b-f4842d413471\\exec-3d27ee65-8eaf-4efb-9d4a-84eed75b50fb.png",
+  "workspacePath": "art-source/ruins-b/prowler-motion/raw/ruins-bell-prowler-walk-5.png",
+  "submittedPromptPath": "art-source/ruins-b/prowler-motion/prompts/ruins-bell-prowler-walk-5.txt",
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-bell-prowler-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-bell-prowler-attack-2-v2.png",
+    "art-source/ruins-b/references/normalized/ruins-bell-prowler-idle-0.png",
+    "art-source/ruins-b/references/normalized/ruins-bell-prowler-attack-2.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "rawSha256": "4b2d86c6630d9860c7bf7d369b8421d329239869c08e778165af3ec8f7414b8a",
+  "accepted": true,
+  "acceptanceReason": "Accepted after contact-sheet review: complete right-facing quadruped; opposite-diagonal reach and low weight transfer transition into the next cycle; bell and clapper remain intact.",
+  "reviewPath": "art-source/ruins-b/prowler-motion/review/ruins-bell-prowler-walk-5-q70.jpg",
+  "reviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ]
+  },
+  "sourceImage": {
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaBBoxGt8": [
+      31,
+      288,
+      1234,
+      1075
+    ],
+    "edgeVisiblePixelsGt8": {
+      "left": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0
+    }
+  },
+  "normalization": {
+    "output": "art-source/ruins-b/prowler-motion/normalized/ruins-bell-prowler-walk-5.png",
+    "size": [
+      96,
+      96
+    ],
+    "alphaBBoxGt8": [
+      5,
+      35,
+      92,
+      93
+    ],
+    "sha256": "7d7e0554afd2b2c549dd395e6d9a6328fdab74785802d3945c9f24a46a602cd4",
+    "facing": "right",
+    "centerX": 48,
+    "bottomVisibleY": 92,
+    "minTransparentPadding": 3,
+    "method": "alpha>8 subject bounds with 3.5% margin, Lanczos downscale to fit 90x76, alpha-centered horizontally and bottom-aligned at visible y=92"
+  },
+  "cyclePhase": 5,
+  "visualReview": "Contact sheet: art-source/ruins-b/prowler-motion/review/ruins-bell-prowler-motion-contact-q70.jpg"
+}

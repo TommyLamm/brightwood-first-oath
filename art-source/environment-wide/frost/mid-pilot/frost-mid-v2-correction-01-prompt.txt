@@ -1,0 +1,16 @@
+Use case: stylized-concept
+Asset type: Production 1920x540 RGBA middle-parallax overlay for Frost Shore in the original 2D side-scrolling adventure.
+Input images:
+- Image 1, env-frost-mid-source.png: reference for the accepted Frost Shore spruce and ice detail language; use only as style guidance, not for its rock platforms or island layout.
+- Image 2, env-frost-sky-v1.png: reference for cool morning blue and a very soft pale-amber rim light; do not paint any sky.
+- Image 3, forest-style-reference-v1.png: accepted game-art guide for painterly pixel texture, simple shading and contour scale; do not copy its forest layout.
+- Image 4, brightwood-world-map-main-v2.png: palette and snowy-island context only; do not copy any map scenery.
+Primary request: Create a revised production mid-layer as a 32:9 side-view panorama. Show only sparse snow-covered spruce boughs and a few delicate ice-encrusted branch tips entering from the upper edge. This is a light decorative canopy overlay; there are no islands or ground.
+Scene/backdrop: A handful of small, irregular hanging spruce branch clusters and icy twigs, spaced far apart along the upper edge, with very wide transparent gaps between them.
+Style/medium: Painterly pixel-textured 2D game art with low-contrast, simple layered shading and clean edges. Keep it subtle and readable at runtime size.
+Composition/framing: Intended target is 1920x540, fixed side view, not isometric. Keep every visible branch within the upper 180 pixels of the intended canvas; aim for most detail within the upper 160 pixels. Leave the entire lower 360 pixels genuinely transparent for actors and movement. Use a few short, varied clusters near the outer edges and outer thirds, not mirror-symmetric. Do not fill the middle with a continuous canopy.
+Lighting/mood: Cold clear morning, softly lit snow; no glow effects.
+Color palette: Powder blue, pale ivory, muted teal, soft blue-gray and lavender-gray shadows, with only a tiny restrained warm highlight.
+Materials/textures: Individual snow-softened spruce needles and delicate frozen twigs, with simple pixel-textured edges.
+Constraints: Request real alpha transparency for all empty space, especially everything below y=180 in the intended 540px target; preserve alpha, with no painted background, sky, matte or checkerboard. Keep broad transparent gaps and the lower gameplay area completely clear.
+Avoid: Rocks, reef outcrops, islands, cliffs, tree trunks, roots, land, floor, platform, shore, sea, fog, horizon, ladders, portals, structures, characters, enemies, text, UI, labels, logos, watermarks, neon, bright edge glow, 3D, photorealism, poster layout, mirror symmetry or tiled motifs.

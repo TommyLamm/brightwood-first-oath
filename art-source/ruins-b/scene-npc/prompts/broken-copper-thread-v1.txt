@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent 128x128 RPG inventory material icon, runtime displayed at 32x32.
+Primary request: depict one broken copper thread dropped by an old wooden marionette.
+Subject: a single short, visibly snapped strand of thin oxidized-copper wire, gently curled into one compact loop with two clearly broken ends; a tiny muted teal patina fleck is acceptable, but no attached object.
+Style/medium: crisp polished 2D pixel-art RPG item icon, chunky coherent pixel clusters, limited palette, strong outline, sharp edges, high contrast at small size; match high-quality 16-bit inventory art, no 3D, no painterly blur.
+Composition/framing: one centered item only, large enough to read at 32x32, on a square transparent canvas with comfortable clear margins.
+Lighting/mood: small warm highlights on aged copper, restrained and practical.
+Color palette: dark copper, muted orange-bronze, a few blue-green oxidized pixels, dark outline.
+Constraints: request genuine transparent alpha. No background, checkerboard, floor, cast shadow, text, label, symbol, watermark, UI, extra strands, wood pieces, hands, characters, glow, blur, gradient or cropped ends.

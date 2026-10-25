@@ -1,0 +1,35 @@
+{
+  "frameId": "ruins-bell-prowler:idle-0",
+  "tool": "built-in image_gen",
+  "callId": "exec-548cf792-f163-4223-8d7f-ae4f73ff3cdd",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17175-9243-7a91-bab6-464cafba1cf7\\exec-548cf792-f163-4223-8d7f-ae4f73ff3cdd.png",
+  "workspacePath": "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-b/references/raw/ruins-bell-prowler-profile-v1.png",
+  "submittedPromptPath": "art-source/ruins-b/references/prompts/ruins-bell-prowler-profile-v1.txt",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "sha256": "90D7BB502F0D20D7151A74DB66D20B731DC00A73D505B8B0B856A3DE5148519D",
+  "notes": "Wrapper returned output_hint with savedPath but no revisedPrompt field; exact submitted prompt is archived.",
+  "accepted": true,
+  "acceptanceReason": "Low right-facing quadruped; four feet, chipped copper bell and clapper; one neutral pose.",
+  "reviewPath": "references/review/ruins-bell-prowler-profile-v1-q70.jpg",
+  "normalized": {
+    "output": "references/normalized/ruins-bell-prowler-idle-0.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      5,
+      29,
+      91,
+      91
+    ],
+    "outputSha256": "7fc35ca7fec315a105a06ee70671932df8cc6337f5c47124e5dbb21611a1a8d0",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92"
+  }
+}

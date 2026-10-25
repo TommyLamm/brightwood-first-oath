@@ -1,0 +1,73 @@
+{
+  "frameId": "item:muted-bell-fragment",
+  "status": "accepted",
+  "rawSource": "art-source/ruins-b/scene-npc/raw/muted-bell-fragment-source.png",
+  "rawSha256": "0C7CAEEB3C490D7FD7593221D1DF52F0178C6C97BAB273A5F5B5D04EBA057E53",
+  "prompt": "art-source/ruins-b/scene-npc/prompts/muted-bell-fragment-v1.txt",
+  "promptSha256": "5D41AB56065CB6723B4EAC7A5FDA60B8CE6564CC0C8F3D2ACF644E989DD898CD",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent 128x128 RPG inventory material icon, runtime displayed at 32x32.\nPrimary request: depict one muted fragment from a cracked ancient copper bell.\nSubject: a single curved shard broken from a small heavy bell, with a clearly jagged chipped rim, weathered bronze-copper surface, and one tiny dark clapper nub still attached. It should read as a bell fragment, not a whole bell.\nStyle/medium: crisp polished 2D pixel-art RPG item icon, chunky coherent pixel clusters, limited palette, strong outline, sharp edges, high contrast at small size; match high-quality 16-bit inventory art, no 3D, no painterly blur.\nComposition/framing: one compact centered fragment only, large enough to read at 32x32, on a square transparent canvas with comfortable clear margins.\nLighting/mood: muted warm copper highlight and cool shadow; old, silent, and sturdy.\nColor palette: oxidized copper, dark bronze, restrained sea-glass teal patina and charcoal outline.\nConstraints: request genuine transparent alpha. No background, checkerboard, floor, cast shadow, text, label, symbol, watermark, UI, whole intact bell, extra shards, people, monsters, glow, blur, gradient, detached particles or cropped edges.",
+  "tool": "built-in image_gen.imagegen via exec wrapper",
+  "sessionThreadId": "01a1717f-aeba-7ef1-8712-5a5aa386d30e",
+  "sessionFile": "C:/Users/Tommy/.codex/sessions/2026/10/25/rollout-2026-10-25T13-19-15-01a1717f-aeba-7ef1-8712-5a5aa386d30e.jsonl",
+  "outerExecCallId": "call_c501f851224d46d79b4a963cc6d1be76",
+  "callId": "exec-438ecd74-c899-4c25-b3f9-7ae290659e3e",
+  "savedPath": "C:/Users/Tommy/.codex/generated_images/01a1717f-aeba-7ef1-8712-5a5aa386d30e/exec-438ecd74-c899-4c25-b3f9-7ae290659e3e.png",
+  "savedPathSha256": "0C7CAEEB3C490D7FD7593221D1DF52F0178C6C97BAB273A5F5B5D04EBA057E53",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "returnedKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencedImagePaths": [],
+  "acceptance": "Accepted: one centered, readable transparent material icon with a clean silhouette and enough margin for 32x32 runtime display.",
+  "rejectionReason": null,
+  "normalization": {
+    "method": "Crop alpha>8 subject bounds with 4.5% margin; Lanczos fit within 104x104 and center on a transparent 128x128 canvas.",
+    "sourceAlphaBBoxGt8": [
+      202,
+      148,
+      1081,
+      1144
+    ],
+    "cropIncludingMargin": [
+      157,
+      103,
+      1126,
+      1189
+    ],
+    "resizedSize": [
+      93,
+      104
+    ],
+    "scale": 0.095764,
+    "output": "public/assets/interface/item-muted-bell-fragment-v1.png",
+    "outputSize": [
+      128,
+      128
+    ],
+    "outputSha256": "ED87D8430B75F5E1D4DC89957750A74AE4EC2135C059752667A8B1788F60C081",
+    "outputAlphaBBoxGt8": [
+      21,
+      16,
+      106,
+      112
+    ],
+    "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/item-muted-bell-fragment-runtime-q70.jpg",
+    "runtimeReviewSize": [
+      640,
+      640
+    ]
+  },
+  "runtimeReview": {
+    "quality": 70,
+    "format": "JPEG",
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "preview": "art-source/ruins-b/scene-npc/review/runtime/item-muted-bell-fragment-runtime-q70.jpg"
+  },
+  "visualReviewNote": "One chipped curved bell shard with the clapper nub still attached remains legible at 32x32 display size."
+}

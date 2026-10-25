@@ -129,6 +129,11 @@ export function objectivePlaces(
   questId: string,
   objective: QuestView['objectives'][number],
 ): string {
+  if (objective.type === 'inspect') {
+    return Object.values(view.catalog.world.maps)
+      .filter((map) => map.npcs.some(({ npcId }) => npcId === objective.targetId))
+      .map(({ name }) => name).join('／');
+  }
   if (objective.type === 'reach') return view.catalog.world.maps[objective.targetId]?.name ?? '';
   if (objective.type === 'equip') return '裝備欄';
 
@@ -221,12 +226,18 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
       const current = Math.min(objective.required, Math.max(0, objective.current));
       const done = current >= objective.required;
       tile.classList.toggle('is-done', done);
-      const targetName = objective.type === 'kill' ? view.catalog.rules.monsters[objective.targetId]?.name : objective.type === 'reach' ? view.catalog.world.maps[objective.targetId]?.name : view.catalog.rules.items[objective.targetId]?.name;
+      const targetName = objective.type === 'kill' ? view.catalog.rules.monsters[objective.targetId]?.name
+        : objective.type === 'reach' ? view.catalog.world.maps[objective.targetId]?.name
+          : objective.type === 'inspect' ? view.catalog.world.npcs[objective.targetId]?.name
+            : view.catalog.rules.items[objective.targetId]?.name;
+      const inspectNpc = objective.type === 'inspect' ? view.catalog.world.npcs[objective.targetId] : undefined;
       const art = objective.type === 'kill'
         ? actor(document, view, view.catalog.rules.monsters[objective.targetId]?.actorKey ?? '', targetName ?? '')
-        : icon(document, view, objective.type === 'reach' ? 'marker:portal' : 'item:' + objective.targetId, targetName ?? '');
+        : inspectNpc
+          ? actor(document, view, inspectNpc.actorKey, targetName ?? '')
+          : icon(document, view, objective.type === 'reach' ? 'marker:portal' : 'item:' + objective.targetId, targetName ?? '');
       const target = node(document, 'div', 'ms-journal-objective__target');
-      target.append(node(document, 'span', 'ms-journal-objective__verb', { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達' }[objective.type]), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
+      target.append(node(document, 'span', 'ms-journal-objective__verb', { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達', inspect: '調律' }[objective.type]), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
       const quantity = node(document, 'strong', 'ms-journal-objective__count', (done ? '✓ ' : '') + current + ' / ' + objective.required);
       const progress = node(document, 'progress', 'ms-journal-progress');
       progress.max = Math.max(1, objective.required);

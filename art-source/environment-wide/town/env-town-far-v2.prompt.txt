@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:town:far for an original 2D side-scrolling adventure.
+Primary request: create one entirely new, very distant view of a small peaceful wooded village at morning. Show a few tiny warm-roof cottages tucked among separate low tree-covered hill clusters.
+Input images:
+- Image 1, approved town sky: use only for its clear blue and pale-gold morning color temperature. Do not include sky or clouds in the output.
+- Image 2, forest style board: use only for its clean pixel-cluster technique, muted green palette, and soft depth. Do not copy its composition or large foreground trees.
+Scene/backdrop: a distant village edge under the already supplied town sky layer.
+Subject: three or four small, separated groups of faraway rounded tree crowns and tiny simple cottage rooftops. Each group has a distinct naturally uneven hill silhouette and transparent gaps between groups.
+Style/medium: clean classic pixel-art with readable stepped clusters and restrained soft shading. Keep a consistent coarse pixel scale for a 1440x540 parallax layer displayed on a 960x540 game canvas. Low contrast behind gameplay; no fine brush speckles, grain, or noise.
+Composition/framing: intended final canvas exactly 1440x540 (8:3 panoramic). Keep all scenery in the lower 28–35% of the frame; leave most of the image and a generous band below the hills truly transparent. Use varying low rooflines and tree heights; keep both ends low and naturally irregular for horizontal scrolling. Do not repeat, mirror, or tile any group. Keep all important art safely inside an 8:3 crop if the native size differs; do not stretch.
+Lighting/mood: fresh, quiet morning with soft diffuse light.
+Color palette: subdued sage and blue-teal trees, warm muted ochre and cream roof details, matching the approved town sky without bright highlights.
+Transparency: real alpha channel. Only the small distant village and its hill/foliage silhouettes are visible; all surrounding space is fully transparent. Use natural neighboring art colors right up to clean pixel edges.
+Constraints: no sky, clouds, ground plane, platform, ledge, continuous horizontal baseline, continuous opaque band along the bottom, fog sheet, mist backdrop, glowing outline, halo, chromatic fringe, stray bright pixels, checkerboard, or opaque background. No close buildings, street scene, signage, legible text, lettering, characters, NPCs, people, animals, props, logo, border, or watermark.

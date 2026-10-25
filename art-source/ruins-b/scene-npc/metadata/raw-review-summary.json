@@ -1,0 +1,250 @@
+[
+  {
+    "source": "raw/broken-copper-thread-source.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      255
+    ],
+    "alphaBBoxGt8": [
+      243,
+      255,
+      1080,
+      1011
+    ],
+    "preview": "review/broken-copper-thread-source-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "6F99B3F19A81C6CCF5BDAAD7A0C33AE405442490A7A577B6308769F56EAB8EDB"
+  },
+  {
+    "source": "raw/muted-bell-fragment-source.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      255
+    ],
+    "alphaBBoxGt8": [
+      202,
+      148,
+      1081,
+      1144
+    ],
+    "preview": "review/muted-bell-fragment-source-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "0C7CAEEB3C490D7FD7593221D1DF52F0178C6C97BAB273A5F5B5D04EBA057E53"
+  },
+  {
+    "source": "raw/ruins-gallery-far-source.png",
+    "sourceSize": [
+      2048,
+      768
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      254
+    ],
+    "alphaBBoxGt8": [
+      26,
+      36,
+      2028,
+      737
+    ],
+    "preview": "review/ruins-gallery-far-source-q70.jpg",
+    "previewSize": [
+      1280,
+      480
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "62D4CA1F826954ACBA4ACCC922A4B5C80AAF1C138F83EAEBDDAF864F56216D9F"
+  },
+  {
+    "source": "raw/ruins-gallery-mid-source.png",
+    "sourceSize": [
+      2048,
+      768
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      254
+    ],
+    "alphaBBoxGt8": [
+      0,
+      0,
+      2048,
+      444
+    ],
+    "preview": "review/ruins-gallery-mid-source-q70.jpg",
+    "previewSize": [
+      1280,
+      480
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "8AD640C2CC999EC2FC4FCBAA3E2AC076681BFFADA89269C599096F2AC4F231F2"
+  },
+  {
+    "source": "raw/ruins-gallery-sky-source.png",
+    "sourceSize": [
+      1672,
+      941
+    ],
+    "sourceMode": "RGB",
+    "alphaMinMax": [
+      255,
+      255
+    ],
+    "alphaBBoxGt8": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "preview": "review/ruins-gallery-sky-source-q70.jpg",
+    "previewSize": [
+      1280,
+      720
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "481A94884088DCE663C85230F41E8D9692E1270B93BA1B86BE5ABC0F681FF4E2"
+  },
+  {
+    "source": "raw/ruins-pathfinder-idle-0-source.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      255
+    ],
+    "alphaBBoxGt8": [
+      327,
+      49,
+      879,
+      1214
+    ],
+    "preview": "review/ruins-pathfinder-idle-0-source-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "8EFA24486966C82EBD0FD7666E633E6A32C08DFDA2E5EDEB6F528562283EB703"
+  },
+  {
+    "source": "raw/ruins-pathfinder-idle-1-source.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      255
+    ],
+    "alphaBBoxGt8": [
+      324,
+      46,
+      882,
+      1215
+    ],
+    "preview": "review/ruins-pathfinder-idle-1-source-q70.jpg",
+    "previewSize": [
+      1254,
+      1254
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "CF820B030374CC74E0FF747A36976730C1FA2DA6CDD2216215F81D78F376635E"
+  },
+  {
+    "source": "raw/ruins-stele-source.png",
+    "sourceSize": [
+      1086,
+      1448
+    ],
+    "sourceMode": "RGBA",
+    "alphaMinMax": [
+      0,
+      255
+    ],
+    "alphaBBoxGt8": [
+      242,
+      54,
+      843,
+      1416
+    ],
+    "preview": "review/ruins-stele-source-q70.jpg",
+    "previewSize": [
+      960,
+      1280
+    ],
+    "previewFormat": "JPEG",
+    "previewQuality": 70,
+    "previewMatteRGB": [
+      223,
+      227,
+      219
+    ],
+    "sourceSha256": "EADE70EAB4830DB81A642F66A2B51B12B71A0021D4BCF3AB9A9EB362323EDA1B"
+  }
+]

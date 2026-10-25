@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG near-overhead parallax tree-canopy layer, PNG with true transparency.
+Input images: Image 1 is only a project style reference; Image 2 is only a reference for the existing environment pack's transparent upper-edge layer structure. Do not reproduce either scene.
+Primary request: create the near foreground canopy for Root Causeway, a humid ancient ruin path under a vast tree crown.
+Scene/backdrop: isolated broad branches and knotted hanging roots attached to the top edge, dense but readable leaf clusters, a few broken pale-stone column-cap fragments caught high in the foliage; frame the upper corners without forming a ceiling across the full image.
+Subject: an irregular old tree crown with a few long root tendrils dropping from above.
+Style/medium: charming softly painted pixel-art-inspired 2D game environment, clustered brush pixels and clear silhouettes; not 3D or photorealistic.
+Composition/framing: exact target 1920x540; composition is only the top 180px of a very wide landscape strip. All artwork must stay in rows y=0 through y=179. Every pixel at y>=180 is fully transparent. Anchor the canopy to the top edge and keep the central opening generous.
+Lighting/mood: soft filtered humid daylight after rain.
+Color palette: deep sage and blue-green leaves, oxidized-copper shadows, pale limestone fragments, subtle teal.
+Constraints: genuine alpha transparency, no background plate or checkerboard; transparent below the canopy fringe. No characters, NPCs, monsters, text, symbols, signs, watermark, sky, cliffs, columns below the canopy, furniture, floor, path, ground, platform or walkable terrain.

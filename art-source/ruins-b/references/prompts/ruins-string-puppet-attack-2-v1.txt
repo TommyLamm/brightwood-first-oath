@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: one transparent active-attack sprite frame for a 2D RPG monster
+Input images: Image 1 is the approved Ruins String Puppet identity/profile reference and must be followed closely; Image 2 is the existing moss-carapace monster used only for pixel-art style and scale, not character design.
+Primary request: Show the exact same single Ruins String Puppet from Image 1 at the active moment of its slap attack (frame ID attack-2): its narrow wooden torso stays planted and pitches forward slightly while its unusually long forward/right arm snaps straight out to deliver one broad wooden-palm slap. The short rear arm and snapped copper strings trail naturally behind. Make the arm extension the clear focal change while preserving the same head, body, joints, materials, palette and proportions.
+Style/medium: crisp 2D pixel-art RPG sprite matching Image 2's chunky clean pixel clusters, limited palette, strong outline and sharp edges; polished game art, no painterly haze and no 3D rendering.
+Composition/framing: one complete side-view monster only, still facing right, on a square transparent canvas; same scale and bottom-centered pivot as Image 1; full arm, strings and feet visible with generous transparent padding; one static action pose, not a sequence or sheet.
+Constraints: genuine transparent alpha; exactly one slap pose; body remains in place with no dash; all parts intact.
+Avoid: left-facing orientation, second pose, multiple creatures, frames, grid, background, ground plane, text, symbols, watermark, UI, added weapons, projectile, motion trail, impact flash, glow, blur, gradient, cropping, detached particles, blood.

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG parallax sky background, one landscape PNG layer.
+Input images: Image 1 is only a style reference for the project's softly painted, clustered game-background texture; do not copy its forest scene.
+Primary request: create the sky layer for Tide Camp, the first location in a humid ancient coastal-ruins chapter.
+Scene/backdrop: full-bleed open sky above a distant calm sea; pale limestone-colored sea haze at a low horizon, soft layered clouds, humid coastal air.
+Subject: only atmosphere, sky and a thin distant sea horizon; no landforms or architecture.
+Style/medium: charming hand-painted pixel-art-inspired 2D game background, broad clear color masses, softly clustered brush pixels, atmospheric depth, consistent with the style reference; not 3D, not photorealistic.
+Composition/framing: exact target composition 960x540, wide 16:9 horizontal side-view backdrop, horizon low in frame, subtle variation across the full width.
+Lighting/mood: quiet overcast daylight after rain, gentle pale light.
+Color palette: blue-grey, warm limestone mist, muted sea-glass teal, tiny restrained oxidized-copper cloud accents.
+Constraints: opaque sky image; no transparency, no text, no signage, no watermark. Keep this strictly a sky layer. Avoid cliffs, shore, buildings, broken towers, tents, trees, roots, characters, NPCs, monsters, platforms, paths, ground, or any walkable terrain.

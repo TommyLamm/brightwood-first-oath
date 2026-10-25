@@ -1,5 +1,11 @@
 # 實作狀態板
 
+2026-10-25 遠古遺跡包 B：**程式與素材完成，獨立候選已建置；實際遊玩／正式存檔／ZIP／發布未驗證**。候選 `1.0.0-beta.13` 位於 `artifacts/ruins-b/dist/`，依 [13 回聲探索計畫](13-ruins-echo-exploration.md) 完成即停。新增長廊、行舟／雙碑、q17／q20、inspect調律、兩種怪物與36有效姿勢；讀1／2／3、寫3，轉寫前保全舊封套。10個新增runtime檔共2.35 MiB，A+B共13.65 MiB。14個不同聚焦測試檔共92項最終通過，typecheck／content／4包207引用／build通過；沒有全回歸。主代理指揮全新Luna Max分批、最多3名，額度中斷後恢復原稿，主對話未載入生成圖。來源、檢查、正式格式3橋接限制見 [B 整合交接](reports/ruins-b-handoff.md)；A成品保留，C／D未完成，未commit／發布。
+
+2026-10-25 遠古遺跡包 A：程式與素材完成，候選 `1.0.0-beta.12` 已建置至 `artifacts/ruins-a/dist/`，按計畫完成 A 即停。主代理指揮全新 GPT-6 Luna Max 分批實作，同時最多三名，主對話未載入生成圖片。新增營站／石道、q15／q16、苔陶蟲、兩位 NPC、航路、區域圖與音樂；15 個新 runtime 資源共 11.29 MiB。型別、內容、入口流程與 loader／引用／動畫契約及 build 已檢查；測試篩選曾選入舊工作樹，唯一舊斷言失敗如實記錄。未跑瀏覽器、正式雲端、ZIP 或發布；讀 1／2、寫 2 仍待正式橋接部署。完整來源、檢查、限制及下一步見 [A 整合交接](reports/ruins-a-handoff.md)。此為A當時紀錄；B最新結果見上，C／D尚未完成。
+
+2026-10-25 企劃階段紀錄：[遠古遺跡・失聲的誓鐘](12-next-chapter-ancient-ruins.md)由主規劃獨立設計；當時尚未實作並保留 beta.11。後續 A 實作狀態以上方 beta.12 交接為準，先前 beta.11 遊玩驗收限制不因此視為通過。
+
 2026-10-18 repository 更新：Public repository [TommyLamm/brightwood-first-oath](https://github.com/TommyLamm/brightwood-first-oath) 的 main 已推送，[v1.0.0-beta.1 預發布 Release](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.1) 已建立，唯一 `game.zip` 已上傳；GitHub workflow 建置／固定工具驗證／pack／validate 全部成功。三個已完成工作樹與臨時分支已清除，原提交歷史保存在 main；尚未追蹤的計畫、來源原稿與預覽已補提交。實際結果見 [GitHub 發布報告](reports/github-release-20261018.md)。下方先前「沒有 tag／Release」是候選驗收當時的歷史狀態。Playroom 尚未上架。
 
 由主 Agent 統一維護；經主 Agent 明確授權的實作代理可更新自己負責的工作段。建立計劃不算實作完成。狀態：NOT_STARTED → READY → IN_PROGRESS → PARTIAL／BLOCKED／REVIEW → DONE。缺驗收標 UNVERIFIED，不寫 PASS。
@@ -249,3 +255,12 @@ This finite three-stage task is complete. The implementation and focused checks 
 清理已完成：最後 named session sentinel-beta9-final-telegraph-last-20261024 已關閉；production key 原在此新 origin 由本次 public UI 建立，結束時只移除本次底檔、fixture 與 backup markers，並確認 key 不存在。僅停止自有 server PID 1784／16136／7908，確認專用 ports 5197／5198／5199 均無 listener，移除三個獨占 temp extraction；共用 5173 與其他存檔／程序未碰。未檢查 browser console。
 
 未跑測試、build、pack 或 validate，沒有更改 beta.9 archive。僅本節文件更新會 stage/commit；其餘 user changes 與 .worktrees 保留。無 push、tag、Release、上傳或發布。地面 telegraph 仍是唯一未驗收項目，至此停止。
+## 2026-10-24 Wide environment background v2 delivery
+
+- Material delivery is complete: 20 far/mid assets for camp, town, forest, rock, frost, frost-pine, frost-cave, sand, sand-dune, and sunwell; far 1440×540 and mid 1920×540 RGBA.
+- The last three mid files were copied unchanged from root-approved layouts. The canonical environment manifest now references all 20 v2 files; v1 and sky assets remain unchanged.
+- The existing wide-background helper ran once and passed all 20 references, dimensions, RGBA format, non-target manifest preservation, and the mid alpha boundary (zero nontransparent pixels at y≥180). Metrics: art-source/environment-wide/metrics/wide-environment-assets.csv.
+- Root reviewed the lightweight scroll overview for camp, forest-edge, red-ridge, and Sunwell basin at start/mid/max positions. Other themes rely on their prior approvals; this is not a fresh visual audit of all 14 maps.
+- The all-map offline preview models far×0.2 / mid×0.5 offsets and Sunwell far 1.6× bottom anchoring. Runtime still pins background layers; parallax integration and runtime verification remain a separate task.
+- No src/ or game.json change, no build/typecheck/test rerun, no browser run, package, commit, push, tag, Release, or platform listing. The earlier typecheck pass remains prior-turn evidence, not a check from this delivery.
+- Canonical handoff: art-source/environment-wide/handoff-20261024.md. Next: a separate runtime parallax integration task and focused verification.

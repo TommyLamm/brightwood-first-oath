@@ -51,7 +51,7 @@ const KEY_ACTIONS: { id: string; label: string }[] = [
 type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
   | 'retry-save' | 'discard-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
-  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'use-item' | 'select-bag'
+  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'use-item' | 'select-bag'
   | 'inventory-filter' | 'select-map' | 'select-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
@@ -301,6 +301,7 @@ function isWearableUpgrade(
 function targetName(view: UiSnapshot, id: string, type: string): string {
   if (type === 'kill') return view.catalog.rules.monsters[id]?.name ?? id;
   if (type === 'reach') return view.catalog.world.maps[id]?.name ?? id;
+  if (type === 'inspect') return view.catalog.world.npcs[id]?.name ?? id;
   return view.catalog.rules.items[id]?.name ?? id;
 }
 
@@ -317,7 +318,7 @@ function rewardText(view: UiSnapshot, reward: UiSnapshot['questViews'][number]['
 
 function objectiveText(view: UiSnapshot, objective: UiSnapshot['questViews'][number]['objectives'][number]): string {
   const action = {
-    kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達',
+    kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達', inspect: '調律',
   }[objective.type];
   return action + ' ' + targetName(view, objective.targetId, objective.type)
     + ' ' + Math.min(objective.current, objective.required) + '/' + objective.required;
@@ -1180,6 +1181,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         dispatchDraft({ type: 'interact', payload: {} });
         focusGameCanvas(button);
         return;
+      case 'inspect-stele': {
+        const targetId = button.dataset.targetId;
+        if (targetId) dispatchDraft({ type: 'inspect', payload: { targetId } });
+        return;
+      }
       case 'use-item': {
         const itemId = button.dataset.itemId;
         if (itemId) dispatchDraft({ type: 'useItem', payload: { itemId } });
@@ -1970,6 +1976,17 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     if (!shownInCards.has(line)) lines.append(makeElement(document, 'p', '', line));
   }
   parent.append(lines);
+  if (interaction.npcId === 'ruins-stele-west' || interaction.npcId === 'ruins-stele-east') {
+    const quest = view.questViews.find(({ questId }) => questId === 'q17');
+    if (view.saveData?.quests.q17?.status === 'active') {
+      const objective = quest?.objectives.find(({ targetId, type }) => type === 'inspect' && targetId === interaction.npcId);
+      const tuned = objective !== undefined && objective.current >= objective.required;
+      parent.append(makeElement(document, 'p', 'ms-panel-note', tuned ? '這塊石碑已留下調律回聲。' : '確認調律後，這塊石碑的記錄便會清晰。'));
+      parent.append(makeButton(document, '調律石碑', 'inspect-stele', {
+        className: 'ms-button ms-button--primary', data: { targetId: interaction.npcId },
+      }));
+    }
+  }
   if (interaction.npcId === 'merchant') parent.append(makeButton(document, '開啟商店', 'open-panel', {
     className: 'ms-button ms-button--primary', data: { panel: 'shop' },
   }));

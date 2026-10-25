@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: transparent two-frame NPC idle sprite strip for a 2D RPG
+Input images: Image 1 and Image 2 are existing project NPCs used only as style and scale references; do not copy their characters or outfits.
+Primary request: Create a new keeper and archivist named Zhiheng: a gentle young adult researcher with short dark hair, a clean pale-stone white outfit with restrained teal-green accents, a small notebook and a compact tool for studying carved inscriptions. Show the same character in two subtly different idle breathing poses, with a very small hand/notebook and shoulder movement.
+Style/medium: match the existing cute big-head side-view RPG pixel sprite style and clear silhouette of the reference NPCs; crisp hand-placed-looking pixel clusters and restrained shading, not a 3D render.
+Composition/framing: exactly two equal square frames arranged left to right in one row, full body visible, facing right, same scale and baseline, both frames isolated and complete. Preserve generous transparent padding; no frame boundary lines.
+Color palette: warm ivory and pale stone, muted sea-green/teal trim, dark natural hair, restrained brown leather notebook/tool accents.
+Constraints: genuine transparent alpha; keep the figure recognizable at 96x96; just one character per frame; keep notebook and inscription tool small and clearly non-weapon-like; no scene backdrop.
+Avoid: weapons, armor, staff, speech bubbles, readable marks, text, labels, logos, watermark, UI, checkerboard, background, floor shadow, cropped feet or head, extra people, glow, blur, gradients, 3D rendering.

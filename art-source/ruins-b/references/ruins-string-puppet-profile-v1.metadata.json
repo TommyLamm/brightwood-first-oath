@@ -1,0 +1,35 @@
+{
+  "frameId": "ruins-string-puppet:idle-0",
+  "tool": "built-in image_gen",
+  "callId": "exec-d502732e-d58a-4d64-844b-4705127b2407",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17175-9243-7a91-bab6-464cafba1cf7\\exec-d502732e-d58a-4d64-844b-4705127b2407.png",
+  "workspacePath": "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+  "submittedPromptPath": "art-source/ruins-b/references/prompts/ruins-string-puppet-profile-v1.txt",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "sha256": "7F6BB180BF8F45CCC16053AB5EEC7E94C6849E30BC634157D2CA632304744922",
+  "notes": "Wrapper returned output_hint with savedPath but no revisedPrompt field; exact submitted prompt is archived.",
+  "accepted": true,
+  "acceptanceReason": "Right-facing slender wooden marionette; complete feet, forward long arm and snapped copper strings; one neutral pose.",
+  "reviewPath": "references/review/ruins-string-puppet-profile-v1-q70.jpg",
+  "normalized": {
+    "output": "references/normalized/ruins-string-puppet-idle-0.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      23,
+      19,
+      73,
+      91
+    ],
+    "outputSha256": "0820c1afefa7ea773286e0963dc17ed94312caacfe3e2aa2b7b94ac682c8cab4",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92"
+  }
+}

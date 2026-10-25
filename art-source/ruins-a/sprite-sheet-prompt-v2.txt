@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: runtime 2D RPG monster sprite atlas, transparent PNG
+Input images: Image 1 is the approved 苔陶蟲 design/action reference and controls creature identity. Image 2 is an existing game actor sprite sheet and is a pixel-art fidelity reference only; do not copy its creature.
+Primary request: Produce one strict 6-column by 5-row sprite atlas for a side-view action RPG, with an exact 576x480 canvas and 96x96 cells. The creature faces right in every cell so the game can flip it for left-facing attacks.
+Scene/backdrop: fully transparent, no ground or scenery
+Subject: the same squat slow crawler from Image 1, with a broken pale ceramic shell, visible engraved bell motif, moss in the cracks, a few fine root feelers, compact body and tiny legs; keep a low silhouette that remains clear at 96x96
+Style/medium: true low-resolution 16-bit pixel art like Image 2: sharply controlled square pixel clusters, limited flat palette, clean hard pixel edges, no anti-aliasing, no painterly texture, no photoreal detail, no gradients; Image 2 is style only, not a design reference
+Composition/framing: exact row-major 6x5 grid; every cell is exactly 96x96 with small transparent interior padding, same bottom pivot and scale, no overlap between cells; no gridlines, gutters, captions, numbering or sheet labels
+Color palette: chalky ivory and weathered pale gray ceramic, deep jade and muted olive moss, restrained oxidized-copper accents; use no more than 20 flat colors
+Rows left to right: row 1 idle has two distinct subtle breathing poses in columns 1-2, columns 3-6 are exact copies of pose 2; row 2 walk has six clearly different slow crawling gait phases in columns 1-6; row 3 attack has four clearly distinct sequential single-bite poses (windup crouch, lean forward, brief bite contact, settle back), columns 5-6 are exact copies of pose 4; row 4 hurt has two distinct recoil/tuck poses, columns 3-6 are exact copies of pose 2; row 5 dead has four unmistakable collapse stages (lower, buckle, tip forward, settled shell), columns 5-6 are exact copies of pose 4
+Constraints: preserve the same creature identity in all cells; each state must read at game scale; attack is one short bite with no projectile; pad unused cells by repeating the final valid frame; genuine transparent alpha
+Avoid: cast shadow, background haze, translucent background pixels, glow, blur, soft outlines, photo textures, 3D, smooth vector shapes, text, watermark, UI, extra characters, inconsistent cell size, any content crossing cell boundaries

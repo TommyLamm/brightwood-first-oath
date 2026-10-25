@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: formal transparent near-foreground mid-parallax canopy/arch layer for a 2D side-view fantasy RPG, Ruins Echo Gallery.
+Primary request: create an upper-edge framing layer for the Echo Gallery, a long ancient stone hall open to pale humid light.
+Scene/backdrop: a few partial pale limestone arch ribs and short dangling teal root tendrils enter from the top edge, with small broken carved stone fragments caught in the roots; frame only the upper left and right corners around a large open center.
+Subject: near-foreground overhead arch and root details only. The silhouette is irregular and broken, with clear gaps and no roof spanning the whole image.
+Style/medium: crisp hand-painted pixel-art-inspired 2D game environment, chunky clean pixel clusters, strong readable silhouette, restrained texture and palette; polished 16-bit RPG scenery, not photorealistic, not 3D, no painterly blur.
+Composition/framing: extra-wide 8:3 landscape intended to normalize to 1920x540. All visible artwork must stay within the top 180 pixels of the final canvas; everything below y=180 must be exactly transparent. Anchor fragments to the upper edge, hang details only a short distance, and leave a very wide central opening.
+Lighting/mood: soft cool daylight filtering through weathered stone, quiet and resonant.
+Color palette: pale wet limestone, blue-grey shadow, subdued sea-glass teal roots, tiny oxidized-copper accents.
+Constraints: request genuine transparent background and preserve alpha. No background plate, checkerboard, floor, platform, walkable terrain, continuous ceiling, lower wall, columns descending below the top band, characters, NPCs, monsters, text, UI, signs, symbols, watermark, glow, or detached particles.

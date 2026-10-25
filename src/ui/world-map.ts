@@ -5,9 +5,12 @@ import {
   FROST_ISLES_WORLD_LANDMARK,
   GOLD_SAND_LANDMARKS,
   GOLD_SAND_SEA_WORLD_LANDMARK,
+  ANCIENT_RUINS_LANDMARKS,
+  ANCIENT_RUINS_WORLD_LANDMARK,
   PLANNED_REGIONS,
   atlasScopeForMapId,
   atlasViewModel,
+  ancientRuinsOverview,
   frostIslesOverview,
   goldSandSeaOverview,
   mapLevelLabel,
@@ -43,9 +46,14 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   const atlas = atlasViewModel(view.catalog, data, selectedId);
   const frostOverview = frostIslesOverview(view.catalog, data);
   const sandOverview = goldSandSeaOverview(view.catalog, data);
-  const landmarks = atlas.scope === 'frost' ? FROST_LANDMARKS : atlas.scope === 'sand' ? GOLD_SAND_LANDMARKS : WORLD_LANDMARKS;
+  const ruinsOverview = ancientRuinsOverview(view.catalog, data);
+  const landmarks = atlas.scope === 'frost' ? FROST_LANDMARKS
+    : atlas.scope === 'sand' ? GOLD_SAND_LANDMARKS
+      : atlas.scope === 'ruins' ? ANCIENT_RUINS_LANDMARKS : WORLD_LANDMARKS;
   const candidatePlanned = atlas.scope === 'world' ? PLANNED_REGIONS.find(({ id }) => id === selectedId) : undefined;
-  const planned = candidatePlanned?.id === 'planned-golden-sands' && sandOverview.totalCount > 0 ? undefined : candidatePlanned;
+  const planned = candidatePlanned?.id === 'planned-golden-sands' && sandOverview.totalCount > 0
+    || candidatePlanned?.id === 'planned-ancient-ruins' && ruinsOverview.totalCount > 0
+    ? undefined : candidatePlanned;
   const selected = planned ? null : atlas.selectedMap;
   if (!selected && !planned) return root;
   const selectedKey = planned?.id ?? selected?.id ?? '';
@@ -53,9 +61,17 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
 
   const toolbar = element(document, 'div', 'ms-atlas-toolbar');
   const progress = element(document, 'div', 'ms-atlas-progress');
-  const localOverview = atlas.scope === 'frost' ? frostOverview : atlas.scope === 'sand' ? sandOverview : null;
+  const localOverview = atlas.scope === 'frost' ? frostOverview
+    : atlas.scope === 'sand' ? sandOverview
+      : atlas.scope === 'ruins' ? ruinsOverview : null;
+  const regionName = atlas.scope === 'frost' ? '霜雪群島'
+    : atlas.scope === 'sand' ? '黃金沙海'
+      : atlas.scope === 'ruins' ? '遠古遺跡' : '木葉世界';
+  const scopeLabel = atlas.scope === 'frost' ? 'FROST ISLES · 霜雪群島'
+    : atlas.scope === 'sand' ? 'GOLDEN SANDS · 黃金沙海'
+      : atlas.scope === 'ruins' ? 'ANCIENT RUINS · 遠古遺跡' : 'BRIGHTWOOD · FIRST OATH';
   progress.append(
-    element(document, 'span', 'ms-atlas-eyebrow', atlas.scope === 'frost' ? 'FROST ISLES · 霜雪群島' : atlas.scope === 'sand' ? 'GOLDEN SANDS · 黃金沙海' : 'BRIGHTWOOD · FIRST OATH'),
+    element(document, 'span', 'ms-atlas-eyebrow', scopeLabel),
     element(document, 'strong', '', localOverview
       ? '已探索 ' + localOverview.exploredCount + ' / ' + localOverview.totalCount + ' 個地區'
       : '已探索 ' + atlas.allExploredCount + ' / ' + atlas.allMapCount + ' 個可玩地區'),
@@ -73,17 +89,21 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   const layout = element(document, 'div', 'ms-atlas-layout');
   const regionClass = atlas.scope === 'world' ? '' : ' ms-atlas-chart--' + atlas.scope;
   const chart = element(document, 'section', 'ms-atlas-chart' + regionClass);
-  chart.setAttribute('aria-label', atlas.scope === 'frost' ? '霜雪群島區域圖，選取地標查看區域情報' : atlas.scope === 'sand' ? '黃金沙海區域圖，選取地標查看區域情報' : '木葉世界群島總覽，點選地標查看區域');
+  chart.setAttribute('aria-label', atlas.scope === 'world' ? '木葉世界群島總覽，點選地標查看區域'
+    : regionName + '區域圖，選取地標查看區域情報');
   const artwork = element(document, 'img', 'ms-atlas-art', '');
   const chartUrl = atlas.scope === 'frost' ? 'assets/interface/region-frost-isles-map-v1.png'
     : atlas.scope === 'sand' ? 'assets/interface/region-golden-sands-map-v1.png'
-      : 'assets/interface/world-map-background-v2.png';
+      : atlas.scope === 'ruins' ? 'assets/interface/region-ancient-ruins-map-v1.png'
+        : 'assets/interface/world-map-background-v2.png';
   artwork.src = new URL(chartUrl, document.baseURI).href;
   artwork.alt = atlas.scope === 'frost'
     ? '霜雪群島手繪區域圖，雪痕海岸、霜松隘道與冰潮洞窟地形。'
     : atlas.scope === 'sand'
       ? '黃金沙海手繪區域圖，琥珀砂岸、沙丘隘道與綠洲盆地地形。'
-      : '木葉世界群島總覽；霜雪群島與黃金沙海可另行查看區域圖，遠古遺跡尚待開發。';
+      : atlas.scope === 'ruins'
+        ? '遠古遺跡手繪區域圖，標出潮痕營站與盤根石道。'
+        : '木葉世界群島總覽；霜雪群島、黃金沙海與遠古遺跡可另行查看區域圖。';
   artwork.draggable = false;
   artwork.addEventListener('error', () => {
     artwork.hidden = true;
@@ -92,7 +112,7 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   const banner = element(document, 'div', 'ms-atlas-banner' + (atlas.scope === 'world' ? '' : ' ms-atlas-banner--' + atlas.scope));
   banner.append(
     element(document, 'span', '', atlas.scope === 'world' ? 'THE FIRST OATH' : 'REGIONAL CHART'),
-    element(document, 'h3', '', atlas.scope === 'frost' ? '霜雪群島' : atlas.scope === 'sand' ? '黃金沙海' : '木葉世界'),
+    element(document, 'h3', '', regionName),
   );
   chart.append(artwork, banner);
   if (atlas.scope === 'world') {
@@ -130,8 +150,10 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   if (atlas.scope === 'world') {
     if (frostOverview.totalCount > 0) chart.append(buildRegionEntry(document, 'frost-shore', '霜雪群島', FROST_ISLES_WORLD_LANDMARK, 'frost', frostOverview));
     if (sandOverview.totalCount > 0) chart.append(buildRegionEntry(document, 'sand-glass-shore', '黃金沙海', GOLD_SAND_SEA_WORLD_LANDMARK, 'sand', sandOverview));
+    if (ruinsOverview.totalCount > 0) chart.append(buildRegionEntry(document, 'ruins-tide-camp', '遠古遺跡', ANCIENT_RUINS_WORLD_LANDMARK, 'ruins', ruinsOverview));
     for (const region of PLANNED_REGIONS) {
       if (region.id === 'planned-golden-sands' && sandOverview.totalCount > 0) continue;
+      if (region.id === 'planned-ancient-ruins' && ruinsOverview.totalCount > 0) continue;
       const button = mapButton(document, region.id, '', 'ms-atlas-landmark ms-atlas-landmark--planned');
       button.style.left = region.x + '%';
       button.style.top = region.y + '%';
@@ -143,7 +165,7 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     }
   }
 
-  const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview);
+  const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview, ruinsOverview);
   layout.append(chart, details);
   root.append(layout);
 
@@ -154,7 +176,10 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     element(document, 'span', '', '◇ 未探索'),
     element(document, 'span', '', atlas.scope === 'world' ? '虛線為島嶼間通道' : '虛線為區域通道'),
   );
-  if (atlas.scope === 'world') legend.append(element(document, 'span', '', '▧ 待開發'));
+  if (atlas.scope === 'world' && PLANNED_REGIONS.some(({ id }) => id === 'planned-golden-sands' && sandOverview.totalCount === 0
+    || id === 'planned-ancient-ruins' && ruinsOverview.totalCount === 0)) {
+    legend.append(element(document, 'span', '', '▧ 待開發'));
+  }
   root.append(legend);
   return root;
 }
@@ -178,6 +203,7 @@ function buildRoutes(
     if (scope !== 'world') return mapScope === scope ? landmarks[mapId] : undefined;
     if (mapScope === 'frost') return FROST_ISLES_WORLD_LANDMARK;
     if (mapScope === 'sand') return GOLD_SAND_SEA_WORLD_LANDMARK;
+    if (mapScope === 'ruins') return ANCIENT_RUINS_WORLD_LANDMARK;
     return landmarks[mapId];
   };
   for (const map of routeMaps) {
@@ -190,7 +216,7 @@ function buildRoutes(
       const targetScope = atlasScopeForMapId(targetMap.id);
       if (scope === 'world' && fromScope === targetScope && fromScope !== 'world') continue;
       if (scope === 'world' && targetScope !== 'world'
-        && targetMap.id !== 'frost-shore' && targetMap.id !== 'sand-glass-shore') continue;
+        && targetMap.id !== 'frost-shore' && targetMap.id !== 'sand-glass-shore' && targetMap.id !== 'ruins-tide-camp') continue;
       const to = coordinate(targetMap.id);
       if (!to) continue;
       const pair = [map.id, targetMap.id].sort().join(':');
@@ -212,7 +238,7 @@ function buildRegionEntry(
   mapId: string,
   name: string,
   worldLandmark: { x: number; y: number },
-  scope: 'frost' | 'sand',
+  scope: 'frost' | 'sand' | 'ruins',
   overview: RegionOverview,
 ): HTMLButtonElement {
   return buildRegionEntryButton(document, mapId, name, worldLandmark, scope, overview);
@@ -223,7 +249,7 @@ function buildRegionEntryButton(
   mapId: string,
   name: string,
   worldLandmark: { x: number; y: number },
-  scope: 'frost' | 'sand',
+  scope: 'frost' | 'sand' | 'ruins',
   overview: RegionOverview,
 ): HTMLButtonElement {
   const requirement = overview.entryRequirement;
@@ -255,6 +281,7 @@ function buildDetails(
   landmarks: Record<string, MapLandmark>,
   frostOverview: ReturnType<typeof frostIslesOverview>,
   sandOverview: ReturnType<typeof goldSandSeaOverview>,
+  ruinsOverview: ReturnType<typeof ancientRuinsOverview>,
 ): HTMLElement {
   const details = element(document, 'aside', 'ms-atlas-details' + (scope === 'world' ? '' : ' ms-atlas-details--' + scope));
   details.setAttribute('aria-label', '區域詳情');
@@ -272,7 +299,7 @@ function buildDetails(
     const visited = new Set([...data.visitedMaps, data.location.mapId]);
     const status = selected.id === data.location.mapId ? '目前位置' : visited.has(selected.id) ? '已探索' : '未探索';
     details.append(
-      element(document, 'span', 'ms-atlas-eyebrow', (scope === 'frost' ? 'FROST ISLES · ' : scope === 'sand' ? 'GOLDEN SANDS · ' : 'REGION · ') + status),
+      element(document, 'span', 'ms-atlas-eyebrow', (scope === 'frost' ? 'FROST ISLES · ' : scope === 'sand' ? 'GOLDEN SANDS · ' : scope === 'ruins' ? 'ANCIENT RUINS · ' : 'REGION · ') + status),
       element(document, 'h3', 'ms-atlas-region-name', selected.name),
       element(document, 'p', 'ms-atlas-level', mapLevelLabel(selected, view.catalog)),
       element(document, 'p', 'ms-atlas-description', landmarks[selected.id]?.description ?? ''),
@@ -281,11 +308,11 @@ function buildDetails(
     const monsterNames = [...new Set(selected.monsters.map(({ monsterId }) => view.catalog.rules.monsters[monsterId]?.name ?? monsterId))];
     if (npcNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '居民：' + npcNames.join('、')));
     if (monsterNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '出沒：' + monsterNames.join('、')));
-    const regionOverview = scope === 'frost' ? frostOverview : scope === 'sand' ? sandOverview : null;
-    const regionEntryMapId = scope === 'frost' ? 'frost-shore' : 'sand-glass-shore';
+    const regionOverview = scope === 'frost' ? frostOverview : scope === 'sand' ? sandOverview : scope === 'ruins' ? ruinsOverview : null;
+    const regionEntryMapId = scope === 'frost' ? 'frost-shore' : scope === 'sand' ? 'sand-glass-shore' : 'ruins-tide-camp';
     if (regionOverview && selected.id === regionEntryMapId && regionOverview.entryRequirement) {
       details.append(
-        element(document, 'h4', 'ms-atlas-path-heading', '群島入口'),
+        element(document, 'h4', 'ms-atlas-path-heading', scope === 'ruins' ? '遺跡航路入口' : '群島入口'),
         element(document, 'p', regionOverview.entryRequirement.open ? 'ms-atlas-condition is-open' : 'ms-atlas-condition', regionOverview.entryRequirement.text),
       );
     }

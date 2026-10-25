@@ -564,6 +564,46 @@ function processCommand(
       return pickupNearest(gameplay, context);
     case 'interact':
       return interactNearest(gameplay, context);
+    case 'inspect': {
+      if (gameplay.saveData.player.hp <= 0 || gameplay.movement.mode === 'dead' || gameplay.deathAtMs !== null) {
+        return withToast(gameplay, '倒下時無法調律石碑。');
+      }
+      if (gameplay.pendingTransition) return withToast(gameplay, '切換地圖時無法調律石碑。');
+      if (gameplay.saveData.location.mapId !== 'ruins-echo-gallery') {
+        return withToast(gameplay, '只有在回聲長廊才能調律這些石碑。');
+      }
+      const targetId = command.payload.targetId;
+      if (targetId !== 'ruins-stele-west' && targetId !== 'ruins-stele-east') {
+        return withToast(gameplay, '找不到可調律的石碑。');
+      }
+      const map = catalog.world.maps['ruins-echo-gallery'];
+      const placement = map?.npcs.find(({ npcId }) => npcId === targetId);
+      if (!placement) return withToast(gameplay, '這塊石碑不在回聲長廊。');
+      if (Math.hypot(
+        placement.x - gameplay.movement.position.x,
+        placement.y - gameplay.movement.position.y,
+      ) > INTERACTION_RANGE_PX) {
+        return withToast(gameplay, '請靠近石碑再調律。');
+      }
+      if (gameplay.interaction?.npcId !== targetId) {
+        return withToast(gameplay, '請先閱讀並開啟這塊石碑的碑文。');
+      }
+      const quest = catalog.world.quests.q17;
+      const questState = gameplay.saveData.quests.q17;
+      if (!quest || questState?.status !== 'active'
+        || !quest.objectives.some((objective) => objective.type === 'inspect' && objective.targetId === targetId)) {
+        return withToast(gameplay, '先在行舟身邊接取「兩段回聲」，再調律石碑。');
+      }
+      if ((questState.counters[targetId] ?? 0) >= 1) {
+        return withToast(gameplay, '這塊石碑已經調律。');
+      }
+      const saveData = {
+        ...gameplay.saveData,
+        quests: recordQuestEvent(gameplay.saveData.quests, { type: 'inspected', targetId }, catalog.world),
+      };
+      const tunedState = { ...gameplay, saveData, toast: '石碑的回聲已應聲。' };
+      return { gameplay: { ...tunedState, interaction: refreshInteraction(tunedState, catalog) } };
+    }
     case 'acceptQuest': {
       const quest = catalog.world.quests[command.payload.questId];
       if (!quest || !nearNpc(gameplay, catalog, quest.giverNpcId, INTERACTION_RANGE_PX)) {
@@ -726,15 +766,21 @@ function npcDialogue(saveData: SaveData, npcId: string, catalog: ContentCatalog)
   const definition = catalog.world.npcs[npcId];
   if (!definition) return [];
   const dialogue = (catalog.world.dialogues[definition.dialogueId] ?? []).map(({ text }) => text);
-  const relevantQuest = Object.values(catalog.world.quests).find((quest) => {
+  const history = npcId === 'ruins-stele-west'
+    ? '守護的是歸途，'
+    : npcId === 'ruins-stele-east' ? '不是封鎖所有來路。' : null;
+  if (history && (saveData.quests.q17?.counters[npcId] ?? 0) >= 1) dialogue.push(history);
+  if (npcId === 'ruins-pathfinder' && saveData.quests.q17?.status === 'claimed') {
+    dialogue.push('兩段回聲都記下來了。它們守護的是歸途，不是封鎖所有來路。長廊深處還傳來更悠遠的鐘響，像是下一段航程的方向。');
+  }
+  for (const quest of Object.values(catalog.world.quests)) {
     const view = getQuestView(saveData, quest.id, catalog);
-    return (quest.giverNpcId === definition.id && view.status === 'available')
+    const relevant = (quest.giverNpcId === definition.id && view.status === 'available')
       || (quest.turnInNpcId === definition.id && (view.status === 'active' || view.status === 'ready'));
-  });
-  if (relevantQuest) {
-    const view = getQuestView(saveData, relevantQuest.id, catalog);
-    dialogue.push(view.status === 'ready' ? relevantQuest.completeText : view.status === 'available'
-      ? relevantQuest.acceptText : relevantQuest.progressText);
+    if (relevant) {
+      dialogue.push(view.status === 'ready' ? quest.completeText : view.status === 'available'
+        ? quest.acceptText : quest.progressText);
+    }
   }
   return dialogue;
 }

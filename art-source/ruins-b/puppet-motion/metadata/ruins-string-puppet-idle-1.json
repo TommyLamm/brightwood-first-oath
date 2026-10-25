@@ -1,0 +1,107 @@
+{
+  "frameId": "ruins-string-puppet:idle-1",
+  "accepted": true,
+  "status": "accepted",
+  "acceptanceReason": "Right-facing breathing alternate; full puppet and copper strings are intact, feet remain planted, and the head/upper torso, loose arm and hanging strings shift subtly from idle-0.",
+  "raw": "raw/ruins-string-puppet-idle-1-v1.png",
+  "rawSha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "alphaThreshold": 8,
+  "sourceAlphaBBoxGt8": [
+    380,
+    107,
+    1137,
+    1130
+  ],
+  "edgeAlphaGt8Pixels": 0,
+  "cropIncludingMargin": [
+    344,
+    71,
+    1173,
+    1166
+  ],
+  "marginRatio": 0.035,
+  "scale": 0.069406,
+  "resizedCrop": [
+    58,
+    76
+  ],
+  "output": "normalized/ruins-string-puppet-idle-1.png",
+  "outputSize": [
+    96,
+    96
+  ],
+  "outputAlphaBBoxAny": [
+    19,
+    17,
+    77,
+    93
+  ],
+  "outputAlphaBBoxGt8": [
+    21,
+    19,
+    75,
+    91
+  ],
+  "outputSha256": "e322736a714bc937f589a2b9aaecb12ee137b7ab7e2db035c04933dd490ef339",
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "facing": "right",
+  "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale to max 90x76, center at x=48, lowest visible pixel y=92",
+  "reviewPath": "review/ruins-string-puppet-idle-1-v1-q70.jpg",
+  "reviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  "submittedPromptPath": "prompts/ruins-string-puppet-idle-1.txt",
+  "submittedPromptSha256": "06360aefa0d9a0c2bcb6dbc32558fe6115c51592b13751dc7b6348da5b103929",
+  "tool": "built-in image_gen",
+  "callId": "exec-e6e966b4-28ad-420f-a2dc-d6280939c757",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17182-62bd-7681-b820-a9b2e2ba7b96\\exec-e6e966b4-28ad-420f-a2dc-d6280939c757.png",
+  "workspacePath": "art-source/ruins-b/puppet-motion/raw/ruins-string-puppet-idle-1-v1.png",
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-string-puppet-attack-2-v1.png"
+  ],
+  "revisedPrompt": "Use case: stylized-concept\nAsset type: one transparent single-pose 2D RPG character animation sprite, frame ID ruins-string-puppet:idle-1\nInput images: Image 1 is the approved Ruins String Puppet idle-0 identity reference; Image 2 is the approved attack-2 reference for the same puppet's materials, asymmetric long arm, and snapped copper strings. Both are references, not edit targets.\nPrimary request: Draw the exact same slender right-facing wooden marionette in a second neutral idle breathing phase. Keep its narrow carved head, compact torso, jointed wooden limbs, unusually long relaxed forward/right arm, short rear arm, snapped copper strings, and restrained moss flecks. Make this pose visibly different from idle-0 through a small inhale: shoulders and upper torso lift slightly, head rises a little, the free arm loosens, and a few hanging strings shift gently. Both feet remain planted; this is calm breathing, not a step or attack.\nStyle/medium: crisp 2D pixel-art RPG sprite, clean chunky pixel clusters, limited weathered wood brown, charcoal, aged copper, and moss-olive palette, strong readable outline, sharp edges; match the references, no painterly haze or 3D rendering.\nComposition/framing: one full-body side-view creature, facing right, centered on a square transparent canvas with a bottom-centered pivot; preserve the reference scale and proportions; leave generous clear padding so the feet, long arm, and every copper string remain whole.\nConstraints: genuine transparent alpha; one complete puppet and one static breathing pose; no cast shadow, no scene, no attack effect; keep identity and materials consistent.\nAvoid: left-facing orientation, duplicate creature, pose sheet, grid, background, ground plane, text, watermark, UI, glow, blur, gradient, cropped limbs/feet/strings, detached particles, weapons, blood, action lines.",
+  "revisedPromptReturnedByTool": true,
+  "sha256": "695ca0a49e1af0a3689b36f17d1e67bcd0547ce5874f232cf6dc47ad8b7c276d",
+  "alphaBBoxGt8": [
+    380,
+    107,
+    1137,
+    1130
+  ],
+  "sessionRecovery": {
+    "threadId": "01a17182-62bd-7681-b820-a9b2e2ba7b96",
+    "sessionLogPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T13-22-12-01a17182-62bd-7681-b820-a9b2e2ba7b96.jsonl",
+    "recordLine": 98,
+    "resultKeysObserved": [
+      "image_url",
+      "output_hint"
+    ],
+    "callIdDerivedFromSavedPathBasename": true,
+    "agentPath": "/root/puppet_motion",
+    "savedPathRecoveredFromDirectOwnerImageGenResult": true,
+    "revisedPromptRecoveredFromDirectOwnerImageGenResult": true,
+    "workspaceRawShaMatchesRecordedSha": true,
+    "additionalUncopiedPuppetMotionImageGenResultFound": false
+  },
+  "rejectionReason": null
+}

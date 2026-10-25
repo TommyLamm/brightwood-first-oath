@@ -2,6 +2,15 @@ import type { AssetAnimation } from '../contracts/asset-manifest.js';
 
 export function animationConformsToUse(imageKey: string, state: string, animation: AssetAnimation): boolean {
   const animationState = state.split(':').at(-1) ?? state;
+  const staticSteleIdle = imageKey === 'actor:ruins-stele'
+    && (state === 'npc:ruins-stele-west:idle' || state === 'npc:ruins-stele-east:idle');
+  if (staticSteleIdle) {
+    return animation.frames.length === 2
+      && animation.frames.every((frame) => frame === 0)
+      && animation.frameMs.length === 2
+      && animation.frameMs.every((frameMs) => frameMs === 350)
+      && animation.loop;
+  }
   const frameCounts: Record<string, number> = imageKey.startsWith('actor:hero-')
     ? { idle: 4, walk: 6, jump: 2, climb: 4, attack: 6, hurt: 2, dead: 4, buff: 4 }
     : imageKey.startsWith('actor:') && state.startsWith('npc:')
@@ -23,6 +32,16 @@ export function animationConformsToUse(imageKey: string, state: string, animatio
         : { [animationState]: 60 };
   const frameMs = expectedFrameMs[animationState];
   if (frameMs !== undefined && animation.frameMs.some((value) => value !== frameMs)) return false;
+  const expectedFrameSequenceMs = imageKey === 'actor:ruins-moss-carapace' && animationState === 'attack'
+    ? [275, 275, 80, 770]
+    : imageKey === 'actor:ruins-string-puppet' && animationState === 'attack'
+      ? [500, 500, 100, 900]
+      : imageKey === 'actor:ruins-bell-prowler' && animationState === 'attack'
+        ? [550, 550, 100, 900]
+        : undefined;
+  if (expectedFrameSequenceMs !== undefined
+    && (animation.frameMs.length !== expectedFrameSequenceMs.length
+      || animation.frameMs.some((value, index) => value !== expectedFrameSequenceMs[index]))) return false;
   const expectedLoop = imageKey.startsWith('actor:hero-')
     ? animationState === 'idle' || animationState === 'walk' || animationState === 'climb'
       ? true

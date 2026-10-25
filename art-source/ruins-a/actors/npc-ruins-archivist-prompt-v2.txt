@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: transparent two-frame NPC idle sprite strip for a 2D RPG
+Input images: Image 1 is the current Zhiheng archivist sprite and is the identity reference: preserve the same short dark hair, gentle face, ivory and teal researcher robe, notebook, inscription stylus, small tool pouch, proportions and side-facing direction. Images 2 and 3 are existing project NPCs used only for pixel style and scale.
+Primary request: Recreate the same archivist in exactly two idle frames with a closed, relaxed mouth in both frames and the same small calm smile. Frame 1 is settled; frame 2 shows only a tiny breath: shoulders and upper robe rise a few pixels, with no hand gesture. This is a quiet resting idle, not a talking animation.
+Style/medium: match the existing cute big-head side-view RPG pixel sprite style of Images 2 and 3, with crisp restrained clusters and readable silhouette.
+Composition/framing: exactly two equal square frames in one horizontal row; same complete full-body figure, same scale and bottom baseline, facing right. Keep each pose fully isolated with transparent space around it. No frame lines.
+Constraints: transparent alpha; preserve the first image's design, no speech or talking; notebook remains a notebook and stylus remains a small writing tool, not a weapon; only the shoulder/robe breath changes between frames.
+Avoid: open mouth, changing expression, arm raise, pointing, extra tools, staff or weapon, background, floor shadow, text, marks, UI, watermark, checkerboard, blur, 3D rendering.

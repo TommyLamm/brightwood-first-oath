@@ -1,0 +1,15 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:forest:far for an original 2D side-scrolling adventure.
+Primary request: create one entirely new, calm panoramic view of distant forested hills at morning.
+Input images:
+- Image 1, approved forest sky: use only for color temperature and quiet morning light.
+- Image 2, forest style board: use only for controlled pixel clusters and muted forest colors; do not copy its foreground trees or composition.
+- Image 3, accepted town far v2: use only for its crisp natural silhouette edges, pixel scale, and low-scene placement. Do not copy its cottages or village layout.
+Scene/backdrop: far woodland seen beyond the play area.
+Subject: two or three low overlapping blue-green forest hills and a delicate, sparse distant treeline. Only far scenery.
+Style/medium: clean classic pixel-art illustration with deliberate readable clusters, restrained soft shading, and low contrast behind gameplay. No painterly speckles, grain, or noise.
+Composition/framing: target 1440x540, 8:3 panoramic. Keep all hill/treeline silhouettes in the lower 28–34% of the frame, with broad genuinely transparent space above and a generous transparent band below. Natural irregular hill contours, varied tree silhouettes, no flat base line. Keep both edges calm and naturally continuable for horizontal scrolling. Single full composition, not a collage; do not mirror or tile any section. If native dimensions differ, keep proportions and crop only when the art remains intact; never stretch.
+Lighting/mood: soft morning light, peaceful and airy.
+Color palette: muted sage, blue-teal, soft gray-green with a few restrained warm cream highlights.
+Transparency: true alpha outside the distant landscape only; clean pixel edges in neighboring natural colors.
+Constraints: no foreground trees, buildings, cottages, roofs, road, river, ground plane, platforms, ledges, collision surfaces, continuous opaque band, fog sheet, glow, outline, halo, chromatic fringe, stray bright pixels, checkerboard, or opaque background. No characters, NPCs, animals, props, text, lettering, logo, border, or watermark.

@@ -156,6 +156,31 @@ const PRESETS: Record<string, Preset> = {
       { kind: 'pebble', every: [12, 24], gain: 0.04 },
     ],
   },
+  'ruins-camp': {
+    wet: 0.38,
+    beds: [
+      { noise: 'brown', filter: 'lowpass', frequency: 300, gain: 0.12, sweep: { rate: 0.055, depth: 0.28 }, swell: { rate: 0.07, depth: 0.35 } },
+      { noise: 'pink', filter: 'bandpass', frequency: 1700, q: 0.8, gain: 0.022, gust: { min: 0.2, max: 1.2, every: [4, 10] } },
+    ],
+    events: [
+      { kind: 'droplet', every: [1.2, 3.6], gain: 0.07 },
+      { kind: 'bell', every: [18, 34], gain: 0.08 },
+      { kind: 'creak', every: [12, 26], gain: 0.045 },
+    ],
+  },
+  'ruins-root': {
+    wet: 0.48,
+    beds: [
+      { noise: 'brown', filter: 'lowpass', frequency: 210, gain: 0.17, sweep: { rate: 0.04, depth: 0.32 } },
+      { noise: 'pink', filter: 'bandpass', frequency: 610, q: 1.4, gain: 0.035, swell: { rate: 0.08, depth: 0.48 } },
+      { noise: 'white', filter: 'highpass', frequency: 5200, gain: 0.008, gust: { min: 0.25, max: 1.3, every: [4, 9] } },
+    ],
+    events: [
+      { kind: 'drip', every: [0.9, 3.2], gain: 0.12 },
+      { kind: 'pebble', every: [8, 17], gain: 0.05 },
+      { kind: 'bell', every: [22, 42], gain: 0.055 },
+    ],
+  },
 };
 
 const MAX_EVENT_VOICES = 18;

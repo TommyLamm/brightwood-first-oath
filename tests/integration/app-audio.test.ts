@@ -138,4 +138,41 @@ describe('app audio wiring', () => {
     expect(calls.sfx).toContain('boss-phase');
     app.dispose();
   });
+
+  it('plays a stele tune once when q17 records a fresh inspection', async () => {
+    const { app, calls } = await startedApp(1404);
+    app.dispatchUi({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    await flushAudioUnlock();
+
+    const gameplay = app.state.gameplay!;
+    gameplay.saveData.location = { mapId: 'ruins-echo-gallery', spawnId: 'left' };
+    gameplay.saveData.quests.q17 = {
+      status: 'active',
+      counters: { 'ruins-stele-west': 0, 'ruins-stele-east': 0, 'ruins-string-puppet': 0 },
+    };
+    gameplay.monsters = [];
+    gameplay.movement = {
+      ...gameplay.movement,
+      position: { x: 900, y: 420 },
+      velocity: { x: 0, y: 0 },
+      mode: 'grounded',
+      footholdId: 'ruins-echo-gallery:platform-1',
+      ladderId: null,
+    };
+
+    app.dispatch({ type: 'interact', payload: {} });
+    app.update(20);
+    expect(app.state.gameplay?.interaction?.npcId).toBe('ruins-stele-west');
+    app.dispatch({ type: 'inspect', payload: { targetId: 'ruins-stele-west' } });
+    app.update(20);
+    expect(app.state.gameplay?.saveData.quests.q17?.counters['ruins-stele-west']).toBe(1);
+    expect(calls.sfx.filter((key) => key === 'stele-tune')).toHaveLength(1);
+
+    app.dispatch({ type: 'inspect', payload: { targetId: 'ruins-stele-west' } });
+    app.update(20);
+    expect(app.state.gameplay?.saveData.quests.q17?.counters['ruins-stele-west']).toBe(1);
+    expect(calls.sfx.filter((key) => key === 'stele-tune')).toHaveLength(1);
+    app.dispose();
+  });
 });

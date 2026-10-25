@@ -43,4 +43,34 @@ export const dialogues: Record<Id, DialogueLine[]> = {
       text: '我是琉砂，負責巡查琥珀砂岸的流沙通道。沙蠍在日照下會留下琥珀鱗片，先替我找回三枚，再回琥珀砂岸報到，我會替你開啟砂丘關道。',
     },
   ],
+  'ruins-archivist-intro': [
+    {
+      speaker: '芷衡',
+      text: '我是芷衡，負責記錄潮痕營站的舊航標。先別急著替每道裂痕找敵人，看看它原本想保護什麼。',
+    },
+  ],
+  'ruins-medic-intro': [
+    {
+      speaker: '青禾',
+      text: '我是青禾，負責照看潮痕營站的旅人。歇好了再走，鐘聲可以等，你的傷不能。',
+    },
+  ],
+  'ruins-pathfinder-intro': [
+    {
+      speaker: '行舟',
+      text: '我是行舟，替舊航標記下潮汐與回聲。長廊仍能通行，回營站的西門也一直敞開。',
+    },
+  ],
+  'ruins-stele-west-intro': [
+    {
+      speaker: '西回聲碑',
+      text: '碑面刻著旅人的歸途，潮痕沿著石紋向西流去。更深的記錄仍被鹽霧遮住，尚未留下清晰字跡。',
+    },
+  ],
+  'ruins-stele-east-intro': [
+    {
+      speaker: '東回聲碑',
+      text: '碑面刻著旅人的歸途，潮痕沿著石紋向西流去。更深的記錄仍被鹽霧遮住，尚未留下清晰字跡。',
+    },
+  ],
 };

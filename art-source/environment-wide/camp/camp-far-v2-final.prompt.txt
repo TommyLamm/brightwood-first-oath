@@ -1,0 +1,15 @@
+Use case: stylized-concept
+Asset type: final transparent parallax far environment layer env:camp:far for an original 2D side-scrolling adventure.
+Primary request: create one completely new, calm panoramic view of the distant countryside beyond a peaceful first camp at dawn. This is a fresh full composition, not an extension of any previous camp image.
+Input images:
+- Image 1, approved camp sky: use only for pale blue and warm dawn color temperature.
+- Image 2, forest style board: use only for clean pixel-cluster rendering and restrained sage/teal palette.
+- Image 3, accepted town far v2: use only for crisp natural silhouette edges, pixel scale, and low-scene placement. Do not copy any cottage, roof, village, or tree arrangement.
+Scene/backdrop: quiet open countryside beyond the camp.
+Subject: two or three low, softly layered blue-green hills with a very sparse distant treeline. No buildings or structures.
+Style/medium: clean classic pixel-art with deliberate, readable clusters and restrained soft shading; distant low-contrast scenery behind gameplay. No brush speckles, grain, or noise.
+Composition/framing: target 1440x540 (8:3 panoramic). Keep all landscape in only the lower 28–34% of the frame, with most of the image truly transparent and a generous transparent band below the hills. Use naturally uneven low ridges; avoid tall mountain peaks and a continuous flat base. Keep both horizontal edges calm and naturally continuable. One full coherent scene; do not mirror, repeat, tile, or collage. Keep proportions and crop only if needed; never stretch.
+Lighting/mood: quiet early morning, airy and gentle.
+Color palette: muted sage, blue-teal, warm gray-green, and small cream-gold light notes away from the silhouette edge.
+Transparency: genuine alpha; only the distant hill and treeline silhouettes are visible, with transparent pixels everywhere else. Edge pixels use nearby natural hill colors.
+Constraints: no horizon-wide fog sheet, ground plane, platform, ledge, collision surface, foreground tree, cottage, roof, tent, prop, glow, outline, halo, cyan/yellow/red/magenta fringe, bright rim, stray pixel, checkerboard, or opaque background. No character, NPC, person, animal, text, sign, logo, border, or watermark.

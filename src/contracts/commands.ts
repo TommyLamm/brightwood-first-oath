@@ -17,6 +17,7 @@ export type CommandDraft =
   | { type: 'attack'; payload: { skillId: Id } }
   | { type: 'pickup'; payload: Record<string, never> }
   | { type: 'interact'; payload: Record<string, never> }
+  | { type: 'inspect'; payload: { targetId: Id } }
   | { type: 'acceptQuest'; payload: { questId: Id } }
   | { type: 'claimQuest'; payload: { questId: Id } }
   | { type: 'buy'; payload: { itemId: Id; quantity: number } }

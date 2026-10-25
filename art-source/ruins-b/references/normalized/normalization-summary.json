@@ -1,0 +1,238 @@
+[
+  {
+    "frameId": "ruins-string-puppet:idle-0",
+    "accepted": true,
+    "acceptanceReason": "Right-facing slender wooden marionette; complete feet, forward long arm and snapped copper strings; one neutral pose.",
+    "raw": "references/raw/ruins-string-puppet-profile-v1.png",
+    "rawSha256": "7f6bb180bf8f45ccc16053ab5eec7e94c6849e30bc634157d2ca632304744922",
+    "rawSize": [
+      1254,
+      1254
+    ],
+    "alphaThreshold": 8,
+    "sourceAlphaBBox": [
+      400,
+      139,
+      1078,
+      1128
+    ],
+    "cropIncludingMargin": [
+      365,
+      104,
+      1113,
+      1163
+    ],
+    "marginRatio": 0.035,
+    "scale": 0.071766,
+    "resizedCrop": [
+      54,
+      76
+    ],
+    "output": "references/normalized/ruins-string-puppet-idle-0.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      23,
+      19,
+      73,
+      91
+    ],
+    "outputSha256": "0820c1afefa7ea773286e0963dc17ed94312caacfe3e2aa2b7b94ac682c8cab4",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92",
+    "review": "references/review/ruins-string-puppet-profile-v1-q70.jpg",
+    "reviewSpec": {
+      "format": "JPEG",
+      "quality": 70,
+      "maxEdge": 1280,
+      "matteRGB": [
+        223,
+        227,
+        219
+      ]
+    }
+  },
+  {
+    "frameId": "ruins-string-puppet:attack-2",
+    "accepted": true,
+    "acceptanceReason": "Right-facing active slap; extended long wooden arm reads clearly; one complete pose with no dash or effects.",
+    "raw": "references/raw/ruins-string-puppet-attack-2-v1.png",
+    "rawSha256": "0a19d4d7f0a846788933ee1808b051e86e58827cdb494ea2006f9e529b3bc247",
+    "rawSize": [
+      1254,
+      1254
+    ],
+    "alphaThreshold": 8,
+    "sourceAlphaBBox": [
+      97,
+      192,
+      1222,
+      1144
+    ],
+    "cropIncludingMargin": [
+      58,
+      153,
+      1254,
+      1183
+    ],
+    "marginRatio": 0.035,
+    "scale": 0.073786,
+    "resizedCrop": [
+      88,
+      76
+    ],
+    "output": "references/normalized/ruins-string-puppet-attack-2.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      6,
+      19,
+      90,
+      91
+    ],
+    "outputSha256": "37bc6ef2997fa6952dbd8f99fde3fc37de6152a0f01558fca744f7bedfc71240",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92",
+    "review": "references/review/ruins-string-puppet-attack-2-v1-q70.jpg",
+    "reviewSpec": {
+      "format": "JPEG",
+      "quality": 70,
+      "maxEdge": 1280,
+      "matteRGB": [
+        223,
+        227,
+        219
+      ]
+    }
+  },
+  {
+    "frameId": "ruins-bell-prowler:idle-0",
+    "accepted": true,
+    "acceptanceReason": "Low right-facing quadruped; four feet, chipped copper bell and clapper; one neutral pose.",
+    "raw": "references/raw/ruins-bell-prowler-profile-v1.png",
+    "rawSha256": "90d7bb502f0d20d7151a74db66d20b731dc00a73d505b8b0b856a3de5148519d",
+    "rawSize": [
+      1254,
+      1254
+    ],
+    "alphaThreshold": 8,
+    "sourceAlphaBBox": [
+      41,
+      233,
+      1219,
+      1066
+    ],
+    "cropIncludingMargin": [
+      0,
+      192,
+      1254,
+      1107
+    ],
+    "marginRatio": 0.035,
+    "scale": 0.07177,
+    "resizedCrop": [
+      90,
+      66
+    ],
+    "output": "references/normalized/ruins-bell-prowler-idle-0.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      5,
+      29,
+      91,
+      91
+    ],
+    "outputSha256": "7fc35ca7fec315a105a06ee70671932df8cc6337f5c47124e5dbb21611a1a8d0",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92",
+    "review": "references/review/ruins-bell-prowler-profile-v1-q70.jpg",
+    "reviewSpec": {
+      "format": "JPEG",
+      "quality": 70,
+      "maxEdge": 1280,
+      "matteRGB": [
+        223,
+        227,
+        219
+      ]
+    }
+  },
+  {
+    "frameId": "ruins-bell-prowler:attack-2",
+    "accepted": true,
+    "acceptanceReason": "Right-facing in-place sweep with the near-side foreleg extended low beyond the nose; three bracing legs and bell remain intact.",
+    "raw": "references/raw/ruins-bell-prowler-attack-2-v2.png",
+    "rawSha256": "248010595d3b68148711a28fc1ba641d918447839c7804d778867188af178664",
+    "rawSize": [
+      1254,
+      1254
+    ],
+    "alphaThreshold": 8,
+    "sourceAlphaBBox": [
+      25,
+      302,
+      1240,
+      1069
+    ],
+    "cropIncludingMargin": [
+      0,
+      259,
+      1254,
+      1112
+    ],
+    "marginRatio": 0.035,
+    "scale": 0.07177,
+    "resizedCrop": [
+      90,
+      61
+    ],
+    "output": "references/normalized/ruins-bell-prowler-attack-2.png",
+    "outputSize": [
+      96,
+      96
+    ],
+    "outputAlphaBBoxGt8": [
+      4,
+      35,
+      92,
+      90
+    ],
+    "outputSha256": "b0106d1d377b4a46bde387e106ee66dc1b20276e31a5ad13afd9132c3ccb40a9",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "facing": "right",
+    "normalization": "crop alpha>8 bbox with 3.5% margin, Lanczos downscale, horizontal center, lowest nontransparent pixel y=92",
+    "review": "references/review/ruins-bell-prowler-attack-2-v2-q70.jpg",
+    "reviewSpec": {
+      "format": "JPEG",
+      "quality": 70,
+      "maxEdge": 1280,
+      "matteRGB": [
+        223,
+        227,
+        219
+      ]
+    }
+  }
+]

@@ -124,3 +124,26 @@
 .ms-atlas-details--sand .ms-atlas-condition { color: #9b5f32; }
 .ms-atlas-details--sand .ms-atlas-condition.is-open { color: #46704c; }
 .maple-ui .ms-atlas-landmark--island--sand .ms-atlas-label { border-color: #9b6f32; color: #61431d; background: linear-gradient(#fff2c8, #e8c982); }
+
+/* Ancient Ruins uses weathered white stone, moss green and oxidized copper. */
+.ms-atlas-chart--ruins { aspect-ratio: 16 / 9; border-color: #54756c; background: #c8ded4; box-shadow: 0 2px 6px #263d3638, inset 0 0 24px #4d7e6b30; }
+.ms-atlas-banner--ruins { border-color: #526e65; background: linear-gradient(100deg, #c7d8c9, #f4f5e8 45%, #b9d4c5); box-shadow: 0 3px 0 #263d3655, inset 0 0 0 2px #f5f6e9; }
+.ms-atlas-banner--ruins > span { color: #54736a; }
+.ms-atlas-banner--ruins h3 { color: #314f47; }
+.ms-atlas-chart--ruins .ms-atlas-routes path { stroke: #687b67; }
+.ms-atlas-chart--ruins .ms-atlas-routes path.is-open { stroke: #3e7567; }
+.maple-ui .ms-atlas-landmark--ruins .ms-atlas-label { border-color: #55746a; color: #304f47; background: linear-gradient(#f8f8e9, #cbded1); }
+.maple-ui .ms-atlas-landmark--ruins .ms-atlas-pin { border-color: #eef3dc; color: #edf4e5; background: #536c5e; }
+.ms-atlas-landmark--ruins.is-visited .ms-atlas-pin { color: #f1ffe9; background: #47725d; }
+.ms-atlas-landmark--ruins.is-current .ms-atlas-pin { color: #fff7cf; background: #9c7147; }
+.ms-atlas-details--ruins { border-color: #92ad9d; color: #304e44; background: #e5ece0; }
+.ms-atlas-details--ruins .ms-atlas-level { color: #3e6255; background: #d0e0d3; }
+.ms-atlas-details--ruins .ms-atlas-description,
+.ms-atlas-details--ruins .ms-atlas-inhabitants { color: #527365; }
+.ms-atlas-details--ruins .ms-atlas-path-heading { border-color: #c4d5c6; }
+.ms-atlas-details--ruins .ms-atlas-condition { color: #926a4e; }
+.ms-atlas-details--ruins .ms-atlas-condition.is-open { color: #3c745d; }
+.maple-ui .ms-atlas-landmark--island--ruins .ms-atlas-label { border-color: #55746a; color: #304f47; background: linear-gradient(#f8f8e9, #cbded1); }
+@container (max-width: 620px) {
+  .ms-atlas-chart--ruins .ms-atlas-label { max-width: 92px; white-space: normal; }
+}

@@ -1,0 +1,16 @@
+Use case: stylized-concept
+Asset type: Production 1440x540 RGBA parallax far-background layer for the Frost Shore area of the original 2D side-scrolling adventure.
+Input images:
+- Image 1, env-frost-far-source.png: reference for snow-softened granite, glacial-blue sea, pale mountain haze and the existing Frost Shore finish; use as visual guidance only and redraw a new full composition.
+- Image 2, env-frost-sky-v1.png: reference for the clear cold morning light, powder-blue sky context and soft pale-gold illumination near the low center horizon.
+- Image 3, forest-style-reference-v1.png: accepted game-art reference for painterly pixel texture scale, broad readable shapes, simple shading and finish; do not copy its forest or any characters.
+- Image 4, brightwood-world-map-main-v2.png: reference only for the snow-island geography and cool coastal palette; do not copy its trees, castle, buildings, markers, or characters.
+Primary request: Create one original, continuous, very wide 8:3 side-view panorama for a production game background. Redraw the full scene as a fresh coherent composition across the entire width; do not stretch, mirror, tile, duplicate, or paste pieces of any reference image. Use varied, naturally connected island and mountain silhouettes with no repeated segment and no single dominant focal peak.
+Scene/backdrop: A distant chain of small snowbound coastal islands, layered snow-capped mountain silhouettes, soft glacier-blue sea haze and open icy water along the lower edge.
+Style/medium: Warm painterly pixel-textured 2D game background with simple faceted shading, crisp readable silhouettes at runtime size, soft depth haze and the established Brightwood finish. No realism or 3D rendering.
+Composition/framing: Very wide 8:3 landscape, fixed side view, not isometric or top-down. Keep mountain peaks within the lower 35ºw^~)Þw60% of the canvas with an irregular gentle skyline; keep the full upper sky and open gaps genuinely transparent. Place distant land and sea across the width as one calm horizontal environment, with no foreground platform or walkable floor.
+Lighting/mood: Bright, clear cold morning. Soft pale-gold light grazes snow from the low center horizon in the same direction and warmth as Image 2; cool blue shade remains dominant. No visible sun or painted sky.
+Color palette: Powder blue, pale ivory snow, muted teal water, lavender-gray shadows, restrained warm amber highlights.
+Materials/textures: Snow-softened granite, glacial ice and calm cold sea, represented with broad readable pixel-textured forms rather than tiny noisy detail.
+Constraints: Request true alpha transparency for sky and gaps; preserve real alpha, not a black matte, solid background or painted checkerboard. Keep the full environment layer cleanly readable at 1440x540.
+Avoid: Characters, enemies, trees, shrubs, buildings, castle, structures, ladders, portals, land platforms, foreground cliffs, text, UI, labels, logos, watermarks, neon glow, photorealism, 3D render, mirror symmetry, repeated/tiled motifs, or any visible join line.

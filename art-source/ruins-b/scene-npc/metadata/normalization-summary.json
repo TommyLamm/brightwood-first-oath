@@ -1,0 +1,348 @@
+{
+  "environment": [
+    {
+      "frameId": "env:ruins-gallery:sky",
+      "raw": "raw/ruins-gallery-sky-source.png",
+      "rawSha256": "481A94884088DCE663C85230F41E8D9692E1270B93BA1B86BE5ABC0F681FF4E2",
+      "rawSize": [
+        1672,
+        941
+      ],
+      "rawMode": "RGB",
+      "rawAlphaBBoxGt8": [
+        0,
+        0,
+        1672,
+        941
+      ],
+      "output": "public/assets/environment/env-ruins-gallery-sky-v1.png",
+      "outputSha256": "FDF350581377D51C6206DE02DE62596544255E17238014B390CF5032A671CA2B",
+      "outputBytes": 717145,
+      "outputSize": [
+        960,
+        540
+      ],
+      "outputMode": "RGBA",
+      "outputAlphaBBoxGt8": [
+        0,
+        0,
+        960,
+        540
+      ],
+      "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+      "clearedAlphaPixels": 0,
+      "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-sky-v1-q70.jpg",
+      "runtimeReviewSize": [
+        960,
+        540
+      ],
+      "accepted": true,
+      "acceptanceReason": "Accepted: full-width calm open vault, correct opaque sky treatment, and the 960x540 source aspect match the gallery plate."
+    },
+    {
+      "frameId": "env:ruins-gallery:far",
+      "raw": "raw/ruins-gallery-far-source.png",
+      "rawSha256": "62D4CA1F826954ACBA4ACCC922A4B5C80AAF1C138F83EAEBDDAF864F56216D9F",
+      "rawSize": [
+        2048,
+        768
+      ],
+      "rawMode": "RGBA",
+      "rawAlphaBBoxGt8": [
+        26,
+        36,
+        2028,
+        737
+      ],
+      "output": "public/assets/environment/env-ruins-gallery-far-v1.png",
+      "outputSha256": "B607FEED03F0988685F36523EA96F989A7E787B399D156BE3394496CF1226E6D",
+      "outputBytes": 817828,
+      "outputSize": [
+        1440,
+        540
+      ],
+      "outputMode": "RGBA",
+      "outputAlphaBBoxGt8": [
+        18,
+        25,
+        1425,
+        519
+      ],
+      "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+      "clearedAlphaPixels": 0,
+      "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-far-v1-q70.jpg",
+      "runtimeReviewSize": [
+        1280,
+        480
+      ],
+      "accepted": true,
+      "acceptanceReason": "Accepted: distant broken colonnade is separated into transparent clusters with a readable lower silhouette for parallax."
+    },
+    {
+      "frameId": "env:ruins-gallery:mid",
+      "raw": "raw/ruins-gallery-mid-source.png",
+      "rawSha256": "8AD640C2CC999EC2FC4FCBAA3E2AC076681BFFADA89269C599096F2AC4F231F2",
+      "rawSize": [
+        2048,
+        768
+      ],
+      "rawMode": "RGBA",
+      "rawAlphaBBoxGt8": [
+        0,
+        0,
+        2048,
+        444
+      ],
+      "output": "public/assets/environment/env-ruins-gallery-mid-v1.png",
+      "outputSha256": "162E9875F6889C1AA68350DF20EF7DBF2A1F66393BF5963C3D0FCFD6724A8D5D",
+      "outputBytes": 454456,
+      "outputSize": [
+        1920,
+        540
+      ],
+      "outputMode": "RGBA",
+      "outputAlphaBBoxGt8": [
+        0,
+        0,
+        1920,
+        180
+      ],
+      "normalization": "Lanczos resize to required runtime dimensions; RGBA retained; PNG optimized at zlib level 9 without palette conversion.",
+      "clearedAlphaPixels": 19282,
+      "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/env-ruins-gallery-mid-v1-q70.jpg",
+      "runtimeReviewSize": [
+        1280,
+        360
+      ],
+      "accepted": true,
+      "acceptanceReason": "Accepted: upper arch/root framing reads clearly; rows y>=180 are exactly transparent as specified. Source pixels below that cutoff were intentionally cleared by the requested layer contract."
+    }
+  ],
+  "pathfinder": {
+    "frameId": "actor:ruins-pathfinder",
+    "rawSources": [
+      {
+        "path": "raw/ruins-pathfinder-idle-0-source.png",
+        "sha256": "8EFA24486966C82EBD0FD7666E633E6A32C08DFDA2E5EDEB6F528562283EB703"
+      },
+      {
+        "path": "raw/ruins-pathfinder-idle-1-source.png",
+        "sha256": "CF820B030374CC74E0FF747A36976730C1FA2DA6CDD2216215F81D78F376635E"
+      }
+    ],
+    "output": "public/assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+    "outputBytes": 15864,
+    "outputSize": [
+      192,
+      96
+    ],
+    "outputMode": "RGBA",
+    "normalization": {
+      "method": "Combine alpha>8 bounds from both raw poses; add 3.5% margin; same crop and Lanczos scale for both frames; center x and align the lowest visible pixel to y=95 in each 96x96 cell.",
+      "sourceFrames": [
+        "ruins-pathfinder-idle-0-source.png",
+        "ruins-pathfinder-idle-1-source.png"
+      ],
+      "sourceAlphaBBoxesGt8": [
+        [
+          327,
+          49,
+          879,
+          1214
+        ],
+        [
+          324,
+          46,
+          882,
+          1215
+        ]
+      ],
+      "cropIncludingMargin": [
+        283,
+        5,
+        923,
+        1254
+      ],
+      "resizedFrameSize": [
+        45,
+        88
+      ],
+      "scale": 0.070456,
+      "output": "public/assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+      "outputSize": [
+        192,
+        96
+      ],
+      "outputSha256": "3C7919590974573F4E86616718ADB5E317E69B9D7217DB61162D09D936F98F91",
+      "outputAlphaBBoxGt8": [
+        28,
+        9,
+        164,
+        93
+      ],
+      "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/ruins-pathfinder-idle-runtime-q70.jpg",
+      "runtimeReviewSize": [
+        1152,
+        576
+      ]
+    },
+    "accepted": true,
+    "acceptanceReason": "Accepted: two complete closed-mouth idle breathing poses, same identity and aligned crop; runtime metadata assigns 350ms per frame."
+  },
+  "stele": {
+    "frameId": "actor:ruins-stele",
+    "raw": "raw/ruins-stele-source.png",
+    "rawSha256": "EADE70EAB4830DB81A642F66A2B51B12B71A0021D4BCF3AB9A9EB362323EDA1B",
+    "output": "public/assets/actors/npcs/ruins-stele-v1.png",
+    "outputBytes": 44940,
+    "outputSize": [
+      192,
+      256
+    ],
+    "outputMode": "RGBA",
+    "normalization": {
+      "method": "Crop alpha>8 subject bounds with 3.5% margin; Lanczos fit within 164x236; center horizontally and align bottom pivot at y=255.",
+      "sourceAlphaBBoxGt8": [
+        242,
+        54,
+        843,
+        1416
+      ],
+      "cropIncludingMargin": [
+        194,
+        6,
+        891,
+        1448
+      ],
+      "resizedSize": [
+        114,
+        236
+      ],
+      "scale": 0.163662,
+      "output": "public/assets/actors/npcs/ruins-stele-v1.png",
+      "outputSize": [
+        192,
+        256
+      ],
+      "outputSha256": "E2BE80E40972563B62B5FB038DF98A4690CB2B62812770B9D31321D8D1AA9B4B",
+      "outputAlphaBBoxGt8": [
+        46,
+        27,
+        146,
+        250
+      ],
+      "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/ruins-stele-runtime-q70.jpg",
+      "runtimeReviewSize": [
+        768,
+        1024
+      ]
+    },
+    "accepted": true,
+    "acceptanceReason": "Accepted: one complete upright monument with a calm blank center, wave grooves, teal mineral seams, copper inlays, and bottom pivot; both NPC IDs will share this static actor."
+  },
+  "items": [
+    {
+      "frameId": "item:broken-copper-thread",
+      "raw": "raw/broken-copper-thread-source.png",
+      "rawSha256": "6F99B3F19A81C6CCF5BDAAD7A0C33AE405442490A7A577B6308769F56EAB8EDB",
+      "output": "public/assets/interface/item-broken-copper-thread-v1.png",
+      "outputBytes": 12394,
+      "outputSize": [
+        128,
+        128
+      ],
+      "outputMode": "RGBA",
+      "normalization": {
+        "method": "Crop alpha>8 subject bounds with 4.5% margin; Lanczos fit within 104x104 and center on a transparent 128x128 canvas.",
+        "sourceAlphaBBoxGt8": [
+          243,
+          255,
+          1080,
+          1011
+        ],
+        "cropIncludingMargin": [
+          205,
+          217,
+          1118,
+          1049
+        ],
+        "resizedSize": [
+          104,
+          95
+        ],
+        "scale": 0.11391,
+        "output": "public/assets/interface/item-broken-copper-thread-v1.png",
+        "outputSize": [
+          128,
+          128
+        ],
+        "outputSha256": "74225A3287E551C6EEE1B1612076D689200C1DBC7175631959E1E442FB57EE83",
+        "outputAlphaBBoxGt8": [
+          16,
+          20,
+          112,
+          107
+        ],
+        "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/item-broken-copper-thread-runtime-q70.jpg",
+        "runtimeReviewSize": [
+          640,
+          640
+        ]
+      },
+      "accepted": true,
+      "acceptanceReason": "Accepted: one centered, readable transparent material icon with a clean silhouette and enough margin for 32x32 runtime display."
+    },
+    {
+      "frameId": "item:muted-bell-fragment",
+      "raw": "raw/muted-bell-fragment-source.png",
+      "rawSha256": "0C7CAEEB3C490D7FD7593221D1DF52F0178C6C97BAB273A5F5B5D04EBA057E53",
+      "output": "public/assets/interface/item-muted-bell-fragment-v1.png",
+      "outputBytes": 15188,
+      "outputSize": [
+        128,
+        128
+      ],
+      "outputMode": "RGBA",
+      "normalization": {
+        "method": "Crop alpha>8 subject bounds with 4.5% margin; Lanczos fit within 104x104 and center on a transparent 128x128 canvas.",
+        "sourceAlphaBBoxGt8": [
+          202,
+          148,
+          1081,
+          1144
+        ],
+        "cropIncludingMargin": [
+          157,
+          103,
+          1126,
+          1189
+        ],
+        "resizedSize": [
+          93,
+          104
+        ],
+        "scale": 0.095764,
+        "output": "public/assets/interface/item-muted-bell-fragment-v1.png",
+        "outputSize": [
+          128,
+          128
+        ],
+        "outputSha256": "ED87D8430B75F5E1D4DC89957750A74AE4EC2135C059752667A8B1788F60C081",
+        "outputAlphaBBoxGt8": [
+          21,
+          16,
+          106,
+          112
+        ],
+        "runtimeReview": "art-source/ruins-b/scene-npc/review/runtime/item-muted-bell-fragment-runtime-q70.jpg",
+        "runtimeReviewSize": [
+          640,
+          640
+        ]
+      },
+      "accepted": true,
+      "acceptanceReason": "Accepted: one centered, readable transparent material icon with a clean silhouette and enough margin for 32x32 runtime display."
+    }
+  ],
+  "normalization": "Deterministic Pillow Lanczos resize/crop, RGBA output, optimize=True and PNG compression level 9. No generated source image was edited or overwritten."
+}

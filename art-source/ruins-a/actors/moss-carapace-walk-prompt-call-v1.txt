@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: one transparent sprite-action row for a 2D RPG runtime atlas
+Input images: Image 1 is the approved moss-carapace design reference only. Image 2 is an existing project monster used only for pixel-art style and scale; do not copy its snail design.
+Primary request: Create a single horizontal strip of exactly six equally sized frame slots for the walk animation of the same squat ancient crawler in Image 1. Preserve the broken pale ceramic carapace with a subtle bell engraving, moss in the cracks, and a few fine root feelers. Show six genuinely distinct sequential slow-crawl poses: alternate the short legs, body bob, and feelers naturally through one readable locomotion cycle; the final pose should flow back to the first.
+Style/medium: crisp pixel-art RPG sprite matching Image 2's chunky clean pixel clusters and limited palette, with readable solid shapes and no painterly haze.
+Composition/framing: one row, six equal-width square frame slots laid out left to right; the complete creature is fully inside every slot, at identical scale and bottom pivot, facing right. Keep each silhouette comfortably inset from all slot edges with transparent gaps. Each frame must depict one complete separate creature; do not draw borders or grid lines.
+Color palette: weathered ivory ceramic, muted stone-gray, jade and olive moss, restrained warm brown root details.
+Constraints: transparent background and genuine alpha; body remains low and squat; all six frames are distinct real crawl poses; no cast shadow; no movement trail; no extra objects.
+Avoid: duplicate poses, extra creature copies, text, symbols, UI, watermark, background, checkerboard, cell overlap, cropped body parts, detached particles, glow, blur, gradients, 3D rendering.
+The requested row is an isolated horizontal animation strip, not a character concept sheet.

@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
-  "version": "1.0.0-beta.10",
-  "description": "踏上劍士之路：探索木葉世界、霜雪群島與黃金沙海，前往日井盆地，立下你的第一個誓約。",
+  "version": "1.0.0-beta.13",
+  "description": "踏上劍士之路：探索木葉世界、霜雪群島與黃金沙海，並調查遠古遺跡的潮痕營站、盤根石道與回聲長廊。",
   "author": "獨立製作",
   "entry": "index.html",
   "cover": "cover.png",
@@ -11,7 +11,7 @@
   "instructions": "方向鍵移動與爬梯，左 Alt 跳躍，左 Ctrl 攻擊，Z 撿拾，Space 互動，1–3 使用技能，Q/W 使用藥水；I/E/K/C/J/M 開啟資訊面板，Esc 關閉面板或暫停。",
   "devices": ["desktop"],
   "cloudSave": {
-    "readableFormats": [1],
-    "writeFormat": 1
+    "readableFormats": [1, 2, 3],
+    "writeFormat": 3
   }
 }

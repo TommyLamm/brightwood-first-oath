@@ -1,5 +1,9 @@
 # 經典劍士冒險：多代理實作交接索引
 
+最新交付：[13 遺跡 B・回聲探索](13-ruins-echo-exploration.md)的程式、素材與獨立候選已完成，版本 `1.0.0-beta.13`、產物 `artifacts/ruins-b/dist/`。新增長廊、q17／q20、兩碑inspect、兩種敵人與完整單姿勢圖集、格式3相容保全。全新GPT-6 Luna Max最多三名並行，來源／原稿留工作區。92項分批聚焦測試、型別／內容／資產引用／build通過；實際瀏覽器、正式格式3雲端橋接、ZIP與發布未驗證。完整結果見 [B 整合交接](reports/ruins-b-handoff.md)；保留A beta.12成品，本批完成即停。
+
+章節設計（2026-10-25）：[遠古遺跡・失聲的誓鐘](12-next-chapter-ancient-ruins.md)。完整規劃為4張地圖、3種普通怪、1名首領、q15–q19主線與q20支線；A（營站／石道、苔陶蟲、q15／q16）及B候選已完成，C／D尚未完成。A的檢查、素材來源與存檔限制見 [A 整合交接](reports/ruins-a-handoff.md)，B讀1／2／3寫3的新決策以上方B交接為準。
+
 更新：2026-10-18（香港時間）。T00 基礎與 G0 已完成；四包 canonical assets 已齊。T14 app、T07 renderer、T08 UI 已合入；`dist/` 與官方驗證的候選 ZIP 已產出，封面與 package evidence 已交付。T16 目前 PARTIAL：有限真實路線到 q01 2/3、read-load、Esc、icons、跨 origin `/dist/` iframe／sandbox／960/640 有限驗證完成；完整 q01–q08、45–60 分鐘、真實音訊、cloud、fullscreen、FPS 與平台發布未驗證。最新細節見[狀態板](status.md)、[T14 報告](reports/T14.md)、[T16 報告](reports/T16.md)與[封裝證據](../artifacts/T15-package-evidence.json)。
 
 ## 下一位主 Agent 從這裡開始

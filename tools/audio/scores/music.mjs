@@ -208,7 +208,7 @@ function town() {
 /**
  * Builds a combat layer that follows the explore layer's harmony. `style` picks the colour:
  * forest (spiccato + taiko), ridge (heavy toms, anvils, low brass), frost (pizzicato + muted brass),
- * sands (hand drums, phrygian ostinato).
+ * sands (hand drums, phrygian ostinato), ruins (measured pizzicato + distant bells).
  */
 function combatLayer(name, { bpm, tonic, mode, A, B, style }) {
   const s = new Score({ name: `${name}:combat`, bpm, bars: 32, tonic, mode });
@@ -216,9 +216,11 @@ function combatLayer(name, { bpm, tonic, mode, A, B, style }) {
   for (const [start, progression] of sections) {
     const peak = start === 24;
     const bridge = start === 16;
-    const ostinatoOctave = style === 'ridge' ? 38 : style === 'frost' ? 50 : 43;
+    const ostinatoOctave = style === 'ridge' ? 38 : style === 'frost' || style === 'ruins' ? 50 : 43;
     if (style === 'frost') {
       s.ostinato('pizz', progression, start, 8, { figure: [0, 7, 12, 7], step: 0.5, octave: ostinatoOctave, vel: 0.7, length: 0.5 });
+    } else if (style === 'ruins') {
+      s.ostinato('pizz', progression, start, 8, { figure: [0, 12, 7, 12], step: 0.5, octave: ostinatoOctave, vel: 0.54, length: 0.34 });
     } else if (style === 'sands') {
       s.ostinato('spiccato', progression, start, 8, { figure: [0, 0, 12, 0, 7, 0, 12, 0], step: 0.5, octave: ostinatoOctave, vel: 0.65, length: 0.35, accents: [1, 0.7, 0.8, 0.7] });
     } else {
@@ -242,6 +244,9 @@ function combatLayer(name, { bpm, tonic, mode, A, B, style }) {
     } else if (style === 'frost') {
       s.rhythm('toms', 'X.....x.X.......', start, 8, { midi: 43, vel: 0.7 });
       s.rhythm('snare', '....x.......x..o', start, 8, { vel: 0.5 });
+    } else if (style === 'ruins') {
+      s.rhythm('toms', 'X.......x.......', start, 8, { midi: 43, vel: 0.48 });
+      s.rhythm('anvil', '....x.......x...', start, 8, { midi: 84, vel: 0.24 });
     } else {
       s.rhythm('taiko', 'X..x..x.X..x.x..', start, 8, { midi: 40, vel: 0.75 });
       s.rhythm('snare', 'o.o.X.o.o.o.X.oo', start, 8, { vel: 0.45 });
@@ -256,6 +261,7 @@ function combatLayer(name, { bpm, tonic, mode, A, B, style }) {
       s.pad('tremolo', progression, start, 8, { voices: 3, low: 67, high: 86, vel: 0.45 });
     }
     if (style === 'frost' && peak) s.arpeggio('glock', progression, start, 8, { pattern: [0, 1, 2, 3], step: 0.5, low: 76, high: 96, vel: 0.35, length: 0.6 });
+    if (style === 'ruins' && peak) s.arpeggio('glock', progression, start, 8, { pattern: [0, 2, 1, 3], step: 1, low: 76, high: 91, vel: 0.25, length: 0.45 });
     if (start > 0) lift(s, start, { vel: 0.65 });
   }
   s.note('cymbal', 0, 2, 60, 0.6);
@@ -400,6 +406,48 @@ function frost() {
       glock: -14, basses: -13, timpani: -14,
     },
     combatLevels: COMBAT_LEVELS,
+  });
+}
+
+function ruins() {
+  return region({
+    key: 'theme-ruins', bpm: 96, tonic: 62, mode: 'aeolian', style: 'ruins',
+    reverb: { size: 0.9, damp: 0.34, high: 7600 },
+    explore: (s, A, B) => {
+      // The Oath returns as a quiet flute call, answered by distant bells in the old stone halls.
+      s.note('basses', 0, 32, 38, 0.26);
+      s.pad('celli', A, 0, 8, { voices: 2, low: 43, high: 58, vel: 0.24 });
+      s.melody('flute', quiet(OATH, 0.64), 0, { octave: 0, progression: A, progressionBars: 8 });
+      s.arpeggio('harp', A, 0, 8, { pattern: [0, 2, 4, 2], step: 1, low: 50, high: 74, vel: 0.24, length: 0.65 });
+      for (const bar of [0, 3, 6]) s.note('bell', s.bar(bar) + 2, 1.5, 83, 0.26);
+
+      // A′: the woodwind phrase changes while the bell answers leave space between calls.
+      s.melody('flute', quiet(OATH_ANSWER, 0.6), 8, { octave: 0, progression: A, progressionStart: 8, progressionBars: 8 });
+      s.pad('violas', A, 8, 8, { low: 55, high: 70, vel: 0.22 });
+      s.bass('pizz', A, 8, 8, { octave: 43, pattern: [[0, 1.5, 0, 0.55], [2, 1.5, 0, 0.5]], vel: 0.33 });
+      for (const bar of [9, 12, 15]) s.note('bell', s.bar(bar) + 1, 1.5, 86, 0.23);
+
+      // B: lower notes recall the broken signal, with the same shared minor bridge harmony.
+      s.melody('celli', quiet(BRIDGE, 0.68), 16, { octave: -1, progression: B, progressionStart: 16, progressionBars: 8 });
+      s.pad('choirOo', B, 16, 8, { low: 52, high: 67, vel: 0.2 });
+      s.arpeggio('harp', B, 16, 8, { pattern: [0, 2, 1, 3], step: 1, low: 50, high: 74, vel: 0.2, length: 0.65 });
+      for (const bar of [17, 21, 23]) s.note('bell', s.bar(bar) + 2, 1.5, 79, 0.22);
+
+      // A″: the familiar call returns, with a soft woodwind answer rather than a full brass swell.
+      s.melody('flute', quiet(OATH, 0.7), 24, { octave: 0, progression: A, progressionStart: 24, progressionBars: 8 });
+      s.melody('violins1', quiet(OATH_ANSWER, 0.48), 24, { octave: 0, progression: A, progressionStart: 24, progressionBars: 8 });
+      s.pad('celli', A, 24, 8, { voices: 2, low: 43, high: 58, vel: 0.28 });
+      s.bass('pizz', A, 24, 8, { octave: 43, vel: 0.3 });
+      s.arpeggio('harp', A, 24, 8, { pattern: [0, 2, 4, 2], step: 1, low: 50, high: 74, vel: 0.24, length: 0.65 });
+      for (const bar of [24, 27, 30]) s.note('bell', s.bar(bar) + 2, 1.5, 83, 0.3);
+    },
+    levels: {
+      flute: -2, celli: -3, violins1: -9, violas: -12, choirOo: -14, harp: -10, pizz: -12,
+      basses: -14, bell: -11, glock: -16, timpani: -16, swell: -18, cymbal: -18,
+    },
+    combatLevels: {
+      ...COMBAT_LEVELS, pizz: -7, celli: -3, flute: -2, bell: -13, toms: -8, anvil: -15,
+    },
   });
 }
 
@@ -671,6 +719,7 @@ export const MUSIC = [
   ridge,
   frost,
   sands,
+  ruins,
   () => boss({ key: 'boss-guardian', bpm: 136, tonic: 60, mode: 'aeolian', colour: 'guardian' }),
   () => boss({ key: 'boss-frost', bpm: 128, tonic: 59, mode: 'aeolian', colour: 'frost' }),
   () => boss({

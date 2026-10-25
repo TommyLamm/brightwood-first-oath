@@ -1,0 +1,23 @@
+{
+  "frameId": "ruins-bell-prowler:attack-2",
+  "tool": "built-in image_gen",
+  "callId": "exec-b5c10cbc-b5cf-4c6c-9624-3ccd78b423a4",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17175-9243-7a91-bab6-464cafba1cf7\\exec-b5c10cbc-b5cf-4c6c-9624-3ccd78b423a4.png",
+  "workspacePath": "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-b/references/raw/ruins-bell-prowler-attack-2-v1.png",
+  "submittedPromptPath": "art-source/ruins-b/references/prompts/ruins-bell-prowler-attack-2-v1.txt",
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-bell-prowler-profile-v1.png",
+    "art-source/ruins-a/actors/review/monster-style-ref.jpg"
+  ],
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "sha256": "F26FD7ED680DB5C151F6C7CC48DED59A23DE1F29D47D240121373A35D25B81E2",
+  "notes": "Wrapper returned output_hint with savedPath but no revisedPrompt field; exact submitted prompt is archived.",
+  "accepted": false,
+  "acceptanceReason": null,
+  "reviewPath": "references/review/ruins-bell-prowler-attack-2-v1-q70.jpg",
+  "normalized": null,
+  "rejectionReason": "At 96px, the active sweep silhouette was too similar to idle; the front paw extension did not read clearly. Retained as a rejected candidate.",
+  "rejectedNormalizedPath": "references/normalized/rejected/ruins-bell-prowler-attack-2-v1-rejected.png",
+  "rejectedNormalizedSha256": "3cdb37f4da83934459c295fe53d6279236bc5adf76417a5e93de9c0077a48d3b"
+}

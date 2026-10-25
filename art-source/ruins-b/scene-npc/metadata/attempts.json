@@ -1,0 +1,11 @@
+{
+  "attemptsWithoutSavedImage": [
+    {
+      "frameId": "environment:ruins-gallery-sky",
+      "outerExecCallId": "call_dec9651a1c5f4c678a2b00719cb14fcd",
+      "promptLength": 1532,
+      "status": "not-used-no-saved-image",
+      "reason": "This wrapper output had no savedPath/output_hint, so no image was available to restore or accept."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal 2D side-view fantasy RPG far-parallax scenery layer, PNG with true transparency.
+Input images: Image 1 is only a style reference for the project's softly painted, clustered game-background texture; do not copy its forest scene.
+Primary request: create the distant scenery for Tide Camp, a humid ancient coastal-ruins outpost.
+Scene/backdrop: isolated distant forms of wet pale limestone coast ruins against empty transparent space: eroded sea cliffs, a slender broken signal tower and a few ancient wall fragments, with one small canvas shelter silhouette tucked among the ruins and subtle oxidized-copper braces.
+Subject: only distant coastline and architectural silhouettes, with calm readable shapes and broad gaps between clusters.
+Style/medium: charming hand-painted pixel-art-inspired 2D game background, broad color masses, softly clustered brush pixels and atmospheric sea mist; not 3D, not photorealistic.
+Composition/framing: exact target composition 1440x540 landscape 8:3; scenery occupies the lower half in broken groups, skyline stays irregular and low, sea-facing silhouettes fade into haze.
+Lighting/mood: quiet post-rain coastal daylight.
+Color palette: pale wet limestone, muted blue-grey, desaturated teal sea haze, sparse oxidized-copper accents.
+Constraints: request genuine transparent background and preserve alpha. Transparent pixels between forms; no sky or filled backdrop. No complete continuous foreground strip, flat top edge, walkable ledge, floor, platform, road, stairs or ground plane. No characters, NPCs, monsters, text, UI, signage or watermark.

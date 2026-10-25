@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: formal transparent far-parallax layer for a 2D side-view fantasy RPG, Ruins Echo Gallery.
+Primary request: create only disconnected distant scenery for a spacious ancient echo gallery beyond the root-grown causeway.
+Scene/backdrop: isolated weathered pale-limestone rear architecture: broken colonnade pieces, a few partial arches and recessed wall fragments, distant root loops caught around stone, sparse oxidized-copper braces. The forms should feel old, quiet, and acoustically resonant, with atmospheric depth.
+Subject: distant scenery silhouettes only, arranged in separated clusters with broad transparent gaps; no foreground set dressing.
+Style/medium: crisp hand-painted pixel-art-inspired 2D game background, chunky coherent pixel clusters, broad clean color masses, restrained layered texture; match polished 16-bit RPG scenery, no photorealism, no 3D and no painterly blur.
+Composition/framing: wide horizontal 8:3 panorama intended to normalize to 1440x540. Keep the architecture mostly in the lower half, with irregular broken tops and visible openings. Vary the heights of the separated groups; leave transparent space between every group.
+Lighting/mood: pale humid daylight slipping through old stone, cool soft shadows, subdued and contemplative.
+Color palette: limestone ivory and warm grey, blue-grey haze, quiet sea-glass teal roots, tiny restrained oxidized copper.
+Constraints: true transparent background, preserve alpha. No sky or filled backdrop. Do not form a continuous horizontal strip, floor, ground plane, walkable ledge, platform, path, stairway, or road. No characters, NPCs, monsters, text, UI, signs, symbols, watermark, bells, furniture, or foreground objects.

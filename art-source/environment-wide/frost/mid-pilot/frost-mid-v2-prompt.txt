@@ -1,0 +1,16 @@
+Use case: stylized-concept
+Asset type: Production 1920x540 RGBA middle-parallax layer for Frost Shore in the original 2D side-scrolling adventure.
+Input images:
+- Image 1, env-frost-mid-source.png: Frost Shore mid-layer subject and its snow-covered spruce/reef-rock language; use only as visual guidance and redraw a new wide composition.
+- Image 2, env-frost-sky-v1.png: reference for cold morning blue light and a soft pale-amber rim; do not paint sky or horizon into this layer.
+- Image 3, forest-style-reference-v1.png: accepted game-art reference for painterly pixel texture, simple shading, contour weight and finish; do not copy its forest composition.
+- Image 4, brightwood-world-map-main-v2.png: reference for snow-island coastal rock forms and muted palette only; do not copy its buildings, markers or characters.
+Primary request: Create one original 32:9 side-view mid-distance background for a production game. Show a few separated clusters of wind-shaped snow-covered spruce trees and ice-eroded reef rocks. Recompose across the full width; do not stretch, mirror, tile, duplicate, or paste reference elements.
+Scene/backdrop: Decorative coastal scenery in a snowy island environment, made of several distinct tree-and-rock groupings with broad transparent gaps between them.
+Style/medium: Warm painterly pixel-textured 2D game background with clear readable shapes, soft layered shading and crisp edges at runtime size. No realism or 3D.
+Composition/framing: Ultra-wide 32:9 landscape for a 1920x540 scene, fixed side view, not isometric. Vary cluster height and placement across the outer edges and outer thirds, without mirror symmetry. Keep the central and lower actor-play area visually open, with wide genuine transparent windows between small isolated rock bases. Balance the empty space with a few purposeful clusters; do not make an empty blank band and do not force a rigid percentage. Never connect the clusters into a continuous floor, shoreline or platform.
+Lighting/mood: Clear cold morning, with subtle pale-amber rim light consistent with Image 2 and cool blue shadows.
+Color palette: Powder blue, pale ivory, muted teal, lavender-gray shadow, tiny restrained warm amber highlights.
+Materials/textures: Compact snow, spruce needles, rounded wind-eroded granite and blue ice facets, all with broad readable pixel-textured forms.
+Constraints: Request true alpha transparency for all empty sky and gaps; preserve genuine alpha with no painted sky, horizon, sea, fog, checkerboard or matte. Keep large clear intervals for actors and movement, especially through the central bottom; scenery remains decorative and non-walkable.
+Avoid: Continuous ground strip, connected shore, walkable floor, platforms, ladders, portals, structures, characters, enemies, text, UI, labels, logo, watermark, neon, 3D render, photorealism, poster layout, mirror symmetry, tiled motifs or tall dense foreground walls.

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: formal near-overhead parallax tree-canopy layer for a side-view fantasy game, transparent PNG.
+Input images: Image 1 is a style reference for the softly painted pixel-art-inspired environment pack. Image 2 is only a reference for its wide top-edge layer structure. Do not copy either scene.
+Primary request: a very wide, shallow foreground fringe of the ancient tree crown over Root Causeway.
+Scene/backdrop: isolated broad branches and dense leaf clusters attached to the top edge, with a few short knotted root tips hanging down and tiny pale broken-column caps nested at the outer corners.
+Subject: an old sage-green canopy framing the upper edge; the lower contour must be naturally irregular with a large open center.
+Style/medium: charming 2D hand-painted pixel-art-inspired game background, readable clustered shapes and softly textured brush pixels, consistent with the style reference; not 3D or photorealistic.
+Composition/framing: exact intended canvas 1920x540. Treat the canvas as a screen-wide shallow strip: keep the canopy and every root tip within the top 150 pixels, never below y=150. All pixels from y=180 to the bottom must be fully transparent. The lower edge is a broken, uneven silhouette with gaps, not a straight horizontal band. Cover only the upper corners and top edge; leave most of the center open.
+Lighting/mood: soft filtered humid daylight after rain.
+Color palette: deep sage and sea-glass teal, warm bark, pale limestone, restrained oxidized copper.
+Constraints: genuine transparent background and alpha; no sky or filled backdrop, no checkerboard. No long hanging trunks or roots, no columns below the canopy, no characters, NPCs, monsters, text, signs, floor, path, platform, ground or walkable terrain.

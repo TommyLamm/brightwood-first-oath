@@ -5,7 +5,8 @@ import { playerLearnableIds } from '../content/rules/index.js';
 type JsonRecord = Record<string, unknown>;
 export type PreparedSave = { data: SaveData; repaired: boolean; repairMessage?: string };
 
-const SAVE_FORMAT = 1;
+const SAVE_FORMAT = 3;
+export const READABLE_SAVE_FORMATS = [1, 2, 3] as const;
 const MAX_BYTES = 64 * 1024;
 const WARNING_BYTES = 48 * 1024;
 const BAG_CAPACITY = 32;
@@ -246,7 +247,8 @@ function normalizeSave(raw: unknown, catalog: ContentCatalog): Result<PreparedSa
     const counters: Record<Id, number> = {};
     for (const [targetId, value] of Object.entries(state.counters)) {
       const objectives = definition.objectives.filter((objective) =>
-        (objective.type === 'kill' || objective.type === 'reach') && objective.targetId === targetId);
+        (objective.type === 'kill' || objective.type === 'reach' || objective.type === 'inspect')
+        && objective.targetId === targetId);
       const maximum = objectives.reduce((result, objective) => Math.max(result, objective.count), 0);
       if (maximum === 0 || !isSafeInteger(value, 0, maximum)) return fail(`任務 ${questId} 的計數器 ${targetId} 無效。`);
       counters[targetId] = value;
@@ -263,9 +265,10 @@ function normalizeSave(raw: unknown, catalog: ContentCatalog): Result<PreparedSa
         if (objective.type === 'kill') return (state.counters[objective.targetId] ?? 0) < objective.count;
         if (objective.type === 'reach') return !visited.has(objective.targetId)
           && (state.counters[objective.targetId] ?? 0) < objective.count;
+        if (objective.type === 'inspect') return (state.counters[objective.targetId] ?? 0) < objective.count;
         return false;
       });
-      if (incompleteTrackedObjective) return fail(`已領取任務 ${questId} 的擊殺／抵達紀錄不完整。`);
+      if (incompleteTrackedObjective) return fail(`已領取任務 ${questId} 的目標紀錄不完整。`);
     }
   }
 

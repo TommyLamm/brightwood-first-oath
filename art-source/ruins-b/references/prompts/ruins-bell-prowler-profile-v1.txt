@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: one transparent identity-anchor sprite for a 2D RPG monster
+Input images: Image 1 is the existing moss-carapace monster used only for pixel-art style and game scale; do not copy its snail design or multi-frame sheet.
+Primary request: Create one complete neutral idle identity anchor for the Ruins Bell Prowler: a low, heavy four-legged stone creature with a compact animal-like body, broad short legs, a blunt head lowered toward the ground, and a cracked ancient copper bell shell strapped across its back. The bell is silent and visibly chipped, with a worn rim and one small dark clapper; stone plates overlap at the shoulders and hips. Give it a sturdy readable quadruped silhouette that teaches a low sweep attack, but keep it calm and motionless in this anchor pose.
+Style/medium: crisp 2D pixel-art RPG sprite matching Image 1's chunky clean pixel clusters, limited palette, strong outline and sharp edges; polished game art, no painterly haze and no 3D rendering.
+Composition/framing: one complete side-view monster only, facing right with head toward the right, on a square transparent canvas; centered with bottom-centered pivot; all four feet, tail, bell and clapper fully visible; generous transparent padding; suitable to normalize into one 96x96 runtime frame. One neutral pose only, not a sheet.
+Color palette: muted slate-gray stone, warm gray highlights, weathered copper and bronze bell, restrained moss-olive seams consistent with the ruins monsters.
+Constraints: genuine transparent alpha; one complete creature; no cast shadow; compact low silhouette; all parts inside the canvas.
+Avoid: left-facing orientation, multiple poses or creatures, frames, grid, background, ground plane, text, symbols, watermark, UI, glowing eyes, glow, blur, gradient, cropped feet or bell, detached particles, weapons, blood, visual attack effects.

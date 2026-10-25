@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: one transparent active-attack sprite frame for a 2D RPG monster
+Input images: Image 1 is the approved Ruins Bell Prowler identity/profile reference and must be followed closely; Image 2 is the existing moss-carapace monster used only for pixel-art style and scale, not character design.
+Primary request: Show the exact same single Ruins Bell Prowler from Image 1 at the active moment of its low sweep attack (frame ID attack-2): keep its heavy torso and chipped bell shell planted in place while it crouches lower, leans its blunt head forward, and sweeps one front foreleg close to the ground toward the right. The other legs brace under its body; the bell remains strapped in place and its small clapper stays attached. Make the low horizontal sweep readable as one pose without making the creature dash.
+Style/medium: crisp 2D pixel-art RPG sprite matching Image 2's chunky clean pixel clusters, limited palette, strong outline and sharp edges; polished game art, no painterly haze and no 3D rendering.
+Composition/framing: one complete side-view monster only, still facing right, on a square transparent canvas; same scale and bottom-centered pivot as Image 1; all four feet, bell, clapper and sweep limb visible with generous transparent padding; one static action pose, not a sequence or sheet.
+Constraints: genuine transparent alpha; exactly one low-sweep pose; torso stays in place; retain the identity, materials, palette and proportions from Image 1.
+Avoid: left-facing orientation, second pose, multiple creatures, frames, grid, background, ground plane, text, symbols, watermark, UI, jump, dash, projectile, motion trail, impact flash, glow, blur, gradient, cropping, detached particles, blood.

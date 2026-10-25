@@ -1,0 +1,94 @@
+{
+  "frameId": "ruins-string-puppet:hurt-0",
+  "tool": "built-in image_gen",
+  "callId": "exec-76ecb3cb-db6c-439e-89d8-50903dc6c4b4",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-76ecb3cb-db6c-439e-89d8-50903dc6c4b4.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812 as C:\\Users\\Tommy\\.codex\\generated_images\\01a171bc-88fd-7752-9645-4f38912bf812\\exec-76ecb3cb-db6c-439e-89d8-50903dc6c4b4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "submittedPrompt": "Use case: stylized-concept\nAsset type: one transparent sprite frame for a 2D pixel-art RPG enemy\nInput images: Image 1 is the approved Ruins String Puppet identity anchor and is authoritative for character design, proportions, materials and palette. Image 2 is the approved active slap pose and is a secondary same-character action reference. Keep the same puppet from both images.\nCharacter identity: one slender marionette made from aged dark walnut wood, narrow carved mask-like head with dark eye slits, compact jointed torso, asymmetrical articulated limbs, one distinctly long forward/right arm ending in a broad wooden palm, shorter rear/left arm, a few snapped oxidized-copper strings hanging from back and shoulders, restrained moss-olive flecks, charcoal joints and muted warm highlights.\nStyle: crisp 2D pixel-art game sprite with clean dark outlines, sharp edges, readable chunky pixel clusters and a limited muted palette matching the references; no painterly haze and no 3D rendering.\nComposition: exactly one complete full-body side-view puppet, facing right with face toward the right, centered on a square canvas at the same character scale as Image 1; keep the whole head, every limb, feet, palm and snapped strings inside frame with generous transparent padding; no cropping.\nBackground and effects: genuine transparent alpha; no background, ground plane, cast shadow, floor, extra creature, duplicate, panel, frame, grid, labels, text, watermark, UI, glow, blur, gradient, motion streak, impact flash, particles, weapons or blood.\nSprite constraints: one clear static pose only, all body pieces remain attached to the puppet; preserve the original body proportions, long-arm asymmetry, wood grain, copper thread and small moss marks; do not add or remove body parts.\nPose request — hurt-0, the first brief impact recoil: keep both feet planted in the same spot; jolt the upper torso and head slightly backward while the long forward/right arm lifts across the front of the chest as a reflexive guard. The shorter rear arm jerks slightly away from the body and the snapped strings swing loosely. Show a readable but restrained first flinch while keeping the puppet complete and intact; no broken wood, removed parts, blood or added damage marks.",
+  "revisedPrompt": null,
+  "revisedPromptReturnedByTool": false,
+  "resultKeysObserved": [
+    "image_url",
+    "output_hint"
+  ],
+  "referencePaths": [
+    "art-source/ruins-b/references/raw/ruins-string-puppet-profile-v1.png",
+    "art-source/ruins-b/references/raw/ruins-string-puppet-attack-2-v1.png"
+  ],
+  "rawWorkspacePath": "art-source/ruins-b/puppet-actions/raw/ruins-string-puppet-hurt-0-v1.png",
+  "rawSha256": "f0746177cbe0226e9db17339ce0ceb0c29e6565ca363c2b42f5717b119e76393",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "alphaThreshold": 8,
+  "sourceAlphaBBoxGt8": [
+    191,
+    143,
+    986,
+    1155
+  ],
+  "marginRatio": 0.035,
+  "cropIncludingMargin": [
+    156,
+    108,
+    1021,
+    1190
+  ],
+  "referenceScale": 0.072776,
+  "resizedCrop": [
+    63,
+    79
+  ],
+  "output": "normalized/ruins-string-puppet-hurt-0.png",
+  "outputSize": [
+    96,
+    96
+  ],
+  "outputAlphaBBoxAny": [
+    16,
+    14,
+    79,
+    93
+  ],
+  "outputAlphaBBoxGt8": [
+    18,
+    16,
+    77,
+    91
+  ],
+  "outputSha256": "ac0a2268b68caff8a1c3ddb633f90b6721b6cfd796bd69379bb27a5d02ab786c",
+  "pivot": [
+    0.5,
+    1.0
+  ],
+  "facing": "right",
+  "normalization": "alpha>8 bbox with 3.5% margin; fixed scale 0.072776 derived from accepted puppet idle-0/attack-2 references; Lanczos; centered at x=48; lowest nontransparent alpha pixel at y=92",
+  "submittedPromptPath": "prompts/ruins-string-puppet-hurt-0.txt",
+  "submittedPromptSha256": "ecefac4730ee6212970d86f3e87bc50497e06d23473af58c03043b6ad625444a",
+  "accepted": true,
+  "status": "accepted",
+  "acceptanceReason": "First recoil is readable through the backward upper-body jolt and long arm guarding the chest; the puppet remains complete and intact.",
+  "rejectionReason": null,
+  "rawReviewPath": "review/ruins-string-puppet-hurt-0-q70.jpg",
+  "rawReviewSpec": {
+    "format": "JPEG",
+    "quality": 70,
+    "maxEdge": 1280,
+    "matteRGB": [
+      223,
+      227,
+      219
+    ],
+    "size": [
+      1254,
+      1254
+    ]
+  },
+  "frameID": "ruins-string-puppet:hurt-0",
+  "rawSHA": "f0746177cbe0226e9db17339ce0ceb0c29e6565ca363c2b42f5717b119e76393",
+  "reviewContactSheetPath": "review/puppet-actions-contact-q70.jpg",
+  "reviewMethod": "Single visual review of normalized contact sheet, including the accepted idle-0 and attack-2 anchors; neutral matte, JPEG quality 70.",
+  "reviewDate": "2026-10-25"
+}
