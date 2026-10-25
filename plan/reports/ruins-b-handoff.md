@@ -51,4 +51,6 @@ Scene八檔共2,130,659 bytes：三層gallery背景、行舟兩格idle、共用�
 
 ## 交接入口
 
+2026-10-25後續：使用者要求先push再規劃下一輪，主代理已將既有背景調整／A／B來源與素材提交為 `17a4c37` 並成功推送至 [fix/background-jitter](https://github.com/TommyLamm/brightwood-first-oath/tree/fix/background-jitter)。未合併main、建立PR、tag／Release或平台發布。上文「未commit／推送」描述B實作完成當時；後續來源保存以此紀錄為準。下一輪僅完成 [14 C計畫](../14-ruins-bell-sanctum.md)，尚未實作；artifacts依ignore留在本機，沒有隨來源push。
+
 來源、owner與實際指令見 [派工紀錄](ruins-b-dispatch.md)、[契約／存檔](ruins-b-contracts-saves.md)、[戰鬥](ruins-b-monster-rules.md)、[世界](ruins-b-world.md)、[app／UI／renderer](ruins-b-app-ui-render.md)、[共同參考](ruins-b-monster-profiles.md)、[配套素材](ruins-b-scene-npc-assets.md)、[木偶motion](ruins-b-puppet-motion.md)、[石獸motion](ruins-b-prowler-motion.md)、[木偶action](ruins-b-puppet-actions.md)、[石獸action](ruins-b-prowler-actions.md)、[正式圖集](ruins-b-atlas-assembly.md)、[最終整合與檢查](ruins-b-integration.md)。主代理本日已網路完整讀取Playroom模板及七份main規格，來源連結與適用驗收列於派工紀錄。B實作到此停止；後續C或D須依使用者下一次指示，不自動發布。
