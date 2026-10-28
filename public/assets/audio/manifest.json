@@ -167,6 +167,24 @@
       "layer": "phase2"
     },
     {
+      "key": "boss-ruins",
+      "url": "assets/audio/boss-ruins.ogg",
+      "fallbackUrl": "assets/audio/boss-ruins.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-ruins",
+      "layer": "base"
+    },
+    {
+      "key": "boss-ruins:phase2",
+      "url": "assets/audio/boss-ruins-phase2.ogg",
+      "fallbackUrl": "assets/audio/boss-ruins-phase2.m4a",
+      "kind": "music",
+      "loop": true,
+      "group": "boss-ruins",
+      "layer": "phase2"
+    },
+    {
       "key": "boss-win",
       "url": "assets/audio/boss-win.ogg",
       "fallbackUrl": "assets/audio/boss-win.m4a",
@@ -319,6 +337,12 @@
     {
       "key": "stele-tune",
       "url": "assets/audio/stele-tune.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "oath-bell-restored",
+      "url": "assets/audio/oath-bell-restored.wav",
       "kind": "sfx",
       "loop": false
     }

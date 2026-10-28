@@ -1,5 +1,6 @@
 import type {
   ActorStep,
+  BellCycle,
   CombatActor,
   EntityId,
   Facing,
@@ -19,6 +20,8 @@ import { createMovement, stepMovement } from '../movement/index.js';
 const IDLE_DURATION_MS = 600;
 const GUARDIAN_PHASE_ONE_DELAY_MS = 2500;
 const GUARDIAN_PHASE_TWO_DELAY_MS = 1800;
+const BELL_KEEPER_ID = 'ruins-bell-keeper';
+const BELL_TRANSITION_MS = 1200;
 const EPSILON = 0.0001;
 // A boss engages anyone this far outside its roam bounds. Without it a player could stand just
 // past roamLeft and hit the guardian with 橫掃 (reach 110) while it never retaliated.
@@ -60,6 +63,15 @@ export function createMonster(
     attackFacing: null,
     attackReach: null,
     deathReported: false,
+    ...(placement.monsterId === BELL_KEEPER_ID ? {
+      bellCycle: {
+        sequenceIndex: 0,
+        nextAttackAtMs: 0,
+        transitionStartedAtMs: null,
+        transitionEndsAtMs: null,
+        transitionUsed: false,
+      } satisfies BellCycle,
+    } : {}),
   };
 }
 
@@ -103,6 +115,14 @@ export function stepActors(
         continue;
       }
       result.monsters.push(monster);
+      continue;
+    }
+
+    if (monster.monsterId === BELL_KEEPER_ID) {
+      const bellStep = stepBellKeeper(monster, player, spawn, map, rules, definition, elapsedSeconds, nowMs);
+      result.monsters.push(bellStep.monster);
+      if (bellStep.attackRequest) result.attackRequests.push(bellStep.attackRequest);
+      if (bellStep.telegraph) result.telegraphs.push(bellStep.telegraph);
       continue;
     }
 
@@ -290,6 +310,7 @@ export function applyMonsterHit(
         knockbackUntilMs: 0,
       };
       clearAttackSnapshot(monster);
+      cancelBellCycle(monster);
       return monster;
     }
 
@@ -306,8 +327,214 @@ export function applyMonsterHit(
   });
 }
 
+type BellKeeperStep = {
+  monster: MonsterState;
+  attackRequest?: ActorStep['attackRequests'][number];
+  telegraph?: Telegraph;
+};
+
+/** Bell Keeper uses bounded pursuit while idle and locks its position during each action. */
+function stepBellKeeper(
+  monster: MonsterState,
+  player: CombatActor,
+  spawn: MonsterSpawn,
+  map: MapDef,
+  rules: RulesCatalog,
+  definition: MonsterDef,
+  dtSeconds: number,
+  nowMs: number,
+): BellKeeperStep {
+  monster.bellCycle ??= {
+    sequenceIndex: 0,
+    nextAttackAtMs: 0,
+    transitionStartedAtMs: null,
+    transitionEndsAtMs: null,
+    transitionUsed: false,
+  };
+
+  if (player.hp <= 0) {
+    monster.mode = 'idle';
+    clearAttackSnapshot(monster);
+    cancelBellCycle(monster);
+    return { monster };
+  }
+
+  if (monster.phase === 1 && monster.hp <= definition.maxHp / 2
+    && !monster.bellCycle.transitionUsed
+    && monster.mode !== 'windup' && monster.mode !== 'dash' && monster.mode !== 'recovery') {
+    startBellTransition(monster, nowMs);
+  }
+
+  if (monster.mode === 'phase-transition') {
+    const endsAtMs = monster.bellCycle.transitionEndsAtMs;
+    if (endsAtMs === null || nowMs < endsAtMs) return { monster };
+
+    monster.phase = 2;
+    monster.mode = 'idle';
+    monster.bellCycle = {
+      ...monster.bellCycle,
+      sequenceIndex: 0,
+      nextAttackAtMs: endsAtMs,
+    };
+    clearAttackSnapshot(monster);
+  }
+
+  if (monster.mode === 'windup') {
+    const skill = monster.pendingSkillId ? rules.skills[monster.pendingSkillId] : undefined;
+    if (!skill || monster.lastAttackAtMs < 0 || !monster.attackOrigin || !monster.attackFacing) {
+      monster.mode = 'idle';
+      clearAttackSnapshot(monster);
+    } else {
+      const resolveAtMs = monster.lastAttackAtMs + skill.windupMs;
+      if (nowMs < resolveAtMs) {
+        return { monster, telegraph: makeTelegraph(monster, skill, resolveAtMs, monster.attackReach) };
+      }
+      monster.mode = 'recovery';
+    }
+  }
+
+  if (monster.mode === 'recovery') {
+    const skill = monster.pendingSkillId ? rules.skills[monster.pendingSkillId] : undefined;
+    const recoveryEndsAtMs = monster.lastAttackAtMs + (skill ? attackDuration(skill) : 0);
+    if (skill && nowMs < recoveryEndsAtMs) return { monster };
+    monster.mode = 'idle';
+    clearAttackSnapshot(monster);
+  }
+
+  // Crossing half health during an attack waits for its full recovery, but the
+  // 600/300ms between-attack pause is replaced by the transition itself.
+  if (monster.phase === 1 && monster.hp <= definition.maxHp / 2
+    && !monster.bellCycle.transitionUsed) {
+    startBellTransition(monster, nowMs);
+    return { monster };
+  }
+
+  const playerInsideActivity = player.position.x >= spawn.roamLeft - BOSS_ENGAGE_MARGIN_PX - EPSILON
+    && player.position.x <= spawn.roamRight + BOSS_ENGAGE_MARGIN_PX + EPSILON;
+  const distanceX = player.position.x - monster.movement.position.x;
+  const distanceY = player.position.y - monster.movement.position.y;
+  const isAggro = playerInsideActivity
+    && distanceX * distanceX + distanceY * distanceY <= definition.aggroRange ** 2
+    && hasClearHorizontalRoute(monster, player, map, definition);
+
+  monster.mode = 'idle';
+  if (!isAggro) return { monster };
+
+  const facing: Facing = player.position.x < monster.movement.position.x ? -1 : 1;
+  monster.movement = { ...monster.movement, facing };
+  const cycle = monster.bellCycle;
+
+  const sequence = monster.phase === 1
+    ? ['ruins-bell-slam', 'ruins-bell-sweep']
+    : ['ruins-bell-sweep', 'ruins-bell-slam', 'ruins-bell-sweep'];
+  const sequenceIndex = cycle.sequenceIndex % sequence.length;
+  const skillId = sequence[sequenceIndex]!;
+  const skill = rules.skills[skillId];
+  if (!skill || skill.kind !== 'attack') {
+    return { monster };
+  }
+  const targetInRange = isInsideSkillRange(monster, player, skill, definition);
+  if (!targetInRange || nowMs < cycle.nextAttackAtMs) {
+    if (!targetInRange) monster = advanceBellKeeperTowardPlayer(
+      monster, player, spawn, map, rules, definition, dtSeconds, nowMs,
+    );
+    return { monster };
+  }
+
+  const nextIndex = ((sequenceIndex + 1) % sequence.length) as BellCycle['sequenceIndex'];
+  const gapMs = monster.phase === 1 ? 600 : 300;
+  monster.mode = 'windup';
+  monster.lastAttackAtMs = nowMs;
+  monster.pendingSkillId = skill.id;
+  monster.attackFacing = facing;
+  monster.attackReach = null;
+  monster.attackOrigin = { ...monster.movement.position };
+  monster.bellCycle = {
+    ...cycle,
+    sequenceIndex: nextIndex,
+    nextAttackAtMs: nowMs + attackDuration(skill) + gapMs,
+  };
+
+  const resolveAtMs = nowMs + skill.windupMs;
+  return {
+    monster,
+    attackRequest: { sourceId: monster.id, skillId: skill.id },
+    ...(nowMs < resolveAtMs ? { telegraph: makeTelegraph(monster, skill, resolveAtMs) } : {}),
+  };
+}
+
+function advanceBellKeeperTowardPlayer(
+  monster: MonsterState,
+  player: CombatActor,
+  spawn: MonsterSpawn,
+  map: MapDef,
+  rules: RulesCatalog,
+  definition: MonsterDef,
+  dtSeconds: number,
+  nowMs: number,
+): MonsterState {
+  const direction = directionToward(monster.movement.position.x, player.position.x);
+  if (direction === 0 || dtSeconds <= 0) return monster;
+  const boundedMove = boundedDirection(monster, direction, spawn, definition, dtSeconds);
+  if (boundedMove.turnAround) {
+    return turnIntoIdle(monster, boundedMove.turnFacing, nowMs);
+  }
+
+  const movementBefore = monster.movement;
+  const movement = stepMonsterMovement(
+    monster,
+    boundedMove.moveX,
+    boundedMove.speed,
+    map,
+    rules,
+    definition,
+    dtSeconds,
+    nowMs,
+  );
+  const clampedX = Math.max(spawn.roamLeft, Math.min(spawn.roamRight, movement.position.x));
+  const boundedMovement = clampedX === movement.position.x
+    ? movement
+    : { ...movement, position: { ...movement.position, x: clampedX } };
+  const hitWallOrMapEdge = Math.abs(boundedMovement.position.x - movementBefore.position.x) <= EPSILON
+    && Math.abs(boundedMovement.velocity.x) <= EPSILON
+    && nowMs >= movementBefore.knockbackUntilMs;
+  const walkedOffFoothold = movementBefore.mode === 'grounded' && boundedMovement.mode === 'airborne';
+  if (hitWallOrMapEdge || walkedOffFoothold) {
+    return turnIntoIdle(
+      { ...monster, movement: movementBefore },
+      boundedMove.moveX === 1 ? -1 : 1,
+      nowMs,
+    );
+  }
+  return { ...monster, movement: boundedMovement };
+}
+
+function startBellTransition(monster: MonsterState, nowMs: number): void {
+  const cycle = monster.bellCycle;
+  if (!cycle || cycle.transitionUsed) return;
+  monster.bellCycle = {
+    ...cycle,
+    transitionStartedAtMs: nowMs,
+    transitionEndsAtMs: nowMs + BELL_TRANSITION_MS,
+    transitionUsed: true,
+  };
+  monster.mode = 'phase-transition';
+  clearAttackSnapshot(monster);
+}
+
+function cancelBellCycle(monster: MonsterState): void {
+  if (!monster.bellCycle) return;
+  monster.bellCycle = {
+    ...monster.bellCycle,
+    transitionStartedAtMs: null,
+    transitionEndsAtMs: null,
+    transitionUsed: true,
+  };
+}
+
 function isBossMonster(monsterId: string): boolean {
-  return monsterId === 'guardian' || monsterId === 'frost-tide-warden' || monsterId === 'sunwell-sentinel';
+  return monsterId === 'guardian' || monsterId === 'frost-tide-warden'
+    || monsterId === 'sunwell-sentinel' || monsterId === BELL_KEEPER_ID;
 }
 
 function isBoundedCharge(monster: MonsterState, skill: SkillDef): boolean {
@@ -359,7 +586,7 @@ function isInsideSkillRange(
 ): boolean {
   const origin = monster.movement.position;
   const facing: Facing = player.position.x < origin.x ? -1 : 1;
-  const reach = monster.monsterId === 'guardian'
+  const reach = monster.monsterId === 'guardian' || monster.monsterId === BELL_KEEPER_ID
     ? skill.reach
     : Math.min(skill.reach, definition.attackRange);
   const attackLeft = facing === 1 ? origin.x : origin.x - reach;
@@ -580,7 +807,11 @@ function turnIntoIdle(monster: MonsterState, facing: Facing, nowMs: number): Mon
 }
 
 function markDead(monster: MonsterState, nowMs: number): MonsterState {
-  if (monster.deadAtMs !== null) return monster;
+  if (monster.deadAtMs !== null) {
+    clearAttackSnapshot(monster);
+    cancelBellCycle(monster);
+    return monster;
+  }
   const dead: MonsterState = {
     ...monster,
     hp: 0,
@@ -589,6 +820,7 @@ function markDead(monster: MonsterState, nowMs: number): MonsterState {
     movement: { ...monster.movement, velocity: { x: 0, y: 0 }, mode: 'dead' },
   };
   clearAttackSnapshot(dead);
+  cancelBellCycle(dead);
   return dead;
 }
 
@@ -612,5 +844,6 @@ function cloneMonster(monster: MonsterState): MonsterState {
       velocity: { ...monster.movement.velocity },
     },
     attackOrigin: monster.attackOrigin ? { ...monster.attackOrigin } : null,
+    ...(monster.bellCycle ? { bellCycle: { ...monster.bellCycle } } : {}),
   };
 }

@@ -104,6 +104,8 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
       panels: view.panels,
       interaction: view.interaction,
       canReturnTown: view.canReturnTown,
+      legacyImportAvailable: view.legacyImportAvailable,
+      legacyImportMessage: view.legacyImportMessage,
     });
     if (signature === lastRenderSignature) return;
     lastRenderSignature = signature;
@@ -136,6 +138,10 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
         appendButton(actions, '開始新遊戲', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
         appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
         appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }), true);
+      }
+      if (view.legacyImportAvailable) {
+        appendButton(actions, '匯入舊版進度', () => dispatch({ type: 'importLegacySave', payload: {} }));
+        appendButton(actions, '暫不匯入', () => dispatch({ type: 'dismissLegacyImport', payload: {} }));
       }
     }
     if (view.screen === 'create') {
@@ -171,7 +177,7 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
       appendButton(actions, '再戰首領', () => dispatch({ type: 'retryBoss', payload: {} }));
       if (view.canReturnTown) {
         const mapId = view.saveData?.location.mapId;
-        const returnLabel = mapId === 'sand-sunwell-altar' ? '返回日井盆地' : mapId === 'frost-tide-cavern' ? '返回雪痕海岸' : '回城';
+        const returnLabel = mapId === 'ruins-bell-sanctum' ? '返回潮痕營站' : mapId === 'sand-sunwell-altar' ? '返回日井盆地' : mapId === 'frost-tide-cavern' ? '返回雪痕海岸' : '回城';
         appendButton(actions, returnLabel, () => dispatch({ type: 'returnTown', payload: {} }));
       }
     }
@@ -179,6 +185,11 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
     const status = document.createElement('span');
     status.textContent = `存檔：${saveStatusLabel(view.saveStatus)}${view.toast ? `｜${view.toast}` : ''}`;
     details.append(status);
+    if (view.saveMessage || view.legacyImportMessage) {
+      const message = document.createElement('span');
+      message.textContent = view.legacyImportMessage ?? view.saveMessage ?? '';
+      details.append(message);
+    }
     if (!view.error && (view.saveStatus === 'saveError' || view.saveStatus === 'loadError' || view.saveStatus === 'unavailable')) {
       appendButton(details, '重試存檔', () => dispatch({ type: 'retrySave', payload: {} }));
     }
@@ -220,6 +231,7 @@ function saveStatusLabel(status: UiSnapshot['saveStatus']): string {
     saving: '保存中',
     saved: '雲端已保存',
     localSaved: '本機已保存',
+    upgradeRequired: '需確認升級',
     previewOnly: '預覽暫存，未保存至正式帳號',
     loadError: '讀取失敗',
     saveError: '保存失敗',
@@ -304,7 +316,8 @@ function renderPanel(
   } else if (panel === 'map' && view.saveData) {
     content.textContent = `目前位置：${view.saveData.location.mapId}/${view.saveData.location.spawnId}`;
     content.textContent += `｜已探索：${view.saveData.visitedMaps.map((mapId) => view.catalog.world.maps[mapId]?.name ?? mapId).join('、')}`;
-    appendButton(details, '返回城鎮', () => dispatch({ type: 'returnTown', payload: {} }));
+    const returnLabel = view.saveData.location.mapId === 'ruins-bell-sanctum' && view.canReturnTown ? '返回潮痕營站' : '返回城鎮';
+    appendButton(details, returnLabel, () => dispatch({ type: 'returnTown', payload: {} }));
   } else if (panel === 'shop' && view.saveData) {
     content.textContent = `${view.interaction?.dialogue.join(' ') ?? '選擇要購買的物品。'}｜金幣 ${view.saveData.player.coins}`;
     for (const item of Object.values(view.catalog.rules.items).filter((entry) => entry.buyPrice > 0 && entry.kind !== 'quest')) {

@@ -170,4 +170,9 @@ export const items: Record<Id, ItemDef> = {
     minLevel: 1, attack: 0, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
     buyPrice: 0, sellPrice: 55, iconKey: 'item:muted-bell-fragment', visualKey: null,
   },
+  'oathfarer-circlet': {
+    id: 'oathfarer-circlet', name: '守誓旅冠', kind: 'hat', slot: 'hat', stackLimit: 1,
+    minLevel: 30, attack: 0, defense: 10, hpBonus: 20, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 600, iconKey: 'item:oathfarer-circlet', visualKey: 'equip:oathfarer-circlet',
+  },
 };

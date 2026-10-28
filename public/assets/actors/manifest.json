@@ -391,6 +391,26 @@
       "displayHeight": 96,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "equip:oathfarer-circlet",
+      "url": "assets/actors/equip-oathfarer-circlet-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:ruins-bell-keeper",
+      "url": "assets/actors/monster-ruins-bell-keeper-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 192,
+      "displayHeight": 192,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -2228,6 +2248,104 @@
     {
       "key": "ruins-bell-prowler:dead",
       "imageKey": "actor:ruins-bell-prowler",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:idle",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-keeper:attack-sweep",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        600,
+        600,
+        100,
+        1000
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:walk",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-keeper:attack",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        450,
+        450,
+        100,
+        1000
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:hurt",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:dead",
+      "imageKey": "actor:ruins-bell-keeper",
       "frames": [
         24,
         25,

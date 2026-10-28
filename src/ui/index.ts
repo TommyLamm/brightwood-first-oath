@@ -2,9 +2,10 @@ import './styles.css';
 import './journal.css';
 import './world-map.css';
 import './illustrated-panels.css';
-import { buildVisualStats, buildVisualQuests } from './illustrated-panels.js';
+import { buildVisualStats, buildVisualQuests, objectivePlaces } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
-import { PLANNED_REGIONS } from './world-map-model.js';
+import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
+import { deriveWorldProgress, frostRouteMarkerInspectCommand, groupWorldQuests, saveUpgradeConfirmCommand, saveUpgradePrompt } from './world-progress-model.js';
 import { DEFAULT_KEY_BINDINGS, type GameAction } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import type { UiController, UiSnapshot } from '../contracts/ports.js';
@@ -50,8 +51,8 @@ const KEY_ACTIONS: { id: string; label: string }[] = [
 
 type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
-  | 'retry-save' | 'discard-save' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
-  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'use-item' | 'select-bag'
+  | 'retry-save' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
+  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
   | 'inventory-filter' | 'select-map' | 'select-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
@@ -60,6 +61,20 @@ type UiAction =
 type KeyGuideItem = {
   label: string;
   action: GameAction;
+};
+
+type PanelFocusSnapshot = {
+  panel: PanelId;
+  focusKey?: string;
+  value?: string;
+  selection: { start: number | null; end: number | null; direction: 'forward' | 'backward' | 'none' | null } | null;
+  scrollTop: number;
+};
+
+type QuickIconCacheEntry = {
+  signature: string;
+  node: HTMLElement;
+  failed: boolean;
 };
 
 const KEY_GUIDE_SECTIONS: {
@@ -238,6 +253,14 @@ function codeLabel(code: string | undefined): string {
   return labels[code] ?? code;
 }
 
+function remainingSeconds(milliseconds: number): string {
+  return (Math.ceil(milliseconds / 100) / 10).toFixed(1) + ' 秒';
+}
+
+function compactQuickSlotState(text: string): string {
+  return text.replace(/(\d+(?:\.\d+)?) 秒/g, '$1秒');
+}
+
 function statusLabel(status: UiSnapshot['saveStatus']): string {
   return {
     unavailable: '未連線',
@@ -249,6 +272,7 @@ function statusLabel(status: UiSnapshot['saveStatus']): string {
     previewOnly: '預覽暫存・未正式保存',
     loadError: '讀取失敗',
     saveError: '保存失敗',
+    upgradeRequired: '等待升級確認',
     conflict: '其他裝置已有更新',
     authLost: '登入狀態失效',
     incompatible: '存檔格式不相容',
@@ -320,11 +344,12 @@ function objectiveText(view: UiSnapshot, objective: UiSnapshot['questViews'][num
   const action = {
     kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達', inspect: '調律',
   }[objective.type];
-  return action + ' ' + targetName(view, objective.targetId, objective.type)
+  const objectiveAction = objective.type === 'inspect' && objective.targetId === 'frost-route-marker' ? '調查' : action;
+  return objectiveAction + ' ' + targetName(view, objective.targetId, objective.type)
     + ' ' + Math.min(objective.current, objective.required) + '/' + objective.required;
 }
 
-function preserveFocus(container: HTMLElement, renderContent: () => void): void {
+function preserveFocus(container: HTMLElement, renderContent: () => void, skipDisabled = false): void {
   const document = container.ownerDocument;
   const active = document.activeElement;
   const key = active instanceof HTMLElement && container.contains(active) ? active.dataset.focus : undefined;
@@ -344,7 +369,7 @@ function preserveFocus(container: HTMLElement, renderContent: () => void): void 
   renderContent();
   if (!key) return;
   const replacement = Array.from(container.querySelectorAll<HTMLElement>('[data-focus]'))
-    .find((element) => element.dataset.focus === key);
+    .find((element) => element.dataset.focus === key && (!skipDisabled || !element.matches(':disabled')));
   if (!replacement) return;
   if (value !== undefined && (replacement instanceof HTMLInputElement || replacement instanceof HTMLSelectElement)) {
     replacement.value = value;
@@ -400,6 +425,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   questTracker.dataset.uiAction = 'open-panel';
   questTracker.dataset.panel = 'quests';
   questTracker.setAttribute('aria-label', '開啟任務日誌');
+  const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
+  interactionHintRow.hidden = true;
+  interactionHintRow.setAttribute('role', 'note');
   const bottomBar = makeElement(document, 'div', 'ms-bottom-bar');
   const actionBar = makeElement(document, 'div', 'ms-action-bar');
   const controls = makeElement(document, 'nav', 'ms-controls');
@@ -431,7 +459,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   actionBar.append(returnTownButton);
   systemControls.append(keyGuide, pauseButton);
   header.append(mapCard, systemControls);
-  region.append(header, questTracker);
+  region.append(header, interactionHintRow, questTracker);
   hud.append(profile, region);
   bottomBar.append(actionBar, quickbar, controls);
 
@@ -448,7 +476,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   for (const slot of quickDefinitions) {
     const button = makeButton(document, '', slot.kind === 'item' ? 'use-item' : 'attack', {
       className: 'ms-quick-slot',
-      data: slot.kind === 'item' ? { itemId: slot.id } : { skillId: slot.id },
+      data: slot.kind === 'item' ? { itemId: slot.id, quickSlot: slot.id } : { skillId: slot.id, quickSlot: slot.id },
     });
     const keyHint = makeElement(document, 'span', 'ms-quick-slot__key', '—');
     const icon = makeElement(document, 'span', 'ms-quick-slot__icon');
@@ -477,7 +505,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   footer.append(saveState, footerActions, errorText);
 
   // The world freezes while the page has lost focus (see worldIsFrozen); say so instead of looking hung.
-  const focusBanner = makeElement(document, 'div', 'ms-focus-banner', '遊戲已暫停：畫面失去焦點。點一下遊戲畫面即可繼續。');
+  const focusBanner = makeElement(document, 'div', 'ms-focus-banner', '遊戲畫面失去焦點，冒險已安全暫停。');
   focusBanner.setAttribute('role', 'status');
   focusBanner.hidden = true;
   shell.append(hud, bottomBar, panelHost, screenLayer, toast, focusBanner, footer);
@@ -506,10 +534,102 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let bindingMessageAction: string | null = null;
   let keyGuideExpanded = false;
   let lastKeyGuideSignature = '';
+  let panelFocusBeforeResume: PanelFocusSnapshot | null = null;
+  let lastPanelFocus: PanelFocusSnapshot | null = null;
+  let restoreFocusAfterResume = false;
   let disposed = false;
+  const quickIconCache = new Map<string, QuickIconCacheEntry>();
 
   const dispatchDraft = (command: CommandDraft): void => {
     if (!disposed) dispatch(command);
+  };
+
+  const capturePanelFocus = (view: UiSnapshot, activeElement: Element | null = document.activeElement): PanelFocusSnapshot | null => {
+    const panel = view.panels.at(-1);
+    const active = activeElement;
+    if (!panel || !(active instanceof HTMLElement) || !panelHost.contains(active)) return null;
+
+    let value: string | undefined;
+    let selection: PanelFocusSnapshot['selection'] = null;
+    if (active instanceof HTMLInputElement || active instanceof HTMLSelectElement || active instanceof HTMLTextAreaElement) {
+      value = active.value;
+    }
+    if ((active instanceof HTMLInputElement && active.type !== 'range') || active instanceof HTMLTextAreaElement) {
+      try {
+        selection = {
+          start: active.selectionStart,
+          end: active.selectionEnd,
+          direction: active.selectionDirection,
+        };
+      } catch {
+        selection = null;
+      }
+    }
+    return {
+      panel,
+      ...(active.dataset.focus ? { focusKey: active.dataset.focus } : {}),
+      ...(value !== undefined ? { value } : {}),
+      selection,
+      scrollTop: panelHost.querySelector<HTMLElement>('.ms-panel__body')?.scrollTop ?? 0,
+    };
+  };
+
+  const renderQuickIcon = (
+    slotId: string,
+    host: HTMLElement,
+    view: UiSnapshot,
+    assetKey: string | null,
+    label: string,
+    className: string,
+    plainFallback?: string,
+  ): void => {
+    const asset = assetKey ? view.interfaceManifest?.images.find((image) => image.key === assetKey) : undefined;
+    const url = asset ? new URL(asset.url, document.baseURI).href : null;
+    const isPlainFallback = assetKey === null && plainFallback !== undefined;
+    const descriptor = JSON.stringify({
+      assetKey,
+      url,
+      displayWidth: asset?.displayWidth ?? null,
+      displayHeight: asset?.displayHeight ?? null,
+      label,
+      className,
+      missing: !asset && !isPlainFallback,
+      plainFallback: isPlainFallback ? plainFallback : null,
+    });
+    let entry = quickIconCache.get(slotId);
+    if (!entry || entry.signature !== descriptor) {
+      const nextEntry: QuickIconCacheEntry = { signature: descriptor, node: document.createElement('span'), failed: false };
+      const missingIcon = (message: string): HTMLElement => {
+        const fallback = makeBadge(document, message, 'missing');
+        fallback.classList.add(className, 'ms-interface-icon-fallback');
+        fallback.setAttribute('aria-label', label + message);
+        return fallback;
+      };
+      if (asset && url) {
+        const image = makeElement(document, 'img', className);
+        image.alt = label;
+        image.width = asset.displayWidth;
+        image.height = asset.displayHeight;
+        image.draggable = false;
+        image.dataset.assetKey = assetKey!;
+        image.addEventListener('error', () => {
+          if (quickIconCache.get(slotId) !== nextEntry) return;
+          const fallback = missingIcon('圖示載入失敗');
+          nextEntry.node = fallback;
+          nextEntry.failed = true;
+          if (image.parentNode) image.replaceWith(fallback);
+        }, { once: true });
+        image.src = url;
+        nextEntry.node = image;
+      } else if (isPlainFallback) {
+        nextEntry.node = makeBadge(document, plainFallback!, 'neutral');
+      } else {
+        nextEntry.node = missingIcon('圖示未載入');
+      }
+      quickIconCache.set(slotId, nextEntry);
+      entry = nextEntry;
+    }
+    if (host.childNodes.length !== 1 || host.firstChild !== entry.node) host.replaceChildren(entry.node);
   };
 
   const renderKeyGuide = (view: UiSnapshot | null): void => {
@@ -635,6 +755,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const renderQuestTracker = (view: UiSnapshot): void => {
     const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
+    const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     const signature = JSON.stringify({ quests: view.questViews, map: view.saveData?.location.mapId, chapterComplete });
     if (signature === lastQuestSignature) return;
     lastQuestSignature = signature;
@@ -644,7 +765,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     questTracker.replaceChildren();
     const heading = makeElement(document, 'span', 'ms-quest-tracker__heading', '任務手帳');
     heading.prepend(makeJournalIcon(document, 'quests'));
-    const title = quest?.title ?? (chapterComplete ? '第一章完成' : '自由探索');
+    const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
     const recipient = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '任務委託人';
@@ -659,7 +780,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       : quest.status === 'ready' ? where(definition?.turnInNpcId)
       : '';
     const detail = !quest
-      ? (chapterComplete ? '古礦已重歸寧靜，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
+      ? (worldComplete ? '四區主線已完成；可自由探索並重看冒險手帳。'
+        : chapterComplete ? '古礦已重歸寧靜，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
+      : quest.status === 'available' && quest.questId === 'q09'
+        ? '前往霜雪群島的雪痕海岸找' + giver + '，接續主線'
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
@@ -670,10 +794,36 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     questTracker.title = title + '｜' + detail + place;
   };
 
+  const updateInteractionHint = (view: UiSnapshot): void => {
+    const hint = view.interactionHint ?? null;
+    const visible = view.screen === 'playing'
+      && view.focusResumeRequired !== true
+      && view.panels.length === 0
+      && hint !== null;
+    shell.classList.toggle('has-interaction-hint', visible);
+    interactionHintRow.hidden = !visible;
+    if (!visible || !hint) {
+      if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
+      delete interactionHintRow.dataset.targetKey;
+      if (interactButton.title !== '') interactButton.title = '';
+      return;
+    }
+    const binding = view.saveData?.settings.bindings.interact ?? DEFAULT_KEY_BINDINGS.interact;
+    const verb = hint.kind === 'portal' ? '前往' : '互動';
+    const text = codeLabel(binding) + ' ' + verb + '：' + hint.label
+      + (hint.blockedMessage ? '｜' + hint.blockedMessage : '');
+    if (interactionHintRow.textContent !== text) interactionHintRow.textContent = text;
+    if (interactionHintRow.title !== text) interactionHintRow.title = text;
+    if (interactionHintRow.dataset.targetKey !== hint.targetKey) interactionHintRow.dataset.targetKey = hint.targetKey;
+    if (interactButton.title !== text) interactButton.title = text;
+  };
+
   const updateQuickButtons = (view: UiSnapshot): void => {
     const player = view.saveData?.player;
     const playing = view.screen === 'playing';
-    const keyForSkill: Record<string, string> = {
+    const focusBlocked = view.focusResumeRequired === true;
+    const canAct = playing && !focusBlocked;
+    const keyForSkill: Record<string, GameAction> = {
       basic: 'attack',
       'heavy-strike': 'skill1',
       sweep: 'skill2',
@@ -681,87 +831,108 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       'small-red': 'potionHp',
       'small-blue': 'potionMp',
     };
-    for (const [skillId, button] of quickButtons) {
+    for (const [slotId, button] of quickButtons) {
+      button.classList.toggle('has-action-feedback', false);
+      const slot = quickDefinitions.find((definition) => definition.id === slotId);
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
       if (key) {
-        const action = keyForSkill[skillId] as GameAction;
+        const action = keyForSkill[slotId]!;
         key.textContent = codeLabel(view.saveData?.settings.bindings[action] ?? DEFAULT_KEY_BINDINGS[action]);
       }
-      const definition = quickDefinitions.find((slot) => slot.id === skillId);
       const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
-      if (iconHost) {
-        const iconKey = definition?.kind === 'item'
-          ? view.catalog.rules.items[skillId]?.iconKey
-          : definition?.kind === 'skill' ? 'skill:' + skillId : view.catalog.rules.items['starter-sword']?.iconKey;
-        iconHost.replaceChildren(iconKey
-          ? makeInterfaceIcon(document, view, iconKey, definition?.label ?? skillId, 'ms-quick-slot__icon-image')
-          : makeBadge(document, '普攻', 'neutral'));
-      }
-      const skill = view.catalog.rules.skills[skillId];
       const state = button.querySelector<HTMLElement>('.ms-quick-slot__state');
       const label = button.querySelector<HTMLElement>('.ms-quick-slot__label');
+      if (!slot || !iconHost || !state || !label) continue;
+
+      if (slot.kind === 'item') {
+        const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';
+        const smallCount = player?.bag
+          .filter((stack) => stack.itemId === slotId)
+          .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
+        const largeCount = player?.bag
+          .filter((stack) => stack.itemId === fallbackId)
+          .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
+        const activeItemId = smallCount > 0 || largeCount === 0 ? slotId : fallbackId;
+        const count = activeItemId === slotId ? smallCount : largeCount;
+        const item = view.catalog.rules.items[activeItemId];
+        const itemName = item?.name ?? activeItemId;
+        button.dataset.itemId = activeItemId;
+        label.textContent = itemName;
+        button.setAttribute('aria-label', itemName);
+        renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName, 'ms-quick-slot__icon-image');
+
+        const cooldown = Math.max(0, view.potionReadyAtMs - view.nowMs);
+        const reason = count === 0 ? '沒有藥水' : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '';
+        const displayState = !playing ? '不可操作'
+          : focusBlocked ? '按「繼續遊戲」恢復'
+            : reason || ('×' + count);
+        button.classList.toggle('is-unavailable', Boolean(reason));
+        button.disabled = !canAct || Boolean(reason);
+        state.textContent = compactQuickSlotState(displayState);
+        button.title = itemName + (reason ? '｜' + reason : '｜數量 ' + count);
+        button.setAttribute('aria-label', itemName + ' ' + displayState);
+        continue;
+      }
+
+      const iconKey = slot.kind === 'skill'
+        ? 'skill:' + slotId
+        : view.catalog.rules.items['starter-sword']?.iconKey ?? null;
+      renderQuickIcon(slotId, iconHost, view, iconKey, slot.label, 'ms-quick-slot__icon-image', slot.kind === 'attack' ? '普攻' : undefined);
+
+      const skill = view.catalog.rules.skills[slotId];
       if (!player || !skill) {
         button.disabled = true;
-        if (state) state.textContent = '尚未載入';
+        state.textContent = '尚未載入';
         continue;
       }
-      if (label) label.textContent = skill.name;
-      if (skillId === 'basic') {
-        button.disabled = !playing;
-        if (state) state.textContent = 'MP 0';
-        button.title = '普通攻擊：MP 0';
-        continue;
-      }
-      const rank = player.skillRanks[skillId] ?? 0;
-      button.classList.toggle('is-unlearned', rank === 0);
-      const cooldown = Math.max(0, (view.skillReadyAtMs[skillId] ?? 0) - view.nowMs);
-      const reason = rank === 0 ? '未學習' : player.mp < skill.mpCost ? 'MP 不足' : cooldown > 0 ? '冷卻中' : '';
-      // A running buff matters more than why it can't be recast right now.
+      label.textContent = skill.name;
+      button.setAttribute('aria-label', skill.name);
+      const basic = slotId === 'basic';
+      const rank = basic ? 1 : player.skillRanks[slotId] ?? 0;
+      button.classList.toggle('is-unlearned', !basic && rank === 0);
+      const cooldown = Math.max(0, (view.skillReadyAtMs[slotId] ?? 0) - view.nowMs);
+      const reason = basic
+        ? cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : ''
+        : rank === 0 ? '未學習'
+          : player.mp < skill.mpCost ? 'MP 不足'
+            : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '';
+      // Keep the active buff duration above cast blockers, as the old quickbar did.
       const buffLeftSec = skill.kind === 'buff' && rank > 0
         ? Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
+      const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
+      const queued = view.combatUi?.bufferedSkillId === slotId;
+      const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
+      const displayState = screenState
+        || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
+          : reason || (queued ? '已排隊'
+            : actionLock > 0 ? '動作中 ' + remainingSeconds(actionLock)
+              : basic ? 'MP 0' : '等級 ' + rank + '・MP ' + skill.mpCost));
       button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
       button.classList.toggle('is-buff-active', buffLeftSec > 0);
-      button.disabled = !playing || Boolean(reason);
-      if (state) state.textContent = buffLeftSec > 0 ? buffLeftSec + ' 秒' : reason || ('等級 ' + rank + '・MP ' + skill.mpCost);
-      button.title = skill.name + '｜' + skillDetails(skill, rank)
-        + (buffLeftSec > 0 ? '｜效果剩餘 ' + buffLeftSec + ' 秒' : '') + (reason ? '｜' + reason : '');
+      button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
+      // Preserve the old rank/MP/cooldown disabled policy; action lock and a live queue are display-only.
+      button.disabled = !canAct || (!basic && Boolean(reason));
+      state.textContent = compactQuickSlotState(displayState);
+      button.title = basic ? skill.name + '：MP 0'
+        : skill.name + '｜' + skillDetails(skill, rank);
+      if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
+      if (reason) button.title += '｜' + reason;
+      else if (queued && !screenState && buffLeftSec === 0) button.title += '｜已排隊';
+      else if (actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
+      if (screenState) button.title += '｜' + screenState;
+      button.setAttribute('aria-label', skill.name + ' ' + displayState);
     }
-    for (const slotId of ['small-red', 'small-blue'] as const) {
-      const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';
-      const button = quickButtons.get(slotId);
-      const state = button?.querySelector<HTMLElement>('.ms-quick-slot__state');
-      const label = button?.querySelector<HTMLElement>('.ms-quick-slot__label');
-      const iconHost = button?.querySelector<HTMLElement>('.ms-quick-slot__icon');
-      const smallCount = player?.bag
-        .filter((stack) => stack.itemId === slotId)
-        .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
-      const largeCount = player?.bag
-        .filter((stack) => stack.itemId === fallbackId)
-        .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
-      const activeItemId = smallCount > 0 || largeCount === 0 ? slotId : fallbackId;
-      const count = activeItemId === slotId ? smallCount : largeCount;
-      const item = view.catalog.rules.items[activeItemId];
-      if (button) button.dataset.itemId = activeItemId;
-      if (label && item) label.textContent = item.name;
-      if (iconHost && item?.iconKey) {
-        iconHost.replaceChildren(makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-quick-slot__icon-image'));
-      }
-      const cooldown = Math.max(0, view.potionReadyAtMs - view.nowMs);
-      const reason = count === 0 ? '沒有藥水' : cooldown > 0 ? '冷卻中' : '';
-      if (button) button.disabled = !playing || Boolean(reason);
-      if (state) state.textContent = reason || ('×' + count);
-      if (button) button.title = (item?.name ?? activeItemId) + (reason ? '｜' + reason : '');
-    }
-    pickupButton.disabled = !playing;
-    interactButton.disabled = !playing;
+
+    pickupButton.disabled = !canAct;
+    interactButton.disabled = !canAct;
     const bindings = view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS;
     pickupButton.textContent = codeLabel(bindings.pickup ?? DEFAULT_KEY_BINDINGS.pickup) + ' 拾取';
     interactButton.textContent = codeLabel(bindings.interact ?? DEFAULT_KEY_BINDINGS.interact) + ' 互動';
     pauseButton.hidden = !playing;
-    pauseButton.disabled = !playing;
+    pauseButton.disabled = !canAct;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
     returnTownButton.hidden = !player || atTown || !playing || !view.saveData?.visitedMaps.includes('town');
-    returnTownButton.disabled = !view.canReturnTown;
+    returnTownButton.disabled = !view.canReturnTown || focusBlocked;
     returnTownButton.title = view.canReturnTown
       ? '立即返回木葉鎮'
       : view.saveData?.location.mapId === 'guardian-arena'
@@ -779,6 +950,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       shopButton.disabled = view.interaction?.npcId !== 'merchant';
       shopButton.hidden = shopButton.disabled;
     }
+    updateInteractionHint(view);
   };
 
   const renderScreen = (view: UiSnapshot): void => {
@@ -786,12 +958,16 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       screen: view.screen,
       error: view.error,
       saveStatus: view.saveStatus,
+      saveUpgrade: view.saveUpgrade ?? null,
+      focusResumeRequired: view.focusResumeRequired ?? false,
       hasSave: view.saveData !== null,
       canReturnTown: view.canReturnTown,
       createRequested,
       replaceConfirmed,
       discardConfirmed,
-      saveMessage: view.saveStatus === 'loadError' ? view.saveMessage : null,
+      saveMessage: view.saveMessage,
+      legacyImportAvailable: view.legacyImportAvailable,
+      legacyImportMessage: view.legacyImportMessage,
       nameDraft,
     });
     if (signature === lastScreenSignature) return;
@@ -813,6 +989,32 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (view.screen === 'loading') {
         screenLayer.hidden = false;
         screenLayer.append(makeScreenCard(document, '正在準備冒險', '載入世界資料與存檔狀態。'));
+        return;
+      }
+      if (view.saveUpgrade) {
+        createRequested = false;
+        replaceConfirmed = false;
+        const prompt = saveUpgradePrompt(view.saveUpgrade);
+        const card = makeScreenCard(document, prompt.title, prompt.explanation);
+        card.append(makeElement(document, 'p', 'ms-screen-card__status', '存檔狀態：' + statusLabel(view.saveStatus)));
+        if (view.saveData) {
+          const saved = view.saveData.player;
+          const savedMapId = savedProgressDisplayMapId(view.saveData.location.mapId);
+          const place = view.catalog.world.maps[savedMapId]?.name;
+          card.append(makeElement(document, 'p', 'ms-screen-card__save',
+            '待確認進度：' + saved.name + '・Lv.' + saved.level + ' ' + jobLabel(saved.job) + (place ? '・' + place : '')));
+        }
+        if (view.saveMessage) card.append(makeElement(document, 'p', 'ms-warning', view.saveMessage));
+        card.append(
+          makeButton(document, prompt.confirmLabel, 'confirm-save-upgrade', {
+            className: 'ms-button ms-button--primary',
+          }),
+          makeButton(document, prompt.temporaryLabel, 'play-temporary', {
+            className: 'ms-button ms-button--secondary',
+          }),
+        );
+        screenLayer.hidden = false;
+        screenLayer.append(card);
         return;
       }
       if ((view.screen === 'title' && !view.error) || showCreate) {
@@ -848,15 +1050,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
           );
         } else if (view.saveStatus === 'incompatible') {
           card.append(
-            makeElement(document, 'p', 'ms-warning', '此版本不能讀取目前存檔格式。請重新開啟相容版本；不會以新資料覆蓋雲端進度。'),
+            makeElement(document, 'p', 'ms-warning', view.saveMessage ?? '此版本不能讀取目前存檔。原始資料已保留。'),
             makeButton(document, '暫時遊玩', 'play-temporary', { className: 'ms-button ms-button--secondary' }),
           );
         } else if (view.saveData) {
           // Say whose adventure 繼續冒險 resumes before the player picks it over 建立新角色.
           const saved = view.saveData.player;
-          // An arena save resumes at the mine entrance (see restoreGame), so name that instead.
-          const savedMap = view.catalog?.world.maps[view.saveData.location.mapId];
-          const place = savedMap?.boss ? view.catalog?.world.maps['mine-gate']?.name : savedMap?.name;
+          // Only Guardian arena saves resume at the mine entrance; other boss maps resume in place.
+          const savedMapId = savedProgressDisplayMapId(view.saveData.location.mapId);
+          const place = view.catalog?.world.maps[savedMapId]?.name;
           card.append(makeElement(document, 'p', 'ms-screen-card__save',
             '上次進度：' + saved.name + '・Lv.' + saved.level + ' ' + jobLabel(saved.job) + (place ? '・' + place : '')));
           card.append(
@@ -867,18 +1069,36 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
           card.append(makeButton(document, '建立角色', 'new-role', { className: 'ms-button ms-button--primary' }));
           card.append(makeButton(document, '暫時遊玩', 'play-temporary', { className: 'ms-button ms-button--secondary' }));
         }
+        if (view.legacyImportAvailable) {
+          card.append(
+            makeElement(document, 'p', 'ms-screen-card__save', view.legacyImportMessage ?? '找到這台裝置保留的舊版進度。'),
+            makeButton(document, '匯入舊版進度', 'import-legacy-save', { className: 'ms-button ms-button--secondary' }),
+            makeButton(document, '暫不匯入', 'dismiss-legacy-import', { className: 'ms-button ms-button--secondary' }),
+          );
+        } else if (view.legacyImportMessage) {
+          card.append(makeElement(document, 'p', 'ms-screen-card__save', view.legacyImportMessage));
+        }
         screenLayer.hidden = false;
         screenLayer.append(card);
         return;
       }
       if (view.screen === 'paused') {
-        const card = makeScreenCard(document, '冒險已暫停', '怪物與時間都已停止。按 Esc 或「繼續遊戲」回到冒險。');
+        const focusResume = view.focusResumeRequired === true;
+        const card = makeScreenCard(document,
+          focusResume ? '畫面已安全暫停' : '冒險已暫停',
+          focusResume
+            ? '畫面曾離開遊戲，冒險已安全暫停。按「繼續遊戲」恢復冒險。'
+            : '怪物與時間都已停止。按「繼續遊戲」回到冒險。');
+        if (focusResume) card.classList.add('ms-screen-card--focus-resume');
+        const continueButton = makeButton(document, '繼續遊戲', 'toggle-pause', { className: 'ms-button ms-button--primary' });
+        continueButton.dataset.focus = 'focus-resume';
         card.append(
-          makeButton(document, '繼續遊戲', 'toggle-pause', { className: 'ms-button ms-button--primary' }),
+          continueButton,
           makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }),
         );
         screenLayer.hidden = false;
         screenLayer.append(card);
+        if (focusResume) continueButton.focus();
         return;
       }
       if (view.screen === 'dead') {
@@ -897,34 +1117,46 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (view.screen === 'chapter' && view.saveData) {
         const player = view.saveData.player;
         const questIds = Object.keys(view.catalog.world.quests);
-        const claimed = questIds.filter((id) => view.saveData!.quests[id]?.status === 'claimed').length;
-        const card = makeScreenCard(document, '第一章「守衛的誓約」完成', '古礦守衛已平息，礦道守望者收下了守衛核心。木葉地區重歸寧靜，你的冒險仍可繼續。');
+        const firstChapterClaimed = questIds.filter((id) => /^q0[1-8]$/.test(id)
+          && view.saveData!.quests[id]?.status === 'claimed').length;
+        const card = makeScreenCard(document, '第一章「守衛的誓約」完成', '古礦守衛已被擊敗，守衛核心已交付，q08 獎勵也已手動領取。接續主線時，從赤岩山徑向東穿過古礦入口回到守衛祭壇，再走東側航路前往雪痕海岸找雪芽。');
         const summary = makeElement(document, 'ul', 'ms-help-list');
         for (const line of [
           '角色：' + player.name + '・Lv.' + player.level + '・' + jobLabel(player.job),
-          '完成任務：' + claimed + ' / ' + questIds.length,
+          '第一章主線：' + firstChapterClaimed + ' / 8 項已領獎',
           '持有金幣：' + formatNumber(player.coins),
         ]) summary.append(makeElement(document, 'li', '', line));
         card.append(summary);
-        card.append(makeButton(document, '繼續自由探索', 'continue', { className: 'ms-button ms-button--primary' }));
+        card.append(makeButton(document, '繼續冒險', 'continue', { className: 'ms-button ms-button--primary' }));
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);
         return;
       }
       if (view.screen === 'result') {
+        const bellResult = view.saveData?.location.mapId === 'ruins-bell-sanctum';
         const frostResult = view.saveData?.location.mapId === 'frost-tide-cavern';
         const sunwellResult = view.saveData?.location.mapId === 'sand-sunwell-altar';
-        const title = frostResult ? '冰潮守望獸已被擊敗！'
+        const title = bellResult ? '誓鐘已恢復寧靜！'
+          : frostResult ? '冰潮守望獸已被擊敗！'
           : sunwellResult ? '日井守衛已被擊敗！'
             : '古礦守衛已被擊敗！';
-        const body = frostResult
+        const guardianQuestStatus = view.questViews.find(({ questId }) => questId === 'q08')?.status;
+        const body = bellResult
+          ? '失序司鐘者已倒下。返回潮痕營站向芷衡回報委託，或再次挑戰司鐘者。'
+          : frostResult
           ? '守望獸已沉入冰潮深處。返回雪痕海岸向雪芽回報，並可再次進入洞窟挑戰。'
           : sunwellResult
             ? '日井祭壇暫時歸於平靜。返回日井盆地後沿西路回琉砂手動領取日井誓刃與金幣，祭壇仍可再次挑戰。'
-            : '守衛核心已收入背包。返回後前往赤岩山徑，向礦道守望者回報。';
-        const returnLabel = frostResult ? '返回雪痕海岸' : sunwellResult ? '返回日井盆地' : '返回城鎮';
-        const retryLabel = frostResult ? '再次挑戰守望獸' : sunwellResult ? '再次挑戰日井守衛' : '再次挑戰守衛';
+            : guardianQuestStatus === 'active' || guardianQuestStatus === 'ready'
+              ? '守衛核心已收入背包；這次勝利只完成戰鬥。請回赤岩山徑找礦道守望者交付核心並手動領取 q08 獎勵，第一章才會完成。'
+              : guardianQuestStatus === 'available'
+                ? '守衛核心已收入背包；q08 必須在任務進行時擊敗守衛才會累計。請先回赤岩山徑向礦道守望者接取 q08，再重返祭壇完成委託並手動領獎。'
+                : guardianQuestStatus === 'claimed'
+                  ? '守衛核心已收入背包；q08 獎勵已領取，第一章已完成。祭壇仍可再次挑戰。'
+                  : '守衛核心已收入背包；請回赤岩山徑找礦道守望者查看 q08 前置與接取狀態，完成委託後再手動領獎。';
+        const returnLabel = bellResult ? '返回潮痕營站' : frostResult ? '返回雪痕海岸' : sunwellResult ? '返回日井盆地' : '返回城鎮';
+        const retryLabel = bellResult ? '再次挑戰司鐘者' : frostResult ? '再次挑戰守望獸' : sunwellResult ? '再次挑戰日井守衛' : '再次挑戰守衛';
         const card = makeScreenCard(document, title, body);
         card.append(makeButton(document, returnLabel, 'return-town', {
           className: 'ms-button ms-button--primary',
@@ -950,6 +1182,19 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         card.append(makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
         screenLayer.hidden = false;
         screenLayer.append(card);
+      }
+      if (view.screen === 'playing' && view.focusResumeRequired === true) {
+        const card = makeScreenCard(document, '畫面已安全暫停', '畫面曾離開遊戲，冒險已安全暫停。按「繼續遊戲」恢復冒險。');
+        card.classList.add('ms-screen-card--focus-resume');
+        const continueButton = makeButton(document, '繼續遊戲', 'toggle-pause', { className: 'ms-button ms-button--primary' });
+        continueButton.dataset.focus = 'focus-resume';
+        card.append(
+          continueButton,
+          makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }),
+        );
+        screenLayer.hidden = false;
+        screenLayer.append(card);
+        continueButton.focus();
       }
     });
   };
@@ -1002,7 +1247,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (lastPanelSignature !== '') {
         lastPanelSignature = '';
         panelHost.replaceChildren();
-        if (view.screen === 'playing') focusGameCanvas();
+          if (view.screen === 'playing' && view.focusResumeRequired !== true) focusGameCanvas();
       }
       return;
     }
@@ -1026,6 +1271,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     if (!force && signature === lastPanelSignature) return;
     lastPanelSignature = signature;
     const samePanel = panelHost.querySelector<HTMLElement>('.ms-panel')?.dataset.panel === panel;
+    const previousFocus = document.activeElement;
+    const previouslyFocusedDialogueControl = panel === 'dialogue' && samePanel
+      && previousFocus instanceof HTMLElement && panelHost.contains(previousFocus)
+      ? previousFocus.dataset.focus
+      : undefined;
     const scrollTop = samePanel ? panelHost.querySelector<HTMLElement>('.ms-panel__body')?.scrollTop ?? 0 : 0;
     const openDetails = new Set(samePanel
       ? Array.from(panelHost.querySelectorAll<HTMLDetailsElement>('details[open][data-detail-id]')).map((detail) => detail.dataset.detailId)
@@ -1062,14 +1312,68 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       card.append(heading, body);
       panelHost.replaceChildren(card);
-    });
+    }, panel === 'dialogue');
+    if (panel === 'dialogue') {
+      const dialogueButtons = Array.from(panelHost.querySelectorAll<HTMLButtonElement>(
+        '.ms-panel[data-panel="dialogue"] button[data-ui-action]:not(:disabled)',
+      ));
+      const focusFirstDialogueAction = (): void => {
+        const firstAction = dialogueButtons.find((button) => button.dataset.uiAction !== 'close-panel')
+          ?? dialogueButtons[0];
+        firstAction?.focus();
+      };
+      if (!samePanel) focusFirstDialogueAction();
+      else if (previouslyFocusedDialogueControl && !dialogueButtons.some((button) =>
+        button.dataset.focus === previouslyFocusedDialogueControl)) focusFirstDialogueAction();
+    }
     const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
+  };
+
+  const restoreCommittedFocus = (view: UiSnapshot): void => {
+    const panel = view.panels.at(-1) ?? null;
+    if (!panel || panelHost.hidden) {
+      focusGameCanvas();
+      return;
+    }
+
+    const saved = panelFocusBeforeResume?.panel === panel ? panelFocusBeforeResume : null;
+    const usable = (element: HTMLElement): boolean => !element.matches(':disabled')
+      && element.tabIndex >= 0
+      && !element.closest('[hidden]');
+    let target = saved?.focusKey
+      ? Array.from(panelHost.querySelectorAll<HTMLElement>('[data-focus]'))
+        .find((element) => element.dataset.focus === saved.focusKey && usable(element))
+      : undefined;
+    if (!target) {
+      target = Array.from(panelHost.querySelectorAll<HTMLElement>('button, input, select, textarea, [tabindex]'))
+        .find(usable);
+    }
+    target ??= panelHost.querySelector<HTMLElement>('[data-focus="panel-close"]') ?? undefined;
+    if (target && saved?.focusKey && target.dataset.focus === saved.focusKey
+      && saved.value !== undefined
+      && (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) {
+      target.value = saved.value;
+    }
+    target?.focus();
+    if (target && saved?.focusKey && target.dataset.focus === saved.focusKey && saved.selection
+      && ((target instanceof HTMLInputElement && target.type !== 'range') || target instanceof HTMLTextAreaElement)
+      && saved.selection.start !== null && saved.selection.end !== null) {
+      try {
+        target.setSelectionRange(saved.selection.start, saved.selection.end, saved.selection.direction ?? undefined);
+      } catch {
+        // Some browser-managed controls do not support text selection.
+      }
+    }
+    const body = panelHost.querySelector<HTMLElement>('.ms-panel__body');
+    if (body && saved) body.scrollTop = saved.scrollTop;
   };
 
   const handleAction = (button: HTMLButtonElement, view: UiSnapshot): void => {
     const action = button.dataset.uiAction as UiAction | undefined;
     if (!action) return;
+    if (view.focusResumeRequired === true
+      && ['attack', 'pickup', 'interact', 'return-town', 'use-item', 'inspect-stele', 'inspect-route-marker'].includes(action)) return;
     switch (action) {
       case 'select-quest':
         if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
@@ -1130,6 +1434,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         discardConfirmed = false;
         dispatchDraft({ type: 'retrySave', payload: {} });
         return;
+      case 'confirm-save-upgrade':
+        {
+          const command = saveUpgradeConfirmCommand(view.saveUpgrade);
+          if (command) dispatchDraft(command);
+        }
+        return;
+      case 'import-legacy-save':
+        if (view.legacyImportAvailable) dispatchDraft({ type: 'importLegacySave', payload: {} });
+        return;
+      case 'dismiss-legacy-import':
+        dispatchDraft({ type: 'dismissLegacyImport', payload: {} });
+        return;
       case 'discard-save':
         if (!discardConfirmed) {
           discardConfirmed = true;
@@ -1144,9 +1460,19 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         dispatchDraft({ type: 'playTemporary', payload: {} });
         focusGameCanvas(button);
         return;
+      case 'review-sidequest': {
+        const questId = button.dataset.questId;
+        if (!questId || !view.questViews.some(({ questId: id }) => id === questId)) return;
+        selectedQuestId = questId;
+        if (view.panels.at(-1) === 'quests') {
+          renderPanel(view, true);
+          return;
+        }
+        dispatchDraft({ type: 'setPanel', payload: { panel: 'quests' } });
+        return;
+      }
       case 'toggle-pause':
         dispatchDraft({ type: 'togglePause', payload: {} });
-        if (view.screen === 'paused') focusGameCanvas(button);
         return;
       case 'return-title':
         dispatchDraft({ type: 'returnTitle', payload: {} });
@@ -1179,13 +1505,25 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       case 'interact':
         dispatchDraft({ type: 'interact', payload: {} });
-        focusGameCanvas(button);
+        // The dispatch may update the UI synchronously or on the next game tick. Keep the
+        // dialogue's own first-action focus if it has already opened; otherwise return input
+        // to the canvas so movement still works after an out-of-range interaction.
+        if (currentView?.panels.at(-1) !== 'dialogue') focusGameCanvas(button);
         return;
       case 'inspect-stele': {
         const targetId = button.dataset.targetId;
         if (targetId) dispatchDraft({ type: 'inspect', payload: { targetId } });
         return;
       }
+      case 'inspect-route-marker':
+        {
+          const command = frostRouteMarkerInspectCommand(
+            view.interaction?.npcId,
+            view.questViews.find(({ questId }) => questId === 'q21')?.status,
+          );
+          if (command) dispatchDraft(command);
+        }
+        return;
       case 'use-item': {
         const itemId = button.dataset.itemId;
         if (itemId) dispatchDraft({ type: 'useItem', payload: { itemId } });
@@ -1302,7 +1640,29 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const render = (view: UiSnapshot): void => {
     if (disposed) return;
+    const previousView = currentView;
+    const previousResumeGate = previousView?.focusResumeRequired === true;
+    const nextResumeGate = view.focusResumeRequired === true;
+    if (nextResumeGate && !previousResumeGate && previousView) {
+      const panel = previousView.panels.at(-1);
+      panelFocusBeforeResume = capturePanelFocus(previousView)
+        ?? (panel && lastPanelFocus?.panel === panel ? lastPanelFocus : null);
+    }
+    if (previousView?.screen === 'playing' && view.screen === 'paused' && view.panels.length > 0) {
+      const panel = view.panels.at(-1);
+      panelFocusBeforeResume = capturePanelFocus(previousView)
+        ?? (panel && lastPanelFocus?.panel === panel ? lastPanelFocus : null);
+    }
+    if (previousView && ((previousResumeGate && !nextResumeGate)
+      || (previousView.screen === 'paused' && view.screen === 'playing'))) {
+      restoreFocusAfterResume = true;
+    }
+    if (restoreFocusAfterResume && view.screen !== 'playing' && view.screen !== 'paused') {
+      restoreFocusAfterResume = false;
+      panelFocusBeforeResume = null;
+    }
     currentView = view;
+    shell.classList.toggle('is-focus-resume-gated', nextResumeGate);
     // Before a character is in the world, hide the empty in-game HUD and show the cover art instead.
     shell.classList.toggle('is-pregame', createRequested
       || view.screen === 'title' || view.screen === 'create' || view.screen === 'loading' || view.screen === 'error');
@@ -1312,6 +1672,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderScreen(view);
     renderFooter(view);
     renderPanel(view);
+    if (view.panels.length === 0) lastPanelFocus = null;
     renderKeyGuide(view);
     renderQuestTracker(view);
     for (const [panel, button] of panelButtons) {
@@ -1329,6 +1690,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
       }
     }
+    if (restoreFocusAfterResume && view.screen === 'playing' && !nextResumeGate
+      && screenLayer.hidden && view.saveStatus !== 'conflict' && !view.saveUpgrade) {
+      restoreCommittedFocus(view);
+      restoreFocusAfterResume = false;
+      panelFocusBeforeResume = null;
+    }
   };
 
   const onClick = (event: Event): void => {
@@ -1337,6 +1704,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const button = target.closest<HTMLButtonElement>('[data-ui-action]');
     if (!button || !shell.contains(button) || button.disabled || !currentView) return;
     handleAction(button, currentView);
+  };
+
+  const rememberPanelFocus = (event: Event): void => {
+    if (!currentView) return;
+    const active = event.type === 'focusout' && event.target instanceof HTMLElement
+      ? event.target : document.activeElement;
+    const saved = capturePanelFocus(currentView, active);
+    if (saved) lastPanelFocus = saved;
   };
 
   const onInput = (event: Event): void => {
@@ -1403,6 +1778,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const onKeyDown = (event: Event): void => {
     if (!(event instanceof KeyboardEvent) || !pendingBinding || !currentView?.saveData) return;
+    const target = event.target;
+    if (currentView.focusResumeRequired === true && target instanceof Element
+      && target.closest('.ms-screen-card--focus-resume')) return;
     event.preventDefault();
     event.stopPropagation();
     const code = event.code;
@@ -1435,10 +1813,36 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderPanel(currentView, true);
   };
 
+  const onDialogueActionRepeat = (event: Event): void => {
+    if (!(event instanceof KeyboardEvent) || !event.repeat || (event.code !== 'Enter' && event.code !== 'Space')) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest<HTMLButtonElement>(
+      '.ms-panel[data-panel="dialogue"] button[data-ui-action]',
+    );
+    if (!button || !panelHost.contains(button)) return;
+    // The focused task action can disappear after the first Enter, moving focus to another
+    // action while the physical key is still held. Ignore repeats so one hold remains one action.
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   // The key guide floats above every panel, so Esc should fold it away first instead of
   // pausing the game (or closing the panel underneath) while the card stays open.
   const onEscapeKeyGuide = (event: Event): void => {
-    if (!(event instanceof KeyboardEvent) || event.code !== 'Escape' || !keyGuideExpanded || pendingBinding) return;
+    if (!(event instanceof KeyboardEvent) || event.code !== 'Escape') return;
+    const target = event.target instanceof Element ? event.target : null;
+    const active = document.activeElement instanceof Element ? document.activeElement : null;
+    const textEntry = [target, active].some((element) => element !== null
+      && element.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]') !== null);
+    const gameRoot = document.getElementById('game-root');
+    const belongsToGame = target !== null && (shell.contains(target) || root.contains(target) || gameRoot?.contains(target) === true);
+    if (belongsToGame && !textEntry && (currentView?.saveStatus === 'conflict' || currentView?.saveUpgrade)) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    if (!keyGuideExpanded || pendingBinding) return;
     event.preventDefault();
     event.stopPropagation();
     keyGuideExpanded = false;
@@ -1447,8 +1851,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const keyWindow = shell.ownerDocument.defaultView;
 
   shell.addEventListener('click', onClick);
+  shell.addEventListener('focusin', rememberPanelFocus, true);
+  shell.addEventListener('focusout', rememberPanelFocus, true);
   shell.addEventListener('input', onInput);
   shell.addEventListener('change', onChange);
+  shell.addEventListener('keydown', onDialogueActionRepeat, true);
   shell.addEventListener('keydown', onKeyDown);
   keyWindow?.addEventListener('keydown', onEscapeKeyGuide, true);
 
@@ -1471,10 +1878,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (disposed) return;
       disposed = true;
       shell.removeEventListener('click', onClick);
+      shell.removeEventListener('focusin', rememberPanelFocus, true);
+      shell.removeEventListener('focusout', rememberPanelFocus, true);
       shell.removeEventListener('input', onInput);
       shell.removeEventListener('change', onChange);
+      shell.removeEventListener('keydown', onDialogueActionRepeat, true);
       shell.removeEventListener('keydown', onKeyDown);
       keyWindow?.removeEventListener('keydown', onEscapeKeyGuide, true);
+      quickIconCache.clear();
       shell.remove();
       currentView = null;
     },
@@ -1545,6 +1956,169 @@ function skillNextRankPreview(skill: UiSnapshot['catalog']['rules']['skills'][st
   return parts.length ? '下一級：' + parts.join('｜') : '';
 }
 
+const JOURNAL_STATUS_LABELS: Record<UiSnapshot['questViews'][number]['status'], string> = {
+  active: '進行中', ready: '可回報', available: '可接取', locked: '未解鎖', claimed: '已領取',
+};
+
+function npcLocation(view: UiSnapshot, npcId: string): string {
+  const npcName = view.catalog.world.npcs[npcId]?.name ?? npcId;
+  const map = Object.values(view.catalog.world.maps).find(({ npcs }) => npcs.some(({ npcId: id }) => id === npcId));
+  return npcName + (map ? '（' + map.name + '）' : '');
+}
+
+function questNavigationCopy(view: UiSnapshot, quest: UiSnapshot['questViews'][number]): string {
+  const definition = view.catalog.world.quests[quest.questId];
+  if (!definition) return JOURNAL_STATUS_LABELS[quest.status];
+  const returnContact = npcLocation(view, definition.turnInNpcId);
+  if (quest.status === 'ready') return '回報：' + returnContact;
+  if (quest.status === 'available') return '接取：' + npcLocation(view, definition.giverNpcId);
+  if (quest.status === 'locked') {
+    const unmet = definition.prerequisiteIds.filter((id) => view.saveData?.quests[id]?.status !== 'claimed');
+    const requirements = unmet.map((id) => '「' + (view.catalog.world.quests[id]?.name ?? id) + '」').join('、');
+    return (requirements ? '先完成 ' + requirements + '，再接取。' : '完成等級條件後可接取。')
+      + '接取：' + npcLocation(view, definition.giverNpcId);
+  }
+  if (quest.status === 'active') {
+    const objective = quest.objectives.find(({ current, required }) => current < required);
+    if (objective) {
+      const maps = objectivePlaces(view, quest.questId, objective);
+      return '目標：' + objectiveText(view, objective) + (maps ? '（' + maps + '）' : '') + '；完成後回報 ' + returnContact;
+    }
+    return '目標已完成，回報：' + returnContact;
+  }
+  return '已領取；' + returnContact;
+}
+
+function buildWorldEndingFeedback(document: Document, view: UiSnapshot, showSideQuestGuide: boolean): HTMLElement | null {
+  if (!view.saveData) return null;
+  const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));
+  if (!progress.worldComplete) return null;
+  const card = makeElement(document, 'section', 'ms-journal-sheet is-claimed');
+  const title = makeElement(document, 'header', 'ms-journal-heading');
+  title.append(makeJournalIcon(document, 'quests'), makeElement(document, 'h3', '', '世界旅程已完成'), makeBadge(document, '歸途已回報', 'level'));
+  card.append(title, makeElement(document, 'p', 'ms-journal-next', '你已回到木葉鎮向岩嶺教官完成「帶回歸途」。四區仍可自由往返、再次挑戰；這段旅程回顧可隨時在冒險手帳重看。'));
+
+  if (showSideQuestGuide) {
+    const unfinished = progress.unfinishedSideQuestIds
+      .map((id) => view.questViews.find((quest) => quest.questId === id))
+      .filter((quest): quest is UiSnapshot['questViews'][number] => quest !== undefined);
+    const guide = makeElement(document, 'div', 'ms-quest-group');
+    guide.append(makeSectionTitle(document, unfinished.length ? '尚未領取的支線' : '四區支線已全部領取'));
+    if (unfinished.length) {
+      for (const quest of unfinished) {
+        const row = makeElement(document, 'div', 'ms-map-row');
+        row.append(
+          makeElement(document, 'strong', '', quest.title),
+          makeBadge(document, JOURNAL_STATUS_LABELS[quest.status], quest.status === 'ready' ? 'level' : 'temporary'),
+          makeElement(document, 'span', 'ms-panel-note', questNavigationCopy(view, quest)),
+        );
+        guide.append(row);
+      }
+    } else {
+      guide.append(makeElement(document, 'p', 'ms-panel-note', '沒有尚未領取的支線；仍可自由探索四區及再次挑戰首領。'));
+    }
+    card.append(guide);
+  }
+
+  const actions = makeElement(document, 'div', 'ms-journal-contacts');
+  actions.append(makeButton(document, '繼續探索地圖', 'open-panel', {
+    className: 'ms-button ms-button--primary', data: { panel: 'map' },
+  }));
+  if (progress.unfinishedSideQuestIds.length) {
+    actions.append(makeButton(document, '查看未完成支線', 'review-sidequest', {
+      className: 'ms-button ms-button--secondary', data: { questId: progress.unfinishedSideQuestIds[0]! },
+    }));
+  }
+  card.append(actions);
+  return card;
+}
+
+function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId: string | null): HTMLElement {
+  const journal = buildVisualQuests(document, view, selectedQuestId);
+  const banner = journal.querySelector<HTMLElement>('.ms-quest-journey');
+  if (banner) {
+    const image = banner.querySelector<HTMLImageElement>('img');
+    image?.remove();
+    const text = banner.querySelector<HTMLElement>('.ms-quest-journey__title');
+    if (text) {
+      const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));
+      text.replaceChildren(
+        makeElement(document, 'span', '', '木葉世界 · 霜雪群島 · 黃金沙海 · 遠古遺跡'),
+        makeElement(document, 'strong', '', '四區冒險手帳'),
+        makeElement(document, 'span', '', `已完成主線章節 ${progress.completedChapterCount} / ${progress.chapters.length}`),
+      );
+    }
+  }
+  journal.querySelector('.ms-quest-route')?.remove();
+  const selectedCard = journal.querySelector<HTMLElement>('.ms-journal-sheet');
+  if (!view.saveData || !selectedCard) return journal;
+
+  const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));
+  const ending = buildWorldEndingFeedback(document, view, true);
+  if (ending) journal.insertBefore(ending, selectedCard);
+
+  for (const group of groupWorldQuests(view.questViews)) {
+    const section = makeElement(document, 'section', 'ms-quest-group');
+    const note = group.kind === 'mainline'
+      ? `${group.claimedCount} / ${group.quests.length} 已完成`
+      : `${group.claimedCount} / ${group.quests.length} 已領取`;
+    section.append(makeSectionTitle(document, group.label, note));
+    const chapter = progress.chapters.find(({ id }) => id === group.id);
+    if (chapter) {
+      if (chapter.complete && chapter.nextMapId) {
+        const nextMap = view.catalog.world.maps[chapter.nextMapId]?.name ?? chapter.nextMapId;
+        const nextNpc = chapter.nextNpcId ? view.catalog.world.npcs[chapter.nextNpcId]?.name ?? chapter.nextNpcId : undefined;
+        section.append(makeElement(document, 'p', 'ms-journal-next', '下一區入口：' + nextMap + (nextNpc ? '；沿路找' + nextNpc : '')));
+      } else if (!chapter.complete) {
+        const completionQuest = view.catalog.world.quests[chapter.completionQuestId ?? ''];
+        section.append(makeElement(document, 'p', 'ms-panel-note', '章節收束：完成並手動領取「' + (completionQuest?.name ?? chapter.completionQuestId) + '」。'));
+      } else if (progress.worldComplete) {
+        section.append(makeElement(document, 'p', 'ms-journal-next', '四區主線已完成；可自由往返，並在上方回顧未完成支線。'));
+      }
+    }
+
+    const route = makeElement(document, 'nav', 'ms-quest-route');
+    route.setAttribute('aria-label', group.label);
+    group.quests.forEach((quest) => {
+      const index = group.questIds.indexOf(quest.questId);
+      const stop = makeButton(document, '', 'select-quest', {
+        className: 'ms-button ms-quest-stop is-' + quest.status,
+        data: { questId: quest.questId },
+      });
+      const selected = quest.questId === selectedQuestId;
+      stop.classList.toggle('is-selected', selected);
+      stop.setAttribute('aria-pressed', String(selected));
+      stop.setAttribute('aria-label', quest.title + '，' + JOURNAL_STATUS_LABELS[quest.status]);
+      stop.title = quest.title + ' · ' + JOURNAL_STATUS_LABELS[quest.status];
+      stop.dataset.focus = 'select-quest:' + quest.questId;
+      stop.append(
+        makeElement(document, 'span', 'ms-quest-stop__number', quest.status === 'claimed' ? '✓' : quest.status === 'locked' ? '◇' : quest.questId.slice(1) || String(index + 1)),
+        makeElement(document, 'span', '', quest.title),
+      );
+      route.append(stop);
+    });
+    section.append(route);
+    journal.insertBefore(section, selectedCard);
+  }
+
+  const selectedQuest = view.questViews.find(({ questId }) => questId === selectedQuestId)
+    ?? view.questViews.find(({ status }) => status === 'ready')
+    ?? view.questViews.find(({ status }) => status === 'active')
+    ?? view.questViews.find(({ status }) => status === 'available');
+  if (selectedQuest?.questId === 'q21') {
+    for (const verb of selectedCard.querySelectorAll<HTMLElement>('.ms-journal-objective__verb')) {
+      if (verb.textContent === '調律') verb.textContent = '調查';
+    }
+  }
+  if (selectedQuest && selectedQuest.reward.exp > 0
+    && view.saveData.player.level >= view.catalog.rules.progression.maxLevel) {
+    selectedCard.querySelector('.ms-journal-rewards')?.append(
+      makeElement(document, 'span', 'ms-journal-reward-extra', '已達等級上限，EXP 不再累積'),
+    );
+  }
+  return journal;
+}
+
 type PanelBuildState = {
   selectedBagIndex: number | null;
   selectedMapId: string | null;
@@ -1578,7 +2152,7 @@ function buildPanelContent(
       content.append(buildVisualStats(document, view));
       break;
     case 'quests':
-      content.append(buildVisualQuests(document, view, state.selectedQuestId));
+      content.append(buildWorldJournal(document, view, state.selectedQuestId));
       break;
     case 'map':
       content.append(buildWorldMap(document, view, state.selectedMapId));
@@ -1976,6 +2550,10 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     if (!shownInCards.has(line)) lines.append(makeElement(document, 'p', '', line));
   }
   parent.append(lines);
+  if (interaction.npcId === 'mentor') {
+    const ending = buildWorldEndingFeedback(document, view, false);
+    if (ending) parent.append(ending);
+  }
   if (interaction.npcId === 'ruins-stele-west' || interaction.npcId === 'ruins-stele-east') {
     const quest = view.questViews.find(({ questId }) => questId === 'q17');
     if (view.saveData?.quests.q17?.status === 'active') {
@@ -1983,12 +2561,26 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       const tuned = objective !== undefined && objective.current >= objective.required;
       parent.append(makeElement(document, 'p', 'ms-panel-note', tuned ? '這塊石碑已留下調律回聲。' : '確認調律後，這塊石碑的記錄便會清晰。'));
       parent.append(makeButton(document, '調律石碑', 'inspect-stele', {
-        className: 'ms-button ms-button--primary', data: { targetId: interaction.npcId },
+        className: 'ms-button ms-button--primary',
+        data: { targetId: interaction.npcId, focus: 'dialogue-inspect-' + interaction.npcId },
+      }));
+    }
+  }
+  if (interaction.npcId === 'frost-route-marker' && view.saveData?.quests.q21?.status === 'active') {
+    const quest = view.questViews.find(({ questId }) => questId === 'q21');
+    const objective = quest?.objectives.find(({ targetId, type }) => type === 'inspect' && targetId === 'frost-route-marker');
+    const inspected = objective !== undefined && objective.current >= objective.required;
+    parent.append(makeElement(document, 'p', 'ms-panel-note', inspected
+      ? '航標方向已記錄。回雪痕海岸找雪芽報告。'
+      : '沿霜松隘道梯路登上高台，調查航標一次，再回雪痕海岸找雪芽報告。'));
+    if (!inspected) {
+      parent.append(makeButton(document, '調查航標', 'inspect-route-marker', {
+        className: 'ms-button ms-button--primary',
       }));
     }
   }
   if (interaction.npcId === 'merchant') parent.append(makeButton(document, '開啟商店', 'open-panel', {
-    className: 'ms-button ms-button--primary', data: { panel: 'shop' },
+    className: 'ms-button ms-button--primary', data: { panel: 'shop', focus: 'dialogue-open-shop' },
   }));
   if (interaction.npcId === 'healer') {
     parent.append(makeElement(document, 'p', 'ms-panel-note', '與晨露互動可在城鎮免費恢復 HP／MP。'));
@@ -2010,12 +2602,14 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       card.append(makeElement(document, 'p', 'ms-reward-line', '目標：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
       card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
       card.append(makeButton(document, '接取任務', 'accept-quest', {
-        className: 'ms-button ms-button--primary', data: { questId: quest.questId },
+        className: 'ms-button ms-button--primary',
+        data: { questId: quest.questId, focus: 'dialogue-accept-' + quest.questId },
       }));
     } else if (quest.status === 'ready') {
       card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
       card.append(makeButton(document, '領取任務獎勵', 'claim-quest', {
-        className: 'ms-button ms-button--primary', data: { questId: quest.questId },
+        className: 'ms-button ms-button--primary',
+        data: { questId: quest.questId, focus: 'dialogue-claim-' + quest.questId },
       }));
     } else {
       card.append(makeElement(document, 'p', 'ms-reward-line', '進度：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
@@ -2066,6 +2660,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板，沒有面板時暫停遊戲。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
     '技能快捷 1／2／3 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
+    '普通攻擊與技能按一下施放；長按不會連續施放。',
   ];
   for (const text of helpText) help.append(makeElement(document, 'li', '', text));
   parent.append(help, makeSectionTitle(document, '鍵位設定'));

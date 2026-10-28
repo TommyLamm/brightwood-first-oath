@@ -19,6 +19,11 @@ export class AppCommandQueue {
     return commands;
   }
 
+  discard(types: ReadonlySet<CommandDraft['type']>): void {
+    if (types.size === 0) return;
+    this.pending = this.pending.filter(({ type }) => !types.has(type));
+  }
+
   get length(): number {
     return this.pending.length;
   }

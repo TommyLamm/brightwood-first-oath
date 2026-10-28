@@ -109,6 +109,18 @@ export const skills: Record<Id, SkillDef> = {
     reach: 260, height: 30, targets: 1, multiplierBase: 1, multiplierPerRank: 0,
     durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
   },
+  'ruins-bell-slam': {
+    id: 'ruins-bell-slam', name: '垂鐘重擊', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 0, windupMs: 900, activeMs: 100, recoveryMs: 1000,
+    reach: 180, height: 120, targets: 1, multiplierBase: 1.25, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
+  'ruins-bell-sweep': {
+    id: 'ruins-bell-sweep', name: '低鳴橫掃', kind: 'attack', maxRank: 1, requiredLevel: 1, requiredJob: 'enemy',
+    mpCost: 0, cooldownMs: 0, windupMs: 1200, activeMs: 100, recoveryMs: 1000,
+    reach: 360, height: 30, targets: 1, multiplierBase: 1.05, multiplierPerRank: 0,
+    durationMs: 0, defensePerRank: 0, hpPerRank: 0, regenPerRank: 0, effectKey: null,
+  },
 };
 
 export const playerLearnableIds = [

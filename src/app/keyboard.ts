@@ -219,16 +219,18 @@ export class KeyboardControls {
     this.options.onWindowFocusChange(false);
   };
   private readonly handleFocus = (): void => {
-    this.options.onWindowFocusChange(true);
+    const doc = this.options.uiRoot.ownerDocument;
+    if (doc.visibilityState !== 'hidden' && doc.hasFocus()) this.options.onWindowFocusChange(true);
   };
   private readonly handleVisibility = (): void => {
     if (this.options.uiRoot.ownerDocument.visibilityState === 'hidden') this.handleBlur();
-    else if (this.options.uiRoot.ownerDocument.hasFocus()) this.handleFocus();
+    else this.handleFocus();
   };
   private readonly handlePointerDown = (event: PointerEvent): void => {
     if (event.isTrusted) this.options.onTrustedGesture?.();
     // A click on the game always means the player is back, even if no window focus event fired.
-    if (this.options.uiRoot.ownerDocument.hasFocus()) this.options.onWindowFocusChange(true);
+    const doc = this.options.uiRoot.ownerDocument;
+    if (doc.visibilityState !== 'hidden' && doc.hasFocus()) this.options.onWindowFocusChange(true);
     const canvas = this.options.gameRoot.querySelector('canvas');
     if (canvas) {
       canvas.tabIndex = 0;

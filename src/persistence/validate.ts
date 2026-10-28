@@ -5,8 +5,8 @@ import { playerLearnableIds } from '../content/rules/index.js';
 type JsonRecord = Record<string, unknown>;
 export type PreparedSave = { data: SaveData; repaired: boolean; repairMessage?: string };
 
-const SAVE_FORMAT = 3;
-export const READABLE_SAVE_FORMATS = [1, 2, 3] as const;
+const SAVE_FORMAT = 5;
+export const READABLE_SAVE_FORMATS = [1, 2, 3, 4, 5] as const;
 const MAX_BYTES = 64 * 1024;
 const WARNING_BYTES = 48 * 1024;
 const BAG_CAPACITY = 32;
@@ -279,19 +279,12 @@ function normalizeSave(raw: unknown, catalog: ContentCatalog): Result<PreparedSa
   let location: SaveData['location'] = { mapId: raw.location.mapId, spawnId: raw.location.spawnId };
   let repairMessage: string | undefined;
   const locationMap = catalog.world.maps[location.mapId];
-  if (locationMap) {
-    if (!locationMap.spawns.some((spawn) => spawn.id === location.spawnId)) {
-      if (!locationMap.spawns.some((spawn) => spawn.id === 'left')) return fail(`地圖 ${location.mapId} 缺少安全 left 出生點。`);
-      location = { mapId: location.mapId, spawnId: 'left' };
-      repairMessage = `位置出生點已修復至 ${location.mapId}/left。`;
-    }
-  } else if (visited.has('town') && catalog.world.maps.town?.spawns.some((spawn) => spawn.id === 'center')) {
-    location = { mapId: 'town', spawnId: 'center' };
-    repairMessage = '未知地圖位置已修復至 town/center。';
-  } else if (catalog.world.maps.camp?.spawns.some((spawn) => spawn.id === 'start')) {
-    location = { mapId: 'camp', spawnId: 'start' };
-    repairMessage = '未知地圖位置已修復至 camp/start。';
-  } else return fail('存檔位置無效，且缺少可用安全出生點。');
+  if (!locationMap) return failure('NOT_FOUND', `存檔位置引用未知地圖：${location.mapId}。`);
+  if (!locationMap.spawns.some((spawn) => spawn.id === location.spawnId)) {
+    if (!locationMap.spawns.some((spawn) => spawn.id === 'left')) return fail(`地圖 ${location.mapId} 缺少安全 left 出生點。`);
+    location = { mapId: location.mapId, spawnId: 'left' };
+    repairMessage = `位置出生點已修復至 ${location.mapId}/left。`;
+  }
 
   if (!isRecord(raw.flags) || !hasExactKeys(raw.flags, ['bossDefeated', 'chapterComplete'])
     || typeof raw.flags.bossDefeated !== 'boolean' || typeof raw.flags.chapterComplete !== 'boolean') {

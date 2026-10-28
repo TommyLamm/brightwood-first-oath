@@ -35,6 +35,9 @@ export type CommandDraft =
   | { type: 'closePanel'; payload: Record<string, never> }
   | { type: 'setSettings'; payload: { settings: Settings } }
   | { type: 'retrySave'; payload: Record<string, never> }
+  | { type: 'confirmSaveUpgrade'; payload: Record<string, never> }
+  | { type: 'importLegacySave'; payload: Record<string, never> }
+  | { type: 'dismissLegacyImport'; payload: Record<string, never> }
   | { type: 'useCloudVersion'; payload: Record<string, never> }
   | { type: 'discardUnreadableSave'; payload: Record<string, never> }
   | { type: 'playTemporary'; payload: Record<string, never> }

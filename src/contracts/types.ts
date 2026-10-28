@@ -109,7 +109,7 @@ export type SaveData = {
 };
 
 export type SaveEnvelope = {
-  formatVersion: 3;
+  formatVersion: 5;
   data: SaveData;
   savedAt: string;
 };
@@ -182,7 +182,19 @@ export type CombatStep = {
   rejected: { sourceId: EntityId; code: ErrorCode }[];
 };
 
-export type MonsterMode = 'idle' | 'patrol' | 'chase' | 'windup' | 'dash' | 'recovery' | 'dead';
+export type MonsterMode = 'idle' | 'patrol' | 'chase' | 'windup' | 'dash' | 'recovery' | 'phase-transition' | 'dead';
+
+/** Runtime-only phase and attack cycle for the Ruins Bell Keeper. Never persisted. */
+export type BellCycle = {
+  /** Index of the next attack: phase 1 uses 0..1; phase 2 uses 0..2. */
+  sequenceIndex: 0 | 1 | 2;
+  /** Earliest game time at which the next attack may start. */
+  nextAttackAtMs: number;
+  /** Null until the single phase transition begins. */
+  transitionStartedAtMs: number | null;
+  transitionEndsAtMs: number | null;
+  transitionUsed: boolean;
+};
 
 export type MonsterState = {
   id: EntityId;
@@ -194,6 +206,8 @@ export type MonsterState = {
   idleUntilMs: number;
   lastAttackAtMs: number;
   phase: 1 | 2;
+  /** Present only on the Ruins Bell Keeper; runtime-only and intentionally not part of SaveData. */
+  bellCycle?: BellCycle;
   deadAtMs: number | null;
   width: number;
   height: number;

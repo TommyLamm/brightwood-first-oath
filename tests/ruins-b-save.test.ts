@@ -44,21 +44,23 @@ describe('ruins B save compatibility', () => {
 
     const outcome = await persistence.initialize();
 
-    expect(outcome).toMatchObject({ mode: 'local', status: 'ready' });
+    expect(outcome).toMatchObject({
+      mode: 'local', status: 'upgradeRequired', saveUpgrade: { formatVersion, source: 'local' },
+    });
     expect(outcome.data?.quests).not.toHaveProperty('q17');
     expect(outcome.data?.quests).not.toHaveProperty('q20');
     expect(storage.entries.get(key)).toBe(original);
     persistence.dispose();
   });
 
-  it('writes and reloads format 3 with inspect progress', async () => {
+  it('writes and reloads format 5 with inspect progress', async () => {
     const storage = new MemoryStorage();
     const persistence = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
-    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3]);
-    expect(SAVE_FORMAT_VERSION).toBe(3);
+    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3, 4, 5]);
+    expect(SAVE_FORMAT_VERSION).toBe(5);
     await persistence.initialize();
     persistence.checkpoint(activeBSave());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(3));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(5));
     persistence.dispose();
 
     const restored = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
@@ -75,15 +77,23 @@ describe('ruins B save compatibility', () => {
     restored.dispose();
   });
 
-  it.each([1, 2])('backs up the exact format-%i local envelope before writing format 3', async (formatVersion) => {
+  it.each([1, 2])('backs up the exact format-%i local envelope before confirmed format-5 writing', async (formatVersion) => {
     const storage = new MemoryStorage();
     const original = JSON.stringify({ formatVersion, data: beforeBSave(), savedAt });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
-    await persistence.initialize();
+    const outcome = await persistence.initialize();
+    expect(outcome).toMatchObject({
+      mode: 'local', status: 'upgradeRequired', saveUpgrade: { formatVersion, source: 'local' },
+    });
 
     persistence.checkpoint(activeBSave());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(3));
+    expect(storage.entries.get(key)).toBe(original);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    persistence.confirmSaveUpgrade();
+    expect(storage.entries.get(`${key}:format${formatVersion}-backup`)).toBe(original);
+    persistence.checkpoint(activeBSave());
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(5));
 
     expect(storage.entries.get(`${key}:format${formatVersion}-backup`)).toBe(original);
     persistence.dispose();
@@ -100,14 +110,21 @@ describe('ruins B save compatibility', () => {
       gameId, storage, cloud: null, catalog: ruinsBCatalog,
       onStatus: (status) => statuses.push(status),
     });
-    await persistence.initialize();
+    const outcome = await persistence.initialize();
+    expect(outcome).toMatchObject({
+      mode: 'local', status: 'upgradeRequired', saveUpgrade: { formatVersion: 2, source: 'local' },
+    });
 
     persistence.checkpoint(activeBSave());
+    expect(storage.entries.get(key)).toBe(original);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    persistence.confirmSaveUpgrade();
     await vi.waitFor(() => expect(statuses).toContain('incompatible'));
 
     expect(storage.entries.get(key)).toBe(original);
     expect(storage.entries.get(`${key}:format2-backup`)).toBe(differentBackup);
     expect(storage.setItem).not.toHaveBeenCalled();
+    expect(storage.removeItem).not.toHaveBeenCalled();
     persistence.dispose();
   });
 
@@ -124,17 +141,24 @@ describe('ruins B save compatibility', () => {
       gameId, storage, cloud: null, catalog: ruinsBCatalog,
       onStatus: (status) => statuses.push(status),
     });
-    await persistence.initialize();
+    const outcome = await persistence.initialize();
+    expect(outcome).toMatchObject({
+      mode: 'local', status: 'upgradeRequired', saveUpgrade: { formatVersion, source: 'local' },
+    });
 
     persistence.checkpoint(activeBSave());
+    expect(storage.entries.get(key)).toBe(original);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    persistence.confirmSaveUpgrade();
     await vi.waitFor(() => expect(statuses).toContain('saveError'));
 
     expect(storage.entries.get(key)).toBe(original);
     expect(storage.entries.has(`${key}:format${formatVersion}-backup`)).toBe(false);
+    expect(storage.removeItem).not.toHaveBeenCalled();
     persistence.dispose();
   });
 
-  it.each([1, 2])('reads cloud format %i and writes the next checkpoint as format 3', async (formatVersion) => {
+  it.each([1, 2])('requires confirmation before upgrading cloud format %i and checkpointing as format 5', async (formatVersion) => {
     const record: CloudRecord = {
       data: beforeBSave(),
       revision: 4,
@@ -144,11 +168,21 @@ describe('ruins B save compatibility', () => {
     };
     const cloud = cloudPort({ loadProgress: vi.fn(async () => record) });
     const persistence = createPersistence({ gameId, storage: null, cloud, catalog: ruinsBCatalog });
-    expect((await persistence.initialize()).status).toBe('ready');
+    const outcome = await persistence.initialize();
+    expect(outcome).toMatchObject({
+      mode: 'cloud', status: 'upgradeRequired', saveUpgrade: { formatVersion, source: 'cloud' },
+    });
+    expect(cloud.saveProgress).not.toHaveBeenCalled();
 
     persistence.checkpoint(activeBSave());
-    await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(1));
-    expect(cloud.saveProgress).toHaveBeenCalledWith(expect.objectContaining({ formatVersion: 3 }));
+    expect(cloud.saveProgress).not.toHaveBeenCalled();
+    persistence.confirmSaveUpgrade();
+    persistence.checkpoint(activeBSave());
+    await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(2));
+    for (const [input] of cloud.saveProgress.mock.calls) {
+      expect(input).toMatchObject({ formatVersion: 5, revision: 4 });
+    }
+    expect(cloud.saveProgress.mock.calls[1]?.[0].data.quests.q17).toMatchObject({ status: 'active' });
     persistence.dispose();
   });
 
@@ -209,7 +243,7 @@ describe('ruins B save compatibility', () => {
     persistence.checkpoint(beforeBSave());
 
     expect(cloud.saveProgress).toHaveBeenCalledTimes(1);
-    expect(cloud.saveProgress).toHaveBeenCalledWith(expect.objectContaining({ formatVersion: 3 }));
+    expect(cloud.saveProgress).toHaveBeenCalledWith(expect.objectContaining({ formatVersion: 5, revision: 0 }));
     expect(storage.setItem).not.toHaveBeenCalled();
     persistence.dispose();
   });

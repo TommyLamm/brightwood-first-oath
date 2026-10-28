@@ -471,6 +471,36 @@
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
+    },
+    {
+      "key": "env:ruins-sanctum:sky",
+      "url": "assets/environment/env-ruins-sanctum-sky-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 960,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-sanctum:far",
+      "url": "assets/environment/env-ruins-sanctum-far-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1440,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins-sanctum:mid",
+      "url": "assets/environment/env-ruins-sanctum-mid-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0
     }
   ],
   "animations": [],

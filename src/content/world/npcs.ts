@@ -13,4 +13,5 @@ export const npcs: Record<Id, NpcDef> = {
   'ruins-pathfinder': { id: 'ruins-pathfinder', name: '行舟', role: 'scout', dialogueId: 'ruins-pathfinder-intro', actorKey: 'actor:ruins-pathfinder' },
   'ruins-stele-west': { id: 'ruins-stele-west', name: '西回聲碑', role: 'keeper', dialogueId: 'ruins-stele-west-intro', actorKey: 'actor:ruins-stele' },
   'ruins-stele-east': { id: 'ruins-stele-east', name: '東回聲碑', role: 'keeper', dialogueId: 'ruins-stele-east-intro', actorKey: 'actor:ruins-stele' },
+  'frost-route-marker': { id: 'frost-route-marker', name: '霜松航標', role: 'keeper', dialogueId: 'frost-route-marker-intro', actorKey: 'actor:ruins-stele' },
 };

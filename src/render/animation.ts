@@ -29,13 +29,21 @@ export function selectMonsterAnimation(
     monsterId: string;
     mode: MonsterMode;
     movement: MovementAnimationState;
+    pendingSkillId?: string | null;
   },
   nowMs: number,
   hasAttack: boolean,
 ): string {
   if (monster.mode === 'dead' || monster.movement.mode === 'dead') return `${monster.monsterId}:dead`;
   if (monster.movement.knockbackUntilMs > nowMs) return `${monster.monsterId}:hurt`;
-  if (hasAttack || monster.mode === 'windup') return `${monster.monsterId}:attack`;
+  if (monster.mode === 'phase-transition') return `${monster.monsterId}:idle`;
+  if (hasAttack || monster.mode === 'windup') {
+    const attackAnimation = monster.monsterId === 'ruins-bell-keeper'
+      && monster.pendingSkillId === 'ruins-bell-sweep'
+      ? 'attack-sweep'
+      : 'attack';
+    return `${monster.monsterId}:${attackAnimation}`;
+  }
   if (
     monster.mode === 'patrol'
     || monster.mode === 'chase'

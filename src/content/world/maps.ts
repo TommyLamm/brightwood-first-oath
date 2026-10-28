@@ -166,7 +166,7 @@ const blueprints: MapBlueprint[] = [
       { id: 'frost-pine-pass:west', x: 100, y: 600, targetMapId: 'frost-shore', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
       { id: 'frost-pine-pass:east', x: 2060, y: 600, targetMapId: 'frost-tide-cavern', targetSpawnId: 'left', requiredQuestId: 'q10', minLevel: 1 },
     ],
-    npcs: [],
+    npcs: [{ npcId: 'frost-route-marker', x: 1770, y: 430 }],
     monsters: [
       { monsterId: 'frost-crab', x: 680, roamLeft: 570, roamRight: 790 },
       { monsterId: 'frost-crab', x: 1170, roamLeft: 1060, roamRight: 1280 },
@@ -258,6 +258,7 @@ const blueprints: MapBlueprint[] = [
     extraSpawns: [],
     portals: [
       { id: 'ruins-echo-gallery:west', x: 100, y: 600, targetMapId: 'ruins-root-causeway', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+      { id: 'ruins-echo-gallery:east', x: 2500, y: 600, targetMapId: 'ruins-bell-sanctum', targetSpawnId: 'entry', requiredQuestId: 'q17', minLevel: 1 },
     ],
     npcs: [
       { npcId: 'ruins-pathfinder', x: 300, y: 600 },
@@ -270,6 +271,17 @@ const blueprints: MapBlueprint[] = [
       { monsterId: 'ruins-string-puppet', x: 1570, roamLeft: 1510, roamRight: 1630 },
       { monsterId: 'ruins-bell-prowler', x: 2000, roamLeft: 1940, roamRight: 2070 },
     ],
+  },
+  {
+    id: 'ruins-bell-sanctum', name: '誓鐘內殿', width: 1800, themeKey: 'ruins-sanctum', musicKey: 'boss-ruins', safe: false, boss: true,
+    platforms: [],
+    ladders: [],
+    extraSpawns: [{ id: 'entry', x: 160, y: 600 }],
+    portals: [
+      { id: 'ruins-bell-sanctum:west', x: 100, y: 600, targetMapId: 'ruins-echo-gallery', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
+    ],
+    npcs: [],
+    monsters: [{ monsterId: 'ruins-bell-keeper', x: 1200, roamLeft: 700, roamRight: 1560 }],
   },
   {
     id: 'sand-dune-pass', name: '砂丘關道', width: 2600, themeKey: 'sand-dune', musicKey: 'theme-sands', safe: false, boss: false,

@@ -106,7 +106,7 @@ export const quests: Record<Id, QuestDef> = {
     summary: '交付六枚霜牙，替雪痕海岸打開通往霜松隘道的北方路線。',
     acceptText: '請從霜牙雪狼身上收集六枚霜牙。集齊後回雪痕海岸找雪芽交付，北方隘道才會開放。',
     progressText: '背包裡還需要六枚霜牙；雪狼會在雪痕海岸一帶巡行。備齊後回雪痕海岸找雪芽報告，交付時霜牙會全部收走。',
-    completeText: '六枚霜牙已交付，雪痕海岸通往霜松隘道的北路現已開通。請回雪痕海岸找雪芽領取補給與金幣，再沿北路前進。',
+    completeText: '六枚霜牙已備妥，請回雪痕海岸找雪芽交付並領取補給；交付後北路才會開通。接下航標委託後，可由隘道梯路登上高台調查，再回雪痕海岸報告。',
   },
   q10: {
     id: 'q10', name: '冰甲蟹清障', giverNpcId: 'frost-guide', turnInNpcId: 'frost-guide', prerequisiteIds: ['q09'], minLevel: 1,
@@ -128,7 +128,7 @@ export const quests: Record<Id, QuestDef> = {
     summary: '擊敗冰潮守望獸，為霜雪群島的航道立下新的守望誓約。',
     acceptText: '請再次深入冰潮洞窟，擊敗冰潮守望獸，讓潮汐航道恢復平靜。完成後回雪痕海岸找雪芽報告，領取最後的謝禮。',
     progressText: '冰潮洞窟深處的守望獸仍在守著航道。擊敗牠後回雪痕海岸找雪芽回報；她會為群島的旅人準備一份實用謝禮。',
-    completeText: '冰潮守望獸已被擊敗，霜雪群島的航道也恢復平靜。請回雪痕海岸找雪芽完成最後回報，領取冰潮長鋒與金幣。',
+    completeText: '冰潮守望獸已被擊敗，群島航道也恢復平靜。請回雪痕海岸找雪芽領取冰潮長鋒與金幣；完成交付後，達到 Lv30 可由東門前往琥珀砂岸。',
   },
   q12: {
     id: 'q12', name: '琥珀鱗片的路標', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q11'], minLevel: 1,
@@ -150,7 +150,7 @@ export const quests: Record<Id, QuestDef> = {
     summary: '替琉砂擊退砂丘關道的日井甲蟲，探明通往日井盆地的古井遺跡。',
     acceptText: '砂丘關道深處有日井甲蟲擋住古井路徑。請在接取後擊退兩隻，再回琥珀砂岸找琉砂回報；領取謝禮後，東方通道便會開放。',
     progressText: '日井甲蟲仍守在砂丘關道，請擊退兩隻後回琥珀砂岸找琉砂報告。完成後由你親自領取謝禮，才會開放東門。',
-    completeText: '兩隻日井甲蟲已被擊退。請回琥珀砂岸找琉砂領取金幣與經驗，通往日井盆地的東門將在領獎後開放。',
+    completeText: '兩隻日井甲蟲已被擊退。請回琥珀砂岸找琉砂領取金幣與經驗，通往日井盆地的東門將在領獎後開放；開門後也可接下盆地歇腳委託，完成後再回岸邊報告。',
   },
   q14: {
     id: 'q14', name: '日井守衛的誓約', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q13'], minLevel: 1,
@@ -159,7 +159,7 @@ export const quests: Record<Id, QuestDef> = {
     summary: '擊敗日井守衛並回琉砂處領取日井誓刃，完成黃金沙海的守望誓約。',
     acceptText: '日井祭壇的日井守衛仍看守著古井誓約。請擊敗守衛，再回琥珀砂岸找琉砂領取誓刃。',
     progressText: '日井守衛尚未倒下；請前往日井祭壇擊敗牠一次，再回琥珀砂岸找琉砂報告。',
-    completeText: '日井守衛已在本次誓約中被擊敗。請回琥珀砂岸找琉砂手動領取日井誓刃與一千八百金幣。',
+    completeText: '日井守衛已在本次誓約中被擊敗。請回琥珀砂岸找琉砂手動領取日井誓刃與一千八百金幣；完成交付後，南方航標會指向潮痕營站。',
   },
   q15: {
     id: 'q15', name: '南方的錯拍', giverNpcId: 'sands-guide', turnInNpcId: 'ruins-archivist', prerequisiteIds: ['q14'], minLevel: 1,
@@ -193,6 +193,24 @@ export const quests: Record<Id, QuestDef> = {
     progressText: '兩座碑與斷弦木偶的目標仍未全數完成，三項目標可依方便順序進行。完成後回到回聲長廊找行舟報告，親自領取藥水與金幣。',
     completeText: '兩段碑文與長廊清障都已完成。請回到回聲長廊找行舟手動領取四瓶大紅、兩瓶大藍與八百金幣。',
   },
+  q18: {
+    id: 'q18', name: '讓誓鐘歇息', giverNpcId: 'ruins-pathfinder', turnInNpcId: 'ruins-archivist', prerequisiteIds: ['q17'], minLevel: 1,
+    objectives: [{ type: 'kill', targetId: 'ruins-bell-keeper', count: 1 }], consumeItems: [],
+    reward: { exp: 0, coins: 1600, items: [{ itemId: 'oathfarer-circlet', quantity: 1 }] },
+    summary: '先向行舟接取內殿委託，再前往誓鐘內殿擊敗失序司鐘者，替舊航標找回安穩節拍。',
+    acceptText: '先在回聲長廊向行舟接取委託，再由東門進入誓鐘內殿擊敗司鐘者；完成後返回潮痕營站向芷衡手動領取守誓旅冠與一千六百金幣。',
+    progressText: '失序司鐘者尚未在本次委託中倒下；接取後進入誓鐘內殿完成戰鬥，再返回潮痕營站找芷衡手動領取守誓旅冠與一千六百金幣。',
+    completeText: '司鐘者已在本次委託中被擊敗；請回到潮痕營站找芷衡手動領取守誓旅冠和一千六百金幣，之後可接下返回木葉鎮的歸途任務。',
+  },
+  q19: {
+    id: 'q19', name: '帶回歸途', giverNpcId: 'ruins-archivist', turnInNpcId: 'mentor', prerequisiteIds: ['q18'], minLevel: 1,
+    objectives: [{ type: 'reach', targetId: 'town', count: 1 }], consumeItems: [],
+    reward: { exp: 0, coins: 300, items: [] },
+    summary: '帶著司鐘者落幕的消息回到木葉鎮，向岩嶺教官回報，替這段旅程留下收束。',
+    acceptText: '誓鐘已歇，請從潮痕營站啟程回到木葉鎮；找到岩嶺教官回報旅途，並向他手動領取三百金幣，完成此段主線。',
+    progressText: '你已接受返程；若曾到過木葉鎮，目標會立即完成，仍請回木葉鎮找岩嶺教官手動領取三百金幣，為此段旅途收尾。',
+    completeText: '你已回到木葉鎮，請再找岩嶺教官手動領取三百金幣並完成旅途回報；守誓旅冠可穿戴或出售，不影響這段主線的完成。',
+  },
   q20: {
     id: 'q20', name: '留給旅人的鈴聲', giverNpcId: 'ruins-pathfinder', turnInNpcId: 'ruins-pathfinder', prerequisiteIds: ['q16'], minLevel: 1,
     objectives: [
@@ -205,5 +223,27 @@ export const quests: Record<Id, QuestDef> = {
     acceptText: '請在回聲長廊擊退三隻巡鈴石獸並收集三片失聲鈴片。備齊後回到回聲長廊找行舟交付，領取藥水與金幣。',
     progressText: '巡鈴石獸或失聲鈴片尚未達標；集齊後回到回聲長廊找行舟交付三片，領取藥水與金幣。',
     completeText: '三隻巡鈴石獸已擊退，三片失聲鈴片也已備妥。請回到回聲長廊找行舟手動交付並領取四瓶大紅與六百金幣。',
+  },
+  q21: {
+    id: 'q21', name: '風雪中的航標', giverNpcId: 'frost-guide', turnInNpcId: 'frost-guide', prerequisiteIds: ['q09'], minLevel: 1,
+    objectives: [{ type: 'inspect', targetId: 'frost-route-marker', count: 1 }], consumeItems: [],
+    reward: { exp: 0, coins: 500, items: [{ itemId: 'large-red', quantity: 3 }, { itemId: 'large-blue', quantity: 2 }] },
+    summary: '調查霜松隘道高台的航標，辨認風雪中的舊航線並向雪芽回報。',
+    acceptText: '請沿霜松隘道既有梯路登上高台，調查一次霜松航標，記下它指向的舊航線。完成後回雪痕海岸找雪芽報告。',
+    progressText: '霜松隘道高台的霜松航標尚未調查；沿隘道既有梯路上行後，靠近航標讀取石刻。完成後回雪痕海岸找雪芽報告。',
+    completeText: '霜松航標的方向已記錄，風雪中的舊航線也重新辨明。請回雪痕海岸找雪芽手動領取三瓶大紅、兩瓶大藍與五百金幣。',
+  },
+  q22: {
+    id: 'q22', name: '日井旁的歇腳處', giverNpcId: 'sands-guide', turnInNpcId: 'sands-guide', prerequisiteIds: ['q13'], minLevel: 1,
+    objectives: [
+      { type: 'reach', targetId: 'sand-sunwell-basin', count: 1 },
+      { type: 'kill', targetId: 'sunwell-beetle', count: 2 },
+    ],
+    consumeItems: [],
+    reward: { exp: 0, coins: 600, items: [{ itemId: 'large-red', quantity: 4 }, { itemId: 'large-blue', quantity: 2 }] },
+    summary: '抵達日井盆地並擊退兩隻甲蟲，替往來旅人清出一處安全歇腳點。',
+    acceptText: '日井盆地旁有處舊歇腳地，請先抵達盆地，再擊退接取後遇見的兩隻日井甲蟲。完成後回琥珀砂岸找琉砂報告。',
+    progressText: '請抵達日井盆地並擊退兩隻日井甲蟲，清出可歇腳的空地。兩項目標完成後回琥珀砂岸找琉砂報告。',
+    completeText: '日井盆地的歇腳處已清理妥當，旅人能在此短暫休整。請回琥珀砂岸找琉砂手動領取四瓶大紅、兩瓶大藍與六百金幣。',
   },
 };

@@ -144,7 +144,7 @@ describe('persistence', () => {
     expect(raw).toBeDefined();
     const envelope = JSON.parse(raw!) as { formatVersion: number; data: SaveData; savedAt: string };
     expect(Object.keys(envelope).sort()).toEqual(['data', 'formatVersion', 'savedAt']);
-    expect(envelope).toMatchObject({ formatVersion: 3, data: savedData });
+    expect(envelope).toMatchObject({ formatVersion: 5, data: savedData });
     expect(typeof envelope.savedAt).toBe('string');
     persistence.dispose();
 
@@ -152,6 +152,139 @@ describe('persistence', () => {
     const outcome = await restored.initialize();
     expect(outcome).toMatchObject({ mode: 'local', status: 'ready', data: savedData });
     restored.dispose();
+  });
+
+  it.each([1, 2, 3, 4])('requires explicit, verified backup before upgrading local format %i', async (formatVersion) => {
+    const storage = new MemoryStorage();
+    const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
+    const oldData = makeSave();
+    oldData.player.name = `format-${formatVersion}`;
+    oldData.quests = { q01: { status: 'active', counters: { snail: 2 } } };
+    const raw = JSON.stringify({ formatVersion, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    storage.entries.set(key, raw);
+    const statuses: SaveStatus[] = [];
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage, cloud: null, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+
+    const loaded = await persistence.initialize();
+    expect(loaded).toMatchObject({
+      mode: 'local',
+      status: 'upgradeRequired',
+      data: oldData,
+      saveUpgrade: { formatVersion, source: 'local' },
+    });
+    persistence.checkpoint({ ...oldData, player: { ...oldData.player, coins: oldData.player.coins + 1 } });
+    expect(storage.entries.get(key)).toBe(raw);
+    expect(storage.setItem).not.toHaveBeenCalled();
+
+    persistence.confirmSaveUpgrade();
+    const backupKey = `${key}:format${formatVersion}-backup`;
+    expect(storage.entries.get(backupKey)).toBe(raw);
+    const upgraded = JSON.parse(storage.entries.get(key)!) as { formatVersion: number; data: SaveData };
+    expect(upgraded.formatVersion).toBe(5);
+    expect(upgraded.data).toEqual(oldData);
+    expect(statuses).toContain('localSaved');
+    persistence.dispose();
+  });
+
+  it('stops local upgrade when the format backup key contains different bytes', async () => {
+    const storage = new MemoryStorage();
+    const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
+    const oldData = makeSave();
+    const raw = JSON.stringify({ formatVersion: 4, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    const backupKey = `${key}:format4-backup`;
+    storage.entries.set(key, raw);
+    storage.entries.set(backupKey, 'different backup bytes');
+    const statuses: SaveStatus[] = [];
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage, cloud: null, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+
+    expect((await persistence.initialize()).status).toBe('upgradeRequired');
+    persistence.confirmSaveUpgrade();
+    expect(statuses).toContain('incompatible');
+    expect(storage.entries.get(key)).toBe(raw);
+    expect(storage.entries.get(backupKey)).toBe('different backup bytes');
+    expect(storage.setItem).not.toHaveBeenCalled();
+    persistence.dispose();
+  });
+
+  it('stops local upgrade when the exact backup cannot be read back', async () => {
+    const entries = new Map<string, string>();
+    const setItem = vi.fn((storageKey: string, value: string) => entries.set(storageKey, value));
+    const storage: StorageLike = {
+      getItem: (storageKey) => storageKey.endsWith(':format4-backup') ? null : entries.get(storageKey) ?? null,
+      setItem,
+      removeItem: (storageKey) => entries.delete(storageKey),
+    };
+    const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
+    const oldData = makeSave();
+    const raw = JSON.stringify({ formatVersion: 4, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    entries.set(key, raw);
+    const statuses: SaveStatus[] = [];
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage, cloud: null, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+
+    expect((await persistence.initialize()).status).toBe('upgradeRequired');
+    persistence.confirmSaveUpgrade();
+    expect(statuses).toContain('saveError');
+    expect(entries.get(key)).toBe(raw);
+    expect(setItem).toHaveBeenCalledTimes(1);
+    expect(setItem).toHaveBeenCalledWith(`${key}:format4-backup`, raw);
+    persistence.dispose();
+  });
+
+  it('waits for explicit cloud upgrade confirmation and never retries an incompatible write as format 4', async () => {
+    const oldData = makeSave();
+    const incompatible = Object.assign(new Error('format is not supported by the published game'), {
+      machineCode: 'SAVE_FORMAT_INCOMPATIBLE',
+    });
+    const statuses: SaveStatus[] = [];
+    const saveProgress = vi.fn(async () => { throw incompatible; });
+    const cloud = cloudPort({
+      loadProgress: vi.fn(async () => ({
+        data: oldData,
+        revision: 7,
+        formatVersion: 4,
+        gameVersion: 'test',
+        updatedAt: '2025-01-01T00:00:00.000Z',
+      })),
+      saveProgress,
+    });
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage: null, cloud, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+
+    const loaded = await persistence.initialize();
+    expect(loaded).toMatchObject({ status: 'upgradeRequired', saveUpgrade: { formatVersion: 4, source: 'cloud' }, data: oldData });
+    expect(saveProgress).not.toHaveBeenCalled();
+    persistence.confirmSaveUpgrade();
+    await waitForStatus(statuses, 'incompatible');
+    expect(saveProgress).toHaveBeenCalledTimes(1);
+    expect(saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 5, revision: 7 });
+    await persistence.retry();
+    expect(saveProgress).toHaveBeenCalledTimes(1);
+    persistence.dispose();
+  });
+
+  it('continues to reject unknown quests and counters under format 5 validation', () => {
+    const unknownQuest = makeSave();
+    unknownQuest.quests = { q999: { status: 'active', counters: {} } };
+    const questResult = validateSave(unknownQuest, catalog);
+    expect(questResult.ok).toBe(false);
+    if (!questResult.ok) expect(questResult.message).toContain('未知任務');
+
+    const unknownCounter = makeSave();
+    unknownCounter.quests = { q01: { status: 'active', counters: { 'unlisted-target': 1 } } };
+    const counterResult = validateSave(unknownCounter, catalog);
+    expect(counterResult.ok).toBe(false);
+    if (!counterResult.ok) expect(counterResult.message).toContain('計數器');
   });
 
   it('rejects saves over 64 KiB without truncating data', () => {
@@ -197,8 +330,8 @@ describe('persistence', () => {
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
 
     const outcome = await persistence.initialize();
-    expect(outcome).toMatchObject({ mode: 'local', status: 'ready' });
-    if (outcome.status === 'ready' && outcome.data) {
+    expect(outcome).toMatchObject({ mode: 'local', status: 'upgradeRequired', saveUpgrade: { formatVersion: 1, source: 'local' } });
+    if (outcome.status === 'upgradeRequired' && outcome.data) {
       expect(outcome.data.quests).not.toHaveProperty('q12');
       expect(getQuestView(outcome.data, 'q12', catalog).status).toBe('available');
     }
@@ -218,7 +351,7 @@ describe('persistence', () => {
     })) as SaveData['quests'];
 
     const result = validateSave(legacy, catalog);
-    expect(SAVE_FORMAT_VERSION).toBe(3);
+    expect(SAVE_FORMAT_VERSION).toBe(5);
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value.quests).not.toHaveProperty('q13');

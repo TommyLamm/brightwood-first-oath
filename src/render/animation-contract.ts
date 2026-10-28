@@ -15,6 +15,8 @@ export function animationConformsToUse(imageKey: string, state: string, animatio
     ? { idle: 4, walk: 6, jump: 2, climb: 4, attack: 6, hurt: 2, dead: 4, buff: 4 }
     : imageKey.startsWith('actor:') && state.startsWith('npc:')
       ? { idle: 2 }
+      : imageKey === 'actor:ruins-bell-keeper'
+        ? { idle: 2, walk: 6, attack: 4, 'attack-sweep': 4, hurt: 2, dead: 4 }
       : imageKey.startsWith('actor:')
         ? imageKey === 'actor:sand-scorpion' || imageKey === 'actor:sunwell-beetle' || imageKey === 'actor:sunwell-sentinel'
           ? { idle: 2, walk: 4, attack: 4, hurt: 2, dead: 4 }
@@ -32,13 +34,17 @@ export function animationConformsToUse(imageKey: string, state: string, animatio
         : { [animationState]: 60 };
   const frameMs = expectedFrameMs[animationState];
   if (frameMs !== undefined && animation.frameMs.some((value) => value !== frameMs)) return false;
-  const expectedFrameSequenceMs = imageKey === 'actor:ruins-moss-carapace' && animationState === 'attack'
-    ? [275, 275, 80, 770]
-    : imageKey === 'actor:ruins-string-puppet' && animationState === 'attack'
-      ? [500, 500, 100, 900]
-      : imageKey === 'actor:ruins-bell-prowler' && animationState === 'attack'
-        ? [550, 550, 100, 900]
-        : undefined;
+  const expectedFrameSequenceMs = imageKey === 'actor:ruins-bell-keeper' && animationState === 'attack'
+    ? [450, 450, 100, 1000]
+    : imageKey === 'actor:ruins-bell-keeper' && animationState === 'attack-sweep'
+      ? [600, 600, 100, 1000]
+      : imageKey === 'actor:ruins-moss-carapace' && animationState === 'attack'
+        ? [275, 275, 80, 770]
+        : imageKey === 'actor:ruins-string-puppet' && animationState === 'attack'
+          ? [500, 500, 100, 900]
+          : imageKey === 'actor:ruins-bell-prowler' && animationState === 'attack'
+            ? [550, 550, 100, 900]
+            : undefined;
   if (expectedFrameSequenceMs !== undefined
     && (animation.frameMs.length !== expectedFrameSequenceMs.length
       || animation.frameMs.some((value, index) => value !== expectedFrameSequenceMs[index]))) return false;

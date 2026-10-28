@@ -18,6 +18,7 @@ import {
   isAncientRuinsMapId,
   mapLevelLabel,
   portalRequirements,
+  savedProgressDisplayMapId,
 } from '../src/ui/world-map-model.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -28,9 +29,25 @@ function save() {
 }
 
 describe('world atlas information', () => {
+  it('shows the repaired Guardian resume map and preserves every other saved map label', () => {
+    expect(savedProgressDisplayMapId('guardian-arena')).toBe('mine-gate');
+    for (const bossMapId of ['frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']) {
+      expect(savedProgressDisplayMapId(bossMapId)).toBe(bossMapId);
+      expect(worldCatalog.maps[savedProgressDisplayMapId(bossMapId)]?.name).toBe(worldCatalog.maps[bossMapId]?.name);
+    }
+    expect(worldCatalog.maps[savedProgressDisplayMapId('guardian-arena')]?.name).toBe('古礦入口');
+  });
+
   it('keeps Leaf Isle coordinates separate and derives Frost Isles nodes from real catalog maps', () => {
     const leafIds = Object.keys(worldCatalog.maps).filter((id) => atlasScopeForMapId(id) === 'world').sort();
     expect(Object.keys(WORLD_LANDMARKS).sort()).toEqual(leafIds);
+    expect([
+      Object.keys(WORLD_LANDMARKS).length,
+      Object.keys(FROST_LANDMARKS).length,
+      Object.keys(GOLD_SAND_LANDMARKS).length,
+      Object.keys(ANCIENT_RUINS_LANDMARKS).length,
+    ]).toEqual([7, 3, 4, 4]);
+    expect(Object.keys(worldCatalog.maps)).toHaveLength(18);
     expect(Object.keys(FROST_LANDMARKS)).toEqual(['frost-shore', 'frost-pine-pass', 'frost-tide-cavern']);
     expect(PLANNED_REGIONS.map(({ name }) => name)).toEqual(['黃金沙海', '遠古遺跡']);
 
@@ -121,18 +138,19 @@ describe('world atlas information', () => {
     expect(frostIslesOverview(catalog, data)).toMatchObject({ current: true, exploredCount: 1, totalCount: 3 });
   });
 
-  it('shows only the three playable ruins maps, gates the chart entry on claimed q14, and keeps selection informational', () => {
+  it('shows only the four playable ruins maps, gates the chart entry on claimed q14, and keeps selection informational', () => {
     expect(ANCIENT_RUINS_WORLD_LANDMARK).toEqual({ x: 69, y: 86 });
-    expect(Object.keys(ANCIENT_RUINS_LANDMARKS)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery']);
+    expect(Object.keys(ANCIENT_RUINS_LANDMARKS)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery', 'ruins-bell-sanctum']);
     expect(ANCIENT_RUINS_LANDMARKS['ruins-echo-gallery']).toMatchObject({ x: 67, y: 39 });
-    expect(Object.keys(worldCatalog.maps).filter(isAncientRuinsMapId).sort()).toEqual(['ruins-echo-gallery', 'ruins-root-causeway', 'ruins-tide-camp']);
+    expect(ANCIENT_RUINS_LANDMARKS['ruins-bell-sanctum']).toMatchObject({ x: 86, y: 22 });
+    expect(Object.keys(worldCatalog.maps).filter(isAncientRuinsMapId).sort()).toEqual(['ruins-bell-sanctum', 'ruins-echo-gallery', 'ruins-root-causeway', 'ruins-tide-camp']);
     expect(atlasScopeForMapId('ruins-tide-camp')).toBe('ruins');
 
     const data = save();
     data.location.mapId = 'sand-glass-shore';
     data.quests.q14 = { status: 'active', counters: {} };
     const locked = ancientRuinsOverview(catalog, data);
-    expect(locked).toMatchObject({ current: false, exploredCount: 0, totalCount: 3 });
+    expect(locked).toMatchObject({ current: false, exploredCount: 0, totalCount: 4 });
     expect(locked.entryRequirement).toEqual({ open: false, text: '需完成「日井守衛的誓約」並領獎' });
 
     data.quests.q14.status = 'claimed';
@@ -141,8 +159,8 @@ describe('world atlas information', () => {
     const beforeSelection = JSON.stringify(data);
     const ruins = atlasViewModel(catalog, data, 'ruins-root-causeway');
     expect(ruins.scope).toBe('ruins');
-    expect(ruins.maps.map(({ id }) => id)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery']);
-    expect(ruins.totalCount).toBe(3);
+    expect(ruins.maps.map(({ id }) => id)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery', 'ruins-bell-sanctum']);
+    expect(ruins.totalCount).toBe(4);
     expect(ruins.selectedMap?.id).toBe('ruins-root-causeway');
     expect(data.location.mapId).toBe('sand-glass-shore');
     expect(JSON.stringify(data)).toBe(beforeSelection);

@@ -267,6 +267,15 @@ const RECIPES = {
     mixInto(out, ring(r, 0.4, [[739.99, 0.16, 0.8], [1479.98, 0.065, 0.5]], { decay: 0.19, level: 0.68 }), 0.075, 0.24);
     return out;
   },
+  'oath-bell-restored': (r) => {
+    const out = buffer(1.05);
+    // A soft stone latch impact opens into a clear, layered bell chord and a short shimmer.
+    mixInto(out, thump(0.28, 176, 62, { decay: 0.12, drive: 1.3 }), 0, 0.24);
+    mixInto(out, ring(r, 0.98, [[523.25, 0.42, 1], [783.99, 0.28, 0.82], [1046.5, 0.15, 0.66], [1568, 0.07, 0.5]], { decay: 0.56, level: 0.76 }), 0.018, 0.72);
+    mixInto(out, ring(r, 0.76, [[659.25, 0.18, 0.75], [1318.5, 0.08, 0.52]], { decay: 0.36, level: 0.62 }), 0.12, 0.28);
+    mixInto(out, sparkle(r, 0.8, { count: 5, low: 1174, high: 2349, spread: 0.46, decay: 0.18 }), 0.14, 0.14);
+    return out;
+  },
 };
 
 export const SFX_KEYS = Object.keys(RECIPES);
@@ -275,7 +284,7 @@ export const SFX_KEYS = Object.keys(RECIPES);
 const TRIM = {
   'ui-click': -9, 'panel-open': -8, dialogue: -7, jump: -6, attack: -3, 'attack-heavy': -1, 'attack-sweep': -2,
   hit: -2, 'crit-hit': -1, hurt: -2, pickup: -6, potion: -5, equip: -5, guard: -4, 'monster-die': -4,
-  telegraph: -3, 'boss-phase': 0, portal: -4, 'stele-tune': -5,
+  telegraph: -3, 'boss-phase': 0, portal: -4, 'stele-tune': -5, 'oath-bell-restored': -4,
 };
 
 export function renderSfx(key) {

@@ -48,6 +48,16 @@ describe('renderer animation selection', () => {
     expect(selectMonsterAnimation({ ...base, mode: 'idle' }, 0, false)).toBe('snail:idle');
   });
 
+  it('selects the Bell Keeper attack strip from its pending skill and idles during its phase transition', () => {
+    const base = { monsterId: 'ruins-bell-keeper', movement: movement() };
+    expect(selectMonsterAnimation({ ...base, mode: 'windup', pendingSkillId: 'ruins-bell-sweep' }, 0, true))
+      .toBe('ruins-bell-keeper:attack-sweep');
+    expect(selectMonsterAnimation({ ...base, mode: 'recovery', pendingSkillId: 'ruins-bell-slam' }, 0, true))
+      .toBe('ruins-bell-keeper:attack');
+    expect(selectMonsterAnimation({ ...base, mode: 'phase-transition', pendingSkillId: null }, 0, true))
+      .toBe('ruins-bell-keeper:idle');
+  });
+
   it('maps attack frames across the complete skill duration', () => {
     const totalDurationMs = skillAnimationDuration({ windupMs: 120, activeMs: 180, recoveryMs: 300 });
     const animation = {

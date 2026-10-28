@@ -15,9 +15,12 @@ const catalog = { rules: rulesCatalog, world: worldCatalog };
 describe('Echo Gallery world content', () => {
   it('requires claimed q16 for entry, keeps the west return free, and connects both stele platforms', () => {
     expect(validateWorld(worldCatalog, rulesCatalog).ok).toBe(true);
-    expect(Object.keys(worldCatalog.maps)).toHaveLength(17);
-    expect(Object.keys(worldCatalog.npcs)).toHaveLength(12);
-    expect(Object.keys(worldCatalog.quests)).toHaveLength(18);
+    expect(Object.keys(worldCatalog.maps)).toHaveLength(18);
+    expect(Object.keys(worldCatalog.npcs)).toHaveLength(13);
+    expect(worldCatalog.npcs['frost-route-marker']).toBeDefined();
+    expect(Object.keys(worldCatalog.quests)).toHaveLength(22);
+    expect(worldCatalog.quests.q21).toBeDefined();
+    expect(worldCatalog.quests.q22).toBeDefined();
 
     const causeway = worldCatalog.maps['ruins-root-causeway']!;
     const gallery = worldCatalog.maps['ruins-echo-gallery']!;
@@ -53,6 +56,25 @@ describe('Echo Gallery world content', () => {
         expect(Math.hypot(portal.x - npc.x, portal.y - npc.y), `${map.id}/${portal.id}/${npc.npcId}`).toBeGreaterThan(128);
       }
     }
+
+    const sanctumEntry = gallery.portals.find(({ targetMapId }) => targetMapId === 'ruins-bell-sanctum')!;
+    const sanctum = worldCatalog.maps['ruins-bell-sanctum']!;
+    const freeReturn = sanctum.portals.find(({ targetMapId }) => targetMapId === 'ruins-echo-gallery')!;
+    const q17Ready = beforeBSave();
+    q17Ready.quests.q17 = {
+      status: 'active',
+      counters: { 'ruins-stele-west': 1, 'ruins-stele-east': 1, 'ruins-string-puppet': 2 },
+    };
+    expect(getQuestView(q17Ready, 'q17', catalog).status).toBe('ready');
+    expect(portalRequirements(sanctumEntry, q17Ready, catalog).open).toBe(false);
+    q17Ready.quests.q17.status = 'claimed';
+    expect(portalRequirements(sanctumEntry, q17Ready, catalog).open).toBe(true);
+    expect(freeReturn.requiredQuestId).toBeNull();
+    expect(portalRequirements(freeReturn, q17Ready, catalog).open).toBe(true);
+    expect(sanctum).toMatchObject({ id: 'ruins-bell-sanctum', width: 1800, height: 720, safe: false, boss: true });
+    expect(sanctum.spawns.find(({ id }) => id === 'entry')).toMatchObject({ x: 160, y: 600 });
+    expect(sanctum.monsters.map(({ monsterId, x, roamLeft, roamRight }) => [monsterId, x, roamLeft, roamRight]))
+      .toEqual([['ruins-bell-keeper', 1200, 700, 1560]]);
   });
 
   it('keeps q17 and q20 independent and requires three bell fragments at turn-in', () => {
@@ -92,8 +114,8 @@ describe('Echo Gallery world content', () => {
   it('adds the third real ruins node and rejects invalid inspect targets, placements, or stage gates', () => {
     expect(ANCIENT_RUINS_LANDMARKS['ruins-echo-gallery']).toMatchObject({ x: 67, y: 39 });
     const atlas = atlasViewModel(catalog, beforeBSave(), 'ruins-echo-gallery');
-    expect(atlas.maps.map(({ id }) => id)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery']);
-    expect(atlas.totalCount).toBe(3);
+    expect(atlas.maps.map(({ id }) => id)).toEqual(['ruins-tide-camp', 'ruins-root-causeway', 'ruins-echo-gallery', 'ruins-bell-sanctum']);
+    expect(atlas.totalCount).toBe(4);
 
     const wrongTarget = structuredClone(worldCatalog);
     const westObjective = wrongTarget.quests.q17!.objectives[0]!;

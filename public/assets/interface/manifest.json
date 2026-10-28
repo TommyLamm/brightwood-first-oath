@@ -571,6 +571,16 @@
       "displayHeight": 32,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "item:oathfarer-circlet",
+      "url": "assets/interface/item-oathfarer-circlet-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [

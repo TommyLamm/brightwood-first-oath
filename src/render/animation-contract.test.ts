@@ -51,4 +51,24 @@ describe('ruins animation metadata contract', () => {
     expect(pickAnimationFrame(prowlerAttack, 1100, 0)).toBe(14);
     expect(pickAnimationFrame(prowlerAttack, 1200, 0)).toBe(15);
   });
+
+  it('requires the Bell Keeper six-animation contract and keeps both attack cadences authored', () => {
+    const states = [
+      animation('ruins-bell-keeper:idle', 'actor:ruins-bell-keeper', [0, 1], [200, 200], true),
+      animation('ruins-bell-keeper:attack-sweep', 'actor:ruins-bell-keeper', [2, 3, 4, 5], [600, 600, 100, 1000]),
+      animation('ruins-bell-keeper:walk', 'actor:ruins-bell-keeper', [6, 7, 8, 9, 10, 11], [120, 120, 120, 120, 120, 120], true),
+      animation('ruins-bell-keeper:attack', 'actor:ruins-bell-keeper', [12, 13, 14, 15], [450, 450, 100, 1000]),
+      animation('ruins-bell-keeper:hurt', 'actor:ruins-bell-keeper', [18, 19], [100, 100]),
+      animation('ruins-bell-keeper:dead', 'actor:ruins-bell-keeper', [24, 25, 26, 27], [100, 100, 100, 100]),
+    ];
+    for (const entry of states) {
+      expect(animationConformsToUse('actor:ruins-bell-keeper', entry.key, entry)).toBe(true);
+    }
+
+    const sweep = states[1]!;
+    const slam = states[3]!;
+    expect(animationConformsToUse('actor:ruins-bell-keeper', sweep.key, { ...sweep, frameMs: [425, 425, 100, 1000] })).toBe(false);
+    expect(pickAnimationFrame(sweep, 1200, 0)).toBe(4);
+    expect(pickAnimationFrame(slam, 900, 0)).toBe(14);
+  });
 });

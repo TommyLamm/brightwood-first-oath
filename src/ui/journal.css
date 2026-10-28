@@ -241,11 +241,16 @@
 .ms-quick-slot__label, .ms-quick-slot__state { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* Potion counts were a 9 px shadowed number that blurred into the bronze frame; give them the same dark pill as the bag. */
 .ms-quick-slot--item .ms-quick-slot__state { width: auto; height: auto; right: 4px; bottom: 4px; max-width: calc(100% - 6px); clip-path: none; padding: 0 3px; border-radius: 3px; font-size: 11px; font-weight: 800; line-height: 15px; color: #fff3d2; background: rgba(35, 24, 14, .85); text-shadow: none; }
+.ms-quick-slot:is(.is-unavailable, .is-buff-active, .has-action-feedback) .ms-quick-slot__state {
+  left: 50%; right: auto; bottom: 2px; width: max-content; max-width: calc(100% - 4px); height: auto; box-sizing: border-box;
+  transform: translateX(-50%); clip-path: none; padding: 1px 2px; border-radius: 3px; font-size: 10px; font-weight: 800; line-height: 12px;
+  text-align: center; text-overflow: clip; white-space: normal; color: #f3e4c4; background: #30291fe6;
+}
 .maple-ui .ms-quick-slot:disabled { background: var(--journal-slot) center / 100% 100% no-repeat; border: 0; color: #d7c5a6; box-shadow: none; }
 .ms-quick-slot:disabled .ms-quick-slot__icon { opacity: .48; filter: saturate(.4); }
-.ms-quick-slot.is-unavailable .ms-quick-slot__state { width: auto; height: auto; max-width: 100%; bottom: 4px; clip-path: none; color: #f3e4c4; background: #30291fe6; padding: 0 3px; border-radius: 3px; font-size: 10px; line-height: 14px; }
 .maple-ui .ms-quick-slot.is-buff-active { box-shadow: 0 0 0 2px #8fd16a, 0 0 10px rgba(143, 209, 106, .7); }
-.ms-quick-slot.is-buff-active .ms-quick-slot__state { width: auto; height: auto; max-width: 100%; bottom: 4px; clip-path: none; color: #10240b; background: #9bd873; padding: 0 3px; border-radius: 3px; font-size: 10px; font-weight: 800; line-height: 14px; }
+.ms-quick-slot.is-buff-active .ms-quick-slot__state { color: #10240b; background: #9bd873; }
+.ms-quick-slot.has-action-feedback .ms-quick-slot__state { color: #fff3d2; background: rgba(35, 24, 14, .9); }
 .ms-quick-slot.is-buff-active:disabled .ms-quick-slot__icon { opacity: 1; filter: none; }
 
 .ms-controls { display: flex; flex-wrap: nowrap; justify-content: end; justify-self: end; align-items: end; gap: 4px; min-width: 0; max-width: 100%; }
@@ -411,6 +416,7 @@
   .ms-quickbar__slots { gap: 3px; }
   .ms-quick-slot__key { min-width: 19px; font-size: 8px; }
   .ms-quick-slot__icon, .ms-quick-slot__icon-image { width: 26px; height: 26px; }
+  .maple-ui.has-interaction-hint .ms-toast:not(.ms-toast--top) { left: 12px; right: 12px; transform: none; width: auto; max-width: none; bottom: 162px; padding: 2px 8px; font-size: 12px; line-height: 18px; box-shadow: none; }
 }
 
 /* While a panel is open the toast sits at the top edge instead of over the panel body. */

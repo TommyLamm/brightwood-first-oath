@@ -445,6 +445,25 @@
   font-size: 10px;
 }
 
+.ms-interaction-hint {
+  width: min(310px, 100%);
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 224, 151, .48);
+  border-radius: 8px;
+  color: #fff0bf;
+  background: rgba(17, 29, 40, .9);
+  box-shadow: 0 4px 12px rgba(3, 8, 13, .28);
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+.maple-ui.is-focus-resume-gated .ms-footer {
+  position: relative;
+  z-index: 51;
+}
+
 .ms-eyebrow {
   color: var(--ms-muted);
   font-size: 10px;
@@ -999,6 +1018,7 @@
   .ms-panel-host { top: 155px; right: 9px; bottom: 190px; width: min(680px, calc(100% - 18px)); max-height: none; }
   .ms-footer { right: 9px; bottom: 5px; left: 9px; }
   .ms-toast { bottom: 190px; }
+  .ms-interaction-hint { width: min(310px, 100%); padding: 5px 8px; }
 }
 
 @media (max-width: 620px) {
@@ -1015,6 +1035,7 @@
   .ms-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ms-volume-grid { grid-template-columns: minmax(0, 1fr); }
   .ms-screen-card { padding: 17px; }
+  .ms-interaction-hint { font-size: 10px; }
 }
 
 @media (max-height: 430px) {

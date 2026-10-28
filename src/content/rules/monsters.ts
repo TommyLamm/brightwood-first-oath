@@ -99,6 +99,12 @@ export const monsters: Record<Id, MonsterDef> = {
     attackWindupMs: 1100, attackCooldownMs: 2400, respawnMs: 9000, actorKey: 'actor:ruins-bell-prowler',
     drops: [{ itemId: 'muted-bell-fragment', chance: 1, min: 1, max: 1 }],
   },
+  'ruins-bell-keeper': {
+    id: 'ruins-bell-keeper', name: '失序司鐘者', level: 30, maxHp: 8000, attack: 60, defense: 28, exp: 0, coins: 0,
+    speed: 38, width: 88, height: 76, aggroRange: 460, attackRange: 360,
+    attackWindupMs: 900, attackCooldownMs: 0, respawnMs: 0, actorKey: 'actor:ruins-bell-keeper',
+    drops: [],
+  },
 };
 
 export const questDropByQuest: Readonly<Record<Id, { monsterId: Id; itemId: Id }>> = {

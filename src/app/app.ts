@@ -11,7 +11,7 @@ import { AppCommandQueue } from './command-queue.js';
 import { DEFAULT_KEY_BINDINGS, KeyboardControls, type GameAction, type KeyBindings } from './keyboard.js';
 import { appCommand, createInitialAppState, createUiSnapshot, type GameAppState, type StartupStatus, worldIsFrozen } from './state.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from './gameplay.js';
-import { createPersistence } from '../persistence/index.js';
+import { BRIGHTWOOD_GAME_ID, createPersistence, SAVE_FORMAT_VERSION } from '../persistence/index.js';
 
 export type AppStartupResult = {
   ready: boolean;
@@ -58,9 +58,15 @@ const ENGAGED_MONSTER_MODES = new Set(['chase', 'windup', 'dash', 'recovery']);
 const COMBAT_MUSIC_RANGE_PX = 720;
 /** Combat music lingers this long after the last threat so it doesn't flap at the edge of aggro. */
 const COMBAT_MUSIC_HOLD_MS = 4500;
-const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel']);
+const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const ATTACK_SOUND_BY_SKILL: Record<string, string> = { 'heavy-strike': 'attack-heavy', sweep: 'attack-sweep' };
 const TUNABLE_STELE_IDS = ['ruins-stele-west', 'ruins-stele-east'] as const;
+const FOCUS_DISCARDED_COMMAND_TYPES: ReadonlySet<CommandDraft['type']> = new Set([
+  'attack', 'pickup', 'interact', 'inspect', 'useItem', 'togglePause',
+]);
+const FOCUS_TRANSIENT_GAMEPLAY_TYPES: ReadonlySet<CommandDraft['type']> = new Set([
+  'attack', 'pickup', 'interact', 'inspect', 'useItem',
+]);
 
 /** Owns one app state, command sequence, game clock, RNG and EntityId sequence. */
 export class GameApp {
@@ -73,6 +79,7 @@ export class GameApp {
   private pendingGameplayCommands: GameCommand[] = [];
   private persistence: Persistence | null = null;
   private persistenceMode: 'local' | 'cloud' | 'preview' | 'memory' = 'memory';
+  private legacyImportDismissedForSession = false;
   private temporaryPlay = false;
   private lastUiClickAt = -Infinity;
   private saveFingerprint: string | null = null;
@@ -85,8 +92,8 @@ export class GameApp {
   private audioIntensity: MusicIntensity = 'explore';
   private audioDucked: boolean | null = null;
   private lastThreatAtMs = -Infinity;
-  /** Last seen dead/enraged state per monster; states can be mutated in place between frames. */
-  private audioMonsterStates = new Map<EntityId, { dead: boolean; enraged: boolean }>();
+  /** Last seen combat/audio state per monster; states can be mutated in place between frames. */
+  private audioMonsterStates = new Map<EntityId, { dead: boolean; enraged: boolean; phaseTransitionStartedAtMs: number | null }>();
   private audioPaused: boolean | null = null;
   private audioSettingsFingerprint: string | null = null;
   private audioEventSequence = 0;
@@ -166,10 +173,26 @@ export class GameApp {
   }
 
   setWindowFocused(windowFocused: boolean): void {
-    if (this.stateValue.windowFocused === windowFocused) return;
-    this.setState({ ...this.stateValue, windowFocused });
+    const state = this.stateValue;
+    if (!windowFocused) {
+      this.keyboard?.input.releaseAll();
+      this.commands.discard(FOCUS_DISCARDED_COMMAND_TYPES);
+      this.pendingGameplayCommands = [];
+
+      const shouldRequireResume = state.focusResumeRequired
+        || (state.gameplay !== null && ['playing', 'paused', 'loading'].includes(state.screen));
+      let gameplay = state.gameplay;
+      if (gameplay?.bufferedAttack) {
+        gameplay = { ...gameplay };
+        delete gameplay.bufferedAttack;
+      }
+      if (state.windowFocused || shouldRequireResume !== state.focusResumeRequired || gameplay !== state.gameplay) {
+        this.setState({ ...state, windowFocused: false, focusResumeRequired: shouldRequireResume, gameplay });
+      }
+    } else if (!state.windowFocused) {
+      this.setState({ ...state, windowFocused: true });
+    }
     this.clock.clearAccumulator();
-    if (!windowFocused) this.pendingGameplayCommands = [];
   }
 
   update(deltaMs: number): void {
@@ -204,16 +227,25 @@ export class GameApp {
     }
     const lifecycleSequences = new Set(lifecycleCommands.map(({ seq }) => seq));
     const commandsWithoutStart = gameplayCommands.filter((command) => !lifecycleSequences.has(command.seq));
+    const commandsForNextStep = wasFrozen
+      ? commandsWithoutStart.filter(({ type }) => !FOCUS_TRANSIENT_GAMEPLAY_TYPES.has(type))
+      : commandsWithoutStart;
 
     if (wasFrozen) this.clock.clearAccumulator();
     if (worldIsFrozen(this.stateValue)) {
       this.clock.advance(deltaMs, true);
-      this.pendingGameplayCommands = [];
+      if (this.stateValue.focusResumeRequired) {
+        const safePendingCommands = this.pendingGameplayCommands.filter(({ type }) => !FOCUS_TRANSIENT_GAMEPLAY_TYPES.has(type));
+        const safeQueuedCommands = commandsForNextStep.filter(({ type }) => !FOCUS_TRANSIENT_GAMEPLAY_TYPES.has(type));
+        this.pendingGameplayCommands = [...safePendingCommands, ...safeQueuedCommands];
+      } else {
+        this.pendingGameplayCommands = [];
+      }
       return;
     }
 
     const frame = this.clock.advance(deltaMs, false);
-    this.pendingGameplayCommands.push(...commandsWithoutStart);
+    this.pendingGameplayCommands.push(...commandsForNextStep);
     if (frame.steps === 0) return;
 
     const catalog = this.stateValue.catalog;
@@ -337,13 +369,25 @@ export class GameApp {
     this.temporaryPlay = false;
     this.saveFingerprint = null;
     const persistence = createPersistence({
-      gameId: this.options.gameId ?? 'maplewood-swordsman',
+      gameId: this.options.gameId ?? BRIGHTWOOD_GAME_ID,
       storage: this.options.storage ?? null,
       cloud: this.options.cloud ?? null,
       catalog,
       onStatus: (saveStatus, message) => {
         if (this.persistence !== persistence) return;
-        this.setState({ ...this.stateValue, saveStatus, saveMessage: message ?? null });
+        const upgrade = this.stateValue.saveUpgrade;
+        const upgraded = upgrade?.source === 'local' && saveStatus === 'localSaved'
+          || upgrade?.source === 'cloud' && saveStatus === 'saved';
+        this.setState({
+          ...this.stateValue,
+          saveStatus,
+          saveMessage: upgraded
+            ? upgrade?.source === 'local'
+              ? `已備份 format ${upgrade.formatVersion} 原始存檔並升級至 format ${SAVE_FORMAT_VERSION}。`
+              : `format ${SAVE_FORMAT_VERSION} 已由平台確認保存。`
+            : message ?? null,
+          saveUpgrade: upgraded ? null : this.stateValue.saveUpgrade,
+        });
       },
     });
     this.persistence = persistence;
@@ -410,6 +454,10 @@ export class GameApp {
         this.handleNewGame(command.payload.name);
         return true;
       case 'continue':
+        if (this.stateValue.saveUpgrade) {
+          this.setToast('請先選擇備份並升級，或暫時遊玩；未升級前不會寫入新格式。');
+          return true;
+        }
         if (this.stateValue.screen === 'chapter' && this.stateValue.gameplay) {
           this.setState({ ...this.stateValue, screen: 'playing', saveMessage: null });
         } else if (this.stateValue.screen !== 'title' || !this.stateValue.gameplay) {
@@ -424,6 +472,36 @@ export class GameApp {
         return true;
       case 'retrySave':
         this.retryPersistence();
+        return true;
+      case 'confirmSaveUpgrade':
+        if (this.stateValue.screen !== 'title' || !this.stateValue.saveUpgrade
+          || !['upgradeRequired', 'saveError'].includes(this.stateValue.saveStatus) || !this.persistence) {
+          this.setToast('目前沒有可確認的存檔升級。');
+        } else {
+          this.persistence.confirmSaveUpgrade();
+        }
+        return true;
+      case 'importLegacySave':
+        if (this.stateValue.screen !== 'title' || !this.stateValue.legacyImportAvailable
+          || this.persistenceMode !== 'local' || this.temporaryPlay) {
+          this.setToast('目前沒有可匯入的舊版進度。');
+        } else {
+          void this.importLegacyProgress();
+        }
+        return true;
+      case 'dismissLegacyImport':
+        if (this.stateValue.screen !== 'title' || !this.stateValue.legacyImportAvailable) {
+          this.setToast('目前沒有可略過的舊版進度匯入。');
+        } else {
+          const message = '已暫不匯入；這台裝置保留的舊版進度沒有變更。';
+          this.legacyImportDismissedForSession = true;
+          this.setState({
+            ...this.stateValue,
+            saveMessage: null,
+            legacyImportAvailable: false,
+            legacyImportMessage: message,
+          });
+        }
         return true;
       case 'discardUnreadableSave':
         if (this.stateValue.screen !== 'title' || this.stateValue.saveStatus !== 'loadError') {
@@ -441,14 +519,14 @@ export class GameApp {
         return true;
       case 'returnTitle':
         if (this.stateValue.saveStatus === 'conflict') {
-          this.setState({ ...this.stateValue, screen: 'title', panels: [], saveMessage: '存檔衝突尚未解決；請選擇載入雲端版本。' });
+          this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: '存檔衝突尚未解決；請選擇載入雲端版本。' });
         } else if (!this.temporaryPlay && ['saving', 'saveError'].includes(this.stateValue.saveStatus)) {
           this.setToast('請先完成或重試存檔，再返回標題。');
         } else if (this.temporaryPlay) {
-          void this.reloadPersistence('已返回標題畫面。');
+          void this.reloadPersistence('已返回標題畫面。', true);
         } else {
           // Keep queued ordinary checkpoints alive; reinitializing here would cancel them.
-          this.setState({ ...this.stateValue, screen: 'title', panels: [], saveMessage: null });
+          this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: null });
         }
         return true;
       case 'setSettings': {
@@ -474,6 +552,10 @@ export class GameApp {
 
   private handleNewGame(name: string): void {
     const state = this.stateValue;
+    if (state.saveUpgrade && !this.temporaryPlay) {
+      this.setToast('請先處理舊格式存檔；可備份並升級，或選擇暫時遊玩。');
+      return;
+    }
     if (state.startupStatus !== 'ready' || !state.catalog || !state.assetManifests || !state.heroAnchors) {
       this.setToast('遊戲資產尚未就緒，暫時不能建立角色。');
       return;
@@ -499,7 +581,11 @@ export class GameApp {
       gameplay: started.gameplay,
       screen: 'playing',
       panels: [],
+      focusResumeRequired: false,
       saveMessage: this.temporaryPlay ? '暫時遊玩不會寫入本機或雲端存檔。' : null,
+      saveUpgrade: null,
+      legacyImportAvailable: false,
+      legacyImportMessage: null,
       worldRevision: state.worldRevision + 1,
     });
     this.checkpointIfChanged(started.gameplay.saveData);
@@ -534,8 +620,47 @@ export class GameApp {
       panels: [],
       saveStatus: 'unavailable',
       saveMessage: '暫時遊玩不會寫入本機或雲端存檔。',
+      saveUpgrade: null,
+      legacyImportAvailable: false,
+      legacyImportMessage: null,
       worldRevision: state.worldRevision + 1,
     });
+  }
+
+  private async importLegacyProgress(): Promise<void> {
+    const persistence = this.persistence;
+    const catalog = this.stateValue.catalog;
+    if (!persistence?.importLegacySave || !catalog || this.stateValue.startupStatus !== 'ready'
+      || !this.stateValue.legacyImportAvailable || this.persistenceMode !== 'local' || this.temporaryPlay) {
+      this.setToast('目前沒有可匯入的舊版進度。');
+      return;
+    }
+    const generation = ++this.operationGeneration;
+    this.saveFingerprint = null;
+    this.setState({
+      ...this.stateValue,
+      screen: 'loading',
+      panels: [],
+      saveStatus: 'loading',
+      saveMessage: '正在確認這台裝置的舊版進度…',
+      legacyImportAvailable: false,
+      legacyImportMessage: null,
+    });
+    try {
+      const outcome = await persistence.importLegacySave();
+      if (generation !== this.operationGeneration || this.persistence !== persistence) return;
+      this.applyLoadOutcome(outcome, 'title');
+    } catch (error) {
+      if (generation !== this.operationGeneration || this.persistence !== persistence) return;
+      this.setState({
+        ...this.stateValue,
+        screen: 'title',
+        saveStatus: 'loadError',
+        saveMessage: errorMessage(error, '舊版進度匯入未能完成；原件仍保留。'),
+        legacyImportAvailable: false,
+        legacyImportMessage: null,
+      });
+    }
   }
 
   private retryPersistence(): void {
@@ -551,7 +676,7 @@ export class GameApp {
     this.setToast('目前沒有需要重試的存檔作業。');
   }
 
-  private async reloadPersistence(successMessage: string): Promise<void> {
+  private async reloadPersistence(successMessage: string, clearFocusResume = false): Promise<void> {
     const persistence = this.persistence;
     const catalog = this.stateValue.catalog;
     if (!persistence || !catalog || this.stateValue.startupStatus !== 'ready') {
@@ -562,12 +687,23 @@ export class GameApp {
     this.temporaryPlay = false;
     this.saveFingerprint = null;
     persistence.invalidate();
-    this.setState({ ...this.stateValue, screen: 'loading', panels: [], saveStatus: 'loading', saveMessage: '正在重新載入存檔…' });
+    this.setState({
+      ...this.stateValue,
+      screen: 'loading',
+      panels: [],
+      ...(clearFocusResume ? { focusResumeRequired: false } : {}),
+      saveStatus: 'loading',
+      saveMessage: '正在重新載入存檔…',
+      saveUpgrade: null,
+      legacyImportAvailable: false,
+      legacyImportMessage: null,
+    });
     try {
       const outcome = await persistence.initialize();
       if (generation !== this.operationGeneration || this.persistence !== persistence) return;
       this.applyLoadOutcome(outcome, 'title');
-      if (outcome.status === 'ready' || outcome.status === 'localSaved' || outcome.status === 'previewOnly') {
+      if (!outcome.legacyImportAvailable
+        && (outcome.status === 'ready' || outcome.status === 'localSaved' || outcome.status === 'previewOnly')) {
         this.setState({ ...this.stateValue, saveMessage: successMessage });
       }
     } catch (error) {
@@ -596,7 +732,12 @@ export class GameApp {
       screen,
       panels: [],
       saveStatus: outcome.status,
-      saveMessage: repairedArenaLocation ? '首領戰存檔已安全返回礦道入口。' : null,
+      saveMessage: repairedArenaLocation ? '首領戰存檔已安全返回礦道入口。' : outcome.message ?? null,
+      saveUpgrade: outcome.saveUpgrade ?? null,
+      legacyImportAvailable: outcome.legacyImportAvailable === true && !this.legacyImportDismissedForSession,
+      legacyImportMessage: this.legacyImportDismissedForSession && outcome.legacyImportAvailable
+        ? '已暫不匯入；這台裝置保留的舊版進度沒有變更。'
+        : outcome.legacyImportMessage ?? null,
       worldRevision: state.worldRevision + 1,
     });
     if (repairedArenaLocation && gameplay) this.checkpointIfChanged(gameplay.saveData);
@@ -691,7 +832,7 @@ export class GameApp {
       }
     }
 
-    const paused = !next.windowFocused || next.screen === 'paused';
+    const paused = !next.windowFocused || next.focusResumeRequired || next.screen === 'paused';
     if (paused !== this.audioPaused) {
       this.audioPaused = paused;
       try { controller.setPaused(paused); } catch { /* Pause audio best-effort; gameplay remains authoritative. */ }
@@ -782,12 +923,26 @@ export class GameApp {
       if (!previousTelegraphIds.has(telegraph.id)) this.playAudioOnce(`telegraph:${telegraph.id}`, 'telegraph');
     }
 
-    const monsterStates = new Map<EntityId, { dead: boolean; enraged: boolean }>();
+    const monsterStates = new Map<EntityId, { dead: boolean; enraged: boolean; phaseTransitionStartedAtMs: number | null }>();
     for (const monster of gameplay.monsters) {
-      const now = { dead: monster.mode === 'dead', enraged: next.catalog ? bossEnraged(monster, next.catalog) : false };
+      const phaseTransitionStartedAtMs = monster.monsterId === 'ruins-bell-keeper'
+        ? monster.bellCycle?.transitionStartedAtMs ?? null
+        : null;
+      const now = {
+        dead: monster.mode === 'dead',
+        enraged: next.catalog ? bossEnraged(monster, next.catalog) : false,
+        phaseTransitionStartedAtMs,
+      };
       const was = this.audioMonsterStates.get(monster.id);
       if (was && !was.dead && now.dead) this.playAudioOnce(`monster-die:${monster.id}`, 'monster-die');
-      if (was && !was.enraged && now.enraged) this.playAudioOnce(`boss-phase:${monster.id}`, 'boss-phase');
+      if (monster.monsterId === 'ruins-bell-keeper') {
+        if (was && !was.dead && now.phaseTransitionStartedAtMs !== null
+          && now.phaseTransitionStartedAtMs !== was.phaseTransitionStartedAtMs) {
+          this.playAudioOnce(`boss-phase:${monster.id}:${now.phaseTransitionStartedAtMs}`, 'boss-phase');
+        }
+      } else if (was && !was.enraged && now.enraged) {
+        this.playAudioOnce(`boss-phase:${monster.id}`, 'boss-phase');
+      }
       monsterStates.set(monster.id, now);
     }
     this.audioMonsterStates = monsterStates;
@@ -852,7 +1007,12 @@ export class GameApp {
       this.playAudioOnce(`portal:${fromMap}:${toMap}:${next.gameTimeMs}`, 'portal');
     }
     if (!before.bossResult && gameplay.bossResult) {
-      this.playAudioOnce(`boss-win:${gameplay.playerEntityId}:${next.gameTimeMs}`, 'boss-win');
+      if (gameplay.saveData.location.mapId === 'ruins-bell-sanctum') {
+        const bellKeeperId = gameplay.monsters.find(({ monsterId, mode }) => monsterId === 'ruins-bell-keeper' && mode === 'dead')?.id;
+        this.playAudioOnce(`oath-bell-restored:${bellKeeperId ?? `${gameplay.playerEntityId}:${next.gameTimeMs}`}`, 'oath-bell-restored');
+      } else {
+        this.playAudioOnce(`boss-win:${gameplay.playerEntityId}:${next.gameTimeMs}`, 'boss-win');
+      }
     }
   }
 
@@ -907,6 +1067,7 @@ function selectedAmbienceKey(state: GameAppState): string | null | undefined {
 
 function bossEnraged(monster: MonsterState, catalog: ContentCatalog): boolean {
   if (!BOSS_MONSTER_IDS.has(monster.monsterId) || monster.mode === 'dead' || monster.hp <= 0) return false;
+  if (monster.monsterId === 'ruins-bell-keeper') return monster.phase === 2;
   const maxHp = catalog.rules.monsters[monster.monsterId]?.maxHp ?? Infinity;
   return monster.phase === 2 || monster.hp <= maxHp / 2;
 }

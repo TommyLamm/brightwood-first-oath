@@ -17,8 +17,8 @@ function makeLegacyFrostSave(nextEntityId: () => EntityId): SaveData {
   if ('error' in started) throw new Error(started.error);
   const save = structuredClone(started.gameplay.saveData);
   const quests: SaveData['quests'] = {};
-  for (const quest of Object.values(worldCatalog.quests)) {
-    if (quest.id === 'q09' || quest.id === 'q10' || quest.id === 'q11') continue;
+    for (const quest of Object.values(worldCatalog.quests)) {
+      if (Number(quest.id.slice(1)) >= 9) continue;
     quests[quest.id] = {
       status: 'claimed',
       counters: Object.fromEntries(quest.objectives
@@ -38,7 +38,7 @@ describe('Frost Isles manual guide quests', () => {
     const nextEntityId = createNextEntityId('frost-quests');
     const oldSave = makeLegacyFrostSave(nextEntityId);
     const validated = validateSave(oldSave, catalog);
-    expect(validated.ok).toBe(true);
+    expect(validated.ok, validated.ok ? '' : validated.message).toBe(true);
     expect(oldSave.quests.q09).toBeUndefined();
     expect(oldSave.quests.q10).toBeUndefined();
     expect(oldSave.quests.q11).toBeUndefined();
@@ -98,9 +98,12 @@ describe('Frost Isles manual guide quests', () => {
     expect(gameplay.toast).toContain('霜松隘道');
 
     gameplay.movement.position = { x: 250, y: 600 };
+    gameplay.saveData.player.level = rulesCatalog.progression.maxLevel;
+    gameplay.saveData.player.exp = 0;
     const coinsBeforeQ09 = gameplay.saveData.player.coins;
-    command({ type: 'claimQuest', payload: { questId: 'q09' } });
+    const q09Claim = command({ type: 'claimQuest', payload: { questId: 'q09' } });
     expect(gameplay.saveData.quests.q09?.status).toBe('claimed');
+    expect(q09Claim.gameplay?.toast).toContain('已達等級上限，EXP不再累積');
     expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'frost-fang')).toBe(false);
     expect(gameplay.saveData.player.coins).toBe(coinsBeforeQ09 + worldCatalog.quests.q09!.reward.coins);
     expect(gameplay.saveData.player.bag.some(({ itemId }) => itemId === 'large-red')).toBe(true);
@@ -169,7 +172,7 @@ describe('Frost Isles manual guide quests', () => {
     legacy.visitedMaps = ['camp', 'town', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern'];
     expect(legacy.quests.q11).toBeUndefined();
     const validated = validateSave(legacy, catalog);
-    expect(validated.ok).toBe(true);
+    expect(validated.ok, validated.ok ? '' : validated.message).toBe(true);
     if (!validated.ok) throw new Error(validated.message);
     expect(getQuestView(validated.value, 'q11', catalog).status).toBe('available');
 
@@ -246,5 +249,93 @@ describe('Frost Isles manual guide quests', () => {
     command({ type: 'claimQuest', payload: { questId: 'q11' } });
     expect(gameplay.saveData.player.bag.filter(({ itemId }) => itemId === 'frost-tide-sword')
       .reduce((sum, stack) => sum + stack.quantity, 0)).toBe(1);
+  });
+
+  it('keeps q21 optional to the Frost mainline, counts only a fresh marker inspection, and preserves a full-bag claim', () => {
+    const nextEntityId = createNextEntityId('frost-q21');
+    const markerPlacement = worldCatalog.maps['frost-pine-pass'].npcs
+      .find(({ npcId }) => npcId === 'frost-route-marker');
+    if (!markerPlacement) throw new Error('Expected the q21 marker to be placed in Frost Pine Pass.');
+    const legacy = makeLegacyFrostSave(nextEntityId);
+    legacy.quests.q09 = { status: 'claimed', counters: {} };
+    legacy.location = { mapId: 'frost-shore', spawnId: 'left' };
+    legacy.visitedMaps = ['camp', 'town', 'guardian-arena', 'frost-shore'];
+    const validated = validateSave(legacy, catalog);
+    expect(validated.ok, validated.ok ? '' : validated.message).toBe(true);
+    if (!validated.ok) throw new Error(validated.message);
+    expect(getQuestView(validated.value, 'q10', catalog).status).toBe('available');
+    expect(getQuestView(validated.value, 'q11', catalog).status).toBe('locked');
+    expect(getQuestView(validated.value, 'q21', catalog).status).toBe('available');
+
+    let gameplay = restoreGame(validated.value, catalog, nextEntityId).gameplay;
+    let nowMs = 1000;
+    let seq = 1;
+    const random = createSeededRandom(2101);
+    const command = (draft: CommandDraft) => {
+      const result = stepGameplay(gameplay, {
+        catalog,
+        commands: [{ ...draft, seq: seq++ } as GameCommand],
+        input: idleInput,
+        dtSeconds: 0,
+        nowMs,
+        random,
+        nextEntityId,
+      });
+      nowMs += 20;
+      if (!result.gameplay) throw new Error('Expected q21 gameplay to remain active.');
+      gameplay = result.gameplay;
+      return result;
+    };
+    const finishTravel = () => {
+      const result = completeMapTransition(gameplay, catalog, nextEntityId, nowMs);
+      if (!result.gameplay) throw new Error('Expected q21 map transition to complete.');
+      gameplay = result.gameplay;
+    };
+
+    gameplay.movement.position = { x: 250, y: 600 };
+    command({ type: 'interact', payload: {} });
+    command({ type: 'acceptQuest', payload: { questId: 'q21' } });
+    expect(gameplay.saveData.quests.q21).toEqual({ status: 'active', counters: { 'frost-route-marker': 0 } });
+    expect(getQuestView(gameplay.saveData, 'q10', catalog).status).toBe('available');
+
+    gameplay.movement.position = { x: 1820, y: 600 };
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.pendingTransition?.mapId).toBe('frost-pine-pass');
+    finishTravel();
+    gameplay.movement.position = { x: markerPlacement.x, y: markerPlacement.y };
+    command({ type: 'inspect', payload: { targetId: 'frost-route-marker' } });
+    expect(gameplay.saveData.quests.q21?.counters['frost-route-marker']).toBe(0);
+    command({ type: 'interact', payload: {} });
+    expect(gameplay.interaction?.npcId).toBe('frost-route-marker');
+    command({ type: 'inspect', payload: { targetId: 'frost-route-marker' } });
+    expect(gameplay.saveData.quests.q21?.counters['frost-route-marker']).toBe(1);
+    expect(getQuestView(gameplay.saveData, 'q21', catalog).status).toBe('ready');
+    command({ type: 'inspect', payload: { targetId: 'frost-route-marker' } });
+    expect(gameplay.saveData.quests.q21?.counters['frost-route-marker']).toBe(1);
+
+    gameplay.movement.position = { x: 100, y: 600 };
+    command({ type: 'interact', payload: {} });
+    finishTravel();
+    gameplay.movement.position = { x: 250, y: 600 };
+    gameplay.saveData.player.bag = Array.from({ length: 32 }, () => ({ itemId: 'forest-seed', quantity: 1 }));
+    const coinsBefore = gameplay.saveData.player.coins;
+    const fullBagClaim = command({ type: 'claimQuest', payload: { questId: 'q21' } });
+    expect(fullBagClaim.gameplay?.toast).toContain('背包已滿');
+    expect(gameplay.saveData.quests.q21?.status).toBe('active');
+    expect(getQuestView(gameplay.saveData, 'q21', catalog).status).toBe('ready');
+    expect(gameplay.saveData.player.coins).toBe(coinsBefore);
+
+    gameplay.saveData.player.bag = [];
+    command({ type: 'claimQuest', payload: { questId: 'q21' } });
+    expect(gameplay.saveData.quests.q21?.status).toBe('claimed');
+    expect(gameplay.saveData.player.coins).toBe(coinsBefore + 500);
+    expect(gameplay.saveData.player.bag).toContainEqual({ itemId: 'large-red', quantity: 3 });
+    expect(gameplay.saveData.player.bag).toContainEqual({ itemId: 'large-blue', quantity: 2 });
+    command({ type: 'claimQuest', payload: { questId: 'q21' } });
+    expect(gameplay.saveData.player.coins).toBe(coinsBefore + 500);
+    expect(gameplay.saveData.player.bag.filter(({ itemId }) => itemId === 'large-red')
+      .reduce((sum, stack) => sum + stack.quantity, 0)).toBe(3);
+    expect(getQuestView(gameplay.saveData, 'q10', catalog).status).toBe('available');
+    expect(getQuestView(gameplay.saveData, 'q11', catalog).status).toBe('locked');
   });
 });

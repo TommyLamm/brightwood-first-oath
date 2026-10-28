@@ -646,6 +646,92 @@ function boss({ key, bpm, tonic, mode, colour, A = BOSS_A, B = BOSS_B, theme = B
   };
 }
 
+// The Bell Sanctum's score uses a measured, tolling pulse and a Phrygian descent,
+// rather than reusing one of the earlier boss arrangements with a different colour.
+const RUINS_A = [
+  { root: 1, beats: 4 }, { root: 1, beats: 4 }, { root: 6, beats: 4 }, { root: 5, beats: 4 },
+  { root: 1, beats: 4 }, { root: 4, beats: 4 }, { root: 6, beats: 4 }, { root: 5, beats: 4 },
+];
+const RUINS_B = [
+  { root: 4, beats: 4 }, { root: 6, beats: 4 }, { root: 1, beats: 4 }, { root: 5, beats: 4 },
+  { root: 4, beats: 4 }, { root: 3, beats: 4 }, { root: 5, beats: 4 }, { root: 1, beats: 4 },
+];
+const RUINS_TOLL = [
+  [1, 2], [3, 1], [2, 1], [5, 2], [4, 1], [3, 1], [1, 2], [0, 1], [-2, 1],
+  [1, 2], [5, 1], [4, 1], [3, 2], [2, 1], [1, 1], [0, 2], [-2, 2],
+];
+const RUINS_ANSWER = [
+  [5, 2], [4, 1], [3, 1], [1, 2], [2, 1], [3, 1], [5, 2], [8, 2],
+  [6, 2], [5, 1], [4, 1], [3, 2], [1, 1], [0, 1], [-2, 2], [1, 2],
+];
+
+function bossRuins() {
+  const base = new Score({ name: 'boss-ruins', bpm: 128, bars: 32, tonic: 57, mode: 'phrygian' });
+  const phase2 = new Score({ name: 'boss-ruins:phase2', bpm: 128, bars: 32, tonic: 57, mode: 'phrygian' });
+  const sections = [[0, RUINS_A, 'toll'], [8, RUINS_A, 'answer'], [16, RUINS_B, 'bridge'], [24, RUINS_A, 'return']];
+  for (const [start, progression, section] of sections) {
+    base.ostinato('pizz', progression, start, 8, {
+      figure: section === 'bridge' ? [0, 7, 12, 7] : [0, 12, 7, 12], step: 0.5, octave: 48, vel: 0.48, length: 0.3,
+    });
+    base.bass('basses', progression, start, 8, { octave: 31, pattern: [[0, 2, 0, 1], [2, 2, 0, 0.8]], vel: 0.55 });
+    base.pad('celli', progression, start, 8, { low: 45, high: 60, vel: 0.42 });
+    base.rhythm('timpani', 'X...............', start, 8, { midi: 38, vel: 0.55 });
+    if (section === 'toll') {
+      base.melody('horns', RUINS_TOLL, start, { octave: -1, vel: 0.68, progression, progressionStart: start, progressionBars: 8 });
+      base.melody('bell', [[1, 2], [5, 2], [3, 4], [1, 4], [0, 4]], start, { octave: 1, vel: 0.62, progression, progressionStart: start, progressionBars: 8 });
+    } else if (section === 'answer') {
+      base.melody('violins1', RUINS_ANSWER, start, { octave: 0, vel: 0.58, progression, progressionStart: start, progressionBars: 8 });
+      base.pad('violas', progression, start, 8, { low: 57, high: 69, vel: 0.28 });
+      base.rhythm('frameDrum', 'X.......x.......', start, 8, { midi: 45, vel: 0.4 });
+    } else if (section === 'bridge') {
+      base.melody('trombones', RUINS_TOLL, start, { octave: -2, vel: 0.58, progression, progressionStart: start, progressionBars: 8 });
+      base.melody('horns', RUINS_ANSWER, start, { octave: -1, vel: 0.54, progression, progressionStart: start, progressionBars: 8 });
+      base.pad('tremolo', progression, start, 8, { low: 62, high: 77, vel: 0.28 });
+      base.rhythm('snare', '....X.......x...', start, 8, { vel: 0.36 });
+    } else {
+      base.melody('trumpets', RUINS_TOLL, start, { octave: 0, vel: 0.6, progression, progressionStart: start, progressionBars: 8 });
+      base.melody('bell', RUINS_ANSWER, start, { octave: 1, vel: 0.52, progression, progressionStart: start, progressionBars: 8 });
+      base.pad('violas', progression, start, 8, { low: 55, high: 72, vel: 0.34 });
+      base.rhythm('frameDrum', 'X...x...X.x.x...', start, 8, { midi: 45, vel: 0.5 });
+    }
+    for (const bar of [start, start + 4]) base.note('bell', base.bar(bar), 1, 50, section === 'bridge' ? 0.52 : 0.42);
+    if (start > 0) lift(base, start, { vel: 0.48, crash: false });
+
+    phase2.pad('choirOo', progression, start, 8, { voices: 3, low: 52, high: 72, vel: 0.56 });
+    phase2.pad('tremolo', progression, start, 8, { voices: 3, low: 67, high: 86, vel: 0.4 });
+    phase2.ostinato('timpani', progression, start, 8, { figure: [0, 0, 7, 0], step: 0.5, octave: 38, vel: 0.52, length: 0.36 });
+    phase2.rhythm('bassDrum', 'X...X...X...X...', start, 8, { midi: 33, vel: 0.56 });
+    phase2.rhythm('snare', 'x.x.X.x.x.x.X.x.', start, 8, { vel: 0.44 });
+    phase2.rhythm('taiko', 'X.......x...X...', start, 8, { midi: 36, vel: 0.46 });
+    phase2.stabs('trumpets', progression, start, 8, { hits: [[0.5, 0.3, 0.7], [2.5, 0.3, 0.72]], voices: 3, low: 62, high: 78, vel: 0.48 });
+    phase2.rhythm('toms', '............X.XX', start + 3, 1, { midi: 46, vel: 0.62 });
+    phase2.rhythm('toms', '........X.x.X.XX', start + 7, 1, { midi: 43, vel: 0.7 });
+    phase2.note('bell', phase2.bar(start), 2, 50, 0.48);
+    phase2.note('bell', phase2.bar(start + 4), 2, 53, 0.42);
+    if (section === 'toll' || section === 'return') {
+      phase2.melody('horns', RUINS_TOLL, start, { octave: -1, vel: 0.54, progression, progressionStart: start, progressionBars: 8 });
+    } else {
+      phase2.melody('violins1', RUINS_ANSWER, start, { octave: 0, vel: 0.48, progression, progressionStart: start, progressionBars: 8 });
+    }
+    if (start > 0) lift(phase2, start, { vel: 0.6, crash: false });
+  }
+  return {
+    key: 'boss-ruins',
+    layers: [
+      { layer: 'base', score: base },
+      {
+        layer: 'phase2', score: phase2,
+        levels: { choirOo: -4, tremolo: -8, timpani: -7, bassDrum: -8, snare: -9, taiko: -7, trumpets: -7, toms: -8, bell: -5, horns: -5, violins1: -3 },
+      },
+    ],
+    levels: {
+      horns: -2, trombones: -4, violins1: -3, trumpets: -3, pizz: -7, basses: -8, celli: -10,
+      violas: -9, timpani: -8, frameDrum: -8, snare: -9, tremolo: -10, bell: -7, swell: -14,
+    },
+    reverb: { size: 0.88, damp: 0.32 },
+  };
+}
+
 // ── Stingers ────────────────────────────────────────────────────────────────────────────────
 
 function victory() {
@@ -726,6 +812,7 @@ export const MUSIC = [
     key: 'boss-sunwell', bpm: 140, tonic: 64, mode: 'phrygianDominant', colour: 'sunwell',
     A: SANDS_A, B: SANDS_B, theme: SANDS_TUNE, bridge: SANDS_BRIDGE,
   }),
+  bossRuins,
   victory,
   defeat,
   levelUp,

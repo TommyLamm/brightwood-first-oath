@@ -7,6 +7,7 @@ import type {
   LoadOutcome,
   Persistence,
   SaveData,
+  SaveUpgradeRequired,
   SaveStatus,
   StorageLike,
 } from '../contracts/index.js';
@@ -23,8 +24,13 @@ const ORDINARY_INTERVAL_MS = 15_000;
 const CLOUD_WINDOW_MS = 60_000;
 const CLOUD_MAX_WRITES_PER_WINDOW = 60;
 
+export const BRIGHTWOOD_GAME_ID = 'brightwood-first-oath';
+export const LEGACY_GAME_ID = 'maplewood-swordsman';
+
 export type PersistenceOptions = {
   gameId: string;
+  /** Overrides Vite's build mode for isolated tests. */
+  development?: boolean;
   storage: StorageLike | null;
   cloud: CloudPort | null;
   catalog: ContentCatalog;
@@ -38,6 +44,16 @@ type CloudAttempt = {
   revision: number;
   requestId: string;
 };
+
+type LegacyCandidate = {
+  raw: string;
+  data: SaveData;
+  formatVersion: number;
+};
+
+type LocalSaveValidation =
+  | { ok: true; data: SaveData; formatVersion: number; repairMessage?: string }
+  | { ok: false; status: 'loadError' | 'incompatible'; message: string; unreadable: boolean };
 
 type Runtime = {
   generation: number;
@@ -57,6 +73,10 @@ type Runtime = {
   timer: ReturnType<typeof setTimeout> | null;
   status: SaveStatus;
   retryRequested: boolean;
+  legacyCandidate: LegacyCandidate | null;
+  saveUpgrade: SaveUpgradeRequired | null;
+  upgradeRaw: string | null;
+  upgradeConfirmed: boolean;
   /** The last local read found a save that exists but cannot be parsed or validated. */
   unreadableLocal: boolean;
 };
@@ -134,8 +154,48 @@ function isSupportedSaveFormat(value: unknown): value is typeof READABLE_SAVE_FO
   return READABLE_SAVE_FORMATS.some((format) => format === value);
 }
 
+function validateLocalSave(rawText: string, catalog: ContentCatalog): LocalSaveValidation {
+  let envelope: unknown;
+  try {
+    envelope = JSON.parse(rawText) as unknown;
+  } catch {
+    return { ok: false, status: 'loadError', message: '本機存檔格式損壞；原始資料已保留。', unreadable: true };
+  }
+  if (!isRecord(envelope) || typeof envelope.formatVersion !== 'number'
+    || !Number.isSafeInteger(envelope.formatVersion)) {
+    return { ok: false, status: 'loadError', message: '本機存檔封套結構無效；原始資料已保留。', unreadable: true };
+  }
+  if (!isSupportedSaveFormat(envelope.formatVersion)) {
+    return { ok: false, status: 'incompatible', message: '本機存檔版本不相容；原始資料已保留。', unreadable: false };
+  }
+  if (!hasExactKeys(envelope, ['formatVersion', 'data', 'savedAt']) || typeof envelope.savedAt !== 'string') {
+    return { ok: false, status: 'loadError', message: '本機存檔封套結構無效；原始資料已保留。', unreadable: true };
+  }
+  const prepared = prepareSave(envelope.data, catalog);
+  if (!prepared.ok) {
+    return { ok: false, status: 'loadError', message: `${prepared.message} 原始資料已保留。`, unreadable: true };
+  }
+  return {
+    ok: true,
+    data: prepared.value.data,
+    formatVersion: envelope.formatVersion,
+    ...(prepared.value.repairMessage ? { repairMessage: prepared.value.repairMessage } : {}),
+  };
+}
+
+function sameCloudContext(previous: CloudReady | null, current: CloudReady): boolean {
+  if (!previous || previous.mode !== current.mode || previous.progressAvailable !== current.progressAvailable) return false;
+  const before = [...previous.capabilities].sort();
+  const after = [...current.capabilities].sort();
+  return before.length === after.length && before.every((capability, index) => capability === after[index]);
+}
+
 export function createPersistence(options: PersistenceOptions): Persistence {
-  const key = localSaveKeyForGame(options.gameId);
+  const development = options.development ?? import.meta.env.DEV;
+  const key = localSaveKeyForGame(options.gameId, development);
+  const legacyKey = options.gameId === BRIGHTWOOD_GAME_ID
+    ? localSaveKeyForGame(LEGACY_GAME_ID, development)
+    : null;
   const runtime: Runtime = {
     generation: 0,
     mode: null,
@@ -154,6 +214,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     timer: null,
     status: 'unavailable',
     retryRequested: false,
+    legacyCandidate: null,
+    saveUpgrade: null,
+    upgradeRaw: null,
+    upgradeConfirmed: false,
     unreadableLocal: false,
   };
 
@@ -183,6 +247,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
   const localOutcome = (generation: number): LoadOutcome => {
     runtime.mode = 'local';
     runtime.unreadableLocal = false;
+    runtime.legacyCandidate = null;
+    runtime.saveUpgrade = null;
+    runtime.upgradeRaw = null;
+    runtime.upgradeConfirmed = false;
     if (!options.storage) {
       runtime.mode = 'memory';
       runtime.initialized = false;
@@ -195,64 +263,82 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     } catch (error) {
       runtime.mode = 'memory';
       runtime.initialized = false;
-      setStatus('loadError', errorMessage(error, '讀取本機存檔失敗。'));
-      return { mode: 'memory', status: 'loadError', data: null };
+      const message = errorMessage(error, '讀取本機存檔失敗。');
+      setStatus('loadError', message);
+      return { mode: 'memory', status: 'loadError', data: null, message };
     }
     if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
     if (rawText === null) {
       runtime.lastCheckpoint = null;
+      if (legacyKey && runtime.cloudReady?.mode !== 'authenticated') {
+        let legacyRaw: string | null;
+        try {
+          legacyRaw = options.storage.getItem(legacyKey);
+        } catch (error) {
+          runtime.mode = 'memory';
+          runtime.initialized = false;
+          const message = `檢查這台裝置保留的舊版進度失敗；沒有變更原有資料。${errorMessage(error, '')}`;
+          setStatus('loadError', message);
+          return { mode: 'memory', status: 'loadError', data: null, message };
+        }
+        if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
+        if (legacyRaw !== null) {
+          const candidate = validateLocalSave(legacyRaw, options.catalog);
+          if (!candidate.ok) {
+            runtime.mode = 'memory';
+            runtime.initialized = false;
+            runtime.unreadableLocal = false;
+            const message = `找到這台裝置的舊版進度，但目前版本無法安全讀取：${candidate.message}`;
+            setStatus('incompatible', message);
+            return { mode: 'memory', status: 'incompatible', data: null, message };
+          }
+          runtime.legacyCandidate = {
+            raw: legacyRaw,
+            data: cloneSaveData(candidate.data),
+            formatVersion: candidate.formatVersion,
+          };
+          runtime.initialized = true;
+          const message = '找到這台裝置的舊版進度。選擇匯入後才會使用，原件會保留。';
+          setStatus('ready', message);
+          return {
+            mode: 'local',
+            status: 'ready',
+            data: null,
+            legacyImportAvailable: true,
+            legacyImportMessage: message,
+          };
+        }
+      }
       runtime.initialized = true;
-      setStatus('ready', '沒有既有本機存檔，可建立新角色。');
+      const message = '沒有既有本機存檔，可建立新角色。';
+      setStatus('ready', message);
       return { mode: 'local', status: 'ready', data: null };
     }
-    let envelope: unknown;
-    try {
-      envelope = JSON.parse(rawText) as unknown;
-    } catch {
+    const validated = validateLocalSave(rawText, options.catalog);
+    if (!validated.ok) {
       runtime.mode = 'memory';
       runtime.initialized = false;
-      runtime.unreadableLocal = true;
-      setStatus('loadError', '本機存檔格式損壞；原始資料已保留。');
-      return { mode: 'memory', status: 'loadError', data: null };
-    }
-    if (!isRecord(envelope) || typeof envelope.formatVersion !== 'number'
-      || !Number.isSafeInteger(envelope.formatVersion)) {
-      runtime.mode = 'memory';
-      runtime.initialized = false;
-      runtime.unreadableLocal = true;
-      setStatus('loadError', '本機存檔封套結構無效；原始資料已保留。');
-      return { mode: 'memory', status: 'loadError', data: null };
-    }
-    if (!isSupportedSaveFormat(envelope.formatVersion)) {
-      runtime.mode = 'memory';
-      runtime.initialized = false;
-      setStatus('incompatible', '本機存檔版本不相容；原始資料已保留。');
-      return { mode: 'memory', status: 'incompatible', data: null };
-    }
-    if (!hasExactKeys(envelope, ['formatVersion', 'data', 'savedAt']) || typeof envelope.savedAt !== 'string') {
-      runtime.mode = 'memory';
-      runtime.initialized = false;
-      runtime.unreadableLocal = true;
-      setStatus('loadError', '本機存檔封套結構無效；原始資料已保留。');
-      return { mode: 'memory', status: 'loadError', data: null };
-    }
-    const prepared = prepareSave(envelope.data, options.catalog);
-    if (!prepared.ok) {
-      runtime.mode = 'memory';
-      runtime.initialized = false;
-      runtime.unreadableLocal = true;
-      setStatus('loadError', `${prepared.message} 原始資料已保留。`);
-      return { mode: 'memory', status: 'loadError', data: null };
+      runtime.unreadableLocal = validated.unreadable;
+      setStatus(validated.status, validated.message);
+      return { mode: 'memory', status: validated.status, data: null, message: validated.message };
     }
     if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
-    runtime.lastCheckpoint = cloneSaveData(prepared.value.data);
+    runtime.lastCheckpoint = cloneSaveData(validated.data);
     runtime.initialized = true;
-    const message = prepared.value.repairMessage ?? '本機存檔已載入。';
-    setStatus('ready', message);
-    return { mode: 'local', status: 'ready', data: prepared.value.data };
+    const saveUpgrade = validated.formatVersion < SAVE_FORMAT_VERSION
+      ? { formatVersion: validated.formatVersion, source: 'local' as const }
+      : null;
+    runtime.saveUpgrade = saveUpgrade;
+    runtime.upgradeRaw = saveUpgrade ? rawText : null;
+    const status = saveUpgrade ? 'upgradeRequired' : 'ready';
+    const message = saveUpgrade
+      ? `本機存檔為 format ${saveUpgrade.formatVersion}；首次寫入 format ${SAVE_FORMAT_VERSION} 前請選擇備份並升級，或暫不升級。`
+      : validated.repairMessage ?? '本機存檔已載入。';
+    setStatus(status, message);
+    return { mode: 'local', status, data: validated.data, saveUpgrade };
   };
 
-  const validateCloudRecord = (record: unknown): { data: SaveData; revision: number; repaired: boolean; repairMessage?: string } | null => {
+  const validateCloudRecord = (record: unknown): { data: SaveData; revision: number; formatVersion: number; repaired: boolean; repairMessage?: string } | null => {
     if (!isRecord(record) || !isValidRevision(record.revision)) throw new Error('雲端存檔 revision 無效。');
     if (!isSupportedSaveFormat(record.formatVersion)) {
       const error = new Error('雲端存檔格式版本不相容。') as CloudError;
@@ -264,6 +350,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     return {
       data: prepared.value.data,
       revision: record.revision,
+      formatVersion: record.formatVersion,
       repaired: prepared.value.repaired,
       repairMessage: prepared.value.repairMessage,
     };
@@ -280,6 +367,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.initialized = false;
     runtime.mode = null;
     runtime.cloudReady = null;
+    runtime.legacyCandidate = null;
+    runtime.saveUpgrade = null;
+    runtime.upgradeRaw = null;
+    runtime.upgradeConfirmed = false;
     runtime.retryAttempt = null;
     runtime.retryLocal = null;
     setStatus('loading');
@@ -295,7 +386,9 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         return { mode: 'memory', status: runtime.status, data: null };
       }
       if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
-      runtime.cloudReady = cloudReady;
+      runtime.cloudReady = cloudReady
+        ? { ...cloudReady, capabilities: [...cloudReady.capabilities] }
+        : null;
       const preview = cloudReady?.mode === 'preview';
       const useCloud = Boolean(options.cloud && cloudReady
         && (preview || (cloudReady.mode === 'authenticated' && cloudReady.progressAvailable)));
@@ -309,6 +402,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
           runtime.revision = 0;
           runtime.lastCheckpoint = null;
           runtime.initialized = true;
+          runtime.saveUpgrade = null;
           const status: SaveStatus = preview ? 'previewOnly' : 'ready';
           setStatus(status, preview ? '預覽連線成功；雲端進度為暫存診斷資料。' : '雲端沒有既有存檔，可建立新角色。');
           return { mode: preview ? 'preview' : 'cloud', status, data: null };
@@ -318,9 +412,16 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         runtime.revision = loaded.revision;
         runtime.lastCheckpoint = cloneSaveData(loaded.data);
         runtime.initialized = true;
-        const status: SaveStatus = preview ? 'previewOnly' : 'ready';
-        setStatus(status, loaded.repairMessage ?? (preview ? '預覽存檔已載入。' : '雲端存檔已載入。'));
-        return { mode: preview ? 'preview' : 'cloud', status, data: loaded.data };
+        const saveUpgrade = loaded.formatVersion < SAVE_FORMAT_VERSION
+          ? { formatVersion: loaded.formatVersion, source: preview ? 'preview' as const : 'cloud' as const }
+          : null;
+        runtime.saveUpgrade = saveUpgrade;
+        const status: SaveStatus = saveUpgrade ? 'upgradeRequired' : preview ? 'previewOnly' : 'ready';
+        const message = saveUpgrade
+          ? `雲端存檔為 format ${saveUpgrade.formatVersion}；確認升級後會送出 format ${SAVE_FORMAT_VERSION}。平台若回覆格式不相容，會停止寫入。`
+          : loaded.repairMessage ?? (preview ? '預覽存檔已載入。' : '雲端存檔已載入。');
+        setStatus(status, message);
+        return { mode: preview ? 'preview' : 'cloud', status, data: loaded.data, saveUpgrade };
       } catch (error) {
         if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
         runtime.mode = 'memory';
@@ -333,6 +434,137 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       if (generation === runtime.generation) runtime.initializing = null;
     });
     return runtime.initializing;
+  };
+
+  const importLegacySave = async (): Promise<LoadOutcome> => {
+    const candidate = runtime.legacyCandidate;
+    const storage = options.storage;
+    if (runtime.disposed || !candidate || !legacyKey || !storage
+      || !runtime.initialized || runtime.mode !== 'local' || runtime.status !== 'ready') {
+      return { mode: runtime.mode ?? 'memory', status: runtime.status, data: null };
+    }
+    const generation = runtime.generation;
+    const cancel = (status: SaveStatus, message: string): LoadOutcome => {
+      runtime.legacyCandidate = null;
+      runtime.initialized = false;
+      runtime.mode = 'memory';
+      runtime.unreadableLocal = false;
+      stopWrites();
+      setStatus(status, message);
+      return { mode: 'memory', status, data: null, message };
+    };
+
+    const reloadAfterRace = (reason: 'target' | 'source-changed' | 'source-removed'): LoadOutcome => {
+      const outcome = localOutcome(generation);
+      if (generation !== runtime.generation || runtime.disposed) return outcome;
+
+      if (outcome.legacyImportAvailable) {
+        const message = '這台裝置的進度在確認期間有變動，這次匯入已取消。已重新讀取目前可匯入的舊版進度；如仍要匯入，請再次確認。';
+        return {
+          ...outcome,
+          legacyImportMessage: `${message} ${outcome.legacyImportMessage ?? ''}`.trim(),
+        };
+      }
+
+      const hasError = outcome.status === 'loadError' || outcome.status === 'incompatible' || outcome.status === 'unavailable';
+      if (hasError) {
+        const message = reason === 'target'
+          ? '確認期間偵測到這台裝置已有存檔，這次舊版匯入已取消。'
+          : '舊版進度在確認期間已改變，這次匯入已取消。';
+        return { ...outcome, message: outcome.message ? `${message} ${outcome.message}` : message };
+      }
+
+      if (outcome.data) {
+        return {
+          ...outcome,
+          legacyImportMessage: '這台裝置已有目前進度，這次舊版匯入已取消；已載入目前進度。',
+        };
+      }
+
+      const message = reason === 'source-removed'
+        ? '原先選取的舊版進度已消失，這次匯入已取消；本次沒有更改資料。'
+        : reason === 'source-changed'
+          ? '原先選取的舊版進度已改變或消失，這次匯入已取消；目前沒有可重新確認的舊版進度，本次沒有更改資料。'
+          : '確認期間偵測到本機進度變動，這次匯入已取消；本次沒有更改資料。';
+      return { ...outcome, legacyImportMessage: message };
+    };
+
+    if (options.cloud) {
+      let currentCloudReady: CloudReady;
+      try {
+        currentCloudReady = await options.cloud.ready();
+      } catch {
+        if (generation !== runtime.generation || runtime.disposed) {
+          return { mode: 'memory', status: runtime.status, data: null };
+        }
+        return cancel('loadError', '無法確認目前的登入狀態，已取消匯入；這次操作尚未寫入本機資料。');
+      }
+      if (generation !== runtime.generation || runtime.disposed) {
+        return { mode: 'memory', status: runtime.status, data: null };
+      }
+      if (currentCloudReady.mode === 'authenticated' || currentCloudReady.mode === 'preview'
+        || !sameCloudContext(runtime.cloudReady, currentCloudReady)) {
+        runtime.cloudReady = { ...currentCloudReady, capabilities: [...currentCloudReady.capabilities] };
+        return cancel('loadError', '登入狀態已改變，已取消匯入；這次操作尚未寫入本機資料。');
+      }
+    }
+
+    if (generation !== runtime.generation || runtime.disposed) {
+      return { mode: 'memory', status: runtime.status, data: null };
+    }
+
+    let currentTarget: string | null;
+    let currentSource: string | null;
+    try {
+      currentTarget = storage.getItem(key);
+      currentSource = storage.getItem(legacyKey);
+    } catch (error) {
+      return cancel('loadError', `確認這台裝置的進度時發生錯誤，已取消匯入；這次操作尚未寫入資料。${errorMessage(error, '')}`);
+    }
+    if (generation !== runtime.generation || runtime.disposed) {
+      return { mode: 'memory', status: runtime.status, data: null };
+    }
+    if (currentTarget !== null || currentSource !== candidate.raw) {
+      return reloadAfterRace(currentTarget !== null ? 'target' : currentSource === null ? 'source-removed' : 'source-changed');
+    }
+
+    const validated = validateLocalSave(currentSource, options.catalog);
+    if (!validated.ok) return localOutcome(generation);
+
+    try {
+      // Recheck immediately before copying. localStorage does not provide cross-tab compare-and-swap.
+      const preCopyTarget = storage.getItem(key);
+      const preCopySource = preCopyTarget === null ? storage.getItem(legacyKey) : null;
+      if (preCopyTarget !== null || preCopySource !== candidate.raw) {
+        return reloadAfterRace(preCopyTarget !== null ? 'target' : preCopySource === null ? 'source-removed' : 'source-changed');
+      }
+      storage.setItem(key, candidate.raw);
+      if (storage.getItem(key) !== candidate.raw || storage.getItem(legacyKey) !== candidate.raw) {
+        return cancel('loadError', '匯入內容未能完整確認；已停止後續操作，請重新讀取這台裝置的進度。');
+      }
+    } catch (error) {
+      return cancel('loadError', `匯入未能完成，請重新讀取這台裝置的進度。${errorMessage(error, '')}`);
+    }
+    if (generation !== runtime.generation || runtime.disposed) {
+      return { mode: 'memory', status: runtime.status, data: null };
+    }
+
+    runtime.legacyCandidate = null;
+    runtime.lastCheckpoint = cloneSaveData(validated.data);
+    runtime.initialized = true;
+    const saveUpgrade = validated.formatVersion < SAVE_FORMAT_VERSION
+      ? { formatVersion: validated.formatVersion, source: 'local' as const }
+      : null;
+    runtime.saveUpgrade = saveUpgrade;
+    runtime.upgradeRaw = saveUpgrade ? candidate.raw : null;
+    const status = saveUpgrade ? 'upgradeRequired' : 'ready';
+    const message = saveUpgrade
+      ? `舊版進度已匯入；原件仍保留。首次寫入 format ${SAVE_FORMAT_VERSION} 前，請選擇備份並升級或暫不升級。`
+      : validated.repairMessage
+        ? `舊版進度已匯入並安全修復；原件仍保留。${validated.repairMessage}`
+        : '舊版進度已匯入；原件仍保留。';
+    setStatus(status, message);
+    return { mode: 'local', status, data: validated.data, message, saveUpgrade };
   };
 
   const writeLocal = (snapshot: SaveData, generation: number): void => {
@@ -378,26 +610,12 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         setStatus('incompatible', `${previousSave.message} 原始資料已保留，已停止寫入。`);
         return;
       }
-      if (previousEnvelope.formatVersion === 1 || previousEnvelope.formatVersion === 2) {
-        const backupKey = `${key}:format${previousEnvelope.formatVersion}-backup`;
-        try {
-          const backupRaw = options.storage.getItem(backupKey);
-          if (backupRaw !== null && backupRaw !== previousRaw) {
-            runtime.mode = 'memory';
-            runtime.initialized = false;
-            stopWrites();
-            setStatus('incompatible', `已有不同的 format ${previousEnvelope.formatVersion} 備份；原始資料已保留，已停止寫入。`);
-            return;
-          }
-          if (backupRaw === null) options.storage.setItem(backupKey, previousRaw);
-          if (options.storage.getItem(backupKey) !== previousRaw) {
-            throw new Error(`format ${previousEnvelope.formatVersion} 備份未能完整確認。`);
-          }
-        } catch (error) {
-          runtime.retryLocal = cloneSaveData(snapshot);
-          setStatus('saveError', `format ${previousEnvelope.formatVersion} 備份失敗；原始存檔未覆寫。${errorMessage(error, '')}`);
-          return;
-        }
+      if (previousEnvelope.formatVersion < SAVE_FORMAT_VERSION) {
+        runtime.mode = 'memory';
+        runtime.initialized = false;
+        stopWrites();
+        setStatus('incompatible', `本機存檔已改為 format ${previousEnvelope.formatVersion}；請重新載入並明確確認升級，原始資料已保留。`);
+        return;
       }
     }
     const envelope = {
@@ -411,12 +629,83 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       options.storage.setItem(key, serialized);
       if (generation !== runtime.generation) return;
       runtime.lastCheckpoint = cloneSaveData(snapshot);
+      runtime.legacyCandidate = null;
       runtime.retryLocal = null;
       setStatus('localSaved');
     } catch (error) {
       if (generation !== runtime.generation) return;
       runtime.retryLocal = cloneSaveData(snapshot);
       setStatus('saveError', errorMessage(error, '寫入本機存檔失敗；可重試。'));
+    }
+  };
+
+  const upgradeLocal = (): void => {
+    const upgrade = runtime.saveUpgrade;
+    const originalRaw = runtime.upgradeRaw;
+    const storage = options.storage;
+    const snapshot = runtime.lastCheckpoint;
+    if (!upgrade || upgrade.source !== 'local' || originalRaw === null || !storage || !snapshot) {
+      setStatus('saveError', '無法確認待升級的本機存檔；原始資料已保留，未寫入。');
+      return;
+    }
+
+    const stopForChangedSource = (message: string): void => {
+      runtime.mode = 'memory';
+      runtime.initialized = false;
+      runtime.upgradeConfirmed = false;
+      stopWrites();
+      setStatus('incompatible', message);
+    };
+
+    setStatus('saving', `正在備份 format ${upgrade.formatVersion} 並升級…`);
+    let currentRaw: string | null;
+    try {
+      currentRaw = storage.getItem(key);
+    } catch (error) {
+      setStatus('saveError', `讀取本機存檔確認失敗；原始資料已保留，未升級。${errorMessage(error, '')}`);
+      return;
+    }
+    if (currentRaw !== originalRaw) {
+      stopForChangedSource('確認期間本機原始存檔已改變；未覆寫，請重新讀取後再選擇。');
+      return;
+    }
+
+    const backupKey = `${key}:format${upgrade.formatVersion}-backup`;
+    try {
+      const existingBackup = storage.getItem(backupKey);
+      if (existingBackup !== null && existingBackup !== originalRaw) {
+        stopForChangedSource(`format ${upgrade.formatVersion} 備份鍵已有不同內容；原始存檔已保留，未升級。`);
+        return;
+      }
+      if (existingBackup === null) storage.setItem(backupKey, originalRaw);
+      if (storage.getItem(backupKey) !== originalRaw) {
+        setStatus('saveError', `format ${upgrade.formatVersion} 備份未能讀回核對；原始存檔未覆寫，已停止寫入。`);
+        return;
+      }
+    } catch (error) {
+      setStatus('saveError', `format ${upgrade.formatVersion} 備份失敗；原始存檔未覆寫，已停止寫入。${errorMessage(error, '')}`);
+      return;
+    }
+
+    const envelope = {
+      formatVersion: SAVE_FORMAT_VERSION,
+      data: cloneSaveData(snapshot),
+      savedAt: new Date().toISOString(),
+    };
+    try {
+      const serialized = JSON.stringify(envelope);
+      if (serialized === undefined) throw new Error('本機存檔無法序列化。');
+      storage.setItem(key, serialized);
+      if (storage.getItem(key) !== serialized) throw new Error('新存檔未能讀回核對。');
+      runtime.lastCheckpoint = cloneSaveData(snapshot);
+      runtime.saveUpgrade = null;
+      runtime.upgradeRaw = null;
+      runtime.upgradeConfirmed = false;
+      runtime.pending = null;
+      runtime.retryLocal = null;
+      setStatus('localSaved', `format ${SAVE_FORMAT_VERSION} 已保存；format ${upgrade.formatVersion} 原始內容仍保存在備份。`);
+    } catch (error) {
+      setStatus('saveError', `升級寫入未能確認；format ${upgrade.formatVersion} 原始備份已保留，停止後續寫入。${errorMessage(error, '')}`);
     }
   };
 
@@ -445,6 +734,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
   const pump = (): void => {
     if (runtime.disposed || !runtime.initialized || runtime.busy || !runtime.mode) return;
+    if (runtime.saveUpgrade && !runtime.upgradeConfirmed) return;
     if (runtime.mode === 'memory') return;
     if (runtime.status === 'conflict' || runtime.status === 'incompatible' || runtime.status === 'authLost'
       || runtime.status === 'unavailable' || runtime.status === 'loadError') return;
@@ -554,6 +844,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       runtime.retryAttempt = null;
       runtime.retryRequested = false;
       runtime.lastCheckpoint = cloneSaveData(attempt.data);
+      if (runtime.saveUpgrade && runtime.upgradeConfirmed && runtime.mode === 'cloud') {
+        runtime.saveUpgrade = null;
+        runtime.upgradeConfirmed = false;
+      }
       setStatus(runtime.mode === 'preview' ? 'previewOnly' : 'saved',
         runtime.mode === 'preview' ? '預覽存檔完成，並非正式帳號保存。' : undefined);
       pump();
@@ -566,11 +860,13 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
   const checkpoint = (data: SaveData): void => {
     if (runtime.disposed || !runtime.initialized || !runtime.mode || runtime.mode === 'memory') return;
+    if (runtime.saveUpgrade && !runtime.upgradeConfirmed) return;
     const prepared = prepareSave(data, options.catalog);
     if (!prepared.ok) {
       setStatus('saveError', prepared.message);
       return;
     }
+    runtime.legacyCandidate = null;
     const snapshot = cloneSaveData(prepared.value.data);
     const metrics = measureSaveData(snapshot);
     if (!metrics.error && metrics.bytes >= SAVE_WARNING_BYTES) {
@@ -583,6 +879,36 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     pump();
   };
 
+  const confirmSaveUpgrade = (): void => {
+    if (runtime.disposed || !runtime.initialized || !runtime.saveUpgrade) {
+      setStatus('incompatible', '目前沒有可確認升級的舊格式存檔。');
+      return;
+    }
+    if (runtime.status === 'incompatible' || runtime.status === 'conflict' || runtime.status === 'authLost') {
+      setStatus(runtime.status, runtime.status === 'incompatible'
+        ? '格式相容性檢查已拒絕升級；未降回舊格式寫入。'
+        : '存檔狀態尚未解除；未執行升級。');
+      return;
+    }
+    runtime.upgradeConfirmed = true;
+    if (runtime.mode === 'local' && runtime.saveUpgrade.source === 'local') {
+      upgradeLocal();
+      return;
+    }
+    if ((runtime.mode === 'cloud' && runtime.saveUpgrade.source === 'cloud')
+      || (runtime.mode === 'preview' && runtime.saveUpgrade.source === 'preview')) {
+      if (!runtime.lastCheckpoint || !options.cloud) {
+        setStatus('saveError', '無法確認目前的雲端存檔；未送出升級寫入。');
+        return;
+      }
+      runtime.pending = { data: cloneSaveData(runtime.lastCheckpoint), important: true };
+      runtime.retryRequested = false;
+      pump();
+      return;
+    }
+    setStatus('incompatible', '目前存檔來源與升級確認不符；未執行寫入。');
+  };
+
   const retry = async (): Promise<void> => {
     if (runtime.disposed) return;
     if (runtime.status === 'loadError') {
@@ -590,6 +916,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       return;
     }
     if (runtime.status !== 'saveError') return;
+    if (runtime.saveUpgrade?.source === 'local' && runtime.upgradeConfirmed) {
+      upgradeLocal();
+      return;
+    }
     if (runtime.mode === 'local' && runtime.retryLocal) {
       runtime.retryRequested = true;
       pump();
@@ -618,6 +948,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.retryLocal = null;
     runtime.retryRequested = false;
     runtime.lastCheckpoint = null;
+    runtime.legacyCandidate = null;
+    runtime.saveUpgrade = null;
+    runtime.upgradeRaw = null;
+    runtime.upgradeConfirmed = false;
     runtime.status = 'unavailable';
   };
 
@@ -641,7 +975,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.disposed = true;
   };
 
-  return { initialize, checkpoint, retry, invalidate, discardUnreadableLocalSave, dispose };
+  return { initialize, importLegacySave, checkpoint, confirmSaveUpgrade, retry, invalidate, discardUnreadableLocalSave, dispose };
 }
 
 export { validateSave } from './validate.js';

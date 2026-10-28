@@ -34,6 +34,7 @@ export const ANCIENT_RUINS_LANDMARKS: Record<string, MapLandmark> = {
   'ruins-tide-camp': { x: 16, y: 72, description: '潮濕石階與帆布營棚依著舊航標而建，斷鐘塔隱約立在海霧後方。' },
   'ruins-root-causeway': { x: 40, y: 55, description: '青綠盤根攀上白石斷柱，梯路連起尚可通行的石道。' },
   'ruins-echo-gallery': { x: 67, y: 39, description: '兩座回聲碑立於高台之間，長廊深處仍有巡鈴石獸守著舊航標。' },
+  'ruins-bell-sanctum': { x: 86, y: 22, description: '閉合白石鐘室環抱著破碎石環，失序司鐘者仍在最深處守著誓鐘。' },
 };
 
 /** One global-chart marker stands for each playable region. */
@@ -53,6 +54,11 @@ export type AtlasViewModel = {
   allExploredCount: number;
   allMapCount: number;
 };
+
+/** Guardian arena saves are repaired to mine-gate when resumed; other saved maps keep their own label. */
+export function savedProgressDisplayMapId(mapId: string): string {
+  return mapId === 'guardian-arena' ? 'mine-gate' : mapId;
+}
 
 export function isFrostMapId(mapId: string): boolean {
   return mapId.startsWith('frost-');

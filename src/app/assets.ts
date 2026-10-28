@@ -51,14 +51,14 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
   actors: [
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:frost-tide-sword', 'equip:sunwell-oathblade',
-    'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm',
-    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel',
+    'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm', 'equip:oathfarer-circlet',
+    'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel', 'actor:ruins-bell-keeper',
     'actor:guide', 'actor:mentor', 'actor:merchant', 'actor:healer', 'actor:keeper', 'actor:frost-guide', 'actor:sands-guide',
     'actor:ruins-moss-carapace', 'actor:ruins-archivist', 'actor:ruins-medic',
     'actor:ruins-pathfinder', 'actor:ruins-stele', 'actor:ruins-string-puppet', 'actor:ruins-bell-prowler',
   ],
   environment: [
-    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell', 'ruins-camp', 'ruins-root', 'ruins-gallery'] as const).flatMap((theme) =>
+    ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell', 'ruins-camp', 'ruins-root', 'ruins-gallery', 'ruins-sanctum'] as const).flatMap((theme) =>
       (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
     'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
@@ -69,7 +69,7 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
       'small-red', 'large-red', 'small-blue', 'large-blue', 'snail-shell', 'slime-gel',
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'frost-fang', 'ice-shell', 'amber-scale', 'forest-seed',
-      'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
+      'spore-sample', 'ridge-emblem', 'guardian-core', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic', 'oathfarer-circlet',
       'broken-copper-thread', 'muted-bell-fragment',
     ].map((id) => `item:${id}`),
     ...['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'].map((id) => `skill:${id}`),
@@ -83,8 +83,8 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
 const expectedAudioKeys = [
   'theme-title', 'theme-town',
   ...['theme-brightwood', 'theme-ridge', 'theme-frost', 'theme-sands', 'theme-ruins'].flatMap((key) => [key, `${key}:combat`]),
-  ...['boss-guardian', 'boss-frost', 'boss-sunwell'].flatMap((key) => [key, `${key}:phase2`]),
-  'boss-win', 'death', 'levelup', 'quest',
+  ...['boss-guardian', 'boss-frost', 'boss-sunwell', 'boss-ruins'].flatMap((key) => [key, `${key}:phase2`]),
+  'boss-win', 'oath-bell-restored', 'death', 'levelup', 'quest',
   'ui-click', 'panel-open', 'dialogue', 'jump', 'attack', 'attack-heavy', 'attack-sweep', 'hit', 'crit-hit', 'hurt',
   'pickup', 'potion', 'equip', 'guard', 'monster-die', 'telegraph', 'boss-phase', 'portal', 'stele-tune',
 ] as const;

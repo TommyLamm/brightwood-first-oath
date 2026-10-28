@@ -109,9 +109,9 @@ function startAttack(encounter: Encounter, nowMs = 1000) {
 
 describe('Ruins gallery ordinary monsters', () => {
   it('adds the exact approved catalog entries, fixed combat values, and guaranteed saleable materials', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(33);
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(18);
-    expect(Object.keys(rulesCatalog.monsters)).toHaveLength(16);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(34);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(20);
+    expect(Object.keys(rulesCatalog.monsters)).toHaveLength(17);
     expect(validateRules(rulesCatalog).ok).toBe(true);
 
     for (const encounter of encounters) {

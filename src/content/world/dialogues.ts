@@ -28,7 +28,7 @@ export const dialogues: Record<Id, DialogueLine[]> = {
   'frost-guide-intro': [
     {
       speaker: '雪芽',
-      text: '我是雪芽，負責照看霜雪群島的海岸通道。狼群與冰甲蟹近日擋住北方路線，請先在此接下委託，完成後回來報告。',
+      text: '我是雪芽，負責照看霜雪群島的海岸通道。交付北路狼牙後，也可調查霜松隘道高台的航標，再回雪痕海岸報告。完成冰潮誓約並領取謝禮後，達到 Lv30 可由東門前往琥珀砂岸。',
     },
   ],
   'keeper-intro': [
@@ -40,13 +40,13 @@ export const dialogues: Record<Id, DialogueLine[]> = {
   'sands-guide-intro': [
     {
       speaker: '琉砂',
-      text: '我是琉砂，負責巡查琥珀砂岸的流沙通道。沙蠍在日照下會留下琥珀鱗片，先替我找回三枚，再回琥珀砂岸報到，我會替你開啟砂丘關道。',
+      text: '我是琉砂，負責巡查琥珀砂岸的流沙通道。交付日井古道後，可接下盆地歇腳處的委託，抵達日井盆地並擊退兩隻甲蟲，再回琥珀砂岸報告。完成日井誓約後，南方航路會通往潮痕營站。',
     },
   ],
   'ruins-archivist-intro': [
     {
       speaker: '芷衡',
-      text: '我是芷衡，負責記錄潮痕營站的舊航標。先別急著替每道裂痕找敵人，看看它原本想保護什麼。',
+      text: '我是芷衡，負責記錄潮痕營站的舊航標。司鐘者倒下後，請回營站找我手動領取守誓旅冠，再接下回到木葉鎮向教官報告的歸途。',
     },
   ],
   'ruins-medic-intro': [
@@ -58,7 +58,7 @@ export const dialogues: Record<Id, DialogueLine[]> = {
   'ruins-pathfinder-intro': [
     {
       speaker: '行舟',
-      text: '我是行舟，替舊航標記下潮汐與回聲。長廊仍能通行，回營站的西門也一直敞開。',
+      text: '我是行舟，替舊航標記下潮汐與回聲。回營站的西門一直敞開；完成並領取「兩段回聲」後，再來找我接下誓鐘委託，從東門進入內殿。',
     },
   ],
   'ruins-stele-west-intro': [
@@ -71,6 +71,12 @@ export const dialogues: Record<Id, DialogueLine[]> = {
     {
       speaker: '東回聲碑',
       text: '碑面刻著旅人的歸途，潮痕沿著石紋向西流去。更深的記錄仍被鹽霧遮住，尚未留下清晰字跡。',
+    },
+  ],
+  'frost-route-marker-intro': [
+    {
+      speaker: '霜松航標',
+      text: '風雪磨去航標的漆色，石刻仍指向群島外海。若已接下雪芽的委託，請調查一次，再回雪痕海岸向她報告。',
     },
   ],
 };

@@ -4,6 +4,7 @@ import { createAppScenes } from './app/scenes.js';
 import { createRootStatusView } from './app/root-ui.js';
 import { playroomCloudPort } from './platform/index.js';
 import type { StorageLike } from './contracts/ports.js';
+import { BRIGHTWOOD_GAME_ID } from './persistence/index.js';
 import { createAudio } from './audio/index.js';
 import { createUi } from './ui/index.js';
 
@@ -21,7 +22,7 @@ const appStorage = browserStorage();
 app = new GameApp({
   baseUrl: import.meta.env.BASE_URL,
   fetcher: (url) => fetch(url),
-  gameId: 'maplewood-swordsman',
+  gameId: BRIGHTWOOD_GAME_ID,
   storage: appStorage,
   cloud: playroomCloudPort,
   audioFactory: createAudio,

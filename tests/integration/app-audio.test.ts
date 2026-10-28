@@ -139,6 +139,98 @@ describe('app audio wiring', () => {
     app.dispose();
   });
 
+  it('keeps Bell Keeper phase music on phase one through the transition and uses its single result stinger', async () => {
+    const { app, calls } = await startedApp(1405);
+    app.dispatchUi({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    await flushAudioUnlock();
+
+    app.state.gameplay!.pendingTransition = { mapId: 'ruins-bell-sanctum', spawnId: 'entry', after: 'travel' };
+    app.completeMapTransition();
+    expect(calls.music.at(-1)).toBe('boss-ruins');
+    const bell = app.state.gameplay!.monsters.find(({ monsterId }) => monsterId === 'ruins-bell-keeper')!;
+    bell.hp = 4000;
+    const priorIntensities = calls.intensity.length;
+
+    app.update(20);
+    expect(app.state.gameplay?.monsters.find(({ id }) => id === bell.id)?.mode).toBe('phase-transition');
+    expect(calls.sfx.filter((key) => key === 'boss-phase')).toHaveLength(1);
+    for (let tick = 0; tick < 45; tick += 1) app.update(20);
+    expect(app.state.gameplay?.monsters.find(({ id }) => id === bell.id)?.phase).toBe(1);
+    expect(calls.intensity.slice(priorIntensities)).not.toContain('phase2');
+
+    for (let tick = 0; tick < 30; tick += 1) app.update(20);
+    expect(app.state.gameplay?.monsters.find(({ id }) => id === bell.id)?.phase).toBe(2);
+    expect(calls.intensity.at(-1)).toBe('phase2');
+    expect(calls.sfx.filter((key) => key === 'boss-phase')).toHaveLength(1);
+
+    const gameplay = app.state.gameplay!;
+    const liveBell = gameplay.monsters.find(({ monsterId }) => monsterId === 'ruins-bell-keeper')!;
+    liveBell.hp = 1;
+    liveBell.mode = 'idle';
+    gameplay.movement = {
+      ...gameplay.movement,
+      position: { x: liveBell.movement.position.x - 40, y: 600 },
+      velocity: { x: 0, y: 0 },
+      facing: 1,
+      mode: 'grounded',
+    };
+    const nowMs = app.state.gameTimeMs;
+    gameplay.combat.attacks = [{
+      id: 'hero-final-bell-hit',
+      sourceId: gameplay.playerEntityId,
+      skillId: 'basic',
+      startedAtMs: nowMs - app.state.catalog!.rules.skills.basic!.windupMs,
+      facing: 1,
+      origin: { ...gameplay.movement.position },
+      rank: 1,
+      hitIds: [],
+    }];
+    app.update(60);
+    expect(app.state.gameplay?.bossResult).toBe(true);
+    expect(calls.sfx.filter((key) => key === 'oath-bell-restored')).toHaveLength(1);
+    expect(calls.sfx).not.toContain('boss-win');
+    app.update(20);
+    expect(calls.sfx.filter((key) => key === 'oath-bell-restored')).toHaveLength(1);
+    app.dispose();
+  });
+
+  it('does not emit the Bell Keeper phase cue when the player dies on its transition tick', async () => {
+    const { app, calls } = await startedApp(1406);
+    app.dispatchUi({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    await flushAudioUnlock();
+
+    app.state.gameplay!.pendingTransition = { mapId: 'ruins-bell-sanctum', spawnId: 'entry', after: 'travel' };
+    app.completeMapTransition();
+    const gameplay = app.state.gameplay!;
+    const bell = gameplay.monsters.find(({ monsterId }) => monsterId === 'ruins-bell-keeper')!;
+    bell.hp = 4000;
+    gameplay.saveData.player = { ...gameplay.saveData.player, hp: 1 };
+    gameplay.movement = {
+      ...gameplay.movement,
+      position: { x: 1170, y: 600 },
+      velocity: { x: 0, y: 0 },
+      mode: 'grounded',
+    };
+    gameplay.combat.attacks = [{
+      id: 'bell-kills-player-during-transition',
+      sourceId: bell.id,
+      skillId: 'ruins-bell-slam',
+      startedAtMs: app.state.gameTimeMs - 900,
+      facing: -1,
+      origin: { x: 1200, y: 600 },
+      rank: 1,
+      hitIds: [],
+    }];
+
+    app.update(20);
+    expect(app.state.screen).toBe('dead');
+    expect(app.state.gameplay?.monsters.find(({ id }) => id === bell.id)?.bellCycle?.transitionStartedAtMs).toBeNull();
+    expect(calls.sfx).not.toContain('boss-phase');
+    app.dispose();
+  });
+
   it('plays a stele tune once when q17 records a fresh inspection', async () => {
     const { app, calls } = await startedApp(1404);
     app.dispatchUi({ type: 'playTemporary', payload: {} });

@@ -7,20 +7,20 @@ const approvedItemIds: readonly Id[] = [
   'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard',
   'forest-seed', 'spore-sample', 'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell',
   'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
-  'broken-copper-thread', 'muted-bell-fragment',
+  'broken-copper-thread', 'muted-bell-fragment', 'oathfarer-circlet',
 ];
 
 const approvedSkillIds: readonly Id[] = [
   'basic', 'heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery', 'enemy-melee',
   'ruins-carapace-bite', 'guardian-slam', 'frost-crab-charge', 'sunwell-beetle-charge',
   'sand-stinger', 'guardian-wave', 'frost-tusk-slam', 'sunwell-sentinel-slam', 'low-tide-wave',
-  'ruins-puppet-slap', 'ruins-prowler-sweep',
+  'ruins-puppet-slap', 'ruins-prowler-sweep', 'ruins-bell-slam', 'ruins-bell-sweep',
 ];
 
 const approvedMonsterIds: readonly Id[] = [
   'snail', 'slime', 'mushroom', 'boar', 'golem', 'sentinel', 'frost-wolf', 'frost-crab',
   'sand-scorpion', 'sunwell-beetle', 'ruins-moss-carapace', 'guardian', 'sunwell-sentinel',
-  'frost-tide-warden', 'ruins-string-puppet', 'ruins-bell-prowler',
+  'frost-tide-warden', 'ruins-string-puppet', 'ruins-bell-prowler', 'ruins-bell-keeper',
 ];
 
 const invalid = (message: string): Result<RulesCatalog> => ({
@@ -47,12 +47,12 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const skillIds = Object.keys(catalog.skills);
   const monsterIds = Object.keys(catalog.monsters);
 
-  if (itemIds.length !== 33) return invalid('items 數量錯誤：預期 33，實際 ' + itemIds.length);
-  if (skillIds.length !== 18) return invalid('skills 數量錯誤：預期 18，實際 ' + skillIds.length);
-  if (monsterIds.length !== 16) return invalid('monsters 數量錯誤：預期 16，實際 ' + monsterIds.length);
-  if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid('items ID 清單不符核准的 33 件物品');
-  if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid('skills ID 清單不符核准的 18 個技能');
-  if (!hasApprovedIds(catalog.monsters, approvedMonsterIds)) return invalid('monsters ID 清單不符核准的 16 隻怪物');
+  if (itemIds.length !== 34) return invalid('items 數量錯誤：預期 34，實際 ' + itemIds.length);
+  if (skillIds.length !== 20) return invalid('skills 數量錯誤：預期 20，實際 ' + skillIds.length);
+  if (monsterIds.length !== 17) return invalid('monsters 數量錯誤：預期 17，實際 ' + monsterIds.length);
+  if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid('items ID 清單不符核准的 34 件物品');
+  if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid('skills ID 清單不符核准的 20 個技能');
+  if (!hasApprovedIds(catalog.monsters, approvedMonsterIds)) return invalid('monsters ID 清單不符核准的 17 隻怪物');
   if (!hasMatchingIds(catalog.items)) return invalid('items 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.skills)) return invalid('skills 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.monsters)) return invalid('monsters 定義 id 必須與 Record key 完全相同');
@@ -82,6 +82,14 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
     if (item.kind === 'quest' && (item.buyPrice !== 0 || item.sellPrice !== 0)) {
       return invalid(`任務物品 ${item.id} 不可購買或出售`);
     }
+  }
+
+  const circlet = catalog.items['oathfarer-circlet'];
+  if (circlet.kind !== 'hat' || circlet.slot !== 'hat' || circlet.stackLimit !== 1 || circlet.minLevel !== 30
+    || circlet.attack !== 0 || circlet.defense !== 10 || circlet.hpBonus !== 20
+    || circlet.restoreHp !== 0 || circlet.restoreMp !== 0 || circlet.buyPrice !== 0 || circlet.sellPrice !== 600
+    || circlet.iconKey !== 'item:oathfarer-circlet' || circlet.visualKey !== 'equip:oathfarer-circlet') {
+    return invalid('守誓旅冠必須符合核准的等級、能力、價格及圖像 keys');
   }
 
   // Bosses are the monsters that never respawn (respawnMs 0). Their guaranteed gear drop is the fight's prize,
@@ -132,11 +140,25 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const learnableCount = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'swordsman').length;
   const enemySkills = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'enemy');
   if (learnableCount !== 5) return invalid(`可學劍士技能數量錯誤：預期 5，實際 ${learnableCount}`);
-  if (enemySkills.length !== 12) return invalid('敵人技能數量錯誤：預期 12，實際 ' + enemySkills.length);
+  if (enemySkills.length !== 14) return invalid('敵人技能數量錯誤：預期 14，實際 ' + enemySkills.length);
   if (catalog.skills.basic?.requiredJob !== 'any') return invalid('basic 必須存在且可由任意職業使用');
   if (enemySkills.some((skill) => skill.maxRank !== 1 || skill.mpCost !== 0)) {
     return invalid('敵人技能必須 maxRank=1 且 mpCost=0');
   }
+  const bellSkillProfiles = [
+    { id: 'ruins-bell-slam', windupMs: 900, activeMs: 100, recoveryMs: 1000, reach: 180, height: 120, multiplierBase: 1.25 },
+    { id: 'ruins-bell-sweep', windupMs: 1200, activeMs: 100, recoveryMs: 1000, reach: 360, height: 30, multiplierBase: 1.05 },
+  ] as const;
+  if (bellSkillProfiles.some((expected) => {
+    const skill = catalog.skills[expected.id];
+    return !skill || skill.kind !== 'attack' || skill.requiredJob !== 'enemy' || skill.maxRank !== 1
+      || skill.mpCost !== 0 || skill.cooldownMs !== 0 || skill.windupMs !== expected.windupMs
+      || skill.activeMs !== expected.activeMs || skill.recoveryMs !== expected.recoveryMs
+      || skill.reach !== expected.reach || skill.height !== expected.height || skill.targets !== 1
+      || skill.multiplierBase !== expected.multiplierBase || skill.multiplierPerRank !== 0
+      || skill.durationMs !== 0 || skill.defensePerRank !== 0 || skill.hpPerRank !== 0
+      || skill.regenPerRank !== 0 || skill.effectKey !== null;
+  })) return invalid('司鐘者的垂鐘重擊與低鳴橫掃必須符合核准的時間、範圍與倍率');
 
   for (const monster of Object.values(catalog.monsters)) {
     const values = [
@@ -164,6 +186,15 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
         return invalid(`任務物品 ${drop.itemId} 不可放在無條件掉落表`);
       }
     }
+  }
+
+  const bellKeeper = catalog.monsters['ruins-bell-keeper'];
+  if (bellKeeper.level !== 30 || bellKeeper.maxHp !== 8000 || bellKeeper.attack !== 60 || bellKeeper.defense !== 28
+    || bellKeeper.exp !== 0 || bellKeeper.coins !== 0 || bellKeeper.speed !== 38 || bellKeeper.width !== 88
+    || bellKeeper.height !== 76 || bellKeeper.aggroRange !== 460 || bellKeeper.attackRange !== 360
+    || bellKeeper.attackWindupMs !== 900 || bellKeeper.attackCooldownMs !== 0 || bellKeeper.respawnMs !== 0
+    || bellKeeper.actorKey !== 'actor:ruins-bell-keeper' || bellKeeper.drops.length !== 0) {
+    return invalid('失序司鐘者必須符合核准的首領規格');
   }
 
   for (const [questId, drop] of Object.entries(questDropByQuest)) {

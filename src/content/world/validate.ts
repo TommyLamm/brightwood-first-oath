@@ -1,32 +1,34 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
 
-const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'ruins-tide-camp', 'ruins-root-causeway', 'sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar', 'ruins-echo-gallery'];
-const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide', 'ruins-archivist', 'ruins-medic', 'ruins-pathfinder', 'ruins-stele-west', 'ruins-stele-east'];
-const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12', 'q13', 'q14', 'q15', 'q16', 'q17', 'q20'];
+const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'ruins-tide-camp', 'ruins-root-causeway', 'sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar', 'ruins-echo-gallery', 'ruins-bell-sanctum'];
+const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide', 'ruins-archivist', 'ruins-medic', 'ruins-pathfinder', 'ruins-stele-west', 'ruins-stele-east', 'frost-route-marker'];
+const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12', 'q13', 'q14', 'q15', 'q16', 'q17', 'q18', 'q19', 'q20', 'q21', 'q22'];
 const expectedNpcPlacements: Record<Id, Id> = {
   guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore', 'sands-guide': 'sand-glass-shore',
   'ruins-archivist': 'ruins-tide-camp', 'ruins-medic': 'ruins-tide-camp',
   'ruins-pathfinder': 'ruins-echo-gallery', 'ruins-stele-west': 'ruins-echo-gallery', 'ruins-stele-east': 'ruins-echo-gallery',
+  'frost-route-marker': 'frost-pine-pass',
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
   'red-ridge': 'rock', 'mine-gate': 'rock', 'guardian-arena': 'rock', 'frost-shore': 'frost', 'frost-pine-pass': 'frost-pine', 'frost-tide-cavern': 'frost-cave', 'sand-glass-shore': 'sand', 'sand-dune-pass': 'sand-dune', 'sand-sunwell-basin': 'sunwell', 'sand-sunwell-altar': 'sunwell',
-  'ruins-tide-camp': 'ruins-camp', 'ruins-root-causeway': 'ruins-root', 'ruins-echo-gallery': 'ruins-gallery',
+  'ruins-tide-camp': 'ruins-camp', 'ruins-root-causeway': 'ruins-root', 'ruins-echo-gallery': 'ruins-gallery', 'ruins-bell-sanctum': 'ruins-sanctum',
 };
 const expectedMusic: Record<Id, string> = {
   camp: 'theme-brightwood', town: 'theme-town', 'forest-edge': 'theme-brightwood', 'mushroom-wood': 'theme-brightwood',
   'red-ridge': 'theme-ridge', 'mine-gate': 'theme-ridge', 'guardian-arena': 'boss-guardian', 'frost-shore': 'theme-frost', 'frost-pine-pass': 'theme-frost', 'frost-tide-cavern': 'boss-frost', 'sand-glass-shore': 'theme-sands', 'sand-dune-pass': 'theme-sands', 'sand-sunwell-basin': 'theme-sands', 'sand-sunwell-altar': 'boss-sunwell',
-  'ruins-tide-camp': 'theme-ruins', 'ruins-root-causeway': 'theme-ruins', 'ruins-echo-gallery': 'theme-ruins',
+  'ruins-tide-camp': 'theme-ruins', 'ruins-root-causeway': 'theme-ruins', 'ruins-echo-gallery': 'theme-ruins', 'ruins-bell-sanctum': 'boss-ruins',
 };
 const requiredOrdinaryMonsterIds = [
   'snail', 'slime', 'mushroom', 'boar', 'golem', 'sentinel', 'frost-wolf', 'frost-crab', 'sand-scorpion', 'sunwell-beetle',
   'ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler',
 ];
-const inspectNpcIds = new Set<Id>(['ruins-stele-west', 'ruins-stele-east']);
-const stelePlacements: Record<Id, { mapId: Id; x: number; y: number }> = {
+const inspectNpcIds = new Set<Id>(['ruins-stele-west', 'ruins-stele-east', 'frost-route-marker']);
+const inspectTargetPlacements: Record<Id, { mapId: Id; x: number; y: number }> = {
   'ruins-stele-west': { mapId: 'ruins-echo-gallery', x: 900, y: 420 },
   'ruins-stele-east': { mapId: 'ruins-echo-gallery', x: 2000, y: 360 },
+  'frost-route-marker': { mapId: 'frost-pine-pass', x: 1770, y: 430 },
 };
 const interactionRangePx = 64;
 
@@ -80,7 +82,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     if (map.themeKey !== expectedThemes[mapId] || map.musicKey !== expectedMusic[mapId]) {
       return failure(`Map theme/music key invalid: ${mapId}`);
     }
-    if (map.boss !== (mapId === 'guardian-arena' || mapId === 'frost-tide-cavern' || mapId === 'sand-sunwell-altar')
+    if (map.boss !== (mapId === 'guardian-arena' || mapId === 'frost-tide-cavern' || mapId === 'sand-sunwell-altar' || mapId === 'ruins-bell-sanctum')
       || map.safe !== (mapId === 'town' || mapId === 'ruins-tide-camp')) {
       return failure(`Map safe/boss classification invalid: ${mapId}`);
     }
@@ -160,19 +162,30 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
       }
     }
     for (const placement of map.npcs) {
-      const stele = stelePlacements[placement.npcId];
-      const isApprovedStelePosition = stele?.mapId === mapId && placement.x === stele.x && placement.y === stele.y;
+      const inspectTarget = inspectTargetPlacements[placement.npcId];
+      const isApprovedInspectPosition = inspectTarget?.mapId === mapId
+        && placement.x === inspectTarget.x && placement.y === inspectTarget.y;
       const isGroundPosition = placement.y === 600 && liesOnFoothold(map, placement.x, placement.y);
       if (!hasRecordKey(world.npcs, placement.npcId) || !Number.isFinite(placement.x) || placement.x < 0 || placement.x > map.width
-        || (!isGroundPosition && !isApprovedStelePosition)
-        || (isApprovedStelePosition && !liesOnFoothold(map, placement.x, placement.y))) {
+        || (!isGroundPosition && !isApprovedInspectPosition)
+        || (isApprovedInspectPosition && !liesOnFoothold(map, placement.x, placement.y))) {
         return failure(`Invalid NPC placement in ${mapId}: ${placement.npcId}`);
       }
     }
   }
 
+  const frostPass = world.maps['frost-pine-pass'];
+  const marker = frostPass?.npcs.find(({ npcId }) => npcId === 'frost-route-marker');
+  const markerPlatform = frostPass?.footholds.some(({ x1, x2, y1, y2 }) => x1 === 1710 && x2 === 1980 && y1 === 430 && y2 === 430);
+  const markerLadder = frostPass?.ladders.some(({ x, topY, bottomY }) => x === 1840 && topY === 430 && bottomY === 600);
+  if (!frostPass || frostPass.npcs.length !== 1 || !marker || marker.x !== 1770 || marker.y !== 430
+    || !markerPlatform || !markerLadder) {
+    return failure('Frost Route Marker must sit on the existing upper ledge reachable by its ladder');
+  }
+
   const causeway = world.maps['ruins-root-causeway'];
   const gallery = world.maps['ruins-echo-gallery'];
+  const sanctum = world.maps['ruins-bell-sanctum'];
   if (!causeway || !gallery || gallery.width !== 2600 || gallery.height !== 720) {
     return failure('Echo Gallery must be a real 2600x720 map');
   }
@@ -201,7 +214,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   const returnPortal = gallery.portals.find(({ targetMapId }) => targetMapId === 'ruins-root-causeway');
   if (causeway.portals.length !== 2 || entry?.id !== 'ruins-root-causeway:east' || entry.x !== 2300 || entry.y !== 600
     || entry.requiredQuestId !== 'q16' || entry.targetSpawnId !== 'left'
-    || gallery.portals.length !== 1 || returnPortal?.id !== 'ruins-echo-gallery:west'
+    || gallery.portals.length !== 2 || returnPortal?.id !== 'ruins-echo-gallery:west'
     || returnPortal.x !== 100 || returnPortal.y !== 600 || returnPortal.requiredQuestId !== null || returnPortal.targetSpawnId !== 'right') {
     return failure('Echo Gallery entry must require claimed q16 and its west return must stay free');
   }
@@ -210,9 +223,32 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     'ruins-pathfinder:300:600', 'ruins-stele-east:2000:360', 'ruins-stele-west:900:420',
   ])) return failure('Echo Gallery NPC placement is invalid');
 
+  const sanctumEntry = gallery.portals.find(({ targetMapId }) => targetMapId === 'ruins-bell-sanctum');
+  const sanctumReturn = sanctum?.portals.find(({ targetMapId }) => targetMapId === 'ruins-echo-gallery');
+  const keeper = sanctum?.monsters[0];
+  if (!sanctum || !sanctumEntry || !sanctumReturn || !keeper) {
+    return failure('Bell Sanctum must have both routes and its approved keeper spawn');
+  }
+  if (sanctum.width !== 1800 || sanctum.height !== 720
+    || sanctum.themeKey !== 'ruins-sanctum' || sanctum.musicKey !== 'boss-ruins'
+    || sanctum.safe || !sanctum.boss || sanctum.footholds.length !== 1 || sanctum.ladders.length !== 0
+    || sanctum.spawns.length !== 3 || !sanctum.spawns.some(({ id, x, y }) => id === 'entry' && x === 160 && y === 600)
+    || sanctum.npcs.length !== 0 || sanctum.monsters.length !== 1
+    || keeper.monsterId !== 'ruins-bell-keeper' || keeper.x !== 1200 || keeper.y !== 600
+    || keeper.roamLeft !== 700 || keeper.roamRight !== 1560
+    || gallery.portals.length !== 2 || sanctumEntry.id !== 'ruins-echo-gallery:east'
+    || sanctumEntry.x !== 2500 || sanctumEntry.y !== 600 || sanctumEntry.requiredQuestId !== 'q17'
+    || sanctumEntry.targetSpawnId !== 'entry'
+    || sanctum.portals.length !== 1 || sanctumReturn.id !== 'ruins-bell-sanctum:west'
+    || sanctumReturn.x !== 100 || sanctumReturn.y !== 600 || sanctumReturn.requiredQuestId !== null
+    || sanctumReturn.targetSpawnId !== 'right') {
+    return failure('Bell Sanctum must be a q17-gated boss arena with a free west return and one pinned keeper spawn');
+  }
+
   const normalMonsterIds = new Set<Id>();
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
-    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden' && monster.monsterId !== 'sunwell-sentinel') normalMonsterIds.add(monster.monsterId);
+    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden' && monster.monsterId !== 'sunwell-sentinel'
+      && monster.monsterId !== 'ruins-bell-keeper') normalMonsterIds.add(monster.monsterId);
   }
   if (requiredOrdinaryMonsterIds.some((monsterId) => !normalMonsterIds.has(monsterId)) || !world.maps['guardian-arena']?.boss
     || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian'
@@ -220,6 +256,8 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     || world.maps['frost-tide-cavern'].monsters.filter(({ monsterId }) => monsterId === 'frost-tide-warden').length !== 1
     || !world.maps['sand-sunwell-altar']?.boss
     || world.maps['sand-sunwell-altar'].monsters.length !== 1 || world.maps['sand-sunwell-altar'].monsters[0]?.monsterId !== 'sunwell-sentinel'
+    || !world.maps['ruins-bell-sanctum']?.boss
+    || world.maps['ruins-bell-sanctum'].monsters.length !== 1 || world.maps['ruins-bell-sanctum'].monsters[0]?.monsterId !== 'ruins-bell-keeper'
     || world.maps['sand-sunwell-basin']?.boss || world.maps['sand-sunwell-basin']?.monsters.length !== 4) {
     return failure('World must include the required ordinary monsters and one boss in each arena');
   }
@@ -260,9 +298,11 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     if (quest.id !== questId || !hasRecordKey(world.npcs, quest.giverNpcId) || !hasRecordKey(world.npcs, quest.turnInNpcId)) {
       return failure(`Quest identity or NPC reference invalid: ${questId}`);
     }
-    const expectedPrerequisite = questId === 'q01' ? [] : questId === 'q20'
-      ? ['q16']
-      : [`q${String(Number(questId.slice(1)) - 1).padStart(2, '0')}`];
+    const expectedPrerequisite = questId === 'q01' ? []
+      : questId === 'q20' ? ['q16']
+        : questId === 'q21' ? ['q09']
+          : questId === 'q22' ? ['q13']
+            : [`q${String(Number(questId.slice(1)) - 1).padStart(2, '0')}`];
     if (quest.prerequisiteIds.length !== expectedPrerequisite.length
       || quest.prerequisiteIds.some((id, index) => id !== expectedPrerequisite[index])) return failure(`Quest prerequisite sequence invalid: ${questId}`);
     if (quest.minLevel !== (questId === 'q02' ? 3 : 1) || !quest.objectives.length || quest.objectives.some((objective) => objective.count <= 0)) {
@@ -277,9 +317,10 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
       if (objective.type === 'inspect') {
         const targetMapId = expectedNpcPlacements[objective.targetId];
         const targetPlacement = targetMapId && world.maps[targetMapId]?.npcs.some(({ npcId }) => npcId === objective.targetId);
+        const approvedPlacement = inspectTargetPlacements[objective.targetId];
         if (!inspectNpcIds.has(objective.targetId) || world.npcs[objective.targetId]?.role !== 'keeper'
-          || targetMapId !== 'ruins-echo-gallery' || !targetPlacement || objective.count !== 1) {
-          return failure(`Inspect target must be a placed, whitelisted Echo Gallery stele in ${questId}`);
+          || !approvedPlacement || targetMapId !== approvedPlacement.mapId || !targetPlacement || objective.count !== 1) {
+          return failure(`Inspect target must be a placed, whitelisted object in ${questId}`);
         }
       }
       if ((objective.type === 'collect' || objective.type === 'equip') && !hasRecordKey(rules.items, objective.targetId)) {
@@ -302,6 +343,47 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
         return failure(`Quest ${questId} text must name its return NPC and location`);
       }
     }
+  }
+
+  const q18 = world.quests.q18;
+  const q19 = world.quests.q19;
+  if (!q18 || !q19) return failure('Quests q18 and q19 must be present in the approved world catalog');
+  if (q18.giverNpcId !== 'ruins-pathfinder' || q18.turnInNpcId !== 'ruins-archivist'
+    || q18.objectives.length !== 1 || q18.objectives[0]?.type !== 'kill'
+    || q18.objectives[0]?.targetId !== 'ruins-bell-keeper' || q18.objectives[0]?.count !== 1
+    || q18.reward.exp !== 0 || q18.reward.coins !== 1600 || q18.reward.items.length !== 1
+    || q18.reward.items[0]?.itemId !== 'oathfarer-circlet' || q18.reward.items[0]?.quantity !== 1
+    || q19.giverNpcId !== 'ruins-archivist' || q19.turnInNpcId !== 'mentor'
+    || q19.objectives.length !== 1 || q19.objectives[0]?.type !== 'reach'
+    || q19.objectives[0]?.targetId !== 'town' || q19.objectives[0]?.count !== 1
+    || q19.reward.exp !== 0 || q19.reward.coins !== 300 || q19.reward.items.length !== 0) {
+    return failure('Quests q18 and q19 must match the approved Bell Keeper and return-to-town objectives and rewards');
+  }
+
+  const q21 = world.quests.q21;
+  const q22 = world.quests.q22;
+  if (!q21 || q21.giverNpcId !== 'frost-guide' || q21.turnInNpcId !== 'frost-guide'
+    || q21.prerequisiteIds.length !== 1 || q21.prerequisiteIds[0] !== 'q09' || q21.minLevel !== 1
+    || q21.objectives.length !== 1 || q21.objectives[0]?.type !== 'inspect'
+    || q21.objectives[0]?.targetId !== 'frost-route-marker' || q21.objectives[0]?.count !== 1
+    || q21.consumeItems.length !== 0 || q21.reward.exp !== 0 || q21.reward.coins !== 500
+    || q21.reward.items.length !== 2 || q21.reward.items[0]?.itemId !== 'large-red'
+    || q21.reward.items[0]?.quantity !== 3 || q21.reward.items[1]?.itemId !== 'large-blue'
+    || q21.reward.items[1]?.quantity !== 2
+    || ![q21.acceptText, q21.progressText, q21.completeText].every((text) => text.includes('霜松航標') && text.includes('雪痕海岸'))) {
+    return failure('Quest q21 must match the approved optional Frost Route Marker objective and reward');
+  }
+  if (!q22 || q22.giverNpcId !== 'sands-guide' || q22.turnInNpcId !== 'sands-guide'
+    || q22.prerequisiteIds.length !== 1 || q22.prerequisiteIds[0] !== 'q13' || q22.minLevel !== 1
+    || q22.objectives.length !== 2 || q22.objectives[0]?.type !== 'reach'
+    || q22.objectives[0]?.targetId !== 'sand-sunwell-basin' || q22.objectives[0]?.count !== 1
+    || q22.objectives[1]?.type !== 'kill' || q22.objectives[1]?.targetId !== 'sunwell-beetle'
+    || q22.objectives[1]?.count !== 2 || q22.consumeItems.length !== 0
+    || q22.reward.exp !== 0 || q22.reward.coins !== 600 || q22.reward.items.length !== 2
+    || q22.reward.items[0]?.itemId !== 'large-red' || q22.reward.items[0]?.quantity !== 4
+    || q22.reward.items[1]?.itemId !== 'large-blue' || q22.reward.items[1]?.quantity !== 2
+    || ![q22.acceptText, q22.progressText, q22.completeText].every((text) => text.includes('日井盆地') && text.includes('琥珀砂岸'))) {
+    return failure('Quest q22 must match the approved optional Sunwell Basin objective and reward');
   }
 
   const visited = new Set<Id>();

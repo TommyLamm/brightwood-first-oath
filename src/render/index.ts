@@ -119,7 +119,8 @@ const HERO_ANCHOR_FRAME_COUNTS: Record<HeroAnchorPose, number> = {
   buff: 4,
 };
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
-const AUTHORED_ATTACK_FRAME_MONSTER_IDS = new Set(['ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler']);
+const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
+const AUTHORED_ATTACK_FRAME_MONSTER_IDS = new Set(['ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler', 'ruins-bell-keeper']);
 const STELE_NPC_IDS = new Set(['ruins-stele-west', 'ruins-stele-east']);
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
 /**
@@ -305,7 +306,10 @@ function missingRequiredAnimations(map: MapDef, catalog: ContentCatalog, assets:
   for (const spawn of map.monsters) {
     const monster = catalog.rules.monsters[spawn.monsterId];
     if (monster) {
-      for (const state of MONSTER_ANIMATION_STATES) required.push({ imageKey: monster.actorKey, state: `${monster.id}:${state}` });
+      const states = monster.id === 'ruins-bell-keeper'
+        ? [...MONSTER_ANIMATION_STATES, 'attack-sweep']
+        : MONSTER_ANIMATION_STATES;
+      for (const state of states) required.push({ imageKey: monster.actorKey, state: `${monster.id}:${state}` });
     }
   }
   const effectKeys = new Set<string>(VFX_IMAGE_KEYS);
@@ -769,6 +773,27 @@ export function createWorldRenderer(
     for (const portal of map.portals) {
       const anchor = portalFootAnchor(portal);
       addStaticSprite(terrainLayer, 'env:portal', anchor.x, anchor.y).setOrigin(anchor.originX, anchor.originY);
+      const destination = catalog.world.maps[portal.targetMapId];
+      if (destination) {
+        const portalImage = assets.images.get('env:portal')!;
+        const label = scene.add.text(
+          anchor.x,
+          anchor.y - portalImage.displayHeight - 8,
+          `前往${destination.name}`,
+          {
+            color: '#fff4d4',
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '13px',
+            fontStyle: 'bold',
+            stroke: '#27323a',
+            strokeThickness: 3,
+          },
+        ).setOrigin(0.5, 1);
+        const halfWidth = label.width / 2;
+        label.x = Math.max(halfWidth + 8, Math.min(anchor.x, map.width - halfWidth - 8));
+        foregroundLayer.add(label);
+        label.setDepth(anchor.y + 0.1);
+      }
       environmentTextureKeys.add('env:portal');
     }
     for (const placement of map.npcs) {
@@ -978,11 +1003,11 @@ export function createWorldRenderer(
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
-      const isNamedBoss = monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel';
+      const isNamedBoss = BOSS_MONSTER_IDS.has(monster.monsterId);
       const attack = attackStartedAt(snapshot, monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
-      const monsterIsAttacking = animationKey.endsWith(':attack');
+      const monsterIsAttacking = animationKey.endsWith(':attack') || animationKey.endsWith(':attack-sweep');
       const monsterSprite = drawActor(
         `monster:${monster.spawnId}`,
         definition.actorKey,
@@ -997,6 +1022,11 @@ export function createWorldRenderer(
           : undefined,
       ).sprite;
       if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
+      if (monster.monsterId === 'ruins-bell-keeper' && monster.mode === 'phase-transition' && isInViewport(monster.movement.position)) {
+        const glowY = monster.movement.position.y - (actorContentSizes.get(definition.actorKey)?.height ?? definition.height) * 0.55;
+        steleGlowGraphics.fillStyle(0x81d8d5, 0.14).fillCircle(monster.movement.position.x, glowY, 34);
+        steleGlowGraphics.lineStyle(2, 0xd0f6e7, 0.64).strokeCircle(monster.movement.position.x, glowY, 36);
+      }
       if (!dead && isInViewport(monster.movement.position)) {
         const image = assets.images.get(definition.actorKey);
         const content = actorContentSizes.get(definition.actorKey);
@@ -1071,7 +1101,7 @@ export function createWorldRenderer(
     }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
-      const bossTelegraph = source?.monsterId === 'guardian' || source?.monsterId === 'frost-tide-warden' || source?.monsterId === 'sunwell-sentinel';
+      const bossTelegraph = source ? BOSS_MONSTER_IDS.has(source.monsterId) : false;
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
       const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;

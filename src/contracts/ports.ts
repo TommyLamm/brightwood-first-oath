@@ -48,7 +48,7 @@ export type CloudSaved = CloudRecord & { saved: true };
 export type CloudSaveInput = {
   data: SaveData;
   revision: number;
-  formatVersion: 3;
+  formatVersion: 5;
   requestId: string;
 };
 
@@ -63,6 +63,11 @@ export type CloudError = Error & {
   machineCode?: string;
 };
 
+export type SaveUpgradeRequired = {
+  formatVersion: number;
+  source: 'local' | 'cloud' | 'preview';
+};
+
 export type SaveStatus =
   | 'unavailable'
   | 'loading'
@@ -73,6 +78,7 @@ export type SaveStatus =
   | 'previewOnly'
   | 'loadError'
   | 'saveError'
+  | 'upgradeRequired'
   | 'conflict'
   | 'authLost'
   | 'incompatible';
@@ -81,10 +87,17 @@ export type LoadOutcome = {
   mode: 'local' | 'cloud' | 'preview' | 'memory';
   status: SaveStatus;
   data: SaveData | null;
+  message?: string | null;
+  legacyImportAvailable?: boolean;
+  legacyImportMessage?: string | null;
+  saveUpgrade?: SaveUpgradeRequired | null;
 };
 
 export type Persistence = {
   initialize(): Promise<LoadOutcome>;
+  importLegacySave?(): Promise<LoadOutcome>;
+  /** Explicitly approves upgrading a loaded format 1–4 save to the current write format. */
+  confirmSaveUpgrade(): void;
   checkpoint(data: SaveData): void;
   retry(): Promise<void>;
   invalidate(): void;
@@ -156,13 +169,29 @@ export type UiSnapshot = {
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;
-  /** False while the page/iframe has lost focus; the world is frozen until it returns. */
+  /** False while the page/iframe has lost focus; explicit resume may still be required after return. */
   windowFocused?: boolean;
+  /** App-only safety gate: returning focus does not resume the world until the player chooses Continue. */
+  focusResumeRequired?: boolean;
+  /** The target selected by the same range/priority rules as the interact command. */
+  interactionHint?: {
+    targetKey: string;
+    kind: 'npc' | 'portal';
+    label: string;
+    blockedMessage: string | null;
+  } | null;
+  /** Read-only combat timing hints for the six quickbar slots. */
+  combatUi?: { actionLockUntilMs: number; bufferedSkillId: Id | null };
   /** Actor sheets, used for NPC dialogue portraits. */
   actorManifest?: AssetManifest | null;
   saveStatus: SaveStatus;
   /** Human-readable detail for the current save status, when the app has one. */
   saveMessage?: string | null;
+  /** Old-format save details requiring an explicit choice before the first format 5 write. */
+  saveUpgrade?: SaveUpgradeRequired | null;
+  /** A validated, local legacy save can be copied only after explicit player choice. */
+  legacyImportAvailable?: boolean;
+  legacyImportMessage?: string | null;
   toast: string | null;
   panels: PanelId[];
   interaction: { npcId: Id; dialogue: string[] } | null;

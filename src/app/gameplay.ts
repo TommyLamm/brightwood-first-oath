@@ -19,8 +19,15 @@ import { applyProgressAction, createPlayer, deriveStats, validatePlayerName } fr
 import { acceptQuest, getQuestView, planQuestClaim, recordQuestEvent } from '../domain/quests/index.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
+import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 
-const INTERACTION_RANGE_PX = 64;
+const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
+const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
+const INSPECT_TARGETS = {
+  'ruins-stele-west': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
+  'ruins-stele-east': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
+  'frost-route-marker': { mapId: 'frost-pine-pass', questId: 'q21', action: '調查航標' },
+} as const;
 
 export type GameplayState = {
   saveData: SaveData;
@@ -209,7 +216,9 @@ export function stepGameplay(
 
   gameplay = cloneGameplay(gameplay);
   if (gameplay.saveData.player.hp <= 0) {
-    clearCombatForActors(gameplay, new Set([gameplay.playerEntityId]));
+    const actorsToClear = new Set<EntityId>([gameplay.playerEntityId]);
+    for (const actorId of clearBellKeeperCombatOnPlayerDeath(gameplay)) actorsToClear.add(actorId);
+    clearCombatForActors(gameplay, actorsToClear);
   }
   if (gameplay.pendingTransition) return { gameplay, screen: 'loading' };
   let openPanel: PanelId | undefined;
@@ -336,7 +345,10 @@ export function stepGameplay(
   const combatSourcesToClear = new Set(gameplay.monsters
     .filter(({ mode }) => mode === 'dead')
     .map(({ id }) => id));
-  if (gameplay.saveData.player.hp <= 0) combatSourcesToClear.add(gameplay.playerEntityId);
+  if (gameplay.saveData.player.hp <= 0) {
+    combatSourcesToClear.add(gameplay.playerEntityId);
+    for (const actorId of clearBellKeeperCombatOnPlayerDeath(gameplay)) combatSourcesToClear.add(actorId);
+  }
   clearCombatForActors(gameplay, combatSourcesToClear);
 
   if (actorStep.respawnRequests.length > 0) {
@@ -565,43 +577,57 @@ function processCommand(
     case 'interact':
       return interactNearest(gameplay, context);
     case 'inspect': {
-      if (gameplay.saveData.player.hp <= 0 || gameplay.movement.mode === 'dead' || gameplay.deathAtMs !== null) {
-        return withToast(gameplay, '倒下時無法調律石碑。');
-      }
-      if (gameplay.pendingTransition) return withToast(gameplay, '切換地圖時無法調律石碑。');
-      if (gameplay.saveData.location.mapId !== 'ruins-echo-gallery') {
-        return withToast(gameplay, '只有在回聲長廊才能調律這些石碑。');
-      }
       const targetId = command.payload.targetId;
-      if (targetId !== 'ruins-stele-west' && targetId !== 'ruins-stele-east') {
-        return withToast(gameplay, '找不到可調律的石碑。');
+      const inspection = Object.prototype.hasOwnProperty.call(INSPECT_TARGETS, targetId)
+        ? INSPECT_TARGETS[targetId as keyof typeof INSPECT_TARGETS]
+        : null;
+      const action = inspection?.action ?? '調查目標';
+      if (gameplay.saveData.player.hp <= 0 || gameplay.movement.mode === 'dead' || gameplay.deathAtMs !== null) {
+        return withToast(gameplay, `倒下時無法${action}。`);
       }
-      const map = catalog.world.maps['ruins-echo-gallery'];
+      if (gameplay.pendingTransition) return withToast(gameplay, `切換地圖時無法${action}。`);
+      if (!inspection) return withToast(gameplay, '找不到可調查的對象。');
+      if (gameplay.saveData.location.mapId !== inspection.mapId) {
+        return withToast(gameplay, inspection.questId === 'q21'
+          ? '只有在霜松隘道才能調查航標。'
+          : '只有在回聲長廊才能調律這些石碑。');
+      }
+      const map = catalog.world.maps[inspection.mapId];
       const placement = map?.npcs.find(({ npcId }) => npcId === targetId);
-      if (!placement) return withToast(gameplay, '這塊石碑不在回聲長廊。');
+      if (!placement) return withToast(gameplay, inspection.questId === 'q21'
+        ? '航標不在霜松隘道。'
+        : '這塊石碑不在回聲長廊。');
       if (Math.hypot(
         placement.x - gameplay.movement.position.x,
         placement.y - gameplay.movement.position.y,
       ) > INTERACTION_RANGE_PX) {
-        return withToast(gameplay, '請靠近石碑再調律。');
+        return withToast(gameplay, inspection.questId === 'q21' ? '請靠近航標再調查。' : '請靠近石碑再調律。');
       }
       if (gameplay.interaction?.npcId !== targetId) {
-        return withToast(gameplay, '請先閱讀並開啟這塊石碑的碑文。');
+        return withToast(gameplay, inspection.questId === 'q21'
+          ? '請先閱讀並開啟航標記錄。'
+          : '請先閱讀並開啟這塊石碑的碑文。');
       }
-      const quest = catalog.world.quests.q17;
-      const questState = gameplay.saveData.quests.q17;
+      const quest = catalog.world.quests[inspection.questId];
+      const questState = gameplay.saveData.quests[inspection.questId];
       if (!quest || questState?.status !== 'active'
         || !quest.objectives.some((objective) => objective.type === 'inspect' && objective.targetId === targetId)) {
-        return withToast(gameplay, '先在行舟身邊接取「兩段回聲」，再調律石碑。');
+        return withToast(gameplay, inspection.questId === 'q21'
+          ? '先在雪芽身邊接取「風雪中的航標」，再調查航標。'
+          : '先在行舟身邊接取「兩段回聲」，再調律石碑。');
       }
       if ((questState.counters[targetId] ?? 0) >= 1) {
-        return withToast(gameplay, '這塊石碑已經調律。');
+        return withToast(gameplay, inspection.questId === 'q21' ? '這座航標已經調查。' : '這塊石碑已經調律。');
       }
       const saveData = {
         ...gameplay.saveData,
         quests: recordQuestEvent(gameplay.saveData.quests, { type: 'inspected', targetId }, catalog.world),
       };
-      const tunedState = { ...gameplay, saveData, toast: '石碑的回聲已應聲。' };
+      const tunedState = {
+        ...gameplay,
+        saveData,
+        toast: inspection.questId === 'q21' ? '航標的方向已記錄。' : '石碑的回聲已應聲。',
+      };
       return { gameplay: { ...tunedState, interaction: refreshInteraction(tunedState, catalog) } };
     }
     case 'acceptQuest': {
@@ -671,8 +697,11 @@ function processCommand(
     }
     case 'returnTown': {
       const currentMapId = gameplay.saveData.location.mapId;
-      if ((currentMapId === 'guardian-arena' || currentMapId === 'frost-tide-cavern' || currentMapId === 'sand-sunwell-altar') && !gameplay.bossResult) {
+      if (BOSS_ARENA_MAP_IDS.has(currentMapId) && !gameplay.bossResult) {
         return withToast(gameplay, '首領戰尚未結束，暫時不能返回安全地點。');
+      }
+      if (currentMapId === 'ruins-bell-sanctum' && gameplay.bossResult) {
+        return requestTransition(gameplay, 'ruins-tide-camp', 'left', 'travel', catalog);
       }
       if (currentMapId === 'sand-sunwell-altar' && gameplay.bossResult) {
         return requestTransition(gameplay, 'sand-sunwell-basin', 'right', 'travel', catalog);
@@ -713,26 +742,17 @@ function withPlayer(gameplay: GameplayState, player: GameplayState['saveData']['
   return { ...gameplay, saveData: { ...gameplay.saveData, player }, toast };
 }
 
-function nearestNpc(gameplay: GameplayState, catalog: ContentCatalog, radius: number): { npcId: string; x: number; y: number } | null {
-  const map = catalog.world.maps[gameplay.saveData.location.mapId];
-  if (!map) return null;
-  const candidates = map.npcs.map((placement) => ({ ...placement, distance: Math.hypot(
-    placement.x - gameplay.movement.position.x,
-    placement.y - gameplay.movement.position.y,
-  ) })).filter(({ distance }) => distance <= radius)
-    .sort((a, b) => a.distance - b.distance || a.npcId.localeCompare(b.npcId));
-  return candidates[0] ?? null;
-}
-
 function nearNpc(gameplay: GameplayState, catalog: ContentCatalog, npcId: string, radius: number): boolean {
-  return nearestNpc(gameplay, catalog, radius)?.npcId === npcId;
+  const map = catalog.world.maps[gameplay.saveData.location.mapId];
+  return nearestNpcPlacement(map, gameplay.movement.position, radius)?.npcId === npcId;
 }
 
 function interactNearest(gameplay: GameplayState, context: GameplayStepInput): { gameplay: GameplayState; screen?: GameplayStepResult['screen']; openPanel?: PanelId } {
   const { catalog } = context;
-  const npc = nearestNpc(gameplay, catalog, INTERACTION_RANGE_PX);
-  if (npc) {
-    const definition = catalog.world.npcs[npc.npcId];
+  const map = catalog.world.maps[gameplay.saveData.location.mapId];
+  const target = resolveInteractionTarget(map, gameplay.movement.position);
+  if (target?.kind === 'npc') {
+    const definition = catalog.world.npcs[target.placement.npcId];
     if (!definition) return withToast(gameplay, '找不到這位 NPC 的對話資料。');
     if (definition.role === 'healer') {
       const stats = deriveStats(gameplay.saveData.player, catalog.rules);
@@ -746,18 +766,10 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
     return { gameplay, ...(definition.role === 'merchant' ? { openPanel: 'shop' as const } : { openPanel: 'dialogue' as const }) };
   }
 
-  const map = catalog.world.maps[gameplay.saveData.location.mapId];
-  const portal = map?.portals.map((candidate) => ({ candidate, distance: Math.hypot(
-    candidate.x - gameplay.movement.position.x,
-    candidate.y - gameplay.movement.position.y,
-  ) })).filter(({ distance }) => distance <= INTERACTION_RANGE_PX)
-    .sort((a, b) => a.distance - b.distance || a.candidate.id.localeCompare(b.candidate.id))[0]?.candidate;
-  if (portal) {
-    if (gameplay.saveData.player.level < portal.minLevel) return withToast(gameplay, `需要等級 ${portal.minLevel} 才能通過。`);
-    if (portal.requiredQuestId && gameplay.saveData.quests[portal.requiredQuestId]?.status !== 'claimed') {
-      return withToast(gameplay, lockedPortalMessage(gameplay.saveData, portal.requiredQuestId, portal.targetMapId, catalog));
-    }
-    return requestTransition(gameplay, portal.targetMapId, portal.targetSpawnId, 'travel', catalog);
+  if (target?.kind === 'portal') {
+    const blockMessage = portalBlockMessage(gameplay.saveData, target.portal, catalog);
+    if (blockMessage) return withToast(gameplay, blockMessage);
+    return requestTransition(gameplay, target.portal.targetMapId, target.portal.targetSpawnId, 'travel', catalog);
   }
   return withToast(gameplay, '附近沒有可以互動的對象或出入口。');
 }
@@ -981,7 +993,7 @@ function applyDeathEvent(
     }
   }
 
-  if (monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel') {
+  if (BOSS_MONSTER_IDS.has(monster.monsterId)) {
     const orderedDrops = [...drops].sort((a, b) => {
       const priority = (entry: typeof drops[number]) =>
         entry.itemId === null ? 0 : catalog.rules.items[entry.itemId]?.kind === 'quest' ? 1 : 2;
@@ -1015,6 +1027,8 @@ function applyDeathEvent(
       gameplay.toast = '冰潮守望獸已倒下，可返回雪痕海岸向雪芽回報。';
     } else if (monster.monsterId === 'sunwell-sentinel') {
       gameplay.toast = '日井守衛已倒下，可返回日井盆地並回琉砂完成誓約。';
+    } else if (monster.monsterId === 'ruins-bell-keeper') {
+      gameplay.toast = '失序司鐘者已倒下，誓鐘恢復了寧靜。';
     } else if (remainingDrops.some(({ itemId }) => itemId === 'guardian-core')) {
       gameplay.toast = '背包空間不足，請先整理背包並拾取守衛核心。';
     } else if (remainingDrops.some(({ itemId }) => itemId !== null)) {
@@ -1087,7 +1101,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense, critChance: 0 },
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
-        knockbackImmune: monster.monsterId === 'guardian' || monster.monsterId === 'frost-tide-warden' || monster.monsterId === 'sunwell-sentinel',
+        knockbackImmune: BOSS_MONSTER_IDS.has(monster.monsterId),
         skillRanks: monster.pendingSkillId ? { [monster.pendingSkillId]: 1 } : {},
       };
     }),
@@ -1110,6 +1124,33 @@ function playerCombatActor(gameplay: GameplayState, catalog: ContentCatalog, now
     knockbackImmune: false,
     skillRanks: gameplay.saveData.player.skillRanks,
   };
+}
+
+/** The dead screen does not step actors again, so cancel this boss's pending combat in the death tick. */
+function clearBellKeeperCombatOnPlayerDeath(gameplay: GameplayState): ReadonlySet<EntityId> {
+  const bellKeeperIds = new Set<EntityId>();
+  gameplay.monsters = gameplay.monsters.map((monster) => {
+    if (monster.monsterId !== 'ruins-bell-keeper') return monster;
+    bellKeeperIds.add(monster.id);
+    return {
+      ...monster,
+      mode: monster.mode === 'dead' ? 'dead' : 'idle',
+      pendingSkillId: null,
+      attackOrigin: null,
+      attackFacing: null,
+      attackReach: null,
+      ...(monster.bellCycle ? {
+        bellCycle: {
+          ...monster.bellCycle,
+          transitionStartedAtMs: null,
+          transitionEndsAtMs: null,
+          transitionUsed: true,
+        },
+      } : {}),
+    };
+  });
+  gameplay.telegraphs = gameplay.telegraphs.filter(({ sourceId }) => !bellKeeperIds.has(sourceId));
+  return bellKeeperIds;
 }
 
 function addEffect(
@@ -1147,8 +1188,11 @@ function questRewardToast(
     ...reward.items.map(({ itemId, quantity }) => (catalog.rules.items[itemId]?.name ?? itemId) + ' ×' + quantity),
   ];
   const levelUp = levelAfter > levelBefore ? '，升至 Lv.' + levelAfter : '';
+  const levelCap = reward.exp > 0 && levelAfter >= catalog.rules.progression.maxLevel
+    ? '，已達等級上限，EXP不再累積'
+    : '';
   const job = reward.job === 'swordsman' ? '，正式成為劍士' : '';
-  return '完成「' + questName + '」：獲得 ' + parts.join('、') + levelUp + job + '。';
+  return '完成「' + questName + '」：獲得 ' + parts.join('、') + levelUp + levelCap + job + '。';
 }
 
 // Names the skill and the next step instead of a generic "not learned or not allowed".
@@ -1174,18 +1218,6 @@ function announceReadyQuests(gameplay: GameplayState, before: SaveData, catalog:
     gameplay.toast = '「' + quest.name + '」的目標已完成！回到' + (npcMap ? npcMap.name : '委託人身邊') + '向' + npcName + '回報。';
     gameplay.stickyToast = gameplay.toast;
   }
-}
-
-// Names the quest that opens the road, the destination, and the next step for its current state.
-function lockedPortalMessage(saveData: SaveData, questId: string, targetMapId: string, catalog: ContentCatalog): string {
-  const quest = catalog.world.quests[questId];
-  const place = catalog.world.maps[targetMapId]?.name ?? '前方';
-  if (!quest) return '尚未完成通往' + place + '的任務。';
-  const npcName = (id: string) => catalog.world.npcs[id]?.name ?? '委託人';
-  const status = getQuestView(saveData, questId, catalog).status;
-  if (status === 'ready') return '向' + npcName(quest.turnInNpcId) + '回報「' + quest.name + '」後才能前往' + place + '。';
-  if (status === 'active') return '完成任務「' + quest.name + '」後才能前往' + place + '。';
-  return '向' + npcName(quest.giverNpcId) + '接取並完成「' + quest.name + '」後才能前往' + place + '。';
 }
 
 // The progression layer only says "MP 不足。"; say how much the skill needs and what the hero has.
@@ -1241,6 +1273,7 @@ function cloneGameplay(gameplay: GameplayState): GameplayState {
         velocity: { ...monster.movement.velocity },
       },
       attackOrigin: monster.attackOrigin ? { ...monster.attackOrigin } : null,
+      ...(monster.bellCycle ? { bellCycle: { ...monster.bellCycle } } : {}),
     })),
     combat: {
       attacks: gameplay.combat.attacks.map((attack) => ({ ...attack, origin: { ...attack.origin }, hitIds: [...attack.hitIds] })),
