@@ -1,0 +1,80 @@
+{
+  "frameId": "ruins-bell-keeper:walk-3-v2",
+  "candidate": "v2",
+  "accepted": false,
+  "reviewStatus": "rejected",
+  "decision": "Rejected after raw review: the correction still shows five legs, including an extra forward limb and foot at the far right. Retained only as a rejected candidate; the next targeted edit removed that far-right limb.",
+  "sessionId": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T19-46-08-01a172e1-e2b4-7e31-8709-cd639bc42c38.jsonl",
+  "sourceTimestampUtc": "2026-10-25T11:50:12.407Z",
+  "outerFunctionsExecCallId": "call_716418654393474194675798c3feb65e",
+  "imageResultItemId": "exec-eaecbb60-776c-42a6-ba32-0b0a05112155",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-eaecbb60-776c-42a6-ba32-0b0a05112155.png",
+  "outputHintPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-3-v2-output-hint.txt",
+  "outputHintCaptured": true,
+  "outputHintUnavailableReason": null,
+  "referencedImages": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\motion-frames\\raw\\ruins-bell-keeper-walk-3-v1.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "transparentBackgroundConfirmed": true,
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3-v2.txt",
+  "submittedPromptSha256": "6896199b9693e2832104732bffbe9f8aded020323524e49740deb3c69bd04102",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3-v2-actual.txt",
+  "actualPromptSha256": "79ea15600abe7f0867d6a816ad6559af4cce2d1c2561f9a139d35f91b3cf376c",
+  "actualPromptChars": 1963,
+  "revisedPromptReturnedByTool": true,
+  "revisedPromptMatchesSubmittedAfterNewlineNormalization": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-3-v2-v1.png",
+  "rawSha256": "20b12c72f08c0bdde606cc190e4c379912544b3930147c23eb4210acce540ddf",
+  "rawSizeBytes": 1285150,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-3-v2.png",
+  "normalizedSha256": "fef23b88a337d1beca15c5a32e812a46221779751804bd3422e3789e2717cb09",
+  "normalizedDimensions": [
+    192,
+    192
+  ],
+  "normalizedMode": "RGBA",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "alphaVisibleBounds": [
+      3,
+      71,
+      189,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      3,
+      71,
+      3,
+      3
+    ],
+    "halfOpenBoundsCenterX": 96.0,
+    "pixelCenterX": 95.5,
+    "lastAlphaRow": 188
+  },
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-3-v2-raw-q70.jpg",
+  "review": {
+    "neutralMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "jpegQuality": 70,
+    "maxEdge": 1280
+  },
+  "cycleContactSheetPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38 as C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-eaecbb60-776c-42a6-ba32-0b0a05112155.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

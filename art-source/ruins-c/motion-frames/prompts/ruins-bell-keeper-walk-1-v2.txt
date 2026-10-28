@@ -1,0 +1,9 @@
+Use case: precise-object-edit
+Asset type: one corrected transparent single-pose 2D RPG boss sprite source frame
+Input images: Image 1 is the walk-1 candidate target to correct; Image 2 is the accepted Bell Keeper idle identity and exact four-leg anatomy anchor.
+Primary request: Correct Image 1's anatomy while preserving its right-facing stride. Image 1 contains an unwanted extra middle leg and foot below the bell. Remove that extra central leg, its joints, and its foot completely; leave the bell and clapper unobstructed. The Bell Keeper has exactly four legs total: two front legs attached at the front shoulder and two hind legs attached at the rear hip, with exactly four complete feet. Keep the existing forward planted near-side front leg, supporting far-side front leg, backward pushing near-side hind leg, and recovering far-side hind leg. Preserve the same pose, identity, framing, size, materials, lighting and linework everywhere else. Do not add another limb or paw.
+Scene/backdrop: preserve genuinely transparent alpha.
+Style/medium: retain the detailed 2D game-sprite rendering, crisp deliberate clusters, restrained cel shading, dark clean outlines, aged bronze and stone textures from Image 1 and Image 2; no 3D render or painterly blur.
+Composition/framing: one complete side-view creature only, facing right, same canvas and scale as Image 1, with every part of all four legs, the mask, frame, bell and clapper inside the canvas.
+Constraints: change only the extra central fifth leg/paw and its attachment; retain exactly the four intended legs and four feet; preserve all other pixels and the pose as closely as possible; transparent background.
+Avoid: any central leg below the bell, fifth foot, any extra support limb, removing or changing one of the four intended legs, changing the mask/bell/frame, shifting the full character, crop, glow, shadow, floor, background, grid, sprite sheet, text, watermark, UI, blur, gradient.

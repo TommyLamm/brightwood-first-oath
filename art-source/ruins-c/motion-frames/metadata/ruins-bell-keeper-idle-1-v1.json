@@ -1,0 +1,86 @@
+{
+  "frameId": "ruins-bell-keeper:idle-1",
+  "candidate": "v1",
+  "accepted": false,
+  "decision": "Rejected after normalized 192px pair review: too close to idle-0; the torso/legs/bell articulation does not read as a distinct idle frame at runtime scale.",
+  "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-55-44-01a1720e-f000-73e2-9553-7cd17539d3b4.jsonl",
+  "outerFunctionsExecCallId": "call_dfe964ec0c7748829902c9bae25659f5",
+  "imageResultItemId": "exec-39f88f5c-cf25-4df1-82de-b65565d1c9e0",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-39f88f5c-cf25-4df1-82de-b65565d1c9e0.png",
+  "savedPathRecoveredFromExactSessionItem": true,
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-39f88f5c-cf25-4df1-82de-b65565d1c9e0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-idle-1.txt",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-idle-1-v1-actual.txt",
+  "actualPromptSha256": "0891172ce8d94fd7c4e353559e057ac6d0515e204c0e76e8eb53d7bb9c14fc3a",
+  "actualPromptChars": 2706,
+  "revisedPrompt": "Attempting to perform the InitializeDefaultDrives operation on the 'FileSystem' provider failed.\r\nUse case: stylized-concept\nAsset type: one transparent single-pose 2D RPG boss sprite source frame\nInput images: Image 1 is the accepted Bell Keeper idle identity and exact material/style anchor. Image 2 is its accepted slam-action design anchor. Image 3 is its accepted low-sweep-action design anchor. Preserve the same creature design across these references.\nPrimary request: Create the Bell Keeper's second idle pose, visibly a gentle breathing / pendulum-rest variation of Image 1, not a duplicate. Keep its compact, low four-legged articulated bronze support frame, exactly four distinct complete legs and broad feet, single hanging bronze oath bell and clapper, and small white marble mask at the front. It faces right in side profile. All four feet remain planted; the frame rises just a little with a subtle relaxed suspension shift and the bell/clapper sway only slightly, without changing its resting neutral character. Keep the mask, bell, rails, joints, and legs in the same positions and proportions as Image 1 apart from this small living idle change.\nScene/backdrop: genuinely transparent canvas, no scene.\nStyle/medium: polished detailed 2D game sprite matching the supplied crisp pixel-art references, chunky readable clusters, restrained cel shading, dark clean outlines, aged bronze and stone textures; no 3D render or painterly blur.\nComposition/framing: one complete side-view creature only, facing right, same approximate scale and bottom-pivot framing as the references, centered on a square transparent canvas with generous padding; keep mask, frame, bell, clapper, all four legs and feet completely inside frame.\nLighting/mood: neutral even game-art lighting; calm, solemn, readable.\nColor palette: preserve muted aged bronze, dark copper, subtle teal patina, chalk-white marble and cool gray shadows from the references.\nMaterials/textures: keep the same mechanical bronze struts, hinge joints, broad stone feet, worn flared bell and chipped marble mask.\nConstraints: true transparent alpha; exactly one Bell Keeper in one distinct idle-1 breathing pose; face right; four complete separately readable articulated legs and four complete feet; no crop; preserve identity and approximate scale; this frame must differ by real body / bell articulation, not canvas translation.\nAvoid: duplicate idle-0, walking, attack pose, humanoid or upright body, fists, fewer/more than four legs, fused/hidden legs, cropped feet, missing bell/clapper/mask, extra bells or heads, motion lines, sparks, glow, cast shadow, floor, background, grid, sprite sheet, text, watermark, UI, blur, gradient.\n\r\n",
+  "revisedPromptReturnedByTool": true,
+  "references": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-slam-active.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-sweep-active.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-idle-1-v1.png",
+  "rawSha256": "b3c8c155abb5506733401ee1f4c6ba5b891580492335cec2954710698562f3e7",
+  "rawSizeBytes": 1289696,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/rejected/ruins-bell-keeper-idle-1-v1-rejected.png",
+  "normalizedSha256": "c0c3b586d6029d70252ab825f0051718357613c6da079dfe6812f62101041564",
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-idle-1-v1-raw-q70.jpg",
+  "pairReviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-idle-pair-q70.jpg",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "sourceCanvasScaledPx": [
+      188,
+      188
+    ],
+    "sourcePlacementXY": [
+      2,
+      24
+    ],
+    "alphaVisibleBounds": [
+      4,
+      59,
+      187,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      4,
+      59,
+      5,
+      3
+    ],
+    "halfOpenBoundsCenterX": 95.5,
+    "pixelCenterX": 95.0,
+    "lastAlphaRow": 188
+  },
+  "review": {
+    "rawReviewMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "pairReviewMatteRgb": [
+      58,
+      58,
+      58
+    ],
+    "jpegQuality": 70,
+    "pairDimensions": [
+      1180,
+      680
+    ]
+  }
+}

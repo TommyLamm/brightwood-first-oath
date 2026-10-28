@@ -1,0 +1,1209 @@
+{
+  "asset": "Ruins C Bell Keeper sweep and dead frame recovery",
+  "plan": "plan/14-ruins-bell-sanctum.md",
+  "date": "2026-10-25",
+  "source_session": {
+    "session_id": "01a17211-48ac-7592-abbf-af07ddf32a7d",
+    "rollout_path": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-58-17-01a17211-48ac-7592-abbf-af07ddf32a7d.jsonl",
+    "generated_images_directory": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d",
+    "recovery_method": "parsed the exact session image_gen.generation items; did not use global latest output or store image data URIs"
+  },
+  "atlas_spec": {
+    "frame_size": [
+      192,
+      192
+    ],
+    "cells": {
+      "2": "sweep-windup-0",
+      "3": "sweep-windup-1",
+      "4": "reuse profiles/normalized/ruins-bell-keeper-sweep-active.png",
+      "5": "sweep-recovery",
+      "24": "dead-0",
+      "25": "dead-1",
+      "26": "dead-2",
+      "27": "dead-3"
+    },
+    "facing": "right",
+    "pivot": [
+      0.5,
+      1.0
+    ],
+    "reused_cell4_path": "art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png"
+  },
+  "normalization": {
+    "input": "1254x1254 RGBA transparent original",
+    "alpha_cleanup": "alpha values below 8 cleared before and after resize as low-alpha tails",
+    "resample": "uniform LANCZOS on premultiplied RGBA",
+    "scale_policy": "188x188 preferred; windup-1 uses 187x187 because the 188x188 result had a 187px visible width and could not leave 3 transparent pixels at both sides while centered",
+    "placement": "crop transparent-only margins from the scaled canvas; place complete alpha>0 bounds centered at x=96 with last visible row y=188",
+    "canvas": "192x192 RGBA",
+    "crop_rule": "no alpha>0 pixels removed"
+  },
+  "artifacts": [
+    {
+      "item_id": "exec-ad670608-ac34-420a-ae62-f313e69b1876",
+      "outer_functions_exec_call_id": "call_a252c9e2b89f4a8cba3a04d8517c77c1",
+      "saved_timestamp_utc": "2026-10-25T08:03:53.567Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ad670608-ac34-420a-ae62-f313e69b1876.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-windup-0.raw.png",
+      "raw_sha256": "29aa310d2c9e81843550ceed221cfc04827f767980d2bf377cb635c5e5c8e672",
+      "raw_size_bytes": 1267155,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-windup-0.txt",
+      "source_prompt_sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+      "input_prompt_utf8_sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-windup-0.txt",
+        "sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png"
+      ],
+      "key": "sweep-windup-0",
+      "cell": 2,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-windup-0.png",
+      "normalized_sha256": "2e08375b3c4c15e6d7d6a67d46cd97190c18b805876c4011c09126055866396a",
+      "normalized_size_bytes": 42213,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        67,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 67,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          67
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-ff598fbf-ca56-4346-bad4-4ccf975fb718",
+      "outer_functions_exec_call_id": "call_d0666b2535fa40f8a7bc7c1c1289e892",
+      "saved_timestamp_utc": "2026-10-25T08:05:08.489Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ff598fbf-ca56-4346-bad4-4ccf975fb718.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-windup-1.raw.png",
+      "raw_sha256": "b305054e003cc87c69cf672ffa5060386fe8814592994e0a2101f27bcbc87f42",
+      "raw_size_bytes": 1189777,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-windup-1.txt",
+      "source_prompt_sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+      "input_prompt_utf8_sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-windup-1.txt",
+        "sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-0.raw.png"
+      ],
+      "key": "sweep-windup-1",
+      "cell": 3,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-windup-1.png",
+      "normalized_sha256": "38cc912419443baccc11af80f785a1d7a7ce67703cff358c533313e54a17014a",
+      "normalized_size_bytes": 39625,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        3,
+        80,
+        189,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 3,
+        "top": 80,
+        "right": 3,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          187,
+          187
+        ],
+        "scale_ratio": "187/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          3,
+          80
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-f0651a44-6ba6-4603-adfb-c53906082e82",
+      "outer_functions_exec_call_id": "call_9c0ce5bebada4214a4cf76f883e4466f",
+      "saved_timestamp_utc": "2026-10-25T08:06:28.310Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-f0651a44-6ba6-4603-adfb-c53906082e82.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-recovery.raw.png",
+      "raw_sha256": "2b342314789501c6dfbaa8df78e2212d2992ed443298bc9ef3be388b7776f044",
+      "raw_size_bytes": 1336067,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-recovery.txt",
+      "source_prompt_sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+      "input_prompt_utf8_sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-recovery.txt",
+        "sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-1.raw.png"
+      ],
+      "key": "sweep-recovery",
+      "cell": 5,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-recovery.png",
+      "normalized_sha256": "8764484ad121ad98f7c1d61d33ce2084e7fd33cc859d889e0afae7b534f4a884",
+      "normalized_size_bytes": 43649,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        4,
+        63,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 4,
+        "top": 63,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          4,
+          63
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-14c7d7f0-9435-434e-99d1-12e78fa7831d",
+      "outer_functions_exec_call_id": "call_4fb39e5af7644651b7e59e442f34367f",
+      "saved_timestamp_utc": "2026-10-25T08:08:02.658Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-14c7d7f0-9435-434e-99d1-12e78fa7831d.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-0.raw.png",
+      "raw_sha256": "641e5ffbde23125e52c0f6a472d7ee1c5b8c4a833774ef056bc4e84c0b77252f",
+      "raw_size_bytes": 1159292,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-0.txt",
+      "source_prompt_sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+      "input_prompt_utf8_sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-0.txt",
+        "sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png"
+      ],
+      "key": "dead-0",
+      "cell": 24,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-0.png",
+      "normalized_sha256": "9f8ca2ce41c31b014c7e590f1298ba9258755fae0a60284fd595667db0166ab6",
+      "normalized_size_bytes": 39641,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        75,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 75,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          75
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-56f35e25-281a-4f68-b177-dedbdfab5e03",
+      "outer_functions_exec_call_id": "call_1a2224757e4543a0942e239fa4d4b571",
+      "saved_timestamp_utc": "2026-10-25T08:09:54.456Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-56f35e25-281a-4f68-b177-dedbdfab5e03.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-1.raw.png",
+      "raw_sha256": "dec8907ed88c4e1e50da14b226f8d4ee05f081dd7698ae8b8e04b01de615fd68",
+      "raw_size_bytes": 1077268,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-1.txt",
+      "source_prompt_sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+      "input_prompt_utf8_sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-1.txt",
+        "sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-0.raw.png"
+      ],
+      "key": "dead-1",
+      "cell": 25,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-1.png",
+      "normalized_sha256": "d8dca18166b54d5d2881186795673b9e00bf740648a168b28bf472e4095eb6e4",
+      "normalized_size_bytes": 36543,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        90,
+        187,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 90,
+        "right": 5,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          90
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8",
+      "outer_functions_exec_call_id": "call_2f29e5d92f8c4364b9f3be39a3cf65e9",
+      "saved_timestamp_utc": "2026-10-25T08:11:45.918Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-2.raw.png",
+      "raw_sha256": "8114f8309cf876988146b049bc87ad11a18ec84a15f8515e4938f64e39d9950f",
+      "raw_size_bytes": 1097739,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-2.txt",
+      "source_prompt_sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+      "input_prompt_utf8_sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-2.txt",
+        "sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png"
+      ],
+      "key": "dead-2",
+      "cell": 26,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-2.png",
+      "normalized_sha256": "b5dffae970329f18818dae6ba882eb3dca756022ffcfc416591154bce7089212",
+      "normalized_size_bytes": 36113,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        91,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 91,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          91
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b",
+      "outer_functions_exec_call_id": "call_9ac22773621f403eb5a21dd112f7c305",
+      "saved_timestamp_utc": "2026-10-25T08:17:27.466Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-3.raw.png",
+      "raw_sha256": "d7aede70adf2813cf7706f11bceb65225d929c95dee890fdd4dead298f4b6134",
+      "raw_size_bytes": 916422,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-3.txt",
+      "source_prompt_sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+      "input_prompt_utf8_sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-3.txt",
+        "sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-2.raw.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png"
+      ],
+      "key": "dead-3",
+      "cell": 27,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-3.png",
+      "normalized_sha256": "a3ceb55c5b3fb31c17bcece72c96827bb61a42c60f1b01af13967480cdea2fca",
+      "normalized_size_bytes": 28590,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        119,
+        187,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 119,
+        "right": 5,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          119
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    }
+  ],
+  "session_image_results": [
+    {
+      "item_id": "exec-9c3f3824-7f33-4061-aa57-df5aed3e6b7f",
+      "outer_functions_exec_call_id": "call_b0674fe403c1416e982b46101ba69f27",
+      "saved_timestamp_utc": "2026-10-25T08:00:53.157Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-9c3f3824-7f33-4061-aa57-df5aed3e6b7f.png",
+      "workspace_raw_path": "raw/rejected/ruins-bell-keeper-sweep-windup-0-candidate-00.raw.png",
+      "raw_sha256": "df9491859379ec7a54eca15de63c4c4e92df180091ebc2c812ef2494603e6d80",
+      "raw_size_bytes": 884880,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/rejected/ruins-bell-keeper-sweep-windup-0-candidate-00.txt",
+      "source_prompt_sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+      "input_prompt_utf8_sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/rejected/ruins-bell-keeper-sweep-windup-0-candidate-00.txt",
+        "sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png"
+      ],
+      "selected": false,
+      "decision": "rejected",
+      "reason": "Unselected earlier output from the same first windup prompt. Visual review shows the bell rim too low and the crouch too close to active; retained as candidate-00 for traceability."
+    },
+    {
+      "item_id": "exec-55fd7446-f770-41b0-a78e-eb5a90e593a5",
+      "outer_functions_exec_call_id": "call_7ebb7463f3934fa693cd0b2df916f61f",
+      "saved_timestamp_utc": "2026-10-25T08:02:07.964Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-55fd7446-f770-41b0-a78e-eb5a90e593a5.png",
+      "workspace_raw_path": "raw/rejected/ruins-bell-keeper-sweep-windup-0-candidate-01.raw.png",
+      "raw_sha256": "2ab0ed2268d011f96cc506ff015c226318466bdc47651d3515fb30f2554d7173",
+      "raw_size_bytes": 954616,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/rejected/ruins-bell-keeper-sweep-windup-0-candidate-01.txt",
+      "source_prompt_sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+      "input_prompt_utf8_sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/rejected/ruins-bell-keeper-sweep-windup-0-candidate-01.txt",
+        "sha256": "887cd8fa3a3361a78977c497fac9a6b857e682b4611bab8c4d68f8ae3463f6c1",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png"
+      ],
+      "selected": false,
+      "decision": "rejected",
+      "reason": "Rejected in the source session: too close to the active sweep, with the bell mouth too low. Retained as candidate-01."
+    },
+    {
+      "item_id": "exec-ad670608-ac34-420a-ae62-f313e69b1876",
+      "outer_functions_exec_call_id": "call_a252c9e2b89f4a8cba3a04d8517c77c1",
+      "saved_timestamp_utc": "2026-10-25T08:03:53.567Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ad670608-ac34-420a-ae62-f313e69b1876.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-windup-0.raw.png",
+      "raw_sha256": "29aa310d2c9e81843550ceed221cfc04827f767980d2bf377cb635c5e5c8e672",
+      "raw_size_bytes": 1267155,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-windup-0.txt",
+      "source_prompt_sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+      "input_prompt_utf8_sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-windup-0.txt",
+        "sha256": "59951023fda06430ee7b18dab1705f1b5a32d2cf2b4594434c0f3e53529d3628",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png"
+      ],
+      "key": "sweep-windup-0",
+      "cell": 2,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-windup-0.png",
+      "normalized_sha256": "2e08375b3c4c15e6d7d6a67d46cd97190c18b805876c4011c09126055866396a",
+      "normalized_size_bytes": 42213,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        67,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 67,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          67
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-ff598fbf-ca56-4346-bad4-4ccf975fb718",
+      "outer_functions_exec_call_id": "call_d0666b2535fa40f8a7bc7c1c1289e892",
+      "saved_timestamp_utc": "2026-10-25T08:05:08.489Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ff598fbf-ca56-4346-bad4-4ccf975fb718.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-windup-1.raw.png",
+      "raw_sha256": "b305054e003cc87c69cf672ffa5060386fe8814592994e0a2101f27bcbc87f42",
+      "raw_size_bytes": 1189777,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-windup-1.txt",
+      "source_prompt_sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+      "input_prompt_utf8_sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-windup-1.txt",
+        "sha256": "1b8223e304f6aab51a484a23eed21c61f7b36caa3b13bee7921e4cd1fa94eba7",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-0.raw.png"
+      ],
+      "key": "sweep-windup-1",
+      "cell": 3,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-windup-1.png",
+      "normalized_sha256": "38cc912419443baccc11af80f785a1d7a7ce67703cff358c533313e54a17014a",
+      "normalized_size_bytes": 39625,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        3,
+        80,
+        189,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 3,
+        "top": 80,
+        "right": 3,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          187,
+          187
+        ],
+        "scale_ratio": "187/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          3,
+          80
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-f0651a44-6ba6-4603-adfb-c53906082e82",
+      "outer_functions_exec_call_id": "call_9c0ce5bebada4214a4cf76f883e4466f",
+      "saved_timestamp_utc": "2026-10-25T08:06:28.310Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-f0651a44-6ba6-4603-adfb-c53906082e82.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-sweep-recovery.raw.png",
+      "raw_sha256": "2b342314789501c6dfbaa8df78e2212d2992ed443298bc9ef3be388b7776f044",
+      "raw_size_bytes": 1336067,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-sweep-recovery.txt",
+      "source_prompt_sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+      "input_prompt_utf8_sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-sweep-recovery.txt",
+        "sha256": "2332de5120763dc7429172d1f8d5a83e73cf7da73169deaa220cf4882ede0e30",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-1.raw.png"
+      ],
+      "key": "sweep-recovery",
+      "cell": 5,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-sweep-recovery.png",
+      "normalized_sha256": "8764484ad121ad98f7c1d61d33ce2084e7fd33cc859d889e0afae7b534f4a884",
+      "normalized_size_bytes": 43649,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        4,
+        63,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 4,
+        "top": 63,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          4,
+          63
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-14c7d7f0-9435-434e-99d1-12e78fa7831d",
+      "outer_functions_exec_call_id": "call_4fb39e5af7644651b7e59e442f34367f",
+      "saved_timestamp_utc": "2026-10-25T08:08:02.658Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-14c7d7f0-9435-434e-99d1-12e78fa7831d.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-0.raw.png",
+      "raw_sha256": "641e5ffbde23125e52c0f6a472d7ee1c5b8c4a833774ef056bc4e84c0b77252f",
+      "raw_size_bytes": 1159292,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-0.txt",
+      "source_prompt_sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+      "input_prompt_utf8_sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-0.txt",
+        "sha256": "86c41f73f630dbd2dfe94c35d1261fba08b4d636819834e977f5b829823187a4",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png"
+      ],
+      "key": "dead-0",
+      "cell": 24,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-0.png",
+      "normalized_sha256": "9f8ca2ce41c31b014c7e590f1298ba9258755fae0a60284fd595667db0166ab6",
+      "normalized_size_bytes": 39641,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        75,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 75,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          75
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-56f35e25-281a-4f68-b177-dedbdfab5e03",
+      "outer_functions_exec_call_id": "call_1a2224757e4543a0942e239fa4d4b571",
+      "saved_timestamp_utc": "2026-10-25T08:09:54.456Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-56f35e25-281a-4f68-b177-dedbdfab5e03.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-1.raw.png",
+      "raw_sha256": "dec8907ed88c4e1e50da14b226f8d4ee05f081dd7698ae8b8e04b01de615fd68",
+      "raw_size_bytes": 1077268,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-1.txt",
+      "source_prompt_sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+      "input_prompt_utf8_sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-1.txt",
+        "sha256": "4e293736cb49ae4e55f37c927e9b07993db87b59a1206737d37d27e3e0432b85",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-0.raw.png"
+      ],
+      "key": "dead-1",
+      "cell": 25,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-1.png",
+      "normalized_sha256": "d8dca18166b54d5d2881186795673b9e00bf740648a168b28bf472e4095eb6e4",
+      "normalized_size_bytes": 36543,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        90,
+        187,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 90,
+        "right": 5,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          90
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8",
+      "outer_functions_exec_call_id": "call_2f29e5d92f8c4364b9f3be39a3cf65e9",
+      "saved_timestamp_utc": "2026-10-25T08:11:45.918Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-2.raw.png",
+      "raw_sha256": "8114f8309cf876988146b049bc87ad11a18ec84a15f8515e4938f64e39d9950f",
+      "raw_size_bytes": 1097739,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-2.txt",
+      "source_prompt_sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+      "input_prompt_utf8_sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-2.txt",
+        "sha256": "fd1cd48a9f4719a58926d87710cb74f5297ed6e59fabdc76b8c4a8858845307c",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png"
+      ],
+      "key": "dead-2",
+      "cell": 26,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-2.png",
+      "normalized_sha256": "b5dffae970329f18818dae6ba882eb3dca756022ffcfc416591154bce7089212",
+      "normalized_size_bytes": 36113,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        91,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 91,
+        "right": 4,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          91
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    },
+    {
+      "item_id": "exec-a25083ba-7175-49c2-af61-d76eaa00acf6",
+      "outer_functions_exec_call_id": "call_da470a10e14b4eafa1c07f460d993bd1",
+      "saved_timestamp_utc": "2026-10-25T08:13:20.391Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-a25083ba-7175-49c2-af61-d76eaa00acf6.png",
+      "workspace_raw_path": "raw/rejected/ruins-bell-keeper-dead-3-candidate-01.raw.png",
+      "raw_sha256": "00392b795beb88142b8ccc77afd393701786ac41ff6bea397a414504a82da92b",
+      "raw_size_bytes": 1101517,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/rejected/ruins-bell-keeper-dead-3-candidate-01.txt",
+      "source_prompt_sha256": "46ae36c6eb27f04adcf3146a449660db7d9b9ae25c3402ca4f117c6bfe0e1aae",
+      "input_prompt_utf8_sha256": "46ae36c6eb27f04adcf3146a449660db7d9b9ae25c3402ca4f117c6bfe0e1aae",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/rejected/ruins-bell-keeper-dead-3-candidate-01.txt",
+        "sha256": "46ae36c6eb27f04adcf3146a449660db7d9b9ae25c3402ca4f117c6bfe0e1aae",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-2.raw.png"
+      ],
+      "selected": false,
+      "decision": "rejected",
+      "reason": "Rejected in the source session: dead-3 was more upright than dead-2 and had not completed the downward settling."
+    },
+    {
+      "item_id": "exec-036064a8-9143-42ce-8ec5-001562a6bae4",
+      "outer_functions_exec_call_id": "call_5f779e298fa1442c964bc67a57135054",
+      "saved_timestamp_utc": "2026-10-25T08:15:22.309Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-036064a8-9143-42ce-8ec5-001562a6bae4.png",
+      "workspace_raw_path": "raw/rejected/ruins-bell-keeper-dead-3-candidate-02.raw.png",
+      "raw_sha256": "614431fdbb3179386fae800f66227b737ffdb67546eef791c9c56fa618bdb291",
+      "raw_size_bytes": 976271,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/rejected/ruins-bell-keeper-dead-3-candidate-02.txt",
+      "source_prompt_sha256": "3e3d74dc5abaddba0ee7806874dccff557d090ab5113f223dac32d5ec75f13ea",
+      "input_prompt_utf8_sha256": "3e3d74dc5abaddba0ee7806874dccff557d090ab5113f223dac32d5ec75f13ea",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/rejected/ruins-bell-keeper-dead-3-candidate-02.txt",
+        "sha256": "3e3d74dc5abaddba0ee7806874dccff557d090ab5113f223dac32d5ec75f13ea",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-2.raw.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png"
+      ],
+      "selected": false,
+      "decision": "rejected",
+      "reason": "Rejected in the source session: the upper frame was still raised and did not settle lower than dead-2."
+    },
+    {
+      "item_id": "exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b",
+      "outer_functions_exec_call_id": "call_9ac22773621f403eb5a21dd112f7c305",
+      "saved_timestamp_utc": "2026-10-25T08:17:27.466Z",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b.png",
+      "workspace_raw_path": "raw/ruins-bell-keeper-dead-3.raw.png",
+      "raw_sha256": "d7aede70adf2813cf7706f11bceb65225d929c95dee890fdd4dead298f4b6134",
+      "raw_size_bytes": 916422,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "source_prompt_path": "prompts/ruins-bell-keeper-dead-3.txt",
+      "source_prompt_sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+      "input_prompt_utf8_sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "prompts/ruins-bell-keeper-dead-3.txt",
+        "sha256": "83aac323544a570b6fe0cab92575d01e4c8d370c7ca3bd7bb2c259d6ccc7d7dd",
+        "equals_input": true
+      },
+      "transparent_background_requested_and_confirmed": true,
+      "input_reference_paths": [
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-2.raw.png",
+        "C:/Users/Tommy/Desktop/brightwood-first-oath/art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png"
+      ],
+      "key": "dead-3",
+      "cell": 27,
+      "selected": true,
+      "normalized_path": "normalized/ruins-bell-keeper-dead-3.png",
+      "normalized_sha256": "a3ceb55c5b3fb31c17bcece72c96827bb61a42c60f1b01af13967480cdea2fca",
+      "normalized_size_bytes": 28590,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        119,
+        187,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 119,
+        "right": 5,
+        "bottom": 3
+      },
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "alpha_cleanup": "set alpha<8 to 0 before and after resize as low-alpha tails",
+        "requested_scale_canvas_px": [
+          188,
+          188
+        ],
+        "scale_ratio": "188/1254",
+        "canvas_px": [
+          192,
+          192
+        ],
+        "placement_px": [
+          5,
+          119
+        ],
+        "pivot_center_pixel_x": 96,
+        "lowest_alpha_gt_0_y": 188,
+        "transparent_only_margin_crop": true,
+        "no_nontransparent_pixels_cropped": true
+      }
+    }
+  ],
+  "recovery_review": {
+    "review_images": "neutral gray RGB(58,58,58), 1000px maximum edge, JPEG quality 70",
+    "normalized_sequence_review": "review/sweep-dead-normalized-sequence.jpg, JPEG quality 70",
+    "ai_visual_review": "inspected existing raw review JPEGs in pairs; examined both rejected dead-3 candidates and the exact-session third candidate before selecting; no image was generated in this recovery turn"
+  },
+  "discarded_candidates": [
+    {
+      "item_id": "exec-9c3f3824-7f33-4061-aa57-df5aed3e6b7f",
+      "raw_path": "raw/rejected/ruins-bell-keeper-sweep-windup-0-candidate-00.raw.png",
+      "reason": "Unselected earlier output from the same first windup prompt. Visual review shows the bell rim too low and the crouch too close to active; retained as candidate-00 for traceability."
+    },
+    {
+      "item_id": "exec-55fd7446-f770-41b0-a78e-eb5a90e593a5",
+      "raw_path": "raw/rejected/ruins-bell-keeper-sweep-windup-0-candidate-01.raw.png",
+      "reason": "Rejected in the source session: too close to the active sweep, with the bell mouth too low. Retained as candidate-01."
+    },
+    {
+      "item_id": "exec-a25083ba-7175-49c2-af61-d76eaa00acf6",
+      "raw_path": "raw/rejected/ruins-bell-keeper-dead-3-candidate-01.raw.png",
+      "reason": "Rejected in the source session: dead-3 was more upright than dead-2 and had not completed the downward settling."
+    },
+    {
+      "item_id": "exec-036064a8-9143-42ce-8ec5-001562a6bae4",
+      "raw_path": "raw/rejected/ruins-bell-keeper-dead-3-candidate-02.raw.png",
+      "reason": "Rejected in the source session: the upper frame was still raised and did not settle lower than dead-2."
+    }
+  ]
+}

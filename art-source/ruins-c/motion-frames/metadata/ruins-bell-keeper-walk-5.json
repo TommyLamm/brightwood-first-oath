@@ -1,0 +1,81 @@
+{
+  "frameId": "ruins-bell-keeper:walk-5",
+  "candidate": "v1",
+  "accepted": true,
+  "reviewStatus": "accepted",
+  "decision": "Accepted after raw and 192px cycle-sheet review: exactly four complete legs and feet are visible; the trailing recovery pose is distinct and returns the cycle toward walk-0.",
+  "sessionId": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T19-46-08-01a172e1-e2b4-7e31-8709-cd639bc42c38.jsonl",
+  "sourceTimestampUtc": "2026-10-25T11:52:54.516Z",
+  "outerFunctionsExecCallId": "call_7fda4008756d4aff8d92400958ac9f16",
+  "imageResultItemId": "exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6.png",
+  "outputHintPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-5-output-hint.txt",
+  "outputHintCaptured": true,
+  "outputHintUnavailableReason": null,
+  "referencedImages": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-slam-active.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-sweep-active.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "transparentBackgroundConfirmed": true,
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-5.txt",
+  "submittedPromptSha256": "c01c67174297d6d17ac44a75264610e212fc362080916a3d90df13d13c7cc740",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-5-actual.txt",
+  "actualPromptSha256": "3b31c7db7ad2709415b22b583f6f5b37ef29a1192ccd4a61e3cdeec6e7c90fb0",
+  "actualPromptChars": 2711,
+  "revisedPromptReturnedByTool": true,
+  "revisedPromptMatchesSubmittedAfterNewlineNormalization": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-5-v1.png",
+  "rawSha256": "a1576d4d61504f02089b06695f114b3db9e0e0225201c95f0cd256801625abce",
+  "rawSizeBytes": 1278537,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-5.png",
+  "normalizedSha256": "74fb40220130375da1c5d39e80d673d14f56a7e285d1f9547cdf40a9f062a5eb",
+  "normalizedDimensions": [
+    192,
+    192
+  ],
+  "normalizedMode": "RGBA",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "alphaVisibleBounds": [
+      4,
+      65,
+      188,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      4,
+      65,
+      4,
+      3
+    ],
+    "halfOpenBoundsCenterX": 96.0,
+    "pixelCenterX": 95.5,
+    "lastAlphaRow": 188
+  },
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-5-raw-q70.jpg",
+  "review": {
+    "neutralMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "jpegQuality": 70,
+    "maxEdge": 1280
+  },
+  "cycleContactSheetPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38 as C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

@@ -1,0 +1,14 @@
+{
+  "asset": "ruins-sanctum-far",
+  "prompt": "Use case: stylized-concept\nAsset type: transparent 2D platformer environment far-parallax layer, intended for a 1440x540 runtime canvas\nPrimary request: create the distinct far architecture of a closed white-stone bell sanctum, with one unmistakably broken stone ring\nScene/backdrop: isolated architectural forms against transparent alpha, inside a sealed ancient chamber\nSubject: a monumental pale limestone ring-like sanctuary arch, visibly broken into several separated but aligned curved stone segments, spanning nearly the full width; several tall distant buttresses and recessed wall bays support the ring; subtle bronze bell brackets are empty\nStyle/medium: painterly 2D game background, detailed but low-contrast at game scale, weathered chalk-white stone with cool blue shadow and restrained bronze inlay\nComposition/framing: extremely wide horizontal panorama, composition designed for a shallow 2.7:1 crop; keep the complete broken upper curve and its supports within the middle horizontal band; architectural silhouette reaches across the frame without a single central focal object\nLighting/mood: subdued cool silver light with soft atmospheric depth\nConstraints: genuinely transparent background outside the architecture; no sky or painted backdrop; no characters, no creature, no boss, no hanging bell, no warning graphics, no floor, no horizontal walkable platform, no text, no symbols, no UI, no logos, no watermark",
+  "generatedSource": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-b3a2150f-fa68-4b15-8a7a-9cdf33bbad76.png",
+  "savedPath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\scene-audio\\ruins-sanctum-far.raw.png",
+  "toolOutputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af as C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-b3a2150f-fa68-4b15-8a7a-9cdf33bbad76.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "callID": "not provided in returned result; generated file identifier preserved in generatedSource",
+  "revisedPrompt": "not provided in returned result",
+  "transparentBackground": true,
+  "rawSha256": "ce0068a038e6b209291769edeedb4f99f80e29f3bc019b0313be40e1b8d63311",
+  "runtimePath": "public/assets/environment/env-ruins-sanctum-far-v1.png",
+  "runtimeSha256": "13c70e87572b66ed42dd61d30f5a1ded62517512ac4f62b4531884b4b09d9226",
+  "normalization": "RGBA resize 2048x768 to 1440x540; clear alpha below 3 and zero RGB where fully transparent; optimized PNG"
+}

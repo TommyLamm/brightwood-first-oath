@@ -1,0 +1,234 @@
+{
+  "asset": "Bell Keeper three reusable identity/action references",
+  "plan": "plan/14-ruins-bell-sanctum.md",
+  "date": "2026-10-25",
+  "artifacts": [
+    {
+      "key": "idle-0",
+      "raw_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png",
+      "raw_sha256": "edb67c5bc556a7a0953610aff549766f7f9011193d5f289c21525e2de7c30551",
+      "raw_size_bytes": 1335127,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171f5-bc1f-7680-9299-41cbbedc9061\\exec-86483269-0e2f-4b5e-8503-55e7078e1394.png",
+      "saved_timestamp_utc": "2026-10-25T07:30:56.156Z",
+      "session_path": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-28-12-01a171f5-bc1f-7680-9299-41cbbedc9061.jsonl",
+      "image_result_item_id": "exec-86483269-0e2f-4b5e-8503-55e7078e1394",
+      "outer_functions_exec_call_id": "call_72c3201eccfc4005bdaa4d81d18e76ca",
+      "transparent_background_requested_and_confirmed": true,
+      "source_prompt_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-idle-0.txt",
+      "source_prompt_sha256": "cf01c7f1367a35be8f7b207095c0255a853220f2e5ac48189a674b1d0e8ce7b5",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-idle-0.txt",
+        "sha256": "cf01c7f1367a35be8f7b207095c0255a853220f2e5ac48189a674b1d0e8ce7b5",
+        "equals_input": true
+      },
+      "normalized_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\normalized\\ruins-bell-keeper-idle-0.png",
+      "normalized_sha256": "b84e99a7c09ec79bd249c1181f4759d4d6cdbf8541211c9bc892cd66bbd9df41",
+      "normalized_size_bytes": 43763,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          22
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "normalized_visible_bounds_alpha_gt_0": [
+        6,
+        57,
+        186,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 6,
+        "top": 57,
+        "right": 6,
+        "bottom": 3
+      },
+      "normalized_transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          22
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "tool": "built-in image_gen",
+      "input_reference_paths": []
+    },
+    {
+      "key": "slam-active",
+      "raw_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-slam-active.png",
+      "raw_sha256": "932bdb057305318be71ebf48478bd8facf47daf1d7d97930ef3db0c893648c4a",
+      "raw_size_bytes": 1235681,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17206-ed63-76f3-818a-f00b804d69d4\\exec-23e643f0-8ff6-4f96-bc3f-a9c2a37b10d9.png",
+      "saved_timestamp_utc": "2026-10-25T07:50:55.774Z",
+      "session_path": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-46-59-01a17206-ed63-76f3-818a-f00b804d69d4.jsonl",
+      "image_result_item_id": "exec-23e643f0-8ff6-4f96-bc3f-a9c2a37b10d9",
+      "outer_functions_exec_call_id": "call_a111e3cf9076495caae638acac4514fb",
+      "transparent_background_requested_and_confirmed": true,
+      "source_prompt_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-slam-active.txt",
+      "source_prompt_sha256": "838abf7c973511f127a9b795202c287394ca3f867d8fcdc4cbb4b521c870b2a2",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-slam-active.revised.txt",
+        "sha256": "0401c67c24685f1942f9c2ed3ee09223100208e32410f133738ec298c4598275",
+        "equals_input": true
+      },
+      "normalized_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\normalized\\ruins-bell-keeper-slam-active.png",
+      "normalized_sha256": "bea8cf5e3da93ea2bd74d24682e0cbfbcbe112af9870c89027093267a81ba6d6",
+      "normalized_size_bytes": 40918,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          26
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "normalized_visible_bounds_alpha_gt_0": [
+        5,
+        86,
+        188,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 5,
+        "top": 86,
+        "right": 4,
+        "bottom": 3
+      },
+      "normalized_transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          26
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "tool": "built-in image_gen",
+      "input_reference_paths": [
+        "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png"
+      ]
+    },
+    {
+      "key": "sweep-active",
+      "raw_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-sweep-active.png",
+      "raw_sha256": "2c32c490942c215d6e99cb53fcba4cae8c873e8eb38c2fcab5076c30f7f0277e",
+      "raw_size_bytes": 1149238,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17206-ed63-76f3-818a-f00b804d69d4\\exec-e394cfbf-127f-4658-960f-f70ec2ffe0cb.png",
+      "saved_timestamp_utc": "2026-10-25T07:53:04.808Z",
+      "session_path": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-46-59-01a17206-ed63-76f3-818a-f00b804d69d4.jsonl",
+      "image_result_item_id": "exec-e394cfbf-127f-4658-960f-f70ec2ffe0cb",
+      "outer_functions_exec_call_id": "call_f00d94e212e949c8acf621ade6981d74",
+      "transparent_background_requested_and_confirmed": true,
+      "source_prompt_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-sweep-active.txt",
+      "source_prompt_sha256": "2d3f5f504f18d367c49150dc0803f19f5a977396e9dfcd1bb32a717171191d12",
+      "tool_revised_prompt": {
+        "present": true,
+        "path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\prompts\\ruins-bell-keeper-sweep-active.revised.txt",
+        "sha256": "9e499e4a63ebab60cd9819d50cbd9a0cda6a5fbbd8cbf90135997f0e68288cf2",
+        "equals_input": true
+      },
+      "normalized_path": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\normalized\\ruins-bell-keeper-sweep-active.png",
+      "normalized_sha256": "bf2fa533873c01f3ed6742442a27b66aa62cceb8807a2b0cfc7e64ed18b9d975",
+      "normalized_size_bytes": 38440,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          31
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "normalized_visible_bounds_alpha_gt_0": [
+        3,
+        78,
+        189,
+        189
+      ],
+      "normalized_transparent_margins_pixels": {
+        "left": 3,
+        "top": 78,
+        "right": 3,
+        "bottom": 3
+      },
+      "normalized_transform": {
+        "resample": "LANCZOS on premultiplied RGBA",
+        "raw_pixels_with_alpha_below_8": "made fully transparent as low-alpha tails",
+        "exact_scale_ratio": "188/1254 (188x188 to 192x192 canvas)",
+        "placement": "whole scaled canvas placed without cropping",
+        "alignment_offset_px": [
+          2,
+          31
+        ],
+        "visible_bounds": "alpha>0 bounds centered at x=96; last nonzero row y=188 (exclusive bbox bottom=189)",
+        "center_anchor": "pivot x=96; an odd-width alpha bbox uses its middle pixel at x=96",
+        "scale_ratio_decimal": 0.149920255183
+      },
+      "tool": "built-in image_gen",
+      "input_reference_paths": [
+        "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png"
+      ]
+    }
+  ],
+  "visual_review": "All three raw RGBA images visually reviewed individually as 1000px max-edge JPEGs, quality 70, composited on neutral RGB(58,58,58). Idle shows right-facing white mask, bronze support frame, suspended bell, four readable planted feet; slam visibly compresses/braces the frame and drops the bell low; sweep swings the flared bell sideways toward the front-right at ground level.",
+  "normalization": "Raw files remain unchanged. For each 1254x1254 RGBA raw reference, alpha values below 8 were cleared as low-alpha tails, then the full image was resized uniformly to 188x188 via premultiplied-alpha LANCZOS and placed without cropping in a 192x192 transparent cell. After positioning, the lowest alpha>0 pixel is y=188, the visible bbox center is x=96, and each edge has at least 3 transparent pixels.",
+  "recovery": "Idle was copied from the exact earlier session savedPath. Its exact tool item contains revisedPrompt, equal to the existing input prompt file; earlier dispatch summary had reported this missing, but direct session inspection disproved that. Prior owner stopped while attempting to write JSON.stringify(image_url) into a single apply_patch input; this delivery stores only safe prompt/source metadata, never the image data URI.",
+  "discarded_candidates": []
+}

@@ -1,0 +1,14 @@
+{
+  "asset": "ruins-sanctum-mid",
+  "prompt": "Use case: stylized-concept\nAsset type: transparent 2D platformer environment mid-parallax overlay, intended for a 1920x540 runtime canvas\nPrimary request: a delicate broken-stone upper foreground silhouette that frames a sealed bell sanctum without obscuring its play area\nScene/backdrop: isolated architectural fragments against transparent alpha\nSubject: a shallow upper frieze of nearby chalk-white ceiling ribs, chipped cornices and a few small suspended stone splinters, with restrained bronze brackets; design it as an elegant horizontal band belonging to an ancient closed white-stone bell chamber\nStyle/medium: painterly 2D game background, weathered pale limestone, cool blue-gray edge shadows, softly rendered, matching painted fantasy environment art\nComposition/framing: very wide panoramic strip; all visible stone is confined to the top quarter, with asymmetrical broken edges and clear transparent openings; leave a broad empty transparent field beneath; suitable for a shallow 3.5:1 crop\nLighting/mood: faint cold reflected light, subdued and atmospheric\nConstraints: genuine transparent background; artwork only in the top 180 pixels of the eventual 1920x540 layer, everything below y=180 fully transparent; no floor, no platform, no horizontal surface that reads as walkable, no ground, no boss, no characters, no creatures, no warning graphics, no text, no logos, no watermark",
+  "generatedSource": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-3c790219-dda1-42df-8d52-d4fc726d192b.png",
+  "savedPath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\scene-audio\\ruins-sanctum-mid.raw.png",
+  "toolOutputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af as C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-3c790219-dda1-42df-8d52-d4fc726d192b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "callID": "not provided in returned result; generated file identifier preserved in generatedSource",
+  "revisedPrompt": "not provided in returned result",
+  "transparentBackground": true,
+  "rawSha256": "c2eb9e518aa72637539e73939ae31608c0ba1d8649e01f369d59e79f39cda483",
+  "runtimePath": "public/assets/environment/env-ruins-sanctum-mid-v1.png",
+  "runtimeSha256": "6989233b1f6b4c9334afeb1d1b202c08ecf5a22d72cd4e4436d7d399493eecdf",
+  "normalization": "RGBA top-band crop 2179x240 resized to 1920x180 on transparent 1920x540 canvas; y>=180 cleared; alpha below 3 cleared; optimized PNG"
+}

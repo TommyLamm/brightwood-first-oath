@@ -1,0 +1,78 @@
+{
+  "frameId": "ruins-bell-keeper:walk-1-v3",
+  "candidate": "v3",
+  "accepted": true,
+  "reviewStatus": "accepted",
+  "decision": "Accepted after 192px and cycle-sheet review: four complete feet remain, the opposing landing articulation is distinct, and no extra central limb is visible. Output-hint text was not preserved when the prior outer exec stopped after ImageGen; the exact savedPath is present in the session image-result item.",
+  "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-55-44-01a1720e-f000-73e2-9553-7cd17539d3b4.jsonl",
+  "sourceTimestampUtc": "2026-10-25T08:17:00.578Z",
+  "outerFunctionsExecCallId": "call_f567ef2d3cf84a2eb65a016f946075bc",
+  "imageResultItemId": "exec-80667417-7333-4962-af64-50d855db2ff5",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-80667417-7333-4962-af64-50d855db2ff5.png",
+  "outputHintPath": null,
+  "outputHintCaptured": false,
+  "outputHintUnavailableReason": "The exact image result item retained savedPath and revisedPrompt, but the outer exec stopped before its wrapper output_hint was recorded.",
+  "referencedImages": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "transparentBackgroundConfirmed": true,
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-1-v3.txt",
+  "submittedPromptSha256": "4e53624864d5dbc756435d060db2bcca2b532255a457ebb2926f11893c14e7b5",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-1-v3-actual.txt",
+  "actualPromptSha256": "d9c5b28713d9aefa96439346676284adb12537d1be472b4f5baa25ca6a95aa2f",
+  "actualPromptChars": 2757,
+  "revisedPromptReturnedByTool": true,
+  "revisedPromptMatchesSubmittedAfterNewlineNormalization": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-1-v3-v1.png",
+  "rawSha256": "eca3a553ca75d2f1ef3152735d92a1cf5b323d0ace3dcb9a3a4f353ae96961e5",
+  "rawSizeBytes": 1306843,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-1-v3.png",
+  "normalizedSha256": "f0708ffbefd46a2b3b2784562acbd0e8e1d146f42dc1229f202d257de44f8b6b",
+  "normalizedDimensions": [
+    192,
+    192
+  ],
+  "normalizedMode": "RGBA",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "alphaVisibleBounds": [
+      5,
+      62,
+      188,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      5,
+      62,
+      4,
+      3
+    ],
+    "halfOpenBoundsCenterX": 96.5,
+    "pixelCenterX": 96.0,
+    "lastAlphaRow": 188
+  },
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-1-v3-raw-q70.jpg",
+  "review": {
+    "neutralMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "jpegQuality": 70,
+    "maxEdge": 1280
+  },
+  "cycleContactSheetPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg"
+}

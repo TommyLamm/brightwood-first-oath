@@ -1,0 +1,1732 @@
+{
+  "asset": "Ruins C Bell Keeper assembled boss atlas",
+  "date": "2026-10-25",
+  "plan": "plan/14-ruins-bell-sanctum.md §5, §8, §9",
+  "contract": {
+    "image_key": "actor:ruins-bell-keeper",
+    "atlas_path": "public/assets/actors/monster-ruins-bell-keeper-v1.png",
+    "atlas_dimensions": [
+      1152,
+      960
+    ],
+    "atlas_mode": "RGBA",
+    "cell_size": [
+      192,
+      192
+    ],
+    "grid": [
+      6,
+      5
+    ],
+    "display_size": [
+      192,
+      192
+    ],
+    "pivot": [
+      0.5,
+      1
+    ],
+    "valid_pose_count": 22,
+    "alpha_contract": "each approved source cell is used pixel-exactly; source alpha>0 bounds are centered at x=96 within 0.5px, nearest anchor pixel 96, last row y=188, and at least 3 transparent pixels on each edge"
+  },
+  "source_metadata": [
+    "art-source/ruins-c/profiles/metadata/ruins-c-bell-keeper-profiles.json",
+    "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+    "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+    "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json"
+  ],
+  "atlas_sha256": "0cfe33f6cc6ce3c349fdd2b04edd352c2c942f32c45677fc21c9dada67727be6",
+  "atlas_size_bytes": 914509,
+  "sha256_method": "SHA-256 over exact source/output files; cell pixel SHA-256 over decoded RGBA bytes",
+  "cell_mapping": [
+    {
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "pose": "idle-0",
+      "raw_path": "art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+      "raw_sha256": "edb67c5bc556a7a0953610aff549766f7f9011193d5f289c21525e2de7c30551",
+      "normalized_path": "art-source/ruins-c/profiles/normalized/ruins-bell-keeper-idle-0.png",
+      "normalized_sha256": "b84e99a7c09ec79bd249c1181f4759d4d6cdbf8541211c9bc892cd66bbd9df41",
+      "metadata_path": "art-source/ruins-c/profiles/metadata/ruins-c-bell-keeper-profiles.json",
+      "image_result_item_id": "exec-86483269-0e2f-4b5e-8503-55e7078e1394",
+      "outer_functions_exec_call_id": "call_72c3201eccfc4005bdaa4d81d18e76ca",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a171f5-bc1f-7680-9299-41cbbedc9061\\exec-86483269-0e2f-4b5e-8503-55e7078e1394.png",
+      "source_kind": "shared profile reference",
+      "raw_size_bytes": 1335127,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 43763,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        6,
+        57,
+        186,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 6,
+        "top": 57,
+        "right": 6,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        6,
+        57,
+        186,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 6,
+        "top": 57,
+        "right": 6,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "da4ea5930d83d6ea7cbf9e28bb799ed712a52df377ed6a16cf1fed980958256f",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "pose": "idle-1",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-idle-1-v2.png",
+      "raw_sha256": "e53fadc79ca70f5d21c7143688fbcd5e81991cc35f58a85f63fa25d090f44555",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-idle-1.png",
+      "normalized_sha256": "6f3523680604916f43012d7dbb527a503913c21eb09251521ea29deaa3b7f74d",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-2f680afe-636d-4768-a054-dab7cdff096d",
+      "outer_functions_exec_call_id": "call_835dd24be82a4d0087f70a263be10a18",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-2f680afe-636d-4768-a054-dab7cdff096d.png",
+      "candidate": "v2",
+      "session_id": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1340035,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 44266,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        60,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 60,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        60,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 60,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "4950ea2cb22f3297c84c3c3769fddb0e9c400609249e99212b78df6150b6404b",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "pose": "sweep-windup-0",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-0.raw.png",
+      "raw_sha256": "29aa310d2c9e81843550ceed221cfc04827f767980d2bf377cb635c5e5c8e672",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-sweep-windup-0.png",
+      "normalized_sha256": "2e08375b3c4c15e6d7d6a67d46cd97190c18b805876c4011c09126055866396a",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-ad670608-ac34-420a-ae62-f313e69b1876",
+      "outer_functions_exec_call_id": "call_a252c9e2b89f4a8cba3a04d8517c77c1",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ad670608-ac34-420a-ae62-f313e69b1876.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1267155,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 42213,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        67,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 67,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        67,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 67,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "c073bb64399f7dce1330c52d800f03916bcb30c4edd18225ca8f4d89cfb2ffc6",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "pose": "sweep-windup-1",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-windup-1.raw.png",
+      "raw_sha256": "b305054e003cc87c69cf672ffa5060386fe8814592994e0a2101f27bcbc87f42",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-sweep-windup-1.png",
+      "normalized_sha256": "38cc912419443baccc11af80f785a1d7a7ce67703cff358c533313e54a17014a",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-ff598fbf-ca56-4346-bad4-4ccf975fb718",
+      "outer_functions_exec_call_id": "call_d0666b2535fa40f8a7bc7c1c1289e892",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-ff598fbf-ca56-4346-bad4-4ccf975fb718.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1189777,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 39625,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        80,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 80,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        80,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 80,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "4da2d2d904a03b24d266e30863d6822bed88e94fb445954ab72c6d3cff166fdf",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "pose": "sweep-active",
+      "raw_path": "art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png",
+      "raw_sha256": "2c32c490942c215d6e99cb53fcba4cae8c873e8eb38c2fcab5076c30f7f0277e",
+      "normalized_path": "art-source/ruins-c/profiles/normalized/ruins-bell-keeper-sweep-active.png",
+      "normalized_sha256": "bf2fa533873c01f3ed6742442a27b66aa62cceb8807a2b0cfc7e64ed18b9d975",
+      "metadata_path": "art-source/ruins-c/profiles/metadata/ruins-c-bell-keeper-profiles.json",
+      "image_result_item_id": "exec-e394cfbf-127f-4658-960f-f70ec2ffe0cb",
+      "outer_functions_exec_call_id": "call_f00d94e212e949c8acf621ade6981d74",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17206-ed63-76f3-818a-f00b804d69d4\\exec-e394cfbf-127f-4658-960f-f70ec2ffe0cb.png",
+      "source_kind": "shared profile reference",
+      "raw_size_bytes": 1149238,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 38440,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        78,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 78,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        78,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 78,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "3e2083210a0f6d404cb744dba83096f13f8b24eacfe8e3e00ce9be3795b830d0",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "pose": "sweep-recovery",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-sweep-recovery.raw.png",
+      "raw_sha256": "2b342314789501c6dfbaa8df78e2212d2992ed443298bc9ef3be388b7776f044",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-sweep-recovery.png",
+      "normalized_sha256": "8764484ad121ad98f7c1d61d33ce2084e7fd33cc859d889e0afae7b534f4a884",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-f0651a44-6ba6-4603-adfb-c53906082e82",
+      "outer_functions_exec_call_id": "call_9c0ce5bebada4214a4cf76f883e4466f",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-f0651a44-6ba6-4603-adfb-c53906082e82.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1336067,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 43649,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        4,
+        63,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 63,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        4,
+        63,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 63,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "eed8bf01d9151ec1b41d0b5dd9630a97a76ce3540672b87ba327c7cb7a89e7a4",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 6,
+      "row": 1,
+      "column": 0,
+      "pose": "walk-0",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-0-v1.png",
+      "raw_sha256": "cf3a04f7e39291ef60596e75995fbdebb44ddc1521a5d305f25b65e5464b0150",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-0.png",
+      "normalized_sha256": "b6168991735f62b5004fec37dcc6bb2dd1063df4db8d1f05642ee44b37088dd6",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-53a2231b-6481-41f6-a8d7-0fd9b9da6ab4",
+      "outer_functions_exec_call_id": "call_1a849b14cd934ac1aa37287711a6ae69",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-53a2231b-6481-41f6-a8d7-0fd9b9da6ab4.png",
+      "candidate": "v1",
+      "session_id": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1163296,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 37147,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        4,
+        77,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 77,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        4,
+        77,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 77,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "4785496db6919f625c5a9ba2b19716114a8b768ab4339b8571a6f7f1f5d1610b",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 7,
+      "row": 1,
+      "column": 1,
+      "pose": "walk-1",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-1-v3-v1.png",
+      "raw_sha256": "eca3a553ca75d2f1ef3152735d92a1cf5b323d0ace3dcb9a3a4f353ae96961e5",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-1.png",
+      "normalized_sha256": "f0708ffbefd46a2b3b2784562acbd0e8e1d146f42dc1229f202d257de44f8b6b",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-80667417-7333-4962-af64-50d855db2ff5",
+      "outer_functions_exec_call_id": "call_f567ef2d3cf84a2eb65a016f946075bc",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-80667417-7333-4962-af64-50d855db2ff5.png",
+      "candidate": "v3",
+      "session_id": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1306843,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 41380,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        62,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 62,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        62,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 62,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "30602ec4faac758fa35e5cad45d714d1f8bb2ba38355a0816a81d51a66f14dbc",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 8,
+      "row": 1,
+      "column": 2,
+      "pose": "walk-2",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-2-v1.png",
+      "raw_sha256": "e5cfd37f038a9cf2b734f20e6038140020cc9c651f55b0c3a38524b8f10e152b",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-2.png",
+      "normalized_sha256": "02a982600608fe0319ca9691b21be0bd12a334639d3b13a47d40425fcc9fcdc9",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975",
+      "outer_functions_exec_call_id": "call_bb716c79a7764cfaaee782507798a2a8",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975.png",
+      "candidate": "v1",
+      "session_id": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1253248,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 42105,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        62,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 62,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        62,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 62,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "04346704520fa4645cbc754b0dd4fff73a5eb40d16f8eae1f65035d72a7ae85b",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 9,
+      "row": 1,
+      "column": 3,
+      "pose": "walk-3",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-3-v3-v1.png",
+      "raw_sha256": "c6bb6c0666b8c6acd8dc063c387141198888f79419bf37a6c7974ead0db1f33a",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-3.png",
+      "normalized_sha256": "74bc99870dde6cadbf979d4b0dbdc1672350961a6738cabed5ae059b2babfbce",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-0c784d9d-6e7f-4b9d-90c6-2a7411b374bd",
+      "outer_functions_exec_call_id": "call_374c0698df1b4d0e973eb4ff58096432",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-0c784d9d-6e7f-4b9d-90c6-2a7411b374bd.png",
+      "candidate": "v3",
+      "session_id": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1190636,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 39987,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        4,
+        71,
+        187,
+        189
+      ],
+      "source_alpha_center_x": 95.0,
+      "source_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 71,
+        "right": 5,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        71,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 71,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": {
+        "path": "art-source/ruins-c/assembly/adjusted/ruins-bell-keeper-walk-3-center96.png",
+        "sha256": "2b07ebe0e7ec184a1f945893a81e7038d867dc437b885d4c1162672c2d92ab0e",
+        "size_bytes": 39982,
+        "translation_px": [
+          1,
+          0
+        ],
+        "reason": "canonical walk-3 alpha bbox center is x=95.0; a transparent-safe 1px right shift aligns it to the required x=96 pivot",
+        "canonical_source_unchanged": true
+      },
+      "atlas_cell_pixel_sha256": "ce3a8379ebb33fbff9ede134bc502675b1376c04db9f1588f11df6cb64fd79c4",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 10,
+      "row": 1,
+      "column": 4,
+      "pose": "walk-4",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-4-v1.png",
+      "raw_sha256": "a42d1b01277dbcdce6b66fd9fd1c5a61dcf01b9f78fa88cd593237b358d2f02a",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-4.png",
+      "normalized_sha256": "6be65a813b1f74f975c471687c94339f99ecba641891ef1fc12145dcd5f8f5b1",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-646fbc4c-6e0b-430a-a17d-7872757d6121",
+      "outer_functions_exec_call_id": "call_591871b2114c4583ae15a13f057e9b2e",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-646fbc4c-6e0b-430a-a17d-7872757d6121.png",
+      "candidate": "v1",
+      "session_id": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1154883,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 38291,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        70,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 70,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        70,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 70,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "08d08cbbf0cc0c25fef8b9bcacb663fb3f69b4cce2bc4b05a9b50cc7e114e6a5",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 11,
+      "row": 1,
+      "column": 5,
+      "pose": "walk-5",
+      "raw_path": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-5-v1.png",
+      "raw_sha256": "a1576d4d61504f02089b06695f114b3db9e0e0225201c95f0cd256801625abce",
+      "normalized_path": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-5.png",
+      "normalized_sha256": "74fb40220130375da1c5d39e80d673d14f56a7e285d1f9547cdf40a9f062a5eb",
+      "metadata_path": "art-source/ruins-c/motion-frames/metadata/accepted-frames.json",
+      "image_result_item_id": "exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6",
+      "outer_functions_exec_call_id": "call_7fda4008756d4aff8d92400958ac9f16",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6.png",
+      "candidate": "v1",
+      "session_id": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "source_kind": "accepted motion frame",
+      "raw_size_bytes": 1278537,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 41646,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        4,
+        65,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 65,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        4,
+        65,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 4,
+        "top": 65,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "5147d1071d300c8f9a7e038b15e3cd61658e4f4eb8ee17ea71ebbed28761ccce",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 12,
+      "row": 2,
+      "column": 0,
+      "pose": "slam-windup-0",
+      "raw_path": "art-source/ruins-c/slam-hurt-frames/raw/ruins-bell-keeper-slam-windup-0.raw.png",
+      "raw_sha256": "e9572aee72a11373978a722a99d21869f8f85d33ea3a5b662fbdd7a0500f4bed",
+      "normalized_path": "art-source/ruins-c/slam-hurt-frames/normalized/ruins-bell-keeper-slam-windup-0.png",
+      "normalized_sha256": "84364dd4c387c8620941013b418eaec690f976853d65e95015746a66b4aa6e42",
+      "metadata_path": "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+      "image_result_item_id": "exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "outer_functions_exec_call_id": null,
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "source_kind": "accepted action frame",
+      "raw_size_bytes": 1363846,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 49415,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        57,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 57,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        57,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 57,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "59596556ac85b2cc1168fbddc369809f007306ea68c55696dd695669a01d2981",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 13,
+      "row": 2,
+      "column": 1,
+      "pose": "slam-windup-1",
+      "raw_path": "art-source/ruins-c/slam-hurt-frames/raw/ruins-bell-keeper-slam-windup-1.raw.png",
+      "raw_sha256": "593d1841d3da605d9cc44ecb07fdc9b7606d3aa829ad8238cecb85de2673f7de",
+      "normalized_path": "art-source/ruins-c/slam-hurt-frames/normalized/ruins-bell-keeper-slam-windup-1.png",
+      "normalized_sha256": "3870f9be42412ec9119a3c4ef9dcc2f47ba97a702a637e68aa76cd09a6abfa02",
+      "metadata_path": "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+      "image_result_item_id": "exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "outer_functions_exec_call_id": null,
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "source_kind": "accepted action frame",
+      "raw_size_bytes": 1164090,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 41990,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        87,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 87,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        87,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 87,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "164e838a2295ca68b00127c5e2f694cfc8162f4c59cbbecb2207ced8fa7c66e1",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 14,
+      "row": 2,
+      "column": 2,
+      "pose": "slam-active",
+      "raw_path": "art-source/ruins-c/profiles/ruins-bell-keeper-slam-active.png",
+      "raw_sha256": "932bdb057305318be71ebf48478bd8facf47daf1d7d97930ef3db0c893648c4a",
+      "normalized_path": "art-source/ruins-c/profiles/normalized/ruins-bell-keeper-slam-active.png",
+      "normalized_sha256": "bea8cf5e3da93ea2bd74d24682e0cbfbcbe112af9870c89027093267a81ba6d6",
+      "metadata_path": "art-source/ruins-c/profiles/metadata/ruins-c-bell-keeper-profiles.json",
+      "image_result_item_id": "exec-23e643f0-8ff6-4f96-bc3f-a9c2a37b10d9",
+      "outer_functions_exec_call_id": "call_a111e3cf9076495caae638acac4514fb",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17206-ed63-76f3-818a-f00b804d69d4\\exec-23e643f0-8ff6-4f96-bc3f-a9c2a37b10d9.png",
+      "source_kind": "shared profile reference",
+      "raw_size_bytes": 1235681,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 40918,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        86,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 86,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        86,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 86,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "30ea334cd14558debf72636704bcf612161a4bec72206e4c1d8ee3f9f69c604c",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 15,
+      "row": 2,
+      "column": 3,
+      "pose": "slam-recovery",
+      "raw_path": "art-source/ruins-c/slam-hurt-frames/raw/ruins-bell-keeper-slam-recovery.raw.png",
+      "raw_sha256": "2764e274406d5568fc6a08d1752bf1be8fa263ae073e5ae57ab663167c7efa8a",
+      "normalized_path": "art-source/ruins-c/slam-hurt-frames/normalized/ruins-bell-keeper-slam-recovery.png",
+      "normalized_sha256": "69b2691d6873afc367604197a2c31a846835386e54e35cf23bb63d0a9776bfe4",
+      "metadata_path": "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+      "image_result_item_id": "exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "outer_functions_exec_call_id": null,
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "source_kind": "accepted action frame",
+      "raw_size_bytes": 1246056,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 45021,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        77,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 77,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        77,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 77,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "8da6818734dca926489eb3b46e5b5549b08c449edb6536ad0852adb6aad3b601",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 16,
+      "row": 2,
+      "column": 4,
+      "pose": "unused-copy-of-15",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "8da6818734dca926489eb3b46e5b5549b08c449edb6536ad0852adb6aad3b601",
+      "copied_from_cell": 15
+    },
+    {
+      "cell": 17,
+      "row": 2,
+      "column": 5,
+      "pose": "unused-copy-of-15",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "8da6818734dca926489eb3b46e5b5549b08c449edb6536ad0852adb6aad3b601",
+      "copied_from_cell": 15
+    },
+    {
+      "cell": 18,
+      "row": 3,
+      "column": 0,
+      "pose": "hurt-0",
+      "raw_path": "art-source/ruins-c/slam-hurt-frames/raw/ruins-bell-keeper-hurt-0.raw.png",
+      "raw_sha256": "e9a13982b112678b133fb4336cc9b12656d730ec40f90eed11bef30d05b70654",
+      "normalized_path": "art-source/ruins-c/slam-hurt-frames/normalized/ruins-bell-keeper-hurt-0.png",
+      "normalized_sha256": "e74a788df6dc5d796291a7cfe2c108e7e65aca0d6e373f796c96784c40244001",
+      "metadata_path": "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+      "image_result_item_id": "exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "outer_functions_exec_call_id": null,
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "source_kind": "accepted action frame",
+      "raw_size_bytes": 1373121,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 50472,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        46,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 46,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        46,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 46,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "091c6581675c83a209d3e9278eb5cf14e6cd9a2acc4b9d7663fe7c5e27e98c2d",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 19,
+      "row": 3,
+      "column": 1,
+      "pose": "hurt-1",
+      "raw_path": "art-source/ruins-c/slam-hurt-frames/raw/ruins-bell-keeper-hurt-1.raw.png",
+      "raw_sha256": "82ae4d2c3824cec9adc50e2b67dc33a09895b477395b8dbdcd2a085fd92b0b38",
+      "normalized_path": "art-source/ruins-c/slam-hurt-frames/normalized/ruins-bell-keeper-hurt-1.png",
+      "normalized_sha256": "433dd8c2422ed3eacdfa31e19d26874477bbcc4f69db149144e126b1767f9b66",
+      "metadata_path": "art-source/ruins-c/slam-hurt-frames/metadata/ruins-c-bell-keeper-slam-hurt-frames.json",
+      "image_result_item_id": "exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "outer_functions_exec_call_id": null,
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "source_kind": "accepted action frame",
+      "raw_size_bytes": 1352489,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 48702,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        3,
+        54,
+        189,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 54,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        3,
+        54,
+        189,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 3,
+        "top": 54,
+        "right": 3,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 20,
+      "row": 3,
+      "column": 2,
+      "pose": "unused-copy-of-19",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290",
+      "copied_from_cell": 19
+    },
+    {
+      "cell": 21,
+      "row": 3,
+      "column": 3,
+      "pose": "unused-copy-of-19",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290",
+      "copied_from_cell": 19
+    },
+    {
+      "cell": 22,
+      "row": 3,
+      "column": 4,
+      "pose": "unused-copy-of-19",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290",
+      "copied_from_cell": 19
+    },
+    {
+      "cell": 23,
+      "row": 3,
+      "column": 5,
+      "pose": "unused-copy-of-19",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290",
+      "copied_from_cell": 19
+    },
+    {
+      "cell": 24,
+      "row": 4,
+      "column": 0,
+      "pose": "dead-0",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-0.raw.png",
+      "raw_sha256": "641e5ffbde23125e52c0f6a472d7ee1c5b8c4a833774ef056bc4e84c0b77252f",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-dead-0.png",
+      "normalized_sha256": "9f8ca2ce41c31b014c7e590f1298ba9258755fae0a60284fd595667db0166ab6",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-14c7d7f0-9435-434e-99d1-12e78fa7831d",
+      "outer_functions_exec_call_id": "call_4fb39e5af7644651b7e59e442f34367f",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-14c7d7f0-9435-434e-99d1-12e78fa7831d.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1159292,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 39641,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        75,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 75,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        75,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 75,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "88301175ab5ed0ca8d14e1ee690b70185eaeaaf1d03250a4476b3a574340af7b",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 25,
+      "row": 4,
+      "column": 1,
+      "pose": "dead-1",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-1.raw.png",
+      "raw_sha256": "dec8907ed88c4e1e50da14b226f8d4ee05f081dd7698ae8b8e04b01de615fd68",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-dead-1.png",
+      "normalized_sha256": "d8dca18166b54d5d2881186795673b9e00bf740648a168b28bf472e4095eb6e4",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-56f35e25-281a-4f68-b177-dedbdfab5e03",
+      "outer_functions_exec_call_id": "call_1a2224757e4543a0942e239fa4d4b571",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-56f35e25-281a-4f68-b177-dedbdfab5e03.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1077268,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 36543,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        90,
+        187,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 90,
+        "right": 5,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        90,
+        187,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 90,
+        "right": 5,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "9ab2103fa85df8b13e888b40d79e9c8524b0a2d255b28ee887f7f309ff10067d",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 26,
+      "row": 4,
+      "column": 2,
+      "pose": "dead-2",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-2.raw.png",
+      "raw_sha256": "8114f8309cf876988146b049bc87ad11a18ec84a15f8515e4938f64e39d9950f",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-dead-2.png",
+      "normalized_sha256": "b5dffae970329f18818dae6ba882eb3dca756022ffcfc416591154bce7089212",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8",
+      "outer_functions_exec_call_id": "call_2f29e5d92f8c4364b9f3be39a3cf65e9",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-b037ab7b-3b47-43ab-8f02-c271de6cbfe8.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 1097739,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 36113,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        91,
+        188,
+        189
+      ],
+      "source_alpha_center_x": 96.0,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 91,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        91,
+        188,
+        189
+      ],
+      "assembly_alpha_center_x": 96.0,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 91,
+        "right": 4,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "c417f4ff036bec6a40c26e1db6e208e47bbcec35171cf1d25cd5bd4140b99099",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 27,
+      "row": 4,
+      "column": 3,
+      "pose": "dead-3",
+      "raw_path": "art-source/ruins-c/sweep-dead-frames/raw/ruins-bell-keeper-dead-3.raw.png",
+      "raw_sha256": "d7aede70adf2813cf7706f11bceb65225d929c95dee890fdd4dead298f4b6134",
+      "normalized_path": "art-source/ruins-c/sweep-dead-frames/normalized/ruins-bell-keeper-dead-3.png",
+      "normalized_sha256": "a3ceb55c5b3fb31c17bcece72c96827bb61a42c60f1b01af13967480cdea2fca",
+      "metadata_path": "art-source/ruins-c/sweep-dead-frames/metadata/ruins-c-sweep-dead-frames.json",
+      "image_result_item_id": "exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b",
+      "outer_functions_exec_call_id": "call_9ac22773621f403eb5a21dd112f7c305",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17211-48ac-7592-abbf-af07ddf32a7d\\exec-aeab4a4e-4857-4b7b-bb75-cf2d98fa763b.png",
+      "source_kind": "accepted sweep/death frame",
+      "raw_size_bytes": 916422,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "normalized_size_bytes": 28590,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "source_alpha_bounds": [
+        5,
+        119,
+        187,
+        189
+      ],
+      "source_alpha_center_x": 95.5,
+      "source_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 119,
+        "right": 5,
+        "bottom": 3
+      },
+      "assembly_alpha_bounds": [
+        5,
+        119,
+        187,
+        189
+      ],
+      "assembly_alpha_center_x": 95.5,
+      "nearest_pivot_pixel_x": 96,
+      "assembly_transparent_margins_ltrb": {
+        "left": 5,
+        "top": 119,
+        "right": 5,
+        "bottom": 3
+      },
+      "assembly_adjustment": null,
+      "atlas_cell_pixel_sha256": "c53a86f5190cf563a99b8f08fca61f5029ee4ec77c15ddb1582c4dbe1258f97d",
+      "copied_from_cell": null
+    },
+    {
+      "cell": 28,
+      "row": 4,
+      "column": 4,
+      "pose": "unused-copy-of-27",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "c53a86f5190cf563a99b8f08fca61f5029ee4ec77c15ddb1582c4dbe1258f97d",
+      "copied_from_cell": 27
+    },
+    {
+      "cell": 29,
+      "row": 4,
+      "column": 5,
+      "pose": "unused-copy-of-27",
+      "raw_path": null,
+      "raw_sha256": null,
+      "normalized_path": null,
+      "normalized_sha256": null,
+      "metadata_path": null,
+      "source_kind": "exact pixel copy of another atlas cell",
+      "atlas_cell_pixel_sha256": "c53a86f5190cf563a99b8f08fca61f5029ee4ec77c15ddb1582c4dbe1258f97d",
+      "copied_from_cell": 27
+    }
+  ],
+  "unused_cells": {
+    "16": {
+      "copied_from_cell": 15,
+      "pixel_sha256": "8da6818734dca926489eb3b46e5b5549b08c449edb6536ad0852adb6aad3b601"
+    },
+    "17": {
+      "copied_from_cell": 15,
+      "pixel_sha256": "8da6818734dca926489eb3b46e5b5549b08c449edb6536ad0852adb6aad3b601"
+    },
+    "20": {
+      "copied_from_cell": 19,
+      "pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290"
+    },
+    "21": {
+      "copied_from_cell": 19,
+      "pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290"
+    },
+    "22": {
+      "copied_from_cell": 19,
+      "pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290"
+    },
+    "23": {
+      "copied_from_cell": 19,
+      "pixel_sha256": "afb92c65573f3a198f4426891533efd62edccf8cce9b98126e257036484c8290"
+    },
+    "28": {
+      "copied_from_cell": 27,
+      "pixel_sha256": "c53a86f5190cf563a99b8f08fca61f5029ee4ec77c15ddb1582c4dbe1258f97d"
+    },
+    "29": {
+      "copied_from_cell": 27,
+      "pixel_sha256": "c53a86f5190cf563a99b8f08fca61f5029ee4ec77c15ddb1582c4dbe1258f97d"
+    }
+  },
+  "animations": [
+    {
+      "key": "ruins-bell-keeper:idle",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        0,
+        1
+      ],
+      "frameMs": [
+        200,
+        200
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-keeper:attack-sweep",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "frameMs": [
+        600,
+        600,
+        100,
+        1000
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:walk",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "frameMs": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": true
+    },
+    {
+      "key": "ruins-bell-keeper:attack",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frameMs": [
+        450,
+        450,
+        100,
+        1000
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:hurt",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        18,
+        19
+      ],
+      "frameMs": [
+        100,
+        100
+      ],
+      "loop": false
+    },
+    {
+      "key": "ruins-bell-keeper:dead",
+      "imageKey": "actor:ruins-bell-keeper",
+      "frames": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "frameMs": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "loop": false
+    }
+  ],
+  "manifest": {
+    "sha256_before": "c953614a1c42220467e8a2adb1f2839b8b2610cda1137458f10ee2c4ac62b0a9",
+    "sha256_after": "5e1e836a2df072f0e79da6b2ac4be608dcc816af34b7e1460409fb6f43a75535",
+    "old_image_count": 40,
+    "new_image_count": 41,
+    "old_animation_count": 116,
+    "new_animation_count": 122,
+    "old_entries_preserved_exactly": true,
+    "appended_image": {
+      "key": "actor:ruins-bell-keeper",
+      "url": "assets/actors/monster-ruins-bell-keeper-v1.png",
+      "columns": 6,
+      "rows": 5,
+      "displayWidth": 192,
+      "displayHeight": 192,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    "appended_animations": [
+      {
+        "key": "ruins-bell-keeper:idle",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          0,
+          1
+        ],
+        "frameMs": [
+          200,
+          200
+        ],
+        "loop": true
+      },
+      {
+        "key": "ruins-bell-keeper:attack-sweep",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "frameMs": [
+          600,
+          600,
+          100,
+          1000
+        ],
+        "loop": false
+      },
+      {
+        "key": "ruins-bell-keeper:walk",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "frameMs": [
+          120,
+          120,
+          120,
+          120,
+          120,
+          120
+        ],
+        "loop": true
+      },
+      {
+        "key": "ruins-bell-keeper:attack",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          12,
+          13,
+          14,
+          15
+        ],
+        "frameMs": [
+          450,
+          450,
+          100,
+          1000
+        ],
+        "loop": false
+      },
+      {
+        "key": "ruins-bell-keeper:hurt",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          18,
+          19
+        ],
+        "frameMs": [
+          100,
+          100
+        ],
+        "loop": false
+      },
+      {
+        "key": "ruins-bell-keeper:dead",
+        "imageKey": "actor:ruins-bell-keeper",
+        "frames": [
+          24,
+          25,
+          26,
+          27
+        ],
+        "frameMs": [
+          100,
+          100,
+          100,
+          100
+        ],
+        "loop": false
+      }
+    ]
+  },
+  "review": {
+    "path": "art-source/ruins-c/assembly/review/ruins-bell-keeper-atlas-contact.jpg",
+    "dimensions": [
+      1152,
+      960
+    ],
+    "format": "JPEG",
+    "quality": 70,
+    "background_rgb": [
+      58,
+      58,
+      58
+    ],
+    "contains_cell_labels": true,
+    "size_bytes": 179026,
+    "sha256": "50c6d4a211d4569321ddd8edb348e77e7ec31e2d4f841a7c2b46b5500c8690ca",
+    "supplemental": {
+      "path": "art-source/ruins-c/assembly/review/ruins-bell-keeper-key-poses.jpg",
+      "dimensions": [
+        768,
+        768
+      ],
+      "format": "JPEG",
+      "quality": 70,
+      "background_rgb": [
+        58,
+        58,
+        58
+      ],
+      "pose_cells": [
+        0,
+        12,
+        4,
+        14
+      ],
+      "size_bytes": 61970,
+      "sha256": "a2b91d6c80fe7a063e1fbf8a33869f96746d0ab0d5f25c67f80ba528c3e7c28b"
+    }
+  },
+  "runtime_budget": {
+    "companion_asset_count": 10,
+    "companion_bytes": 6645080,
+    "atlas_bytes": 914509,
+    "c_runtime_total_bytes": 7559589,
+    "limit_bytes": 9437184
+  }
+}

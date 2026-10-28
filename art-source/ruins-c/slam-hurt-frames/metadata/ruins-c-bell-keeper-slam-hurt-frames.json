@@ -1,0 +1,530 @@
+{
+  "asset": "Bell Keeper slam windup, recovery, hurt poses",
+  "date": "2026-10-25",
+  "plan": "plan/14-ruins-bell-sanctum.md",
+  "reference_paths": [
+    "art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+    "art-source/ruins-c/profiles/ruins-bell-keeper-slam-active.png",
+    "art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png"
+  ],
+  "atlas_mapping": {
+    "slam-windup-0": 12,
+    "slam-windup-1": 13,
+    "slam-active-reuse": 14,
+    "slam-recovery": 15,
+    "hurt-0": 18,
+    "hurt-1": 19
+  },
+  "reused_active_reference": {
+    "path": "art-source/ruins-c/profiles/ruins-bell-keeper-slam-active.png",
+    "sha256": "932bdb057305318be71ebf48478bd8facf47daf1d7d97930ef3db0c893648c4a",
+    "copied_or_regenerated": false
+  },
+  "artifacts": [
+    {
+      "key": "slam-windup-0",
+      "cell": 12,
+      "raw_path": "raw\\ruins-bell-keeper-slam-windup-0.raw.png",
+      "raw_sha256": "e9572aee72a11373978a722a99d21869f8f85d33ea3a5b662fbdd7a0500f4bed",
+      "raw_size_bytes": 1363846,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        17,
+        1244,
+        1254
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        18,
+        223,
+        1242,
+        1091
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "image_result_item_id": "exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "outer_functions_exec_call_id": null,
+      "outer_call_id_unavailable_reason": "The built-in tool returned only image_url and output_hint to the nested caller; no outer functions.exec call ID was exposed.",
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0-candidate-02.txt",
+      "prompt_sha256": "8d5c4f99bbc7c024e3a0f3b552e807110ef20501917610128c1405ec98c3ed57",
+      "submitted_prompt_prefix_note": "The first two windup-0 attempts were submitted with the PowerShell InitializeDefaultDrives warning prepended because Get-Content output was passed verbatim; this accepted frame is candidate 02.",
+      "normalized_path": "normalized\\ruins-bell-keeper-slam-windup-0.png",
+      "normalized_sha256": "84364dd4c387c8620941013b418eaec690f976853d65e95015746a66b4aa6e42",
+      "normalized_size_bytes": 49415,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalization": {
+        "resample": "Pillow LANCZOS resize in premultiplied RGBa mode",
+        "alpha_tail": "raw alpha below 8 set to 0 before crop; transparent margins cropped only",
+        "fit": "uniform scale to max 186x186 content box; no non-transparent anatomy cropped",
+        "crop_bbox_alpha_ge_8": [
+          18,
+          223,
+          1242,
+          1091
+        ],
+        "scaled_size": [
+          186,
+          132
+        ],
+        "placement_offset_px": [
+          3,
+          57
+        ],
+        "normalized_visible_bounds_alpha_gt_0": [
+          3,
+          57,
+          189,
+          189
+        ],
+        "normalized_transparent_margins_pixels": {
+          "left": 3,
+          "top": 57,
+          "right": 3,
+          "bottom": 3
+        },
+        "visible_bbox_center_x": 96.0,
+        "last_alpha_y": 188
+      },
+      "visual_review": "passed: one right-facing Bell Keeper; same bronze four-legged frame, white mask, suspended bell; pose distinct in sequence; no missing/cropped feet, effects, or identity drift.",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0-candidate-02.actual-submitted.txt",
+      "submitted_prompt_sha256": "bf2a28d3a8ba91700a917fd9d0a3461094e1d1d1159ab512824ae6ee515a0c45",
+      "powerShell_warning_prefix_submitted": true,
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    },
+    {
+      "key": "slam-windup-1",
+      "cell": 13,
+      "raw_path": "raw\\ruins-bell-keeper-slam-windup-1.raw.png",
+      "raw_sha256": "593d1841d3da605d9cc44ecb07fdc9b7606d3aa829ad8238cecb85de2673f7de",
+      "raw_size_bytes": 1164090,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        56,
+        1254,
+        1231
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        33,
+        385,
+        1245,
+        1047
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "image_result_item_id": "exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "outer_functions_exec_call_id": null,
+      "outer_call_id_unavailable_reason": "The built-in tool returned only image_url and output_hint to the nested caller; no outer functions.exec call ID was exposed.",
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-1.txt",
+      "prompt_sha256": "32d1d51b2ba3121f3cba13b740652c7b0ea696a1a56aa707dd16b9ca5f1a72fc",
+      "submitted_prompt_prefix_note": "The fixed PowerShell warning line was stripped before the prompt was submitted.",
+      "normalized_path": "normalized\\ruins-bell-keeper-slam-windup-1.png",
+      "normalized_sha256": "3870f9be42412ec9119a3c4ef9dcc2f47ba97a702a637e68aa76cd09a6abfa02",
+      "normalized_size_bytes": 41990,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalization": {
+        "resample": "Pillow LANCZOS resize in premultiplied RGBa mode",
+        "alpha_tail": "raw alpha below 8 set to 0 before crop; transparent margins cropped only",
+        "fit": "uniform scale to max 186x186 content box; no non-transparent anatomy cropped",
+        "crop_bbox_alpha_ge_8": [
+          33,
+          385,
+          1245,
+          1047
+        ],
+        "scaled_size": [
+          186,
+          102
+        ],
+        "placement_offset_px": [
+          3,
+          87
+        ],
+        "normalized_visible_bounds_alpha_gt_0": [
+          3,
+          87,
+          189,
+          189
+        ],
+        "normalized_transparent_margins_pixels": {
+          "left": 3,
+          "top": 87,
+          "right": 3,
+          "bottom": 3
+        },
+        "visible_bbox_center_x": 96.0,
+        "last_alpha_y": 188
+      },
+      "visual_review": "passed: one right-facing Bell Keeper; same bronze four-legged frame, white mask, suspended bell; pose distinct in sequence; no missing/cropped feet, effects, or identity drift.",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-slam-windup-1.actual-submitted.txt",
+      "submitted_prompt_sha256": "7445cae896028234a58cca5e519e595a4a925bcc408a73d5b46df080c080813e",
+      "powerShell_warning_prefix_submitted": false,
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    },
+    {
+      "key": "slam-recovery",
+      "cell": 15,
+      "raw_path": "raw\\ruins-bell-keeper-slam-recovery.raw.png",
+      "raw_sha256": "2764e274406d5568fc6a08d1752bf1be8fa263ae073e5ae57ab663167c7efa8a",
+      "raw_size_bytes": 1246056,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        32,
+        1254,
+        1254
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        20,
+        329,
+        1244,
+        1064
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "image_result_item_id": "exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "outer_functions_exec_call_id": null,
+      "outer_call_id_unavailable_reason": "The built-in tool returned only image_url and output_hint to the nested caller; no outer functions.exec call ID was exposed.",
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-recovery.txt",
+      "prompt_sha256": "3ad8708941472e48624a20f73f858d5787f6d71a2bcb1b032f4d6f7a5bb71b04",
+      "submitted_prompt_prefix_note": "The fixed PowerShell warning line was stripped before the prompt was submitted.",
+      "normalized_path": "normalized\\ruins-bell-keeper-slam-recovery.png",
+      "normalized_sha256": "69b2691d6873afc367604197a2c31a846835386e54e35cf23bb63d0a9776bfe4",
+      "normalized_size_bytes": 45021,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalization": {
+        "resample": "Pillow LANCZOS resize in premultiplied RGBa mode",
+        "alpha_tail": "raw alpha below 8 set to 0 before crop; transparent margins cropped only",
+        "fit": "uniform scale to max 186x186 content box; no non-transparent anatomy cropped",
+        "crop_bbox_alpha_ge_8": [
+          20,
+          329,
+          1244,
+          1064
+        ],
+        "scaled_size": [
+          186,
+          112
+        ],
+        "placement_offset_px": [
+          3,
+          77
+        ],
+        "normalized_visible_bounds_alpha_gt_0": [
+          3,
+          77,
+          189,
+          189
+        ],
+        "normalized_transparent_margins_pixels": {
+          "left": 3,
+          "top": 77,
+          "right": 3,
+          "bottom": 3
+        },
+        "visible_bbox_center_x": 96.0,
+        "last_alpha_y": 188
+      },
+      "visual_review": "passed: one right-facing Bell Keeper; same bronze four-legged frame, white mask, suspended bell; pose distinct in sequence; no missing/cropped feet, effects, or identity drift.",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-slam-recovery.actual-submitted.txt",
+      "submitted_prompt_sha256": "bf457e473a9c6a6d02557b88245f63f1c5995991f718c1ee66970ee0d78b36e5",
+      "powerShell_warning_prefix_submitted": false,
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    },
+    {
+      "key": "hurt-0",
+      "cell": 18,
+      "raw_path": "raw\\ruins-bell-keeper-hurt-0.raw.png",
+      "raw_sha256": "e9a13982b112678b133fb4336cc9b12656d730ec40f90eed11bef30d05b70654",
+      "raw_size_bytes": 1373121,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        23,
+        1226,
+        1254
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        22,
+        167,
+        1224,
+        1093
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "image_result_item_id": "exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "outer_functions_exec_call_id": null,
+      "outer_call_id_unavailable_reason": "The built-in tool returned only image_url and output_hint to the nested caller; no outer functions.exec call ID was exposed.",
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-hurt-0.txt",
+      "prompt_sha256": "28b6e04fdfe3274228d0540a65c4402f518f50d1ec4f7114ac7cd5a27352dd63",
+      "submitted_prompt_prefix_note": "The fixed PowerShell warning line was stripped before the prompt was submitted.",
+      "normalized_path": "normalized\\ruins-bell-keeper-hurt-0.png",
+      "normalized_sha256": "e74a788df6dc5d796291a7cfe2c108e7e65aca0d6e373f796c96784c40244001",
+      "normalized_size_bytes": 50472,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalization": {
+        "resample": "Pillow LANCZOS resize in premultiplied RGBa mode",
+        "alpha_tail": "raw alpha below 8 set to 0 before crop; transparent margins cropped only",
+        "fit": "uniform scale to max 186x186 content box; no non-transparent anatomy cropped",
+        "crop_bbox_alpha_ge_8": [
+          22,
+          167,
+          1224,
+          1093
+        ],
+        "scaled_size": [
+          186,
+          143
+        ],
+        "placement_offset_px": [
+          3,
+          46
+        ],
+        "normalized_visible_bounds_alpha_gt_0": [
+          3,
+          46,
+          189,
+          189
+        ],
+        "normalized_transparent_margins_pixels": {
+          "left": 3,
+          "top": 46,
+          "right": 3,
+          "bottom": 3
+        },
+        "visible_bbox_center_x": 96.0,
+        "last_alpha_y": 188
+      },
+      "visual_review": "passed: one right-facing Bell Keeper; same bronze four-legged frame, white mask, suspended bell; pose distinct in sequence; no missing/cropped feet, effects, or identity drift.",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-hurt-0.actual-submitted.txt",
+      "submitted_prompt_sha256": "ce82a9f945506223462a45a9cadd1bd3b6ed70e4198c011ff2e5e0bd9de29bfd",
+      "powerShell_warning_prefix_submitted": false,
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    },
+    {
+      "key": "hurt-1",
+      "cell": 19,
+      "raw_path": "raw\\ruins-bell-keeper-hurt-1.raw.png",
+      "raw_sha256": "82ae4d2c3824cec9adc50e2b67dc33a09895b477395b8dbdcd2a085fd92b0b38",
+      "raw_size_bytes": 1352489,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        113,
+        1253,
+        1254
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        20,
+        208,
+        1241,
+        1095
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "image_result_item_id": "exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "outer_functions_exec_call_id": null,
+      "outer_call_id_unavailable_reason": "The built-in tool returned only image_url and output_hint to the nested caller; no outer functions.exec call ID was exposed.",
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-hurt-1.txt",
+      "prompt_sha256": "4102a195dadededceb1e6fe80d361f2888658a209fd79f7688e4d0fb49ae6ae0",
+      "submitted_prompt_prefix_note": "The fixed PowerShell warning line was stripped before the prompt was submitted.",
+      "normalized_path": "normalized\\ruins-bell-keeper-hurt-1.png",
+      "normalized_sha256": "433dd8c2422ed3eacdfa31e19d26874477bbcc4f69db149144e126b1767f9b66",
+      "normalized_size_bytes": 48702,
+      "normalized_dimensions": [
+        192,
+        192
+      ],
+      "normalized_mode": "RGBA",
+      "normalization": {
+        "resample": "Pillow LANCZOS resize in premultiplied RGBa mode",
+        "alpha_tail": "raw alpha below 8 set to 0 before crop; transparent margins cropped only",
+        "fit": "uniform scale to max 186x186 content box; no non-transparent anatomy cropped",
+        "crop_bbox_alpha_ge_8": [
+          20,
+          208,
+          1241,
+          1095
+        ],
+        "scaled_size": [
+          186,
+          135
+        ],
+        "placement_offset_px": [
+          3,
+          54
+        ],
+        "normalized_visible_bounds_alpha_gt_0": [
+          3,
+          54,
+          189,
+          189
+        ],
+        "normalized_transparent_margins_pixels": {
+          "left": 3,
+          "top": 54,
+          "right": 3,
+          "bottom": 3
+        },
+        "visible_bbox_center_x": 96.0,
+        "last_alpha_y": 188
+      },
+      "visual_review": "passed: one right-facing Bell Keeper; same bronze four-legged frame, white mask, suspended bell; pose distinct in sequence; no missing/cropped feet, effects, or identity drift.",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-hurt-1.actual-submitted.txt",
+      "submitted_prompt_sha256": "3c92397b24e127d06c254c52eff3967b2ebeb38b20e8c25c612ce1b51330d1f0",
+      "powerShell_warning_prefix_submitted": false,
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    }
+  ],
+  "discarded_candidates": [
+    {
+      "key": "slam-windup-0",
+      "candidate": 1,
+      "rejected": true,
+      "raw_path": "rejected\\ruins-bell-keeper-slam-windup-0-candidate-01.raw.png",
+      "raw_sha256": "8ef43540ee263f5c8f93a5544fec234f03d0c4394d8e9b8f68e826854953ec2b",
+      "raw_size_bytes": 1342690,
+      "raw_dimensions": [
+        1254,
+        1254
+      ],
+      "raw_mode": "RGBA",
+      "raw_alpha_bounds_alpha_gt_0": [
+        0,
+        19,
+        1236,
+        1254
+      ],
+      "raw_alpha_bounds_alpha_ge_8": [
+        25,
+        205,
+        1231,
+        1112
+      ],
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e\\exec-b8696766-df6d-4a6b-8573-5b74fa87b156.png",
+      "image_result_item_id": "exec-b8696766-df6d-4a6b-8573-5b74fa87b156.png",
+      "outer_functions_exec_call_id": null,
+      "transparent_background_requested": true,
+      "tool_revised_prompt": null,
+      "tool_revised_prompt_unavailable_reason": "The nested built-in result exposed only image_url and output_hint; no revisedPrompt field was returned.",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0.txt",
+      "prompt_sha256": "e6a95c9e6be2ef44ca741862abb270f77a927f4a7782d5e6374f907e3fc557c1",
+      "submitted_prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0-candidate-01.actual-submitted.txt",
+      "submitted_prompt_sha256": "4dc7a5837ff049d66fea7a29a7113eda617d4ff3b2e7b37fd7b080efc71dd6cf",
+      "powerShell_warning_prefix_submitted": true,
+      "review_path": "review/review-slam-windup-0-candidate-01.jpg",
+      "reason": "Rejected because the rendered pose remained too close to idle: there was no clear early bell lift or leg-brace silhouette. The raw candidate and neutral-background review image are preserved.",
+      "call_id": null,
+      "call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead.",
+      "outer_call_id_unavailable_reason": "The nested built-in image_gen result did not expose a tool call ID; the generated image result item ID and exact savedPath are recorded instead."
+    }
+  ],
+  "generation_attempts": [
+    {
+      "key": "slam-windup-0",
+      "candidate": 1,
+      "status": "rejected",
+      "image_result_item_id": "exec-b8696766-df6d-4a6b-8573-5b74fa87b156.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e\\exec-b8696766-df6d-4a6b-8573-5b74fa87b156.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0-candidate-01.actual-submitted.txt",
+      "raw_path": "rejected\\ruins-bell-keeper-slam-windup-0-candidate-01.raw.png",
+      "reason": "Rejected because the rendered pose remained too close to idle: there was no clear early bell lift or leg-brace silhouette. The raw candidate and neutral-background review image are preserved."
+    },
+    {
+      "key": "slam-windup-0",
+      "candidate": 2,
+      "status": "accepted",
+      "image_result_item_id": "exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-2adbaff9-89d5-413b-bcf8-02cd5762bb65.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-0-candidate-02.actual-submitted.txt",
+      "raw_path": "raw\\ruins-bell-keeper-slam-windup-0.raw.png"
+    },
+    {
+      "key": "slam-windup-1",
+      "candidate": 1,
+      "status": "accepted",
+      "image_result_item_id": "exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-4deb2cb1-e9df-4043-a778-0cdba672e01f.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-windup-1.actual-submitted.txt",
+      "raw_path": "raw\\ruins-bell-keeper-slam-windup-1.raw.png"
+    },
+    {
+      "key": "slam-recovery",
+      "candidate": 1,
+      "status": "accepted",
+      "image_result_item_id": "exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-e0d21b7f-64ac-4960-b895-3981c0eed1b4.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-slam-recovery.actual-submitted.txt",
+      "raw_path": "raw\\ruins-bell-keeper-slam-recovery.raw.png"
+    },
+    {
+      "key": "hurt-0",
+      "candidate": 1,
+      "status": "accepted",
+      "image_result_item_id": "exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-f59ddb6e-0d85-4186-8290-7ca3b56a5e9f.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-hurt-0.actual-submitted.txt",
+      "raw_path": "raw\\ruins-bell-keeper-hurt-0.raw.png"
+    },
+    {
+      "key": "hurt-1",
+      "candidate": 1,
+      "status": "accepted",
+      "image_result_item_id": "exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "saved_path": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720f-2e00-7fa0-bdba-f62e65f1313e/exec-9fe3a59d-c3fe-403d-a6dc-0cd138312be7.png",
+      "prompt_path": "prompts\\ruins-bell-keeper-hurt-1.actual-submitted.txt",
+      "raw_path": "raw\\ruins-bell-keeper-hurt-1.raw.png"
+    }
+  ]
+}

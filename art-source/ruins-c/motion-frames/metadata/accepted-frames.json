@@ -1,0 +1,255 @@
+{
+  "asset": "Ruins C Bell Keeper motion frames",
+  "plan": "plan/14-ruins-bell-sanctum.md",
+  "date": "2026-10-25",
+  "acceptedPoseCount": 7,
+  "facing": "right",
+  "identityAnchors": [
+    "art-source/ruins-c/profiles/ruins-bell-keeper-idle-0.png",
+    "art-source/ruins-c/profiles/ruins-bell-keeper-slam-active.png",
+    "art-source/ruins-c/profiles/ruins-bell-keeper-sweep-active.png"
+  ],
+  "normalizationContract": "192x192 RGBA; full-source uniform resize with premultiplied-alpha Lanczos; no crop; alpha>0 visible bbox center within 0.5px of x=96; last alpha row y=188; at least 3 transparent pixels on every edge.",
+  "acceptedFrames": [
+    {
+      "index": 0,
+      "frameId": "ruins-bell-keeper:idle-1",
+      "candidate": "v2",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-idle-1-v2.png",
+      "rawSha256": "e53fadc79ca70f5d21c7143688fbcd5e81991cc35f58a85f63fa25d090f44555",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-idle-1.png",
+      "normalizedSha256": "6f3523680604916f43012d7dbb527a503913c21eb09251521ea29deaa3b7f74d",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-idle-1.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-idle-1-v2.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-idle-1-v2.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-idle-1-v2-actual.txt",
+      "imageResultItemId": "exec-2f680afe-636d-4768-a054-dab7cdff096d",
+      "outerFunctionsExecCallId": "call_835dd24be82a4d0087f70a263be10a18",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-2f680afe-636d-4768-a054-dab7cdff096d.png",
+      "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "alphaBounds": [
+        5,
+        60,
+        188,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        5,
+        60,
+        4,
+        3
+      ],
+      "pixelCenterX": 96.0,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 1,
+      "frameId": "ruins-bell-keeper:walk-0",
+      "candidate": "v1",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-0-v1.png",
+      "rawSha256": "cf3a04f7e39291ef60596e75995fbdebb44ddc1521a5d305f25b65e5464b0150",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-0.png",
+      "normalizedSha256": "b6168991735f62b5004fec37dcc6bb2dd1063df4db8d1f05642ee44b37088dd6",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-0.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-0.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-0.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-0-actual.txt",
+      "imageResultItemId": "exec-53a2231b-6481-41f6-a8d7-0fd9b9da6ab4",
+      "outerFunctionsExecCallId": "call_1a849b14cd934ac1aa37287711a6ae69",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-53a2231b-6481-41f6-a8d7-0fd9b9da6ab4.png",
+      "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "alphaBounds": [
+        4,
+        77,
+        189,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        4,
+        77,
+        3,
+        3
+      ],
+      "pixelCenterX": 96.0,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 2,
+      "frameId": "ruins-bell-keeper:walk-1",
+      "candidate": "v3",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-1-v3-v1.png",
+      "rawSha256": "eca3a553ca75d2f1ef3152735d92a1cf5b323d0ace3dcb9a3a4f353ae96961e5",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-1.png",
+      "normalizedSha256": "f0708ffbefd46a2b3b2784562acbd0e8e1d146f42dc1229f202d257de44f8b6b",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-1-v3.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-1-v3.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-1-v3.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-1-v3-actual.txt",
+      "imageResultItemId": "exec-80667417-7333-4962-af64-50d855db2ff5",
+      "outerFunctionsExecCallId": "call_f567ef2d3cf84a2eb65a016f946075bc",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-80667417-7333-4962-af64-50d855db2ff5.png",
+      "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "alphaBounds": [
+        5,
+        62,
+        188,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        5,
+        62,
+        4,
+        3
+      ],
+      "pixelCenterX": 96.0,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 3,
+      "frameId": "ruins-bell-keeper:walk-2",
+      "candidate": "v1",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-2-v1.png",
+      "rawSha256": "e5cfd37f038a9cf2b734f20e6038140020cc9c651f55b0c3a38524b8f10e152b",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-2.png",
+      "normalizedSha256": "02a982600608fe0319ca9691b21be0bd12a334639d3b13a47d40425fcc9fcdc9",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-2.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-2.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-2.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-2-actual.txt",
+      "imageResultItemId": "exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975",
+      "outerFunctionsExecCallId": "call_bb716c79a7764cfaaee782507798a2a8",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975.png",
+      "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+      "alphaBounds": [
+        3,
+        62,
+        189,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        3,
+        62,
+        3,
+        3
+      ],
+      "pixelCenterX": 95.5,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 4,
+      "frameId": "ruins-bell-keeper:walk-3",
+      "candidate": "v3",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-3-v3-v1.png",
+      "rawSha256": "c6bb6c0666b8c6acd8dc063c387141198888f79419bf37a6c7974ead0db1f33a",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-3.png",
+      "normalizedSha256": "74bc99870dde6cadbf979d4b0dbdc1672350961a6738cabed5ae059b2babfbce",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-3-v3.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-3-v3.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3-v3.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3-v3-actual.txt",
+      "imageResultItemId": "exec-0c784d9d-6e7f-4b9d-90c6-2a7411b374bd",
+      "outerFunctionsExecCallId": "call_374c0698df1b4d0e973eb4ff58096432",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-0c784d9d-6e7f-4b9d-90c6-2a7411b374bd.png",
+      "sessionId": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "alphaBounds": [
+        4,
+        71,
+        187,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        4,
+        71,
+        5,
+        3
+      ],
+      "pixelCenterX": 95.0,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 5,
+      "frameId": "ruins-bell-keeper:walk-4",
+      "candidate": "v1",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-4-v1.png",
+      "rawSha256": "a42d1b01277dbcdce6b66fd9fd1c5a61dcf01b9f78fa88cd593237b358d2f02a",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-4.png",
+      "normalizedSha256": "6be65a813b1f74f975c471687c94339f99ecba641891ef1fc12145dcd5f8f5b1",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-4.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-4.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-4.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-4-actual.txt",
+      "imageResultItemId": "exec-646fbc4c-6e0b-430a-a17d-7872757d6121",
+      "outerFunctionsExecCallId": "call_591871b2114c4583ae15a13f057e9b2e",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-646fbc4c-6e0b-430a-a17d-7872757d6121.png",
+      "sessionId": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "alphaBounds": [
+        3,
+        70,
+        189,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        3,
+        70,
+        3,
+        3
+      ],
+      "pixelCenterX": 95.5,
+      "lastAlphaRow": 188
+    },
+    {
+      "index": 6,
+      "frameId": "ruins-bell-keeper:walk-5",
+      "candidate": "v1",
+      "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-5-v1.png",
+      "rawSha256": "a1576d4d61504f02089b06695f114b3db9e0e0225201c95f0cd256801625abce",
+      "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-5.png",
+      "normalizedSha256": "74fb40220130375da1c5d39e80d673d14f56a7e285d1f9547cdf40a9f062a5eb",
+      "candidateNormalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-5.png",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-5.json",
+      "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-5.txt",
+      "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-5-actual.txt",
+      "imageResultItemId": "exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6",
+      "outerFunctionsExecCallId": "call_7fda4008756d4aff8d92400958ac9f16",
+      "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a172e1-e2b4-7e31-8709-cd639bc42c38\\exec-ea297f8a-252c-4a44-8c9f-4cd2fd59e9d6.png",
+      "sessionId": "01a172e1-e2b4-7e31-8709-cd639bc42c38",
+      "alphaBounds": [
+        4,
+        65,
+        188,
+        189
+      ],
+      "transparentMarginsLTRB": [
+        4,
+        65,
+        4,
+        3
+      ],
+      "pixelCenterX": 95.5,
+      "lastAlphaRow": 188
+    }
+  ],
+  "walkCycleReview": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg",
+  "rejectedCandidates": [
+    {
+      "candidate": "walk-1-v1",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-1.json",
+      "decision": "Fifth leg/foot beneath bell."
+    },
+    {
+      "candidate": "walk-1-v2",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-1-v2.json",
+      "decision": "Correction still left an extra limb/foot."
+    },
+    {
+      "candidate": "walk-3-v1",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-3.json",
+      "decision": "Extra center leg/foot beneath hanging bell."
+    },
+    {
+      "candidate": "walk-3-v2",
+      "metadataPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-3-v2.json",
+      "decision": "Five legs remained, including far-right extra limb/foot."
+    }
+  ]
+}

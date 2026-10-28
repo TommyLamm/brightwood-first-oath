@@ -1,0 +1,83 @@
+{
+  "frameId": "ruins-bell-keeper:walk-3",
+  "accepted": false,
+  "reviewStatus": "rejected",
+  "decision": "Rejected after raw review: the first opposite-stride candidate has an extra center leg/foot beneath the hanging bell.",
+  "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-55-44-01a1720e-f000-73e2-9553-7cd17539d3b4.jsonl",
+  "outerFunctionsExecCallId": "call_cf731e5fd121474a894abb4bd4e91812",
+  "imageResultItemId": "exec-406a7c0e-9635-4820-af85-401f3062e2cb",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "outputHintPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-3-output-hint.txt",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-406a7c0e-9635-4820-af85-401f3062e2cb.png",
+  "referencedImages": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-slam-active.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-sweep-active.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3.txt",
+  "submittedPromptSha256": "32303142c41ef9bfb3895a35b6788b4966551828a424dc643f5f1bcbe865b3d2",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-3-actual.txt",
+  "actualPromptSha256": "8c2f3d1ef8335134305aba50dc15011cbe1bef7edbc867ffe83fec6e6004ce8b",
+  "revisedPromptReturnedByTool": true,
+  "revisedPromptMatchesSubmittedAfterNewlineNormalization": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-3-v1.png",
+  "rawSha256": "bf465366e26ab845710c02207e3422f3859652f5902cf91fa81ef6ac36ace50e",
+  "rawSizeBytes": 1358381,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/rejected/ruins-bell-keeper-walk-3-v1-rejected.png",
+  "normalizedSha256": "1a1879e9aff6812c26497938d90f4de037811d82c904ac1825eb275792d8f88d",
+  "normalizedDimensions": [
+    192,
+    192
+  ],
+  "normalizedMode": "RGBA",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "alphaVisibleBounds": [
+      3,
+      71,
+      189,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      3,
+      71,
+      3,
+      3
+    ],
+    "halfOpenBoundsCenterX": 96.0,
+    "pixelCenterX": 95.5,
+    "lastAlphaRow": 188
+  },
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-3-raw-q70.jpg",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-406a7c0e-9635-4820-af85-401f3062e2cb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.\n",
+  "review": {
+    "neutralMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "jpegQuality": 70,
+    "maxEdge": 1280,
+    "cycleContactSheetPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg",
+    "walkCycleReviewMatteRgb": [
+      58,
+      58,
+      58
+    ],
+    "walkCycleReviewMaxEdge": 1280
+  },
+  "candidate": "v1",
+  "finalSelection": false
+}

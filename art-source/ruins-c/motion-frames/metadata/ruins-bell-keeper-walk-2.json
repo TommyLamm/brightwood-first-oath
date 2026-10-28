@@ -1,0 +1,83 @@
+{
+  "frameId": "ruins-bell-keeper:walk-2",
+  "accepted": true,
+  "reviewStatus": "accepted",
+  "decision": "Accepted after raw review and the six-frame 192px cycle contact sheet: four complete feet are visible and the passing phase has distinct joint articulation.",
+  "sessionId": "01a1720e-f000-73e2-9553-7cd17539d3b4",
+  "sessionPath": "C:\\Users\\Tommy\\.codex\\sessions\\2026\\10\\25\\rollout-2026-10-25T15-55-44-01a1720e-f000-73e2-9553-7cd17539d3b4.jsonl",
+  "outerFunctionsExecCallId": "call_bb716c79a7764cfaaee782507798a2a8",
+  "imageResultItemId": "exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975",
+  "imageTool": "built-in image_gen",
+  "resultKeys": [
+    "image_url",
+    "output_hint"
+  ],
+  "outputHintPath": "art-source/ruins-c/motion-frames/metadata/ruins-bell-keeper-walk-2-output-hint.txt",
+  "savedPath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975.png",
+  "referencedImages": [
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-idle-0.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-slam-active.png",
+    "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\profiles\\ruins-bell-keeper-sweep-active.png"
+  ],
+  "transparentBackgroundRequested": true,
+  "submittedPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-2.txt",
+  "submittedPromptSha256": "5518393b2a83215f8a0abc1a9433fd0a4888ecfdfe378948bcb852b52d0cff3f",
+  "actualPromptPath": "art-source/ruins-c/motion-frames/prompts/ruins-bell-keeper-walk-2-actual.txt",
+  "actualPromptSha256": "7ba95bb9ae4d8989e16d41be64dc22924459c4b17de423c5d7771a45080f4f47",
+  "revisedPromptReturnedByTool": true,
+  "revisedPromptMatchesSubmittedAfterNewlineNormalization": true,
+  "rawPath": "art-source/ruins-c/motion-frames/raw/ruins-bell-keeper-walk-2-v1.png",
+  "rawSha256": "e5cfd37f038a9cf2b734f20e6038140020cc9c651f55b0c3a38524b8f10e152b",
+  "rawSizeBytes": 1253248,
+  "rawDimensions": [
+    1254,
+    1254
+  ],
+  "rawMode": "RGBA",
+  "normalizedPath": "art-source/ruins-c/motion-frames/normalized/ruins-bell-keeper-walk-2.png",
+  "normalizedSha256": "02a982600608fe0319ca9691b21be0bd12a334639d3b13a47d40425fcc9fcdc9",
+  "normalizedDimensions": [
+    192,
+    192
+  ],
+  "normalizedMode": "RGBA",
+  "normalization": {
+    "method": "full source canvas scaled uniformly with premultiplied-alpha Lanczos; no crop",
+    "alphaValuesBelow": 8,
+    "alphaVisibleBounds": [
+      3,
+      62,
+      189,
+      189
+    ],
+    "transparentMarginsLTRB": [
+      3,
+      62,
+      3,
+      3
+    ],
+    "halfOpenBoundsCenterX": 96.0,
+    "pixelCenterX": 95.5,
+    "lastAlphaRow": 188
+  },
+  "reviewPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-2-raw-q70.jpg",
+  "outputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1720e-f000-73e2-9553-7cd17539d3b4\\exec-654ab6f6-875d-4da6-9a1b-e7ff6683a975.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.\n",
+  "review": {
+    "neutralMatteRgb": [
+      223,
+      227,
+      219
+    ],
+    "jpegQuality": 70,
+    "maxEdge": 1280,
+    "cycleContactSheetPath": "art-source/ruins-c/motion-frames/review/ruins-bell-keeper-walk-cycle-q70.jpg",
+    "walkCycleReviewMatteRgb": [
+      58,
+      58,
+      58
+    ],
+    "walkCycleReviewMaxEdge": 1280
+  },
+  "candidate": "v1",
+  "finalSelection": true
+}

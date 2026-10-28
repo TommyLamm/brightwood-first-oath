@@ -1,0 +1,14 @@
+{
+  "asset": "oathfarer-circlet-icon",
+  "prompt": "Use case: stylized-concept\nAsset type: fantasy game inventory item icon, final 128x128 RGBA\nPrimary request: a single oathfarer circlet, a practical heirloom headpiece for a level-30 traveler\nSubject: a delicate open silver-white circlet shaped as a slim curved headband, with a small deep-blue moonstone at the center and restrained antique bronze inlay; refined and protective, not a crown\nStyle/medium: polished hand-painted 2D RPG inventory icon, crisp silhouette, tactile metal highlights, restrained fantasy detail\nComposition/framing: centered isolated item, three-quarter view, fills about 76 percent of a square canvas, generous clear margin\nLighting/mood: soft studio highlights, cool reflections and a warm glint on bronze\nColor palette: chalk silver, muted bronze, deep blue stone\nConstraints: genuinely transparent background; show exactly one circlet, no head or mannequin, no body, no extra objects, no pedestal, no text, no lettering, no UI frame, no border, no logos, no watermark",
+  "generatedSource": "C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-8f8d6a3f-244e-4d82-8479-abb254fc5b23.png",
+  "savedPath": "C:\\Users\\Tommy\\Desktop\\brightwood-first-oath\\art-source\\ruins-c\\scene-audio\\oathfarer-circlet-icon.raw.png",
+  "toolOutputHint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af as C:\\Users\\Tommy\\.codex\\generated_images\\01a17200-f6ca-7ec1-bfd8-791328aaf7af\\exec-8f8d6a3f-244e-4d82-8479-abb254fc5b23.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "callID": "not provided in returned result; generated file identifier preserved in generatedSource",
+  "revisedPrompt": "not provided in returned result",
+  "transparentBackground": true,
+  "rawSha256": "5677c8fb41a8ca4ae0d17c50e42e18880e267ece5359a08c796cbefd99f5a59e",
+  "runtimePath": "public/assets/interface/item-oathfarer-circlet-v1.png",
+  "runtimeSha256": "f23dfe414e47eef8abc7568209ccfd50ec0ce7d2a795c166f4b5cd66dd5bdbbe",
+  "normalization": "RGBA alpha-bound crop, contain within 108x108, centered on transparent 128x128 canvas; alpha below 3 cleared; optimized PNG"
+}
