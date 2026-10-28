@@ -3,7 +3,7 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
-更新：2026-10-28 10:48（Asia/Hong_Kong）。使用者已授權主代理實作 [Plan18](18-development-feedback-improvements.md)，本輪預設 W00–W03 已交付，後續已要求測試並將所有工作區文件分組 commit；此前「只規劃即停」是歷史階段。
+更新：2026-10-28 10:51（Asia/Hong_Kong）。使用者已授權主代理實作 [Plan18](18-development-feedback-improvements.md)，本輪預設 W00–W03 已交付，後續要求的工作區測試與分組 commit 也已完成；此前「只規劃即停」是歷史階段。
 
 | 維度 | 當前結果／界線 |
 | --- | --- |
@@ -14,7 +14,7 @@
 | 未驗／不推廣 | 合成前置不證正常 NPC→portal 行走、任務通關或完成傳送；更小尺寸、真 OS 失焦、正式平台／真帳號雲端、實際音訊、原生／沉浸 fullscreen、灰畫面根因與舊 q09／q10 未重演仍未驗。未標 CANDIDATE_READY 或平台通過。 |
 | QA cleanup | Plan17 自有 session／Chrome／daemon／server 已按當時 owner 證據收束，profiles／raw／原圖／日誌保留，見[歷史收束](reports/base-experience-browser-recovery.md#收束)。**Plan18 未啟動 browser／server，無本輪 QA 資源**，不稱重新清理通過。 |
 | 提交前驗證 | 本次主工作區 **45 檔／327 項測試通過**，typecheck、content、隔離 build 與 Plan18 文件／fixture 檢查通過。已修正測試誤收舊工作樹及過時格式／catalog 斷言，runtime 未因本次修測改變；[實際檢查與提交範圍](reports/workspace-commit-validation-20261028.md)。不把自動測試通過升格為正式平台／雲端或完整 browser 驗收。 |
-| 下一步 | **本輪預設實作與提交前檢查完成。** 依授權分組 commit 全部可追蹤工作區變更，保留既有忽略資料；C01–C04 未觸發，更窄尺寸、新 harness fixture 接入、fingerprint 共用化與新候選依 [Plan18 條件](18-development-feedback-improvements.md#5-有條件工作新證據才啟動)留待獨立理由。不升版／pack／發布或建排程。 |
+| 下一步 | **本輪預設實作、測試與分組提交已完成。** 五組內容 commit 涵蓋全部 430 個可追蹤變更檔，另以文件收束 commit 記錄結果；既有忽略資料保留。C01–C04 未觸發，更窄尺寸、新 harness fixture 接入、fingerprint 共用化與新候選依 [Plan18 條件](18-development-feedback-improvements.md#5-有條件工作新證據才啟動)留待獨立理由。不升版／pack／push／發布或建排程。 |
 
 下方全部為有日期的階段歷史；其中「最新」「未驗」「停止」描述當時狀態，不覆蓋本區。證據原文保留，不逐條改寫舊 FAIL／UNVERIFIED。
 

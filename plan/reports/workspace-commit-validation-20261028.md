@@ -37,6 +37,18 @@ Luna 先跑受影響 focused 檔；主代理審閱後才跑一次最終正確收
 4. Plan18 計畫、回饋、證據、QA 文件與 fixture、共用現況入口，以及本報告。
 5. 開發執行設定、Vitest 收集配置與工作樹 ignore。
 
+五組內容提交已完成，與檢查前基線 `d410f67` 相比共 430 個變更檔，並已確認當時 Git working tree clean：
+
+| commit | 範圍 | 檔案數 |
+| --- | --- | ---: |
+| `1186685` | 遺跡素材原稿／產製紀錄 | 213 |
+| `6a11f6d` | 遊戲來源、runtime 素材、測試、版本 metadata | 81 |
+| `3560d86` | 歷史計畫、交接與 visual-review | 114 |
+| `3489b75` | Plan18、QA 指引／fixture、共用入口與本報告初稿 | 19 |
+| `5e3703c` | preview 啟動設定、Vitest 配置、worktree ignore | 3 |
+
+本段與唯一狀態入口的完成標記另以文件收束 commit 保存，不重跑未變的遊戲檢查；其 commit ID 直接見 Git 歷史。每組提交前都核對了實際 staged paths，沒有額外檔案或 gitlink；Plan18 staged fixture 也確認與工作區原 bytes 相同。Git 寫索引在 sandbox 被拒後，使用當次使用者已授權的 Git 寫入權限完成，沒有改系統政策。
+
 不使用 force-add。node_modules、候選 artifacts、根 dist、Playwright profiles／raw／長 log、工具暫存等沿用現有忽略規則並保留原件；`.worktrees` 內容維持各自獨立 repository，不新增子模組、不 flatten。`.claude/launch.json` 是無憑證的既有本機啟動配置，按全部文件授權一併保留。
 
 本次沒有 browser／視審、正式平台／雲端、音訊或真 OS 焦點測試，沒有 seed、save validator、pack／完整 ZIP validate、tag、push、Release 或上架。沿用歷史 beta24 ZIP 與局部視審證據，未外推為本次重新通過。Git commit 是本機版本保存，不代表發布。
