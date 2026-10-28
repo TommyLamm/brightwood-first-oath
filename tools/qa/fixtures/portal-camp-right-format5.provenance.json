@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Immutable synthetic portal precondition for isolated QA only.",
+  "synthetic": true,
+  "immutable": true,
+  "formatVersion": 5,
+  "saveKey": "brightwood-first-oath:save:v1",
+  "location": {
+    "mapId": "camp",
+    "spawnId": "right"
+  },
+  "byteLength": 616,
+  "sha256": "4e55c8c1a8ef4c1078c46be6de7ff28b19cb10b132278761dfe3fe82e7c6fb00",
+  "sourceFixture": {
+    "repositoryRelativePath": "output/playwright/base-experience-visual-beta22/seed-portal-fixture-format5.json",
+    "copyMethod": "Byte-for-byte file copy; no parse/stringify or content edits."
+  },
+  "validationStatus": "historical_acceptance",
+  "revalidatedThisWork": false,
+  "historicalValidatorAcceptance": {
+    "validatorLogRepositoryRelativePath": "output/playwright/base-experience-visual-beta22/portal-fixture-validator.log",
+    "acceptedResult": {
+      "status": "ready",
+      "formatVersion": 5,
+      "saveKey": "brightwood-first-oath:save:v1",
+      "byteLength": 616,
+      "sha256": "4e55c8c1a8ef4c1078c46be6de7ff28b19cb10b132278761dfe3fe82e7c6fb00",
+      "location": {
+        "mapId": "camp",
+        "spawnId": "right"
+      }
+    }
+  },
+  "reuseHistory": {
+    "beta22FirstUse": {
+      "reportRepositoryRelativePath": "plan/reports/base-experience-visual-beta22.md",
+      "seedLogRepositoryRelativePath": "output/playwright/base-experience-visual-beta22/portal-seed.log",
+      "evidence": "The isolated game origin reported its canonical key initially null and this synthetic camp/right fixture was seeded once as a QA precondition. The report explicitly says this was not normal NPC travel or a completed portal transfer."
+    },
+    "beta24Reuse": {
+      "reportRepositoryRelativePath": "plan/reports/base-experience-browser-recovery.md",
+      "seedLogRepositoryRelativePath": "output/playwright/base-experience-visual-beta24/seed.log",
+      "harnessRepositoryRelativePath": "output/playwright/base-experience-visual-beta24/serve-beta24-portal.mjs",
+      "harnessFixturePathLine": 11,
+      "candidateId": "brightwood-first-oath",
+      "candidateVersion": "1.0.0-beta.24",
+      "fixtureSha256": "4e55c8c1a8ef4c1078c46be6de7ff28b19cb10b132278761dfe3fe82e7c6fb00",
+      "evidence": "The beta24 report and seed log record a fresh origin with the canonical key initially null, a guarded one-time seed, and camp/right location. Harness line 11 still reads the beta22 output path."
+    }
+  },
+  "copyCreated": {
+    "date": "2026-10-28",
+    "timezone": "Asia/Hong_Kong"
+  },
+  "thisWork": {
+    "fixtureValidator": "not_run",
+    "browser": "not_run"
+  }
+}

@@ -1,5 +1,91 @@
 # 實作狀態板
 
+<a id="current-state"></a>
+## 當前狀態（唯一全局入口）
+
+更新：2026-10-28 10:48（Asia/Hong_Kong）。使用者已授權主代理實作 [Plan18](18-development-feedback-improvements.md)，本輪預設 W00–W03 已交付，後續已要求測試並將所有工作區文件分組 commit；此前「只規劃即停」是歷史階段。
+
+| 維度 | 當前結果／界線 |
+| --- | --- |
+| Plan18 | **PROCESS_DOCS_DELIVERED／QA_FIXTURE_PREPARED**：主代理完成 W00 入口與整合；三名全新 `gpt-6-luna`／`max`／`fork none` 分別交付 W01 browser runbook／模板、W02 overlay 配方、W03 fixture／provenance。[QA 薄索引](../tools/qa/README.md)；[各包結果與實際檢查](reports/plan18-process-handoff.md#實際進度檢查與下一步)。 |
+| 遊戲候選 | `brightwood-first-oath`／`1.0.0-beta.24`，**SOURCE_DELIVERED／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL**，未發布。[候選與封包報告](reports/base-experience-toast-fix.md)；[既有指紋摘要](../artifacts/base-experience-1.0.0-beta.24/fingerprints.json)。本輪無 runtime 改動，不造新候選或覆寫指紋。 |
+| 已驗表面／方法 | 歷史 beta24 **640×360 portal 指定畫面實畫 PASS（所見）**：新隔離 profile／空 canonical origin、validator 曾接受的合成 format5 `camp/right` fixture，正常 Continue／一次 Space；完整 hint、toast、profile、actions、quickbar、footer 無互遮。[直接方法、rect 與圖片證據](reports/base-experience-browser-recovery.md#測試方法與實測)。 |
+| 其他沿用結果 | beta23 修復 actions 遮擋後，動作／排隊 960×540 與 640×360、640 冷卻與小紅切大紅限定視審已過；beta22 NPC／合成恢復卡呈現沿用。[集中交接](reports/base-experience-handoff.md#新增內容視覺補驗與最新候選)保留時間鏈與 4 檔 27 focused／相關 tsc 歷史結果；本輪不重測。 |
+| 未驗／不推廣 | 合成前置不證正常 NPC→portal 行走、任務通關或完成傳送；更小尺寸、真 OS 失焦、正式平台／真帳號雲端、實際音訊、原生／沉浸 fullscreen、灰畫面根因與舊 q09／q10 未重演仍未驗。未標 CANDIDATE_READY 或平台通過。 |
+| QA cleanup | Plan17 自有 session／Chrome／daemon／server 已按當時 owner 證據收束，profiles／raw／原圖／日誌保留，見[歷史收束](reports/base-experience-browser-recovery.md#收束)。**Plan18 未啟動 browser／server，無本輪 QA 資源**，不稱重新清理通過。 |
+| 提交前驗證 | 本次主工作區 **45 檔／327 項測試通過**，typecheck、content、隔離 build 與 Plan18 文件／fixture 檢查通過。已修正測試誤收舊工作樹及過時格式／catalog 斷言，runtime 未因本次修測改變；[實際檢查與提交範圍](reports/workspace-commit-validation-20261028.md)。不把自動測試通過升格為正式平台／雲端或完整 browser 驗收。 |
+| 下一步 | **本輪預設實作與提交前檢查完成。** 依授權分組 commit 全部可追蹤工作區變更，保留既有忽略資料；C01–C04 未觸發，更窄尺寸、新 harness fixture 接入、fingerprint 共用化與新候選依 [Plan18 條件](18-development-feedback-improvements.md#5-有條件工作新證據才啟動)留待獨立理由。不升版／pack／發布或建排程。 |
+
+下方全部為有日期的階段歷史；其中「最新」「未驗」「停止」描述當時狀態，不覆蓋本區。證據原文保留，不逐條改寫舊 FAIL／UNVERIFIED。
+
+## 歷史：先前階段授權與交付
+
+**[Plan18](18-development-feedback-improvements.md) PLAN_READY（尚未實作），主代理已審閱。** B8／B9／B10回顧已收齊，見[回饋](reports/plan18-agent-feedback.md)；指定Sol6.1 xhigh已交詳細plan與[規劃證據](reports/plan18-planning-evidence.md)。W00–W03聚焦單一狀態入口、browser／QA owner指引、overlay局部驗收配方、可追溯fixture；更窄尺寸與fingerprint共用化延後，條件工作需新證據。沒有未解確定玩家bug要求立即改碼，不重做beta24已過項。本輪只做文件引用／範圍自查，未實作、tests、browser、build／pack、升版／發布或建排程；全部子代理完成，停止。下方Plan17保留完成基線。
+
+**新增內容視覺補驗已收束：最新beta24 SOURCE_DELIVERED／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL。** NPC／合成恢復卡呈現、beta23動作中／排隊／冷卻所見通過。beta24一條CSS修正的toast遮操作鈕，亦已640實畫PASS：全文完整，hint／profile／操作鈕／快捷列／footer無互遮。使用者授權恢復測試後，相同Node／CLI／Chrome在sandbox報crashpad 0x6D、一般桌面權限成功，支持環境權限／IPC差異，未改系統設定。僅新獨立QA前置短段，非正常傳送／全回歸；候選未變、27 focused不重跑。before/after raw與profiles保留，清理見恢復報告。未發布、不新增plan／排程；真OS焦點／平台／雲端等仍未驗。詳[集中交接](reports/base-experience-handoff.md)及[啟動恢復與beta24視審](reports/base-experience-browser-recovery.md)。以下為先前階段歷史。
+
+**最終收束：Plan17 beta22 SOURCE_DELIVERED／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL。** 失焦明確恢復、同源互動提示、戰鬥狀態及快捷圖示重用已實作，並補命令層conflict／upgrade恢復保護。最終4檔27 focused、tsc及beta22 build／固定完整ZIP驗證通過；beta21只實測NPC提示／同名對話及同頁焦點，真blur／portal／技能／圖示／640與視覺均未驗，beta22未直接browser。自有QA session／server／ports已清，profiles／證據保留；排程已觸發刪除，未發布，不新增plan／排程。詳[最終交接](reports/base-experience-handoff.md)。下方為各階段歷史。
+
+**Plan17 beta21 SOURCE_DELIVERED／ZIP_VALIDATED；B06 browser進行中。** 四項基礎體驗已實作，4檔26 focused＋最後typecheck通過，新候選一次build／固定tools1.2.0 pack／完整validate通過。候選`artifacts/base-experience-1.0.0-beta.21/`，原beta19／20保留；唯一Terra正在新profile有界短段驗收，沒有發布，不提前稱browser通過。詳[實作交接](reports/base-experience-handoff.md)。下段為先前階段記錄。
+
+**04:05續作：Plan17 IN_PROGRESS。** [詳細計畫](17-base-game-experience.md)及[規劃證據](reports/base-experience-plan-evidence.md)已由原Sol6.1 Extra High完成、主代理審閱接受；一次性04-05已刪除。A批三名全新Luna Max已分別開始焦點恢復、共用互動目標與combat UI純推導；共享UI後續單owner整合，再由Terra Max集中新變更短段驗收。尚無本輪實作驗證結果，未發布。所有權與後續見[派工](reports/base-experience-dispatch.md)及[本對話交接](reports/base-experience-current-handoff.md)。下段為規劃時記錄。
+
+**PLAN_IN_PROGRESS；04:05接續並實作。** 已派全新 `gpt-6.1-sol`／`xhigh` 規劃代理 `/root/base_experience_plan` 撰寫詳細基礎體驗計畫，預期 `17-base-game-experience.md`。舊對話04-05排程已刪除，新一次性04-05已建立並核對target為本對話 `01a17e26-32af-7801-b5e2-f93311f61c5a`，香港時間2026-10-28 04:05。**新指令取代下方歷史「只寫計畫即停」：現在規劃，04:05完成plan並由主代理指揮Luna Max實作（最多3名）；視覺審核與browser測試改交Terra Max（最多1名，按總槽交錯）。** 只優化基礎體驗，不新增遊玩內容。完整所有權、繼承進度及續作入口見[本對話交接](reports/base-experience-current-handoff.md)。本輪尚未實作或跑遊戲檢查。
+
+## 本輪已收束（2026-10-27夜間）
+
+**beta20 SOURCE_DELIVERED／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL。** 四區18圖的本期內容、導航、q21／q22、格式5相容與世界回顧已交付；航標新位置正常調查及同Sol單點視覺通過，5相關案例／content／tsc／build／固定pack完整validate沿用已過結果。本輪Sand已正常q12／q13／q22／q14手動領獎並實際南航入Ruins；兩個QA會話及自有server31500／32480、四port皆已清理，profiles與所有證據保留。Frost從正常q08副本出航，最後q09 active3/6未領、q10未接；其未改核心沿用focused，不再擴大完整舊任務重刷，未重演不改成PASS。原q08檔SHA核對仍相同，沒有發布；不宣稱整體CANDIDATE_READY或正式平台通過。
+
+**下一次04:05（2026-10-28香港）只做有界基礎體驗新規劃：全新GPT-6.1 Sol Extra High（gpt-6.1-sol／xhigh／fork none），寫入plan目錄與必要索引後停止，不實作、不新增遊玩內容。** 原任務若有真正未完實作先按交接處理；外部未驗／舊未重演項保持邊界，不自動變成反覆刷舊任務的開發門檻。一次性排程04-05已保存更新，觸發後刪除；詳[當前交付](reports/world-completion-handoff.md)與[最新交接](reports/world-completion-live-handoff.md)。以下為依日期保留的階段紀錄。
+
+**04:05排程最新限制：新計畫僅由全新GPT-6.1 Sol Extra High（gpt-6.1-sol／xhigh／fork none）規劃並寫入項目；文件完成後即停，不進入實作。** 基礎遊戲體驗優化，不新增遊玩內容；排程04-05已更新，仍為2026-10-28香港04:05一次性。原Sol High只沿用審圖，不替代新規劃代理。
+
+**新增排程授權：2026-10-28 04:05香港時間一次性續作已建立（04-05，ACTIVE）。** 未完先續Plan16；若當前任務已完成，才開一個有界基礎體驗改進計畫，禁止新遊玩內容，完成後交接清理。這條使用者新指令取代舊06:30後不新plan／排程限制；不授權發布，原兩次排程不恢復。詳[排程與當前交接](reports/world-completion-live-handoff.md)。
+
+2026-10-27 22:34最新續作：**IN_PROGRESS／beta20 SOURCE_DELIVERED＋ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL**。前批因用量中斷，fresh Luna b17已正常領q22／q14並由南梯入Ruins，QA browser／server31500已清理，fresh b18接原Frost已正常拾至q09fang2/6，續q09／q10；均先核actual raw，不seed／重開／回載補血。原Sol沿用；航標新位置正常調查／單點視覺PASS與既有source／ZIP檢查沿用，不重跑。仍不新增plan／排程／發布；[當前所有權與來源](reports/world-completion-live-handoff.md)。下方為先前階段摘要。
+
+2026-10-27 下午階段（歷史）：**IN_PROGRESS／beta.20 SOURCE_DELIVERED＋ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL**。航標1770／430修正及5相關案例／content／tsc通過，新候選正常climb／inspect、同Sol1280構圖名稱避手帳PASS；b14自有服務已清。fresh Luna Max b12在原Sand profile已手動領q12／q13，q22接取後kill2／盆地reach1已ready未claim，q14active0，現往祭壇後合併西返；[精簡進度](reports/world-completion-sand-finish.md)已存。fresh b15從保留的正常q08 raw副本正常備份升級／Continue，正補出航及q09／q10缺步，原件不改；q21／q11及其他已過checks不重做。同Sol沿用、不新增plan／排程／發布；詳[交付](reports/world-completion-handoff.md)及[當前所有權](reports/world-completion-live-handoff.md)。
+
+## 歷史進度（不覆蓋上方當前摘要）
+
+2026-10-27下午使用者明確「繼續」，現恢復 **IN_PROGRESS**：全新Luna Max從原profile／原origin接Sand，補既有Plan16 q22／q14等缺口；原Sol已確認可繼續沿用。不重做已完成q21／q11、不重跑未變checks，不新增plan／排程／發布。beta19來源／ZIP仍凍結，已驗與未驗分開；當前所有權與恢復點見[即時交接](reports/world-completion-live-handoff.md)。以下PAUSED與其他段為歷史。
+
+2026-10-27 使用者明確要求完成當前步驟後暫停，現為 **PAUSED_BY_USER**。q21手動領獎、q11正常勝利→返程→手動領獎、實際進Sand及Sol可見場景已完成；b9只唯讀交接，q12／後續沙海玩法沒有開始。原profile／原始存檔／證據保留，自有browser與服務已清理；兩個一次性排程已刪除，等待使用者恢復，不自動續作。beta19 SOURCE_READY／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL，未發布；詳[最新暫停點](reports/world-completion-live-handoff.md)及[集中交付](reports/world-completion-handoff.md)。下方為本輪及先前歷史。
+
+2026-10-27 06:30最後一輪：**beta.19 SOURCE_READY／ZIP_VALIDATED／LOCAL_BROWSER_PARTIAL**。[最終逐圖交付](reports/world-completion-handoff.md)整理四區18圖、來源、存檔相容與驗收邊界。兩個一次性排程`01-25`／`06-30`均已觸發刪除；本輪只收尾Plan16，不再新增plan或排程。q21航標已正常調查，q17兩木偶缺步已補；舊格式確認升級／暫玩保全與q19回顧已有真browser證據。最後兩名全新Luna接原Frost／Sand profile補未完成操作，同一Sol沿用。**未標WORLD_CONTENT_COMPLETE或整體CANDIDATE_READY**；霜雪／沙海實機閉環及音訊／正式平台等仍按最終報告列結果。下方01:25等為歷史快照。
+
+2026-10-27 Plan16新候選 **beta.19 SOURCE_READY／ZIP_VALIDATED；BROWSER_IN_PROGRESS**。W02導航、q21／q22、format5明確備份升級／暫時遊玩、四區手帳／q19世界回顧已實作；相關focused與最終typecheck已過，一次build／固定tools1.2.0 pack/fullvalidate成功。ZIP `artifacts/world-completion-beta19/game-beta19.zip`（131,520,178 bytes；SHA68644dc701fb51fa8f11d69a0698819b4cb01203c8a258d9085c37c5aca6b53b）。兩名全新Luna分開做region與UI瀏覽器必要驗收，同一Sol接後續截圖；尚未宣稱玩家閉環、正式雲端／平台或音訊通過。詳[即時交接](reports/world-completion-live-handoff.md)。
+
+2026-10-27 第一批交付：W00／W01靜態設計已完成，W02地名／第一章後續導航已實作（9 focused cases及typecheck通過）。第二批三位全新Luna並行做format5明確備份升級gate、q21／q22區域內容、W06手帳／世界回顧及航標UI；尚未整合成新候選。司鐘者本期保留8000HP／28DEF／節拍，舊約18秒樣本未達歷史時長範圍照實保留，不以加血磨時間。真實存檔未動；進度／所有權以[即時交接](reports/world-completion-live-handoff.md)為準。
+
+2026-10-27 Plan16已獲使用者明確授權，狀態改為 **IN_PROGRESS**。第一批全新GPT-6 Luna Max三名分別處理W00／平衡設計、W01存檔相容、W02導航實作；圖片審核依指定交同一位GPT-6.1 Sol High至接近300K再換，每次最多一位。兩個一次性會話續作01:25／06:30已建立；06:30最後一輪完成當時計畫並收尾後停止，不再新增plan。以[即時交接](reports/world-completion-live-handoff.md)記錄當前所有權與恢復點；以下Plan16未授權／未啟動為前輪歷史。
+
+2026-10-26 全區域計畫：使用者要求把當前世界地圖各區完成開發，並先製作詳細plan。[Plan16](16-world-completion-roadmap.md) **PLAN_READY；W00–W09尚未啟動**。已按四區18圖盤點，規劃霜雪／沙海探索支線、Lv30橫向進展、首領平衡、四區手帳與世界結局、存檔決策及候選／平台分階段交付。本輪只改文件並做文件檢查，無遊戲／版本／存檔／成品變更。beta.18維持SOURCE_READY／ZIP_VALIDATED／LOCAL_BROWSER_PARTIAL；正常角色q01–q08已分段claimed，最新raw及遺跡證據見Plan16來源，不重跑舊已過項目。下方為既有交接與歷史。
+
+2026-10-26 20:20排程續作：[額外遺跡視覺驗收最新交接](reports/ruins-visual-handoff-20261026.md)。已補成真正勝利→正常再次挑戰：入口沒有舊矩形／青綠圈可見殘留，首領滿綠血條重生，戰後HP／MP及q18進度保留；[專項證據](reports/ruins-retry-2020-20261026.md)。先前三張地圖限定短段、兩種預警與可見半血轉場沿用。beta.18 source／ZIP未改，未重build/tests/pack或發布；正常角色q08claimed 1492B檢查點保留。精確瞬時／音訊／正式平台／雲端仍未驗，Plan15維持LOCAL_BROWSER_PARTIAL。下方為歷史。
+
+2026-10-26 11:51使用者明確續作：從beta.18真實q05 partial6/8原始存檔繼續q05–q08，另做首領量測方法的精簡靜態審查；source／既有成品保留，不重跑q01–q04或未改的通過檢查。新fresh Luna Max分工／最新規格見[11:51派工](reports/resume-1154-dispatch-20261026.md)。下方08:31為上一個排程的收尾紀錄，不是本輪停止狀態。
+
+2026-10-26 08:31已提前收尾：本5h用量98%，未持續至09:00，goal未標complete。beta.18成品／ZIP、三個改善與實際分段browser結果已交付；q05停6/8、q06–q08及其他未驗項保留。所有child已完成，存檔／報告／自有服務cleanup完成；最終來源、限制及下一步見[集中交接](reports/overnight-optimization-handoff-20261026.md)。下方08:18等段落為階段快照。
+
+最新集中交接：[2026-10-26自主優化](reports/overnight-optimization-handoff-20261026.md)（08:18收尾）。**beta.18 SOURCE_READY／ZIP_VALIDATED；LOCAL_BROWSER_PARTIAL**：對話鍵盤／匯入回饋／傳點標示改善完成，相關focused tests、typecheck／build、必要視檢與官方pack／validate按版本各有證據。beta.15 q19手動回報／R2已補完，主線仍標分段；正常從零進度為beta.17 q01–q03、完整原始raw接beta.18 q04已手動領獎，q05實際6/8但未完成／未領。08:13用量90%後停止新scope以保護存檔／服務收尾，所有child已完成；下一次從q05 partial raw正常補血續作，不重跑q01–q04。首領80s樣本未得勝利且未確認持續命中，完整主線／聲音／正式平台／雲端仍未驗。以下為階段快照，以集中交接及專項報告為準。
+
+2026-10-26 06:12最新：**beta.17 SOURCE_READY／ZIP_VALIDATED，local browser仍按範圍PARTIAL**。已完成beta.16對話鍵盤焦點／repeat防連鎖及點按說明，beta.17補匯入競爭取消／重新確認訊息與canonical讀取diagnostic。後者26個聚焦案例、typecheck、獨立build及三個真browser分支通過；不重跑已過且未改的檢查。固定tools1.2.0 pack／完整validate通過，ZIP `artifacts/overnight-20261026/beta17-package/game-beta17.zip`，131,514,096 bytes，SHA `e92f3b663993b19be6ed32a6d613644e4d87db1271c40736e974414573c94620`。[beta.17 source交接](reports/overnight-import-feedback-20261026.md)／[封包交接](reports/overnight-beta17-package-20261026.md)。beta.15 namespace與枝線實測已有報告；主線q19／R2收尾、beta.17空白新玩家與既有背景抖動疑慮正由三個隔離owner補必要驗收，不把舊版本或fixture測試冒充新版本全流程。
+
+00:50與06:00一次性排程均已觸發並刪除。約01:54–06:00曾受用量限制，沒有持續執行；06:00正常用量恢復後接續09:00截止的同一授權，原goal狀態由系統留為usageLimited。[06:00接手範圍](reports/morning-0600-dispatch-20261026.md)。不使用重置信用，不發布／commit／push／tag；08:40起收束，09:00前關閉自有服務與代理。以下較早快照由本段及後續報告補充，不代表仍未開始或全面通過。
+
+2026-10-26 夜間第一個改善完成：**beta.16對話鍵盤QA完成、未封包／發布**。Space／HUD開NPC對話後聚焦首個有效action，維持任務按鈕identity，並抑制長按Enter／Space造成跨任務的連鎖動作；新增普攻／技能點按說明。直接browser測初次Space不誤領、Enter repeat不誤接、獨立按鍵領／接、Esc回遊戲、面板快捷鍵／重綁／數量輸入保焦點均通過，最終typecheck／獨立build通過。QA成品 `artifacts/overnight-20261026/dialogue-focus/dist/`，treeSHA `44583c48e0ff832b212177e88e9c1028dc61be0d2d16d65b83abe396dc81a4ab`；[完整交接](reports/overnight-dialogue-focus-20261026.md)。beta.15原ZIP保留，其他world／boss結果不冒用成beta.16全驗。下一個owner正補本機匯入競爭被取消的可見說明，另立beta.17；主線與枝線browser仍按分工續驗。
+
+2026-10-26 00:50夜間續作：已建立持續至09:00前的active goal，00:50一次性排程已觸發刪除，06:00排程保留。前批browser因用量中斷，現已恢復並由全新Luna Max分別接手。**beta.15瀏覽器驗收為PARTIAL**：格式1–4明確匯入／備份、取消、canonical優先與競爭資料保全、未知格式、一次寫入失敗、dev/build及兩本機路徑已有真browser log並補成[namespace報告](reports/ruins-d-browser-namespace-retry.md)；q15／q16及q17部分有實測證據，R1後半與R3/R4續驗中，不宣稱完整通關。beta.15 dist／ZIP保留不改。下一個改善是以真browser確認NPC對話的鍵盤焦點、澄清普攻／技能點按提示，再另立候選；未完成項不當作通過。[夜間派工與最新規格](reports/overnight-optimization-dispatch-20261026.md)。
+
+2026-10-25 遺跡D：**SOURCE_READY／ZIP_VALIDATED；LOCAL_BROWSER_UNVERIFIED**。`1.0.0-beta.15` 已完成正式ID／canonical本機key接線及玩家明確匯入／暫不匯入，保全原件、舊格式備份及雲端隔離。27個聚焦案例（namespace21、app6）、Node24.22.1下typecheck、219資源引用及一次獨立build通過；固定tools1.2.0 pack／完整validate及有限機密掃描通過。候選 `artifacts/ruins-d/dist/`，ZIP `artifacts/ruins-d/game-beta15.zip`，131,513,398 bytes，SHA `1d7de2c3d38f19ff03bbc279daaea5b724c354183545ed66758d63dbb376e7dc`。Playwright／CUA不可用、Firefox啟動掛起，未載任何遊戲iframe；自有服務已停。正式平台／雲端未驗，未commit／push／發布。主代理統籌全新Luna Max最多三名，主對話未插圖。完整來源、檢查、限制及續作見 [D交接](reports/ruins-d-handoff.md)。以下D規劃／啟動及A–C段落為歷史快照。
+
+2026-10-25 D實作啟動紀錄：依使用者「繼續plan15」授權，規範由主代理完整讀取後轉述。找到bundled Node24.22.1及核對固定tools1.2.0 SHA，無須改全域Node或重生工具；A/B/C來源與成品保留。批次與範圍見 [D派工紀錄](reports/ruins-d-dispatch.md)。
+
+2026-10-25 D規劃：已完成 [plan15](15-ruins-acceptance-and-package.md)，狀態 **PLANNED／未實作**。重新完整讀main模板與七份規格，定點核對現有程式與交接；發現公開ID為`brightwood-first-oath`但main／app仍用`maplewood-swordsman`作本機key，以及目前Node24.19.0低於規格24.22.1。計畫先做保留舊key、玩家明確確認後才複製的namespace修正與合規Node，再以預計beta.15（仍讀1–4寫4）做隔離iframe／存檔／聲畫與完整ZIP。打包CLI實際已有來源／輸出參數，沿用即可。正式平台／雲端／發布另列條件，不自動發布。本輪未派實作代理、未改遊戲／存檔／版本、未跑遊戲測試／build／browser／pack；C仍是beta.14候選，未驗項目維持未驗。
+
+2026-10-25 遠古遺跡包 C：**程式、素材與beta.14獨立候選完成；正式瀏覽器／雲端／ZIP／發布未驗證**。新增誓鐘內殿、失序司鐘者、q18／q19與守誓旅冠；22姿勢單圖集、6動畫、phase2配樂與復原短音，讀1–4寫4並保全格式1／2／3原封套。17個不同聚焦測試檔127項、型別／內容／4包218引用／build通過；11新runtime檔7,559,589 bytes，全章21,867,870 bytes。成品 `artifacts/ruins-c/dist/`，A／B保留。全新Luna Max最多三名並行，用量中斷後恢復指定session原稿；主對話未載圖。本次未commit／push／發布。完整結果與D待辦見 [C 整合交接](reports/ruins-c-handoff.md)。以下各輪為歷史紀錄，C最新狀態以本段為準。
+
 2026-10-25 推送與C規劃：既有背景調整／A／B來源、正式素材及原稿以 `17a4c37` 成功推送至 `origin/fix/background-jitter`，未合併main、未建立PR／發布tag／Release。[14 誓鐘內殿實作計畫](14-ruins-bell-sanctum.md) **PLANNED／尚未實作**，由主代理獨立核對當日最新八份線上文件與現有接線後完成；包含首領循環／一次1200ms轉場、兩套攻擊22姿勢、q18／q19／旅冠、格式4保全、ownership與最小驗收。這一輪未派實作代理、生成素材或改遊戲程式／版本，未重跑遊戲測試、build或瀏覽器。下方B「未commit」為實作階段的歷史記錄，後續push狀態以本段為準。
 
 2026-10-25 遠古遺跡包 B：**程式與素材完成，獨立候選已建置；實際遊玩／正式存檔／ZIP／發布未驗證**。候選 `1.0.0-beta.13` 位於 `artifacts/ruins-b/dist/`，依 [13 回聲探索計畫](13-ruins-echo-exploration.md) 完成即停。新增長廊、行舟／雙碑、q17／q20、inspect調律、兩種怪物與36有效姿勢；讀1／2／3、寫3，轉寫前保全舊封套。10個新增runtime檔共2.35 MiB，A+B共13.65 MiB。14個不同聚焦測試檔共92項最終通過，typecheck／content／4包207引用／build通過；沒有全回歸。主代理指揮全新Luna Max分批、最多3名，額度中斷後恢復原稿，主對話未載入生成圖。來源、檢查、正式格式3橋接限制見 [B 整合交接](reports/ruins-b-handoff.md)；A成品保留，C／D未完成，未commit／發布。
