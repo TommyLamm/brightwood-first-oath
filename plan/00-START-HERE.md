@@ -1,5 +1,15 @@
 # 給下一位主 Agent 的完整交接
 
+**本輪本機交付已收束，先讀[狀態板](status.md)與[集中交付](reports/world-completion-handoff.md)。** Sand兩獎／q15入圖已閉環；Frost舊鏈最後q09 3/6未領、q10未重演，不得假稱完整通關，也不再自動重啟舊刷怪作未改核心的重複驗證。QA profiles／原件／dirty保留，自有服務已清。2026-10-28香港04:05一次性續作的新計畫分支必須派全新gpt-6.1-sol／xhigh／fork none，僅寫基礎體驗計畫入repo，完成即停、不實作或加新遊玩內容；舊06:30限制已由此新授權取代。
+
+**2026-10-27使用者再次明確恢復，僅收尾既有Plan16。** beta20已封裝，航標正常調查及同Sol1280構圖視覺PASS，原件與beta19保留。fresh b12已正常領q12／q13、接q22＋q14；fresh b15從正常q08存檔副本補出航／q09q10缺步，q21／q11不重做。先讀[唯一當前摘要](status.md)與[最新交接](reports/world-completion-live-handoff.md)，下方早上暫停等為歷史；不新增plan／排程或發布。
+
+## 歷史入口（2026-10-27 06:30最後一輪）
+
+使用者目標是完成世界圖四大區域。先讀 [Plan16集中交付](reports/world-completion-handoff.md)、[status](status.md) 及[即時交接](reports/world-completion-live-handoff.md)，再讀 [16・全區域計畫](16-world-completion-roadmap.md) 的實際未完成項。當前路徑 `C:\Users\Tommy\Desktop\brightwood-first-oath`；beta.19 SOURCE_READY／ZIP_VALIDATED／LOCAL_BROWSER_PARTIAL，四區18圖、19主線／3支線、format5。W00／W01、q21／q22、導航、手帳／世界回顧及明確備份升級均已交付，不重做已完成來源或未變的通過檢查。
+
+01:25／06:30一次性排程均已觸發刪除，06:30為最後一輪；收尾後不再新增plan或排程。停止自主執行不代表全區驗收通過。未獲發布授權，不推tag／建Release／做平台人工確認。下方F槽路徑、七圖首版、q01未完成、舊提交規則等為歷史來源，不能覆蓋最新使用者指示或據此回退成果。
+
 ## 可直接貼給下一位 Agent 的指令
 
 > 請在 F:\Desktop\MapleStory 按 plan/README.md 繼續實作經典劍士單機遊戲。明確並行派出多個子代理，按 plan/09-parallel-dispatch.md 及 plan/tasks 依賴派工。T00 共用骨架與契約已落地並開放 G0，不要重做；只派尚未完成或有明確缺口的工作。主 Agent 的唯一實作任務是派工與協調，不直接改程式碼；子代理使用 GPT-6 Luna Max，且只能改其所有權路徑，必須知道其他代理同時工作、不可還原他人變更。可能衝突時分開 worktree，完成後合併 main；每個小階段分開 commit，提交前核對暫存檔案清單。

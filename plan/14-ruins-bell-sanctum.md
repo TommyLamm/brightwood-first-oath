@@ -1,6 +1,8 @@
 # 遠古遺跡包 C：誓鐘內殿實作計畫
 
-日期：2026-10-25（香港時間）。狀態：**規劃完成，尚未實作或驗收**。本輪先將既有成果提交為 `17a4c37`，並成功推送至 `origin/fix/background-jitter`，再由主代理獨立規劃 C。沒有合併 main、建立 PR／tag／Release，沒有派實作代理、生成素材、改遊戲版本／程式／存檔或執行遊戲檢查。
+日期：2026-10-25（香港時間）。最新狀態：**C 程式、素材與 beta.14 獨立候選已完成；正式瀏覽器／雲端／ZIP／發布驗收未執行**。結果、來源及下一步見 [C 整合交接](reports/ruins-c-handoff.md)。主代理指揮全新 GPT-6 Luna Max 分批實作，最多三名；主對話未載入生成圖，沒有 commit／push／PR／tag／Release 或平台發布。
+
+以下保留原規劃的凍結要求；其中「本輪不升版／尚未實作」指規劃階段。規劃前既有成果曾以 `17a4c37` 推送至 `origin/fix/background-jitter`；本次C實作沒有另行提交或推送。
 
 基線：[已推送的來源](https://github.com/TommyLamm/brightwood-first-oath/tree/17a4c37166d3373a03b5082bc6720b29be0dd3fc)、[12 章節設計](12-next-chapter-ancient-ruins.md)、[B 整合交接](reports/ruins-b-handoff.md)。實作前仍須核對最新工作區。B 為 beta.13、讀1／2／3寫3；A／B候選成品在本機 artifacts，依既有 ignore 不隨來源 push。B未做的瀏覽器、正式雲端、ZIP與發布驗收不因此轉為通過。
 
@@ -146,4 +148,4 @@ world檔由world owner，rules／actors由AI owner，persistence由save owner，
 
 本輪重新完整網路讀取main：[模板](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game-agent-template.md)、[開發標準](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/game-development.md)、[操作契約](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/command-contracts.md)、[Manifest Schema](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game.schema.json)、[Release workflow](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/templates/game-release.yml)、[SDK](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/examples/starter/playroom-sdk.js)、[版本指引](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/sdk-versioning.md)、[存檔相容性](https://raw.githubusercontent.com/TommyLamm/playroom-platform/main/docs/save-compatibility.md)。規格不下載成runtime副本，遠端內容只用於本專案規範。
 
-本輪適用：保留舊進度與真實格式相容性、失敗不覆寫、相對資源、候選與正式驗收分開、push來源不等於發布。只做Git提交／push確認、現有接線與計畫一致性／本地連結檢查；沒有重新跑已通過的B遊戲測試、typecheck、build、瀏覽器或ZIP。遊戲仍為beta.13，下一步等使用者指示實作本計畫。
+規劃階段紀錄：當時只做Git提交／push確認、現有接線與計畫一致性／本地連結檢查，遊戲仍為beta.13；沒有重新跑B遊戲檢查。後續C實作已完成beta.14，依本計畫保留舊進度與真實格式相容性、失敗不覆寫、相對資源，並區分候選與正式驗收；實際檢查及未驗證項目見 [最新交接](reports/ruins-c-handoff.md)。
