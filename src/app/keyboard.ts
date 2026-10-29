@@ -8,6 +8,15 @@ export type GameAction =
   | 'inventory' | 'equipment' | 'skills' | 'stats' | 'quests' | 'map' | 'escape';
 
 export type KeyBindings = Partial<Record<GameAction, string>>;
+declare const effectiveKeyBindingsBrand: unique symbol;
+export type EffectiveKeyBindings = Readonly<Partial<Record<GameAction, string>>> & {
+  readonly [effectiveKeyBindingsBrand]: true;
+};
+
+export type KeyBindingConflict = Readonly<{
+  action: GameAction;
+  code: string;
+}>;
 
 export const DEFAULT_KEY_BINDINGS: Readonly<Record<GameAction, string>> = {
   moveLeft: 'ArrowLeft',
@@ -32,6 +41,66 @@ export const DEFAULT_KEY_BINDINGS: Readonly<Record<GameAction, string>> = {
   escape: 'Escape',
 };
 
+const GAME_ACTIONS = Object.keys(DEFAULT_KEY_BINDINGS) as GameAction[];
+const HELD_MOVEMENT_ACTIONS = new Set<GameAction>(['moveLeft', 'moveRight', 'climbUp', 'climbDown']);
+const VALID_KEY_CODE = /^[A-Za-z][A-Za-z0-9]*$/;
+
+/** Resolve defaults and saved overrides with the same exact-code precedence as the runtime parser. */
+export function resolveEffectiveBindings(overrides: KeyBindings = {}): EffectiveKeyBindings {
+  const next: KeyBindings = { ...DEFAULT_KEY_BINDINGS };
+  for (const action of GAME_ACTIONS) {
+    const code = overrides[action];
+    if (typeof code === 'string' && VALID_KEY_CODE.test(code)) {
+      for (const boundAction of GAME_ACTIONS) {
+        if (next[boundAction] === code) delete next[boundAction];
+      }
+      next[action] = code;
+    }
+  }
+  return next as EffectiveKeyBindings;
+}
+
+function codesForBinding(action: GameAction, code: string): string[] {
+  if (action === 'attack' && code === 'ControlLeft') return [code, 'ControlRight'];
+  if (action === 'jump' && code === 'AltLeft') return [code, 'AltRight'];
+  return [code];
+}
+
+function actionForCode(bindings: EffectiveKeyBindings, code: string): GameAction | null {
+  if (code === 'ControlRight' && bindings.attack === 'ControlLeft') return 'attack';
+  if (code === 'AltRight' && bindings.jump === 'AltLeft') return 'jump';
+  return GAME_ACTIONS.find((action) => bindings[action] === code) ?? null;
+}
+
+/** Return codes used by this action's runtime input, including held movement codes and one-way aliases. */
+export function getEffectiveKeyCodes(action: GameAction, effective: EffectiveKeyBindings): readonly string[] {
+  const code = effective[action];
+  if (!code) return [];
+  // Movement reads heldCodes through isHeld directly, even when keyDown dispatches the code elsewhere.
+  if (HELD_MOVEMENT_ACTIONS.has(action)) return [code];
+  return codesForBinding(action, code)
+    .filter((candidate) => actionForCode(effective, candidate) === action);
+}
+
+/** Find another action whose current binding would be claimed by this candidate. */
+export function findKeyBindingConflict(
+  effective: EffectiveKeyBindings,
+  action: GameAction,
+  candidateCode: string,
+): KeyBindingConflict | null {
+  if (!VALID_KEY_CODE.test(candidateCode)) return null;
+  const candidateCodes = codesForBinding(action, candidateCode);
+
+  for (const otherAction of GAME_ACTIONS) {
+    if (otherAction === action) continue;
+    const otherCode = effective[otherAction];
+    if (!otherCode) continue;
+    const conflictCode = candidateCodes.find((code) => codesForBinding(otherAction, otherCode).includes(code));
+    if (conflictCode) return { action: otherAction, code: conflictCode };
+  }
+  return null;
+}
+
 export type KeyDownContext = {
   focused: boolean;
   uiFocused?: boolean;
@@ -44,12 +113,6 @@ export type KeyDownResult = {
   command: CommandDraft | null;
   preventDefault: boolean;
 };
-
-function actionForCode(bindings: KeyBindings, code: string): GameAction | null {
-  if (code === 'ControlRight' && bindings.attack === 'ControlLeft') return 'attack';
-  if (code === 'AltRight' && bindings.jump === 'AltLeft') return 'jump';
-  return (Object.keys(bindings) as GameAction[]).find((action) => bindings[action] === code) ?? null;
-}
 
 function panelForAction(action: GameAction): PanelId | null {
   switch (action) {
@@ -65,7 +128,7 @@ function panelForAction(action: GameAction): PanelId | null {
 
 /** DOM-independent KeyboardEvent.code state, also used by browser event wiring. */
 export class KeyboardInputState {
-  private bindings: KeyBindings = { ...DEFAULT_KEY_BINDINGS };
+  private bindings: EffectiveKeyBindings = resolveEffectiveBindings();
   private heldCodes = new Set<string>();
   private jumpPressed = false;
 
@@ -74,28 +137,18 @@ export class KeyboardInputState {
   }
 
   setBindings(bindings: KeyBindings): void {
-    const next: KeyBindings = { ...DEFAULT_KEY_BINDINGS };
-    for (const action of Object.keys(DEFAULT_KEY_BINDINGS) as GameAction[]) {
-      const code = bindings[action];
-      if (typeof code === 'string' && /^[A-Za-z][A-Za-z0-9]*$/.test(code)) {
-        for (const boundAction of Object.keys(next) as GameAction[]) {
-          if (next[boundAction] === code) delete next[boundAction];
-        }
-        next[action] = code;
-      }
-    }
-    this.bindings = next;
+    this.bindings = { ...resolveEffectiveBindings(bindings) };
     this.releaseAll();
   }
 
   rebind(action: GameAction, code: string): void {
-    if (!/^[A-Za-z][A-Za-z0-9]*$/.test(code)) throw new RangeError(`Invalid KeyboardEvent.code: ${code}`);
+    if (!VALID_KEY_CODE.test(code)) throw new RangeError(`Invalid KeyboardEvent.code: ${code}`);
     const next = { ...this.bindings };
     for (const boundAction of Object.keys(next) as GameAction[]) {
       if (next[boundAction] === code) delete next[boundAction];
     }
     next[action] = code;
-    this.bindings = next;
+    this.bindings = next as EffectiveKeyBindings;
     this.releaseAll();
   }
 

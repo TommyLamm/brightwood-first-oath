@@ -16,10 +16,12 @@ import { createMovement, stepMovement } from '../domain/movement/index.js';
 import { applyMonsterHit, createMonster, stepActors } from '../domain/actors/index.js';
 import { createCombatState, stepCombat, tryAttack } from '../domain/combat/index.js';
 import { applyProgressAction, createPlayer, deriveStats, validatePlayerName } from '../domain/progression/index.js';
-import { acceptQuest, getQuestView, planQuestClaim, recordQuestEvent } from '../domain/quests/index.js';
+import { acceptQuest, getQuestView, recordQuestEvent } from '../domain/quests/index.js';
+import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { resolveItemUse } from './item-use.js';
 
 const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
@@ -539,24 +541,16 @@ function processCommand(
         : withToast(gameplay, result.message);
     }
     case 'useItem': {
-      if (context.nowMs < gameplay.potionReadyAtMs) return withToast(gameplay, '藥水還在冷卻中。');
-      let itemId = command.payload.itemId;
-      if (itemId === 'small-red' && !player.bag.some((stack) => stack.itemId === 'small-red' && stack.quantity > 0)
-        && player.bag.some((stack) => stack.itemId === 'large-red' && stack.quantity > 0)) {
-        itemId = 'large-red';
-      } else if (itemId === 'small-blue' && !player.bag.some((stack) => stack.itemId === 'small-blue' && stack.quantity > 0)
-        && player.bag.some((stack) => stack.itemId === 'large-blue' && stack.quantity > 0)) {
-        itemId = 'large-blue';
-      }
-      const item = catalog.rules.items[itemId];
-      if (item?.kind === 'consumable' && !player.bag.some((stack) => stack.itemId === itemId && stack.quantity > 0)) {
-        // The domain's generic 「數量不足」 read like a bookkeeping error mid-fight; say what to do instead.
-        return withToast(gameplay, `${item.name}已經用完了，可向木葉鎮的木葉商人補貨。`);
-      }
-      const result = applyProgressAction(player, { type: 'useItem', itemId }, catalog.rules);
+      const result = resolveItemUse({
+        player,
+        rules: catalog.rules,
+        requestedItemId: command.payload.itemId,
+        nowMs: context.nowMs,
+        potionReadyAtMs: gameplay.potionReadyAtMs,
+      });
       if (!result.ok) return withToast(gameplay, result.message);
       gameplay.potionReadyAtMs = context.nowMs + 1000;
-      return { gameplay: withPlayer(gameplay, result.value, null) };
+      return { gameplay: withPlayer(gameplay, result.value.player, null) };
     }
     case 'setSettings':
       return {
@@ -653,31 +647,17 @@ function processCommand(
       if (!quest || !nearNpc(gameplay, catalog, quest.turnInNpcId, INTERACTION_RANGE_PX)) {
         return withToast(gameplay, '請到任務交付對象身邊再領取獎勵。');
       }
-      const claim = planQuestClaim(gameplay.saveData, command.payload.questId, catalog);
+      const claim = resolveQuestClaim(gameplay.saveData, command.payload.questId, catalog);
       if (!claim.ok) return withToast(gameplay, claim.message);
-      let updated = applyProgressAction(player, { type: 'removeItems', items: claim.value.removeItems }, catalog.rules);
-      if (!updated.ok) return withToast(gameplay, updated.message);
-      let claimedPlayer = updated.value;
-      if (claim.value.reward.minLevel !== undefined) {
-        updated = applyProgressAction(claimedPlayer, { type: 'setLevelFloor', level: claim.value.reward.minLevel }, catalog.rules);
-        if (!updated.ok) return withToast(gameplay, updated.message);
-        claimedPlayer = updated.value;
-      }
-      if (claim.value.reward.job === 'swordsman') {
-        updated = applyProgressAction(claimedPlayer, { type: 'changeJob' }, catalog.rules);
-        if (!updated.ok) return withToast(gameplay, updated.message);
-        claimedPlayer = updated.value;
-      }
-      updated = applyProgressAction(claimedPlayer, { type: 'gainReward', reward: { ...claim.value.reward, minLevel: undefined, job: undefined } }, catalog.rules);
-      if (!updated.ok) return withToast(gameplay, updated.message);
+      const { player: claimedPlayer, nextQuests, reward } = claim.value;
       const isChapterComplete = command.payload.questId === 'q08';
-      if (updated.value.level > player.level) {
-        addEffect(gameplay, gameplay.playerEntityId, 'levelup', updated.value.level, context.nowMs, context.nextEntityId);
+      if (claimedPlayer.level > player.level) {
+        addEffect(gameplay, gameplay.playerEntityId, 'levelup', claimedPlayer.level, context.nowMs, context.nextEntityId);
       }
       const saveData = {
         ...gameplay.saveData,
-        player: updated.value,
-        quests: claim.value.nextQuests,
+        player: claimedPlayer,
+        quests: nextQuests,
         flags: isChapterComplete
           ? { ...gameplay.saveData.flags, chapterComplete: true }
           : gameplay.saveData.flags,
@@ -689,7 +669,7 @@ function processCommand(
           interaction: refreshInteraction({ ...gameplay, saveData }, catalog),
           toast: isChapterComplete
             ? '已完成第一章「守衛的誓約」，可繼續自由探索木葉世界。'
-            : questRewardToast(quest.name, claim.value.reward, player.level, updated.value.level, catalog),
+            : questRewardToast(quest.name, reward, player.level, claimedPlayer.level, catalog),
         },
         // Spec: claiming q08 shows the chapter settlement (world frozen until dismissed).
         ...(isChapterComplete ? { screen: 'chapter' as const } : {}),

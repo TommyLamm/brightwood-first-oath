@@ -2,14 +2,35 @@ import './styles.css';
 import './journal.css';
 import './world-map.css';
 import './illustrated-panels.css';
-import { buildVisualStats, buildVisualQuests, objectivePlaces } from './illustrated-panels.js';
+import { buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
 import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
 import { deriveWorldProgress, frostRouteMarkerInspectCommand, groupWorldQuests, saveUpgradeConfirmCommand, saveUpgradePrompt } from './world-progress-model.js';
-import { DEFAULT_KEY_BINDINGS, type GameAction } from '../app/keyboard.js';
+import {
+  DEFAULT_KEY_BINDINGS,
+  findKeyBindingConflict,
+  getEffectiveKeyCodes,
+  resolveEffectiveBindings,
+  type GameAction,
+} from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import type { UiController, UiSnapshot } from '../contracts/ports.js';
 import type { Settings } from '../contracts/types.js';
+import { resolveQuestClaim } from '../domain/quests/claim.js';
+import { validatePlayerName } from '../domain/progression/index.js';
+import { resolveItemUse } from '../app/item-use.js';
+import { reconcileBagViewState } from './bag-view-state.js';
+import { previewEquipmentAction } from './equipment-preview.js';
+import { previewEquipmentStats, type EquipmentStatsPreview } from './equipment-stats-preview.js';
+import { previewMaterialSale } from './material-sale-preview.js';
+import { previewSale } from './sale-preview.js';
+import { previewBuy } from './trade-preview.js';
+import { previewMaximumBuy } from './maximum-buy-preview.js';
+import { previewApAllocation } from './ap-allocation-preview.js';
+import { previewSkillLearning } from './skill-learning-preview.js';
+import { INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
+import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
+import { resolveNpcMapTarget } from './npc-map-target.js';
 
 const PANEL_LABELS: Record<PanelId, string> = {
   inventory: '背包',
@@ -27,7 +48,7 @@ const PANEL_ORDER: PanelId[] = [
   'inventory', 'equipment', 'skills', 'stats', 'quests', 'map', 'shop', 'dialogue', 'settings',
 ];
 
-const KEY_ACTIONS: { id: string; label: string }[] = [
+const KEY_ACTIONS: { id: Exclude<GameAction, 'escape'>; label: string }[] = [
   { id: 'moveLeft', label: '向左移動' },
   { id: 'moveRight', label: '向右移動' },
   { id: 'climbUp', label: '向上攀爬' },
@@ -53,9 +74,9 @@ type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
   | 'retry-save' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
-  | 'inventory-filter' | 'select-map' | 'select-quest'
+  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
-  | 'claim-quest' | 'buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
+  | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'settings-reset-bindings' | 'reload-page';
 
 type KeyGuideItem = {
@@ -70,6 +91,38 @@ type PanelFocusSnapshot = {
   selection: { start: number | null; end: number | null; direction: 'forward' | 'backward' | 'none' | null } | null;
   scrollTop: number;
 };
+
+function bagFocusIndex(focusKey: string | undefined): number | null {
+  const match = /^(?:bag-slot|sell-quantity|shop-sell-quantity)-(\d+)$/.exec(focusKey ?? '');
+  return match ? Number(match[1]) : null;
+}
+
+function clearBagFocus(snapshot: PanelFocusSnapshot | null): PanelFocusSnapshot | null {
+  return snapshot && bagFocusIndex(snapshot.focusKey) !== null
+    ? { ...snapshot, focusKey: undefined, value: undefined, selection: null }
+    : snapshot;
+}
+
+function isBagIndexedControl(element: HTMLElement): boolean {
+  return bagFocusIndex(element.dataset.focus) !== null
+    || element.dataset.bagIndex !== undefined
+    || element.dataset.sellQuantity !== undefined;
+}
+
+function clearOverflowingSellValue(
+  snapshot: PanelFocusSnapshot | null,
+  bag: NonNullable<UiSnapshot['saveData']>['player']['bag'],
+  reducedQuantities: ReadonlySet<number>,
+): PanelFocusSnapshot | null {
+  if (!snapshot || !reducedQuantities.size) return snapshot;
+  const index = bagFocusIndex(snapshot.focusKey);
+  if (index === null || !reducedQuantities.has(index) || snapshot.value === undefined) return snapshot;
+  const value = Number(snapshot.value);
+  const max = bag[index]?.quantity;
+  return max !== undefined && Number.isFinite(value) && value > max
+    ? { ...snapshot, value: undefined, selection: null }
+    : snapshot;
+}
 
 type QuickIconCacheEntry = {
   signature: string;
@@ -121,25 +174,26 @@ const KEY_GUIDE_SECTIONS: {
   },
 ];
 
+function effectiveKeyText(bindings: Partial<Record<GameAction, string>>, action: GameAction): string {
+  const codes = getEffectiveKeyCodes(action, resolveEffectiveBindings(bindings));
+  if (codes.length === 0) return '未生效';
+  if (codes.includes('ControlLeft') && codes.includes('ControlRight') && codes.length === 2) return '左／右 Ctrl';
+  if (codes.includes('AltLeft') && codes.includes('AltRight') && codes.length === 2) return '左／右 Alt';
+  return codes.map(codeLabel).join('／');
+}
+
 function getKeyBadgeText(bindings: Partial<Record<GameAction, string>>, item: KeyGuideItem): string {
   if (item.action === 'moveLeft') {
-    const left = codeLabel(bindings.moveLeft ?? DEFAULT_KEY_BINDINGS.moveLeft);
-    const right = codeLabel(bindings.moveRight ?? DEFAULT_KEY_BINDINGS.moveRight);
+    const left = effectiveKeyText(bindings, 'moveLeft');
+    const right = effectiveKeyText(bindings, 'moveRight');
     return left === '←' && right === '→' ? '← / →' : `${left} / ${right}`;
   }
   if (item.action === 'climbUp') {
-    const up = codeLabel(bindings.climbUp ?? DEFAULT_KEY_BINDINGS.climbUp);
-    const down = codeLabel(bindings.climbDown ?? DEFAULT_KEY_BINDINGS.climbDown);
+    const up = effectiveKeyText(bindings, 'climbUp');
+    const down = effectiveKeyText(bindings, 'climbDown');
     return up === '↑' && down === '↓' ? '↑ / ↓' : `${up} / ${down}`;
   }
-  const code = bindings[item.action] ?? DEFAULT_KEY_BINDINGS[item.action];
-  if (item.action === 'jump' && (!code || code === 'AltLeft' || code === 'AltRight')) {
-    return 'Alt';
-  }
-  if (item.action === 'attack' && (!code || code === 'ControlLeft' || code === 'ControlRight')) {
-    return 'Ctrl';
-  }
-  return codeLabel(code);
+  return effectiveKeyText(bindings, item.action);
 }
 
 function makeElement<K extends keyof HTMLElementTagNameMap>(
@@ -232,6 +286,12 @@ function formatNumber(value: number): string {
   return Math.max(0, Math.floor(value)).toLocaleString('zh-HK');
 }
 
+function formatEquipmentStatsPreview(preview: EquipmentStatsPreview): string {
+  return '攻擊 ' + formatNumber(preview.before.attack) + ' → ' + formatNumber(preview.after.attack)
+    + '；防禦 ' + formatNumber(preview.before.defense) + ' → ' + formatNumber(preview.after.defense)
+    + '；生命上限 ' + formatNumber(preview.before.maxHp) + ' → ' + formatNumber(preview.after.maxHp);
+}
+
 function percent(value: number, maximum: number): number {
   if (maximum <= 0) return 0;
   return Math.max(0, Math.min(100, (value / maximum) * 100));
@@ -289,10 +349,6 @@ function kindLabel(kind: string): string {
   }[kind] ?? kind;
 }
 
-function shopKindOrder(kind: string): number {
-  return ['consumable', 'weapon', 'body', 'hat'].indexOf(kind) >>> 0;
-}
-
 function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): string {
   const effects: string[] = [];
   if (item.attack) effects.push('攻擊 +' + item.attack);
@@ -307,6 +363,30 @@ function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): str
     '買價 ' + (item.buyPrice > 0 ? formatNumber(item.buyPrice) : '不可購買'),
     '賣價 ' + formatNumber(item.sellPrice),
   ].join('\n');
+}
+
+function makeEquipmentComparison(
+  document: Document,
+  view: UiSnapshot,
+  player: NonNullable<UiSnapshot['saveData']>['player'],
+  item: UiSnapshot['catalog']['rules']['items'][string],
+): HTMLElement | null {
+  if (!item.slot) return null;
+  // Compare against what is worn now so players can tell an upgrade without opening 裝備.
+  const currentId = player.equipment[item.slot];
+  const current = currentId ? view.catalog.rules.items[currentId] : undefined;
+  const compare = makeElement(document, 'p', 'ms-compare', '對比' + (current ? '「' + current.name + '」' : '空的' + slotLabel(item.slot) + '欄') + '：');
+  const stats = [['攻擊', 'attack'], ['防禦', 'defense'], ['最大 HP', 'hpBonus']] as const;
+  let changed = false;
+  for (const [label, key] of stats) {
+    const delta = (item[key] ?? 0) - (current?.[key] ?? 0);
+    if (delta === 0) continue;
+    if (changed) compare.append('・');
+    changed = true;
+    compare.append(makeElement(document, 'span', delta > 0 ? 'ms-compare__up' : 'ms-compare__down', label + (delta > 0 ? ' ▲' : ' ▼') + Math.abs(delta)));
+  }
+  if (!changed) compare.append('能力相同');
+  return compare;
 }
 
 /** Gear the hero can wear now that beats the equipped piece on some stat and loses on none. */
@@ -519,7 +599,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let lastPanelSignature = '';
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
   let selectedBagIndex: number | null = null;
-  let inventoryFilter = 'all';
+  let inventoryFilter: InventoryFilter = 'all';
+  let shopFilter: ShopFilter = 'all';
   let selectedMapId: string | null = null;
   let selectedQuestId: string | null = null;
   let createRequested = false;
@@ -528,7 +609,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let nameDraft = '旅人';
   let shopQuantities = new Map<string, number>();
   let sellQuantities = new Map<number, number>();
-  let pendingBinding: string | null = null;
+  let lastReconciledBag: NonNullable<UiSnapshot['saveData']>['player']['bag'] = [];
+  let bagStateMessage = '';
+  let bagHeadingRestorePending = false;
+  let pendingBinding: Exclude<GameAction, 'escape'> | null = null;
   let bindingMessage = '';
   // Which row the message is about, so it shows next to that row instead of below all 17 bindings.
   let bindingMessageAction: string | null = null;
@@ -539,6 +623,19 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   let restoreFocusAfterResume = false;
   let disposed = false;
   const quickIconCache = new Map<string, QuickIconCacheEntry>();
+
+  const clearTransientViewState = (): void => {
+    selectedBagIndex = null;
+    sellQuantities = new Map();
+    shopQuantities = new Map();
+    bagStateMessage = '';
+    bagHeadingRestorePending = false;
+    pendingBinding = null;
+    bindingMessage = '';
+    bindingMessageAction = null;
+    lastPanelFocus = clearBagFocus(lastPanelFocus);
+    panelFocusBeforeResume = clearBagFocus(panelFocusBeforeResume);
+  };
 
   const dispatchDraft = (command: CommandDraft): void => {
     if (!disposed) dispatch(command);
@@ -647,13 +744,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     keyGuideCard.replaceChildren();
 
     const headerRow = makeElement(document, 'div', 'ms-key-guide__header');
-    headerRow.append(
-      makeElement(document, 'h4', '', '操作按鍵提示'),
-      makeButton(document, '✕ 收起', 'toggle-key-guide', {
-        className: 'ms-button ms-button--close',
-        title: '收起按鍵提示',
-      }),
-    );
+    const closeButton = makeButton(document, '✕ 收起', 'toggle-key-guide', {
+      className: 'ms-button ms-button--close',
+      title: '收起按鍵提示',
+    });
+    closeButton.setAttribute('aria-label', '✕ 收起：操作按鍵提示');
+    headerRow.append(makeElement(document, 'h4', '', '操作按鍵提示'), closeButton);
     keyGuideCard.append(headerRow);
 
     for (const section of KEY_GUIDE_SECTIONS) {
@@ -676,7 +772,22 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     keyGuideCard.append(tip);
   };
 
-  const captureNameInput = (): HTMLInputElement => {
+  const nameFeedbackId = 'brightwood-first-oath-character-name-feedback';
+  const presentNameFeedback = (
+    input: HTMLInputElement,
+    feedback: HTMLParagraphElement | null,
+    checked: ReturnType<typeof validatePlayerName>,
+  ): void => {
+    input.setAttribute('aria-describedby', nameFeedbackId);
+    input.setAttribute('aria-invalid', String(!checked.ok));
+    if (!feedback) return;
+    feedback.className = checked.ok ? 'ms-panel-note' : 'ms-warning';
+    feedback.textContent = checked.ok
+      ? `建立後將使用名稱「${checked.value}」。`
+      : checked.message;
+  };
+
+  const captureNameInput = (checked: ReturnType<typeof validatePlayerName>): HTMLInputElement => {
     const input = makeElement(document, 'input', 'ms-input');
     input.type = 'text';
     input.maxLength = 16;
@@ -685,6 +796,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     input.value = nameDraft;
     input.dataset.focus = 'character-name';
     input.setAttribute('aria-label', '角色名稱');
+    input.setAttribute('aria-describedby', nameFeedbackId);
+    input.setAttribute('aria-invalid', String(!checked.ok));
     return input;
   };
 
@@ -724,7 +837,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const maxHp = view.stats?.maxHp ?? player.hp;
     if (player.hp > 0 && player.hp <= maxHp * 0.3) {
       hp.classList.add('is-low');
-      hp.title = 'HP 偏低，記得按 ' + codeLabel(view.saveData?.settings.bindings.potionHp ?? DEFAULT_KEY_BINDINGS.potionHp) + ' 喝紅色藥水';
+      hp.title = 'HP 偏低，記得按 ' + effectiveKeyText(view.saveData?.settings.bindings ?? {}, 'potionHp') + ' 喝紅色藥水';
     }
     const mp = makeMeter(document, 'MP', player.mp, view.stats?.maxMp ?? player.mp, 'mp');
     const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
@@ -808,9 +921,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       if (interactButton.title !== '') interactButton.title = '';
       return;
     }
-    const binding = view.saveData?.settings.bindings.interact ?? DEFAULT_KEY_BINDINGS.interact;
     const verb = hint.kind === 'portal' ? '前往' : '互動';
-    const text = codeLabel(binding) + ' ' + verb + '：' + hint.label
+    const text = effectiveKeyText(view.saveData?.settings.bindings ?? {}, 'interact') + ' ' + verb + '：' + hint.label
       + (hint.blockedMessage ? '｜' + hint.blockedMessage : '');
     if (interactionHintRow.textContent !== text) interactionHintRow.textContent = text;
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
@@ -837,7 +949,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
       if (key) {
         const action = keyForSkill[slotId]!;
-        key.textContent = codeLabel(view.saveData?.settings.bindings[action] ?? DEFAULT_KEY_BINDINGS[action]);
+        key.textContent = effectiveKeyText(view.saveData?.settings.bindings ?? {}, action);
       }
       const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
       const state = button.querySelector<HTMLElement>('.ms-quick-slot__state');
@@ -925,9 +1037,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
     pickupButton.disabled = !canAct;
     interactButton.disabled = !canAct;
-    const bindings = view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS;
-    pickupButton.textContent = codeLabel(bindings.pickup ?? DEFAULT_KEY_BINDINGS.pickup) + ' 拾取';
-    interactButton.textContent = codeLabel(bindings.interact ?? DEFAULT_KEY_BINDINGS.interact) + ' 互動';
+    const bindings = view.saveData?.settings.bindings ?? {};
+    pickupButton.textContent = effectiveKeyText(bindings, 'pickup') + ' 拾取';
+    interactButton.textContent = effectiveKeyText(bindings, 'interact') + ' 互動';
     pauseButton.hidden = !playing;
     pauseButton.disabled = !canAct;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
@@ -1022,13 +1134,19 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         const card = makeScreenCard(document, '建立角色', view.saveData
           ? (replaceConfirmed ? '第二次確認：既有角色進度將被取代，且無法復原。' : '建立新角色會取代目前角色，請先確認後再送出。')
           : '輸入角色名稱，確認後開始冒險。');
-        card.append(captureNameInput());
+        const checkedName = validatePlayerName(nameDraft);
+        const nameInput = captureNameInput(checkedName);
+        const nameFeedback = makeElement(document, 'p');
+        nameFeedback.id = nameFeedbackId;
+        presentNameFeedback(nameInput, nameFeedback, checkedName);
+        card.append(nameInput, nameFeedback);
         if (view.saveData && !replaceConfirmed) {
           card.append(makeButton(document, '我了解，繼續確認', 'create-confirm', { className: 'ms-button ms-button--danger' }));
         } else {
           card.append(makeButton(document, view.saveData ? '確認取代並建立' : '確認建立角色', 'create-confirm', {
             className: 'ms-button ms-button--primary',
-            disabled: !nameDraft.trim(),
+            disabled: !checkedName.ok,
+            title: checkedName.ok ? '' : checkedName.message,
           }));
         }
         const confirmButton = card.querySelector<HTMLButtonElement>('[data-ui-action="create-confirm"]');
@@ -1232,6 +1350,54 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
 
   const renderPanel = (view: UiSnapshot, force = false): void => {
     const panel = view.panels.at(-1) ?? null;
+    const previousBag = lastReconciledBag;
+    const nextBag = view.saveData?.player.bag ?? [];
+    const activeBeforeReconciliation = document.activeElement;
+    const activeBagControl = activeBeforeReconciliation instanceof HTMLElement
+      && panelHost.contains(activeBeforeReconciliation)
+      && isBagIndexedControl(activeBeforeReconciliation);
+    const hadBagFocusSnapshot = bagFocusIndex(lastPanelFocus?.focusKey) !== null
+      || bagFocusIndex(panelFocusBeforeResume?.focusKey) !== null
+      || bagHeadingRestorePending;
+    const reconciliation = reconcileBagViewState(previousBag, nextBag, selectedBagIndex, sellQuantities);
+    selectedBagIndex = reconciliation.selectedBagIndex;
+    sellQuantities = reconciliation.sellQuantities;
+    lastReconciledBag = nextBag.map((stack) => ({ ...stack }));
+    const bagPanel = panel === 'inventory' || panel === 'shop';
+    const bagStructureChanged = reconciliation.structureChanged;
+    if (bagStructureChanged) {
+      bagStateMessage = reconciliation.hadAffectedState ? '請重新選取物品' : '';
+      lastPanelFocus = clearBagFocus(lastPanelFocus);
+      panelFocusBeforeResume = clearBagFocus(panelFocusBeforeResume);
+      bagHeadingRestorePending = bagPanel
+        && (view.focusResumeRequired === true || restoreFocusAfterResume)
+        && (hadBagFocusSnapshot || activeBagControl);
+    } else {
+      const reducedQuantities = new Set<number>();
+      for (let index = 0; index < previousBag.length; index += 1) {
+        const before = previousBag[index]!;
+        const after = nextBag[index];
+        if (after && before.itemId === after.itemId && after.quantity < before.quantity) reducedQuantities.add(index);
+      }
+      if (reducedQuantities.size > 0) {
+        lastPanelFocus = clearOverflowingSellValue(lastPanelFocus, nextBag, reducedQuantities);
+        panelFocusBeforeResume = clearOverflowingSellValue(panelFocusBeforeResume, nextBag, reducedQuantities);
+        if (activeBeforeReconciliation instanceof HTMLInputElement
+          && activeBeforeReconciliation.dataset.sellQuantity !== undefined) {
+          const bagIndex = Number(activeBeforeReconciliation.dataset.sellQuantity);
+          const max = nextBag[bagIndex]?.quantity;
+          if (max !== undefined && reducedQuantities.has(bagIndex)
+            && Number(activeBeforeReconciliation.value) > max) {
+            const clamped = sellQuantities.get(bagIndex) ?? clampInteger(Number(activeBeforeReconciliation.value), 1, max);
+            activeBeforeReconciliation.value = String(clampInteger(clamped, 1, max));
+          }
+        }
+      }
+    }
+    const skipBagFocusPreservation = bagStructureChanged && bagPanel && activeBagControl;
+    const focusStableBagHeading = skipBagFocusPreservation
+      && view.focusResumeRequired !== true && !restoreFocusAfterResume;
+    if (focusStableBagHeading) bagHeadingRestorePending = false;
     // Leaving settings mid-rebind used to keep 「按鍵中…」 armed (and old feedback) for the next visit.
     if (panel !== 'settings' && (pendingBinding !== null || bindingMessage !== '')) {
       pendingBinding = null;
@@ -1262,8 +1428,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       selectedMapId,
       selectedQuestId,
       inventoryFilter,
+      shopFilter,
+      potionCooling: panel === 'inventory' && view.nowMs < view.potionReadyAtMs,
       shopQuantities: Array.from(shopQuantities.entries()),
       sellQuantities: Array.from(sellQuantities.entries()),
+      bagStateMessage,
       pendingBinding,
       bindingMessage,
       bindingMessageAction,
@@ -1280,7 +1449,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const openDetails = new Set(samePanel
       ? Array.from(panelHost.querySelectorAll<HTMLDetailsElement>('details[open][data-detail-id]')).map((detail) => detail.dataset.detailId)
       : []);
-    preserveFocus(panelHost, () => {
+    const buildPanel = (): void => {
       const card = makeElement(document, 'section', 'ms-panel');
       card.setAttribute('aria-label', PANEL_LABELS[panel]);
       card.dataset.panel = panel;
@@ -1289,10 +1458,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       title.append(
         makeElement(document, 'h2', '', PANEL_LABELS[panel]),
       );
+      if (panel === 'inventory' || panel === 'shop') {
+        const headingTitle = title.querySelector<HTMLElement>('h2');
+        if (headingTitle) {
+          headingTitle.tabIndex = -1;
+          headingTitle.dataset.focus = 'panel-heading';
+        }
+      }
       const closeButton = makeButton(document, '關閉', 'close-panel', {
         className: 'ms-button ms-button--close',
         title: '關閉最上層面板',
       });
+      closeButton.setAttribute('aria-label', '關閉' + PANEL_LABELS[panel]);
       closeButton.dataset.focus = 'panel-close';
       heading.append(title, closeButton);
       const body = makeElement(document, 'div', 'ms-panel__body');
@@ -1301,8 +1478,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         selectedMapId,
         selectedQuestId,
         inventoryFilter,
+        shopFilter,
         shopQuantities,
         sellQuantities,
+        bagStateMessage,
         pendingBinding,
         bindingMessage,
         bindingMessageAction,
@@ -1312,7 +1491,13 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       card.append(heading, body);
       panelHost.replaceChildren(card);
-    }, panel === 'dialogue');
+    };
+    if (skipBagFocusPreservation) {
+      buildPanel();
+      if (focusStableBagHeading) panelHost.querySelector<HTMLElement>('[data-focus="panel-heading"]')?.focus();
+    } else {
+      preserveFocus(panelHost, buildPanel, panel === 'dialogue');
+    }
     if (panel === 'dialogue') {
       const dialogueButtons = Array.from(panelHost.querySelectorAll<HTMLButtonElement>(
         '.ms-panel[data-panel="dialogue"] button[data-ui-action]:not(:disabled)',
@@ -1333,15 +1518,19 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const restoreCommittedFocus = (view: UiSnapshot): void => {
     const panel = view.panels.at(-1) ?? null;
     if (!panel || panelHost.hidden) {
+      bagHeadingRestorePending = false;
       focusGameCanvas();
       return;
     }
 
     const saved = panelFocusBeforeResume?.panel === panel ? panelFocusBeforeResume : null;
+    const restoreBagHeading = bagHeadingRestorePending && (panel === 'inventory' || panel === 'shop');
     const usable = (element: HTMLElement): boolean => !element.matches(':disabled')
       && element.tabIndex >= 0
       && !element.closest('[hidden]');
-    let target = saved?.focusKey
+    let target = restoreBagHeading
+      ? panelHost.querySelector<HTMLElement>('[data-focus="panel-heading"]') ?? undefined
+      : saved?.focusKey
       ? Array.from(panelHost.querySelectorAll<HTMLElement>('[data-focus]'))
         .find((element) => element.dataset.focus === saved.focusKey && usable(element))
       : undefined;
@@ -1367,6 +1556,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     }
     const body = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (body && saved) body.scrollTop = saved.scrollTop;
+    if (restoreBagHeading || bagHeadingRestorePending) bagHeadingRestorePending = false;
   };
 
   const handleAction = (button: HTMLButtonElement, view: UiSnapshot): void => {
@@ -1385,6 +1575,20 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         selectedMapId = button.dataset.mapId;
         renderPanel(view, true);
         return;
+      case 'review-npc-map': {
+        const npcId = button.dataset.npcId;
+        if (!npcId) return;
+        const latestView = currentView ?? view;
+        const mapTarget = resolveNpcMapTarget(latestView.catalog.world, npcId);
+        if (!mapTarget) return;
+        selectedMapId = mapTarget.mapId;
+        if (latestView.panels.at(-1) === 'map') {
+          renderPanel(latestView, true);
+          return;
+        }
+        dispatchDraft({ type: 'setPanel', payload: { panel: 'map' } });
+        return;
+      }
       case 'open-panel': {
         const panel = PANEL_ORDER.find((entry) => entry === button.dataset.panel);
         if (!panel) return;
@@ -1400,10 +1604,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         if (view.panels.length <= 1) focusGameCanvas(button);
         return;
       case 'continue':
+        clearTransientViewState();
         dispatchDraft({ type: 'continue', payload: {} });
         focusGameCanvas(button);
         return;
       case 'new-role':
+        clearTransientViewState();
         createRequested = true;
         replaceConfirmed = false;
         nameDraft = '旅人';
@@ -1411,16 +1617,18 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         renderScreen(view);
         return;
       case 'create-confirm':
+        clearTransientViewState();
         if (view.saveData && !replaceConfirmed) {
           replaceConfirmed = true;
           lastScreenSignature = '';
           renderScreen(view);
           return;
         }
-        if (!nameDraft.trim()) return;
+        const checkedName = validatePlayerName(nameDraft);
+        if (!checkedName.ok) return;
         createRequested = false;
         replaceConfirmed = false;
-        dispatchDraft({ type: 'newGame', payload: { name: nameDraft.trim() } });
+        dispatchDraft({ type: 'newGame', payload: { name: checkedName.value } });
         focusGameCanvas(button);
         return;
       case 'create-cancel':
@@ -1475,6 +1683,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         dispatchDraft({ type: 'togglePause', payload: {} });
         return;
       case 'return-title':
+        clearTransientViewState();
         dispatchDraft({ type: 'returnTitle', payload: {} });
         return;
       case 'reload-page':
@@ -1526,42 +1735,90 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       case 'use-item': {
         const itemId = button.dataset.itemId;
-        if (itemId) dispatchDraft({ type: 'useItem', payload: { itemId } });
+        if (itemId) {
+          if (button.dataset.inventoryUse === 'true') {
+            const player = view.saveData?.player;
+            if (!player) return;
+            const preview = resolveItemUse({
+              player,
+              rules: view.catalog.rules,
+              requestedItemId: itemId,
+              nowMs: view.nowMs,
+              potionReadyAtMs: view.potionReadyAtMs,
+            });
+            if (!preview.ok) return;
+          }
+          dispatchDraft({ type: 'useItem', payload: { itemId } });
+        }
         if (view.panels.length === 0) focusGameCanvas(button);
         return;
       }
       case 'select-bag':
         selectedBagIndex = Number(button.dataset.bagIndex);
-        if (Number.isInteger(selectedBagIndex)) renderPanel(view, true);
+        if (Number.isInteger(selectedBagIndex)) {
+          bagStateMessage = '';
+          renderPanel(view, true);
+        }
         return;
       case 'inventory-filter':
-        inventoryFilter = button.dataset.kind ?? 'all';
+        {
+          const filter = INVENTORY_FILTERS.find(({ id }) => id === button.dataset.kind);
+          if (!filter || filter.id === inventoryFilter) return;
+          inventoryFilter = filter.id;
+        }
         selectedBagIndex = null;
         renderPanel(view, true);
         return;
+      case 'shop-filter': {
+        const filter = SHOP_FILTERS.find(({ id }) => id === button.dataset.kind);
+        if (!filter || filter.id === shopFilter) return;
+        shopFilter = filter.id;
+        renderPanel(view, true);
+        return;
+      }
       case 'equip-bag': {
         const bagIndex = Number(button.dataset.bagIndex);
-        if (Number.isInteger(bagIndex)) dispatchDraft({ type: 'equip', payload: { bagIndex } });
+        const player = view.saveData?.player;
+        if (!player || !Number.isInteger(bagIndex)) return;
+        const preview = previewEquipmentAction({
+          player,
+          rules: view.catalog.rules,
+          action: { type: 'equip', bagIndex },
+        });
+        if (!preview.disabled) dispatchDraft({ type: 'equip', payload: { bagIndex } });
         return;
       }
       case 'sell-materials': {
-        const bag = view.saveData?.player.bag ?? [];
-        // Highest index first so earlier stacks keep their positions while emptied ones are removed.
-        for (let bagIndex = bag.length - 1; bagIndex >= 0; bagIndex -= 1) {
-          const stack = bag[bagIndex]!;
-          const item = view.catalog.rules.items[stack.itemId];
-          if (item?.kind !== 'material' || item.sellPrice <= 0) continue;
+        const player = view.saveData?.player;
+        if (!player) return;
+        const preview = previewMaterialSale({
+          player,
+          rules: view.catalog.rules,
+          atMerchant: view.interaction?.npcId === 'merchant',
+        });
+        if (preview.disabled) return;
+        for (const { bagIndex, quantity } of preview.actions) {
           sellQuantities.delete(bagIndex);
-          dispatchDraft({ type: 'sell', payload: { bagIndex, quantity: stack.quantity } });
+          dispatchDraft({ type: 'sell', payload: { bagIndex, quantity } });
         }
         return;
       }
       case 'sell-bag': {
         const bagIndex = Number(button.dataset.bagIndex);
-        const maxQuantity = view.saveData?.player.bag[bagIndex]?.quantity ?? 1;
+        const player = view.saveData?.player;
+        if (!player) return;
+        const maxQuantity = player.bag[bagIndex]?.quantity ?? 1;
         const rawQuantity = Number(button.dataset.quantity ?? sellQuantities.get(bagIndex) ?? 1);
         const quantity = clampInteger(rawQuantity, 1, maxQuantity);
         if (Number.isInteger(bagIndex) && quantity > 0) {
+          const preview = previewSale({
+            player,
+            rules: view.catalog.rules,
+            bagIndex,
+            quantity,
+            atMerchant: view.interaction?.npcId === 'merchant',
+          });
+          if (preview.disabled) return;
           sellQuantities.delete(bagIndex);
           dispatchDraft({ type: 'sell', payload: { bagIndex, quantity } });
         }
@@ -1569,14 +1826,25 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       case 'unequip': {
         const slot = button.dataset.slot;
-        if (slot === 'weapon' || slot === 'body' || slot === 'hat') dispatchDraft({ type: 'unequip', payload: { slot } });
+        const player = view.saveData?.player;
+        if (!player || (slot !== 'weapon' && slot !== 'body' && slot !== 'hat')) return;
+        const preview = previewEquipmentAction({
+          player,
+          rules: view.catalog.rules,
+          action: { type: 'unequip', slot },
+        });
+        if (!preview.disabled) dispatchDraft({ type: 'unequip', payload: { slot } });
         return;
       }
       case 'allocate-ap': {
         const stat = button.dataset.stat;
         const available = view.saveData?.player.ap ?? 0;
         const amount = clampInteger(Number(button.dataset.amount ?? 1), 1, Math.max(1, available));
-        if (stat === 'str' || stat === 'dex') dispatchDraft({ type: 'allocateAp', payload: { stat, amount } });
+        const latestView = currentView;
+        const player = latestView?.saveData?.player;
+        if (!latestView || !player || (stat !== 'str' && stat !== 'dex')) return;
+        const preview = previewApAllocation({ player, rules: latestView.catalog.rules, stat, amount });
+        if (preview.ok) dispatchDraft({ type: 'allocateAp', payload: { stat, amount } });
         return;
       }
       case 'learn-skill': {
@@ -1591,13 +1859,47 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       }
       case 'claim-quest': {
         const questId = button.dataset.questId;
-        if (questId) dispatchDraft({ type: 'claimQuest', payload: { questId } });
+        const latestView = currentView;
+        const saveData = latestView?.saveData;
+        if (!questId || !latestView || !saveData) return;
+        if (resolveQuestClaim(saveData, questId, latestView.catalog).ok) {
+          dispatchDraft({ type: 'claimQuest', payload: { questId } });
+        }
         return;
       }
       case 'buy': {
         const itemId = button.dataset.itemId;
-        const stackable = (currentView?.catalog.rules.items[itemId ?? '']?.stackLimit ?? 1) > 1;
-        if (itemId) dispatchDraft({ type: 'buy', payload: { itemId, quantity: stackable ? shopQuantities.get(itemId) ?? 1 : 1 } });
+        const player = view.saveData?.player;
+        const item = itemId ? view.catalog.rules.items[itemId] : undefined;
+        if (!itemId || !player || !item) return;
+        const quantity = item.stackLimit > 1
+          ? clampInteger(shopQuantities.get(itemId) ?? 1, 1, 99)
+          : 1;
+        const preview = previewBuy({
+          player,
+          rules: view.catalog.rules,
+          itemId,
+          quantity,
+          atMerchant: view.interaction?.npcId === 'merchant',
+        });
+        if (!preview.disabled) dispatchDraft({ type: 'buy', payload: { itemId, quantity: preview.quantity } });
+        return;
+      }
+      case 'select-max-buy': {
+        const itemId = button.dataset.itemId;
+        const latestView = currentView;
+        const player = latestView?.saveData?.player;
+        const item = itemId && latestView ? latestView.catalog.rules.items[itemId] : undefined;
+        if (!itemId || !latestView || !player || !item || item.stackLimit <= 1) return;
+        const preview = previewMaximumBuy({
+          player,
+          rules: latestView.catalog.rules,
+          itemId,
+          atMerchant: latestView.interaction?.npcId === 'merchant',
+        });
+        if (preview.disabled) return;
+        shopQuantities.set(itemId, preview.quantity);
+        renderPanel(latestView, true);
         return;
       }
       case 'settings-mute': {
@@ -1607,13 +1909,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         return;
       }
       case 'use-cloud-version':
+        clearTransientViewState();
         dispatchDraft({ type: 'useCloudVersion', payload: {} });
         return;
       case 'settings-rebind': {
         const actionId = button.dataset.actionId;
-        if (!actionId || !KEY_ACTIONS.some(({ id }) => id === actionId)) return;
-        pendingBinding = actionId;
-        bindingMessageAction = actionId;
+        const action = KEY_ACTIONS.find(({ id }) => id === actionId);
+        if (!action) return;
+        pendingBinding = action.id;
+        bindingMessageAction = action.id;
         bindingMessage = '按一下新按鍵；Esc 保留關閉最上層面板。';
         renderPanel(view, true);
         return;
@@ -1661,6 +1965,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       restoreFocusAfterResume = false;
       panelFocusBeforeResume = null;
     }
+    const enteringLoad = (view.screen === 'loading' && previousView?.screen !== 'loading')
+      || (view.saveStatus === 'loading' && previousView?.saveStatus !== 'loading');
+    if (enteringLoad) clearTransientViewState();
     currentView = view;
     shell.classList.toggle('is-focus-resume-gated', nextResumeGate);
     // Before a character is in the world, hide the empty in-game HUD and show the cover art instead.
@@ -1679,6 +1986,38 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const top = view.panels.at(-1) === panel;
       button.classList.toggle('is-active', top);
       button.setAttribute('aria-expanded', String(top));
+      if (panel === 'inventory') {
+        const player = view.saveData?.player;
+        if (player) {
+          const used = player.bag.length;
+          const label = PANEL_LABELS[panel];
+          button.setAttribute('aria-label', '開啟' + label + '（已用 ' + used + '／32 格）');
+          button.title = label + '：已用 ' + used + '／32 格'
+            + (used >= 28 ? '；可出售或使用物品整理空位' : '');
+          if (used >= 28) button.dataset.badge = String(used);
+          else delete button.dataset.badge;
+        } else {
+          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+          button.title = PANEL_LABELS[panel];
+          delete button.dataset.badge;
+        }
+        continue;
+      }
+      if (panel === 'quests') {
+        const readyCount = view.saveData
+          ? view.questViews.filter(({ status }) => status === 'ready').length
+          : 0;
+        if (readyCount > 0) {
+          button.dataset.badge = String(readyCount);
+          button.setAttribute('aria-label', '開啟任務（待回報 ' + readyCount + ' 項）');
+          button.title = '任務：' + readyCount + ' 項待回報，請查看手帳中的回報 NPC 與獎勵';
+        } else {
+          delete button.dataset.badge;
+          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+          button.title = PANEL_LABELS[panel];
+        }
+        continue;
+      }
       // Unspent AP/SP badges: new players otherwise rarely discover the stats/skills panels.
       const unspent = panel === 'stats' ? view.saveData?.player.ap ?? 0
         : panel === 'skills' ? view.saveData?.player.sp ?? 0 : 0;
@@ -1719,9 +2058,13 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     if (target instanceof HTMLInputElement && target.dataset.focus === 'character-name') {
       nameDraft = target.value;
       lastScreenSignature = '';
+      const checkedName = validatePlayerName(nameDraft);
+      const feedback = screenLayer.querySelector<HTMLParagraphElement>(`#${nameFeedbackId}`);
+      presentNameFeedback(target, feedback, checkedName);
       const confirmButton = screenLayer.querySelector<HTMLButtonElement>('[data-ui-action="create-confirm"]');
       if (confirmButton && currentView && (!currentView.saveData || replaceConfirmed)) {
-        confirmButton.disabled = !nameDraft.trim();
+        confirmButton.disabled = !checkedName.ok;
+        confirmButton.title = checkedName.ok ? '' : checkedName.message;
       }
       return;
     }
@@ -1737,7 +2080,6 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     // click on 購買／出售, replaced the button between mousedown and mouseup and ate that click.
     if (target instanceof HTMLInputElement && (target.dataset.shopQuantity || target.dataset.sellQuantity !== undefined)) {
       const value = Number(target.value);
-      if (!Number.isInteger(value) || value < 1) return;
       if (target.dataset.shopQuantity) shopQuantities.set(target.dataset.shopQuantity, clampInteger(value, 1, 99));
       else {
         const bagIndex = Number(target.dataset.sellQuantity);
@@ -1783,6 +2125,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       && target.closest('.ms-screen-card--focus-resume')) return;
     event.preventDefault();
     event.stopPropagation();
+    if (event.repeat) return;
     const code = event.code;
     if (code === 'Escape') {
       bindingMessage = 'Esc 保留給關閉最上層面板。';
@@ -1796,13 +2139,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
     const bindings = currentView.saveData.settings.bindings;
-    // Compare against the effective bindings (defaults + saved overrides) so a new key
-    // cannot silently steal a default binding from another action.
-    const effective: Record<string, string> = { ...DEFAULT_KEY_BINDINGS, ...bindings };
-    const duplicate = Object.entries(effective).find(([action, boundCode]) => action !== pendingBinding && boundCode === code);
-    if (duplicate) {
-      const action = KEY_ACTIONS.find((entry) => entry.id === duplicate[0])?.label ?? duplicate[0];
-      bindingMessage = codeLabel(code) + ' 已綁定「' + action + '」，請選擇另一個按鍵。';
+    const conflict = findKeyBindingConflict(resolveEffectiveBindings(bindings), pendingBinding, code);
+    if (conflict) {
+      const action = KEY_ACTIONS.find((entry) => entry.id === conflict.action)?.label
+        ?? (conflict.action === 'escape' ? '關閉面板／暫停' : conflict.action);
+      bindingMessage = codeLabel(code) + ' 與「' + action + '」衝突，請選擇另一個按鍵。';
       renderPanel(currentView, true);
       return;
     }
@@ -1877,6 +2218,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     dispose(): void {
       if (disposed) return;
       disposed = true;
+      clearTransientViewState();
       shell.removeEventListener('click', onClick);
       shell.removeEventListener('focusin', rememberPanelFocus, true);
       shell.removeEventListener('focusout', rememberPanelFocus, true);
@@ -1922,6 +2264,7 @@ function makeScreenCard(document: Document, title: string, description: string):
   const card = makeElement(document, 'section', 'ms-screen-card');
   card.setAttribute('role', 'dialog');
   card.setAttribute('aria-modal', 'true');
+  card.setAttribute('aria-label', title);
   card.append(
     makeElement(document, 'h1', '', title),
     makeElement(document, 'p', 'ms-screen-card__description', description),
@@ -2034,7 +2377,8 @@ function buildWorldEndingFeedback(document: Document, view: UiSnapshot, showSide
 }
 
 function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId: string | null): HTMLElement {
-  const journal = buildVisualQuests(document, view, selectedQuestId);
+  const selectedQuest = chooseJournalQuest(view.questViews, selectedQuestId);
+  const journal = buildVisualQuests(document, view, selectedQuest?.questId ?? null);
   const banner = journal.querySelector<HTMLElement>('.ms-quest-journey');
   if (banner) {
     const image = banner.querySelector<HTMLImageElement>('img');
@@ -2085,7 +2429,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
         className: 'ms-button ms-quest-stop is-' + quest.status,
         data: { questId: quest.questId },
       });
-      const selected = quest.questId === selectedQuestId;
+      const selected = quest.questId === selectedQuest?.questId;
       stop.classList.toggle('is-selected', selected);
       stop.setAttribute('aria-pressed', String(selected));
       stop.setAttribute('aria-label', quest.title + '，' + JOURNAL_STATUS_LABELS[quest.status]);
@@ -2101,10 +2445,6 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
     journal.insertBefore(section, selectedCard);
   }
 
-  const selectedQuest = view.questViews.find(({ questId }) => questId === selectedQuestId)
-    ?? view.questViews.find(({ status }) => status === 'ready')
-    ?? view.questViews.find(({ status }) => status === 'active')
-    ?? view.questViews.find(({ status }) => status === 'available');
   if (selectedQuest?.questId === 'q21') {
     for (const verb of selectedCard.querySelectorAll<HTMLElement>('.ms-journal-objective__verb')) {
       if (verb.textContent === '調律') verb.textContent = '調查';
@@ -2123,9 +2463,11 @@ type PanelBuildState = {
   selectedBagIndex: number | null;
   selectedMapId: string | null;
   selectedQuestId: string | null;
-  inventoryFilter: string;
+  inventoryFilter: InventoryFilter;
+  shopFilter: ShopFilter;
   shopQuantities: Map<string, number>;
   sellQuantities: Map<number, number>;
+  bagStateMessage: string;
   pendingBinding: string | null;
   bindingMessage: string;
   bindingMessageAction: string | null;
@@ -2182,40 +2524,43 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／32 格');
   note.append(usage, document.createTextNode('。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
   parent.append(note);
-  const categories = [
-    { id: 'all', label: '全部' },
-    { id: 'equipment', label: '裝備' },
-    { id: 'consumable', label: '消耗品' },
-    { id: 'material', label: '材料' },
-    { id: 'quest', label: '任務物品' },
-  ];
+  if (state.bagStateMessage) {
+    const resetNote = makeElement(document, 'p', 'ms-panel-note ms-bag-state-note', state.bagStateMessage);
+    resetNote.setAttribute('role', 'status');
+    parent.append(resetNote);
+  }
+  const categories = INVENTORY_FILTERS;
   const categoryBar = makeElement(document, 'div', 'ms-category-bar');
+  categoryBar.setAttribute('role', 'group');
+  categoryBar.setAttribute('aria-label', '背包分類');
   for (const category of categories) {
-    const button = makeButton(document, category.label, 'inventory-filter', {
+    const count = selectInventoryEntries(player.bag, view.catalog.rules.items, category.id).length;
+    const button = makeButton(document, category.label + '（' + count + '）', 'inventory-filter', {
       className: 'ms-chip' + (state.inventoryFilter === category.id ? ' is-active' : ''),
       data: { kind: category.id },
     });
-      button.dataset.focus = 'inventory-filter-' + category.id;
+    button.setAttribute('aria-pressed', String(state.inventoryFilter === category.id));
+    button.dataset.focus = 'inventory-filter-' + category.id;
+    button.setAttribute('aria-label', '背包分類：' + category.label + '，' + count + ' 組物品');
     categoryBar.append(button);
   }
   parent.append(categoryBar);
 
-  const filtered = player.bag
-    .map((stack, bagIndex) => ({ stack, bagIndex, item: view.catalog.rules.items[stack.itemId] }))
-    .filter(({ item }) => {
-      if (state.inventoryFilter === 'all') return true;
-      if (state.inventoryFilter === 'equipment') return item?.kind === 'weapon' || item?.kind === 'body' || item?.kind === 'hat';
-      return item?.kind === state.inventoryFilter;
-    });
+  const filtered = selectInventoryEntries(player.bag, view.catalog.rules.items, state.inventoryFilter);
+  const categoryLabel = categories.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
+  note.append(document.createTextNode(' 目前分類「' + categoryLabel + '」共 ' + filtered.length + ' 組物品。'
+    + (state.inventoryFilter === 'all' ? '' : ' 其他分類的物品仍計入已用格數。')));
   const selected = filtered.find(({ bagIndex }) => bagIndex === state.selectedBagIndex) ?? null;
   const layout = makeElement(document, 'div', 'ms-inventory-layout');
   const grid = makeElement(document, 'div', 'ms-bag-grid');
-  grid.setAttribute('aria-label', '32 格背包');
+  grid.setAttribute('aria-label', state.inventoryFilter === 'all'
+    ? '全部背包，顯示 ' + filtered.length + ' 組物品，共 32 格'
+    : '背包分類「' + categoryLabel + '」，顯示 ' + filtered.length + ' 組物品，共 32 格');
   for (let index = 0; index < 32; index += 1) {
     const entry = filtered[index];
     if (!entry) {
       const empty = makeElement(document, 'div', 'ms-bag-slot ms-bag-slot--empty');
-      empty.setAttribute('aria-label', '空背包格 ' + (index + 1));
+      empty.setAttribute('aria-label', (state.inventoryFilter === 'all' ? '空背包格 ' : '分類顯示空位 ') + (index + 1));
       empty.append(makeElement(document, 'span', 'ms-bag-slot__number', String(index + 1).padStart(2, '0')));
       grid.append(empty);
       continue;
@@ -2226,7 +2571,8 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
       title: item ? itemDetails(item) : '物品資料缺失：' + stack.itemId,
       data: { bagIndex: String(bagIndex) },
     });
-    slot.setAttribute('aria-label', (item?.name ?? stack.itemId) + ' ×' + stack.quantity + '，背包第 ' + (index + 1) + ' 格');
+    slot.setAttribute('aria-label', (item?.name ?? stack.itemId) + ' ×' + stack.quantity + '，背包第 ' + (bagIndex + 1) + ' 格');
+    slot.setAttribute('aria-pressed', String(bagIndex === state.selectedBagIndex));
     slot.dataset.focus = 'bag-slot-' + bagIndex;
     slot.append(
       makeInterfaceIcon(document, view, item?.iconKey ?? '', item?.name ?? stack.itemId, 'ms-bag-slot__icon'),
@@ -2246,10 +2592,22 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
 
   const detail = makeElement(document, 'aside', 'ms-item-detail');
   if (!selected) {
-    detail.append(
-      makeElement(document, 'h3', '', '選取一件物品'),
-      makeElement(document, 'p', '', '選取背包格後可查看需求、能力、價格，並使用、裝備或出售。'),
-    );
+    if (player.bag.length === 0) {
+      detail.append(
+        makeElement(document, 'h3', '', '背包目前是空的'),
+        makeElement(document, 'p', '', '探索並拾取物品後，物品會顯示在這裡。'),
+      );
+    } else if (filtered.length === 0) {
+      detail.append(
+        makeElement(document, 'h3', '', '此分類沒有物品'),
+        makeElement(document, 'p', '', '可選擇上方「全部」分類查看背包中的其他物品。'),
+      );
+    } else {
+      detail.append(
+        makeElement(document, 'h3', '', '選取一件物品'),
+        makeElement(document, 'p', '', '選取背包格後可查看需求、能力、價格，並使用、裝備或出售。'),
+      );
+    }
   } else {
     const { stack, bagIndex, item } = selected;
     detail.append(
@@ -2261,53 +2619,96 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     );
     if (item?.kind === 'quest') detail.append(makeElement(document, 'p', 'ms-warning', '任務物品不可出售。'));
     if (item?.kind === 'consumable') {
-      detail.append(makeButton(document, '使用一個', 'use-item', {
+      const usePreview = resolveItemUse({
+        player,
+        rules: view.catalog.rules,
+        requestedItemId: stack.itemId,
+        nowMs: view.nowMs,
+        potionReadyAtMs: view.potionReadyAtMs,
+      });
+      const useRecoverySummary = usePreview.ok
+        ? 'HP ' + formatNumber(player.hp) + ' → ' + formatNumber(usePreview.value.player.hp)
+          + '；MP ' + formatNumber(player.mp) + ' → ' + formatNumber(usePreview.value.player.mp)
+        : '';
+      const useButton = makeButton(document, '使用一個', 'use-item', {
         className: 'ms-button ms-button--primary',
-        data: { itemId: stack.itemId },
-      }));
+        disabled: !usePreview.ok,
+        title: usePreview.ok ? '使用一個：' + item.name + '；' + useRecoverySummary : usePreview.message,
+        data: { itemId: stack.itemId, inventoryUse: 'true' },
+      });
+      useButton.setAttribute('aria-label', '使用一個：' + item.name);
+      if (usePreview.ok) {
+        const usePreviewNote = makeElement(document, 'p', 'ms-panel-note', '使用後預覽：' + useRecoverySummary);
+        usePreviewNote.id = 'brightwood-first-oath-use-preview-' + bagIndex;
+        useButton.setAttribute('aria-describedby', usePreviewNote.id);
+        detail.append(usePreviewNote);
+      }
+      detail.append(useButton);
+      if (!usePreview.ok) detail.append(makeElement(document, 'span', 'ms-disabled-reason', usePreview.message));
     }
     if (item?.slot) {
-      // Compare against what is worn now so players can tell an upgrade without opening 裝備.
-      const currentId = player.equipment[item.slot];
-      const current = currentId ? view.catalog.rules.items[currentId] : undefined;
-      const compare = makeElement(document, 'p', 'ms-compare', '對比' + (current ? '「' + current.name + '」' : '空的' + slotLabel(item.slot) + '欄') + '：');
-      const stats = [['攻擊', 'attack'], ['防禦', 'defense'], ['最大 HP', 'hpBonus']] as const;
-      let changed = false;
-      for (const [label, key] of stats) {
-        const delta = (item[key] ?? 0) - (current?.[key] ?? 0);
-        if (delta === 0) continue;
-        if (changed) compare.append('・');
-        changed = true;
-        compare.append(makeElement(document, 'span', delta > 0 ? 'ms-compare__up' : 'ms-compare__down', label + (delta > 0 ? ' ▲' : ' ▼') + Math.abs(delta)));
-      }
-      if (!changed) compare.append('能力相同');
-      detail.append(compare);
-      const tooLow = player.level < item.minLevel;
-      detail.append(makeButton(document, '裝備', 'equip-bag', {
+      const compare = makeEquipmentComparison(document, view, player, item);
+      if (compare) detail.append(compare);
+      const equipmentPreview = previewEquipmentStats({
+        player,
+        rules: view.catalog.rules,
+        action: { type: 'equip', bagIndex },
+      });
+      const equipmentSummary = equipmentPreview.ok ? formatEquipmentStatsPreview(equipmentPreview.value) : '';
+      const equipButton = makeButton(document, '裝備', 'equip-bag', {
         className: 'ms-button ms-button--primary',
-        disabled: tooLow,
-        title: tooLow ? '需要等級 ' + item.minLevel + ' 才能裝備' : '裝備' + item.name,
+        disabled: !equipmentPreview.ok,
+        title: equipmentPreview.ok ? '裝備' + item.name + '；' + equipmentSummary : equipmentPreview.message,
         data: { bagIndex: String(bagIndex) },
-      }));
-      if (tooLow) detail.append(makeElement(document, 'span', 'ms-disabled-reason', '需要 Lv.' + item.minLevel + ' 才能裝備（目前 Lv.' + player.level + '）'));
+      });
+      equipButton.setAttribute('aria-label', '裝備：' + item.name);
+      if (equipmentPreview.ok) {
+        const equipmentPreviewNote = makeElement(document, 'p', 'ms-panel-note', '裝備後預覽：' + equipmentSummary);
+        equipmentPreviewNote.id = 'brightwood-first-oath-equip-preview-' + bagIndex;
+        equipButton.setAttribute('aria-describedby', equipmentPreviewNote.id);
+        detail.append(equipmentPreviewNote);
+      }
+      detail.append(equipButton);
+      if (!equipmentPreview.ok) detail.append(makeElement(document, 'span', 'ms-disabled-reason', equipmentPreview.message));
     }
     if (item && item.kind !== 'quest' && item.sellPrice > 0) {
       const atMerchant = view.interaction?.npcId === 'merchant';
+      const quantityValue = clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity);
+      const salePreview = previewSale({
+        player,
+        rules: view.catalog.rules,
+        bagIndex,
+        quantity: quantityValue,
+        atMerchant,
+      });
       const quantity = makeElement(document, 'input', 'ms-input ms-input--quantity');
       quantity.type = 'number';
       quantity.min = '1';
       quantity.max = String(stack.quantity);
       quantity.step = '1';
-      quantity.value = String(clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity));
+      quantity.value = String(salePreview.quantity);
       quantity.dataset.sellQuantity = String(bagIndex);
       quantity.dataset.focus = 'sell-quantity-' + bagIndex;
-      quantity.setAttribute('aria-label', '出售數量');
-      detail.append(quantity, makeButton(document, '出售選取數量', 'sell-bag', {
+      quantity.setAttribute('aria-label', item.name + ' 出售數量');
+      const saleNote = makeElement(document, 'p', 'ms-panel-note', '出售 ×' + salePreview.quantity + ' 可得 ' + formatNumber(salePreview.total) + ' 金幣');
+      const sellButton = makeButton(document, '出售選取數量', 'sell-bag', {
         className: 'ms-button ms-button--secondary',
-        disabled: !atMerchant,
-        title: atMerchant ? '出售所選數量' : '需在商人互動中出售',
+        disabled: salePreview.disabled,
+        title: salePreview.reason ?? '出售所選數量，可得 ' + formatNumber(salePreview.total) + ' 金幣',
         data: { bagIndex: String(bagIndex) },
-      }));
+      });
+      sellButton.setAttribute('aria-label', '出售選取數量：' + item.name + '，數量 ' + salePreview.quantity + '，收入 ' + formatNumber(salePreview.total) + ' 金幣');
+      if (!salePreview.disabled) {
+        saleNote.textContent += '；出售後預覽：金幣 ' + formatNumber(player.coins) + ' → ' + formatNumber(player.coins + salePreview.total);
+        saleNote.id = 'brightwood-first-oath-inventory-sale-preview-' + bagIndex;
+        sellButton.setAttribute('aria-describedby', saleNote.id);
+      }
+      detail.append(
+        saleNote,
+        quantity,
+        sellButton,
+      );
+      if (salePreview.reason) detail.append(makeElement(document, 'span', 'ms-disabled-reason', salePreview.reason));
     }
   }
   layout.append(detail);
@@ -2333,10 +2734,29 @@ function buildEquipmentPanel(document: Document, view: UiSnapshot, parent: HTMLE
       makeElement(document, 'h3', '', item?.name ?? '尚未裝備'),
       makeElement(document, 'pre', 'ms-detail-copy', item ? itemDetails(item) : '此裝備槽目前為空。'),
     );
-    if (itemId) card.append(makeButton(document, '卸下' + slotLabel(slot), 'unequip', {
-      className: 'ms-button ms-button--secondary',
-      data: { slot },
-    }));
+    if (itemId) {
+      const preview = previewEquipmentStats({
+        player,
+        rules: view.catalog.rules,
+        action: { type: 'unequip', slot },
+      });
+      const summary = preview.ok ? formatEquipmentStatsPreview(preview.value) : '';
+      const unequipButton = makeButton(document, '卸下' + slotLabel(slot), 'unequip', {
+        className: 'ms-button ms-button--secondary',
+        disabled: !preview.ok,
+        title: preview.ok ? '卸下' + slotLabel(slot) + '；' + summary : preview.message,
+        data: { slot },
+      });
+      unequipButton.setAttribute('aria-label', '卸下' + slotLabel(slot) + '：' + (item?.name ?? itemId));
+      if (preview.ok) {
+        const unequipPreviewNote = makeElement(document, 'p', 'ms-panel-note', '卸下後預覽：' + summary);
+        unequipPreviewNote.id = 'brightwood-first-oath-unequip-preview-' + slot;
+        unequipButton.setAttribute('aria-describedby', unequipPreviewNote.id);
+        card.append(unequipPreviewNote);
+      }
+      card.append(unequipButton);
+      if (!preview.ok) card.append(makeElement(document, 'span', 'ms-disabled-reason', preview.message));
+    }
     grid.append(card);
   }
   parent.append(grid);
@@ -2350,7 +2770,7 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   }
   // Name the player's own skill keys (they may be rebound) and how much SP is left to spend.
   const bindings = view.saveData?.settings.bindings ?? {};
-  const key = (action: 'skill1' | 'skill2' | 'skill3') => codeLabel(bindings[action] ?? DEFAULT_KEY_BINDINGS[action]);
+  const key = (action: 'skill1' | 'skill2' | 'skill3') => effectiveKeyText(bindings, action);
   const note = makeElement(document, 'p', 'ms-panel-note', '');
   note.append(
     makeElement(document, 'strong', '', '可用 SP：' + player.sp),
@@ -2366,10 +2786,9 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   for (const skill of skills) {
     const rank = player.skillRanks[skill.id] ?? 0;
     const learned = rank > 0;
-    const levelReady = player.level >= skill.requiredLevel;
-    const jobReady = skill.requiredJob === 'any' || player.job === skill.requiredJob;
     const rankReady = rank < skill.maxRank;
-    const reason = !rankReady ? '已達最高等級' : !levelReady ? '需要 Lv.' + skill.requiredLevel : !jobReady ? '需轉職為劍士' : player.sp < 1 ? '需要 1 SP' : '';
+    const learningPreview = previewSkillLearning({ player, rules: view.catalog.rules, skillId: skill.id });
+    const reason = learningPreview.ok ? '' : learningPreview.message;
     const card = makeElement(document, 'article', 'ms-skill-card');
     const head = makeElement(document, 'div', 'ms-skill-card__head');
     head.append(
@@ -2384,12 +2803,27 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
     if (skill.id === 'vitality') card.append(makeElement(document, 'p', 'ms-panel-note', '提升最大 HP；不會自動恢復生命。'));
     if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '連續 3 秒沒有攻擊或受傷時，開始逐步恢復生命。'));
-    card.append(makeButton(document, !rankReady ? '已滿級' : learned ? '提升至等級 ' + (rank + 1) : '學習技能', 'learn-skill', {
+    const actionLabel = !rankReady ? '已滿級' : learned ? '提升至等級 ' + (rank + 1) : '學習技能';
+    const learningSummary = learningPreview.ok
+      ? '學習後：SP ' + formatNumber(player.sp) + ' → ' + formatNumber(learningPreview.value.remainingSp)
+        + (learningPreview.value.before.maxHp !== learningPreview.value.after.maxHp
+          ? '；最大 HP ' + formatNumber(learningPreview.value.before.maxHp) + ' → ' + formatNumber(learningPreview.value.after.maxHp)
+          : '')
+      : '';
+    const actionButton = makeButton(document, actionLabel, 'learn-skill', {
       className: 'ms-button ms-button--primary',
       disabled: Boolean(reason),
-      title: reason || '消耗 1 SP 學習或提升技能',
+      title: learningPreview.ok ? '消耗 1 SP 學習或提升技能；' + learningSummary : learningPreview.message,
       data: { skillId: skill.id },
-    }));
+    });
+    actionButton.setAttribute('aria-label', actionLabel + '：' + skill.name + '，目前等級 ' + rank + '/' + skill.maxRank);
+    if (learningPreview.ok) {
+      const skillPreviewNote = makeElement(document, 'p', 'ms-panel-note', learningSummary);
+      skillPreviewNote.id = 'brightwood-first-oath-skill-preview-' + skill.id;
+      actionButton.setAttribute('aria-describedby', skillPreviewNote.id);
+      card.append(skillPreviewNote);
+    }
+    card.append(actionButton);
     // The 已滿級 button already says it; only explain blockers the player can act on.
     if (reason && rankReady) card.append(makeElement(document, 'span', 'ms-disabled-reason', reason));
     grid.append(card);
@@ -2407,15 +2841,39 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   parent.append(makeElement(document, 'p', 'ms-panel-note', atMerchant
     ? '歡迎光臨！需要藥水或新裝備嗎？'
     : '請先靠近木葉商人並互動，再進行購買。'));
+  if (!atMerchant) {
+    const mapTarget = resolveNpcMapTarget(view.catalog.world, 'merchant');
+    if (mapTarget) {
+      const announcement = '查看商人所在地圖：' + mapTarget.npcName + ' 位於「' + mapTarget.mapName + '」。只查看地圖，不會移動角色。';
+      const mapButton = makeButton(document, '查看商人所在地圖', 'review-npc-map', {
+        className: 'ms-button ms-button--secondary',
+        title: announcement,
+        data: { npcId: 'merchant', focus: 'shop-merchant-map' },
+      });
+      mapButton.setAttribute('aria-label', announcement);
+      parent.append(mapButton);
+    }
+  }
+  if (state.bagStateMessage) {
+    const resetNote = makeElement(document, 'p', 'ms-panel-note ms-bag-state-note', state.bagStateMessage);
+    resetNote.setAttribute('role', 'status');
+    parent.append(resetNote);
+  }
   parent.append(makeElement(document, 'p', 'ms-wallet', '持有金幣：' + formatNumber(player.coins)));
-  const offers = Object.values(view.catalog.rules.items)
-    .filter((item) => item.buyPrice > 0 && item.kind !== 'quest')
-    .sort((a, b) => shopKindOrder(a.kind) - shopKindOrder(b.kind) || a.minLevel - b.minLevel || a.buyPrice - b.buyPrice);
+  const used = player.bag.length;
+  const capacityNote = makeElement(document, 'p', 'ms-panel-note');
+  capacityNote.append(
+    document.createTextNode('背包：'),
+    makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／32 格'),
+    document.createTextNode('。可堆疊物品可補入同類未滿堆疊；能否購買依各貨品提示。'),
+  );
+  parent.append(capacityNote);
+  const offers = selectShopOffers(view.catalog.rules.items, state.shopFilter);
   const grid = makeElement(document, 'div', 'ms-shop-grid');
   for (const item of offers) {
     const stackable = item.stackLimit > 1;
     const quantity = stackable ? clampInteger(state.shopQuantities.get(item.id) ?? 1, 1, 99) : 1;
-    const total = quantity * item.buyPrice;
+    const preview = previewBuy({ player, rules: view.catalog.rules, itemId: item.id, quantity, atMerchant });
     const card = makeElement(document, 'article', 'ms-shop-card');
     // Flag gear the hero cannot wear yet or already owns, so nobody spends 1,800 金幣 on a duplicate.
     const badges = makeElement(document, 'div', 'ms-shop-card__badges');
@@ -2437,6 +2895,10 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       makeElement(document, 'pre', 'ms-detail-copy', itemDetails(item).split('\n').filter((line) => !line.startsWith('買價')).join('\n')),
       makeElement(document, 'span', 'ms-shop-card__price', '單價 ' + formatNumber(item.buyPrice) + ' 金幣'),
     );
+    if (item.slot) {
+      const compare = makeEquipmentComparison(document, view, player, item);
+      if (compare) card.append(compare);
+    }
     // Equipment does not stack (each piece takes a bag slot), so only consumables get a quantity box.
     if (stackable) {
       const quantityRow = makeElement(document, 'label', 'ms-quantity-row');
@@ -2446,25 +2908,72 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       input.min = '1';
       input.max = '99';
       input.step = '1';
-      input.value = String(quantity);
+      input.value = String(preview.quantity);
       input.dataset.shopQuantity = item.id;
       input.dataset.focus = 'shop-quantity-' + item.id;
       input.setAttribute('aria-label', item.name + ' 購買數量');
       quantityRow.append(input);
       card.append(quantityRow);
+      const quantityOnePreview = previewBuy({ player, rules: view.catalog.rules, itemId: item.id, quantity: 1, atMerchant });
+      const maxBuyButton = makeButton(document, '選擇最大可買量', 'select-max-buy', {
+        className: 'ms-button ms-button--secondary',
+        disabled: quantityOnePreview.disabled,
+        title: quantityOnePreview.reason ?? '依目前金幣與背包空間設定數量，最多99；不會立即購買。',
+        data: { itemId: item.id },
+      });
+      maxBuyButton.setAttribute('aria-label', '選擇最大可買量：' + item.name);
+      maxBuyButton.dataset.focus = 'shop-max-' + item.id;
+      card.append(maxBuyButton);
     }
-    card.append(makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(total) + ' 金幣'));
-    const reason = !atMerchant ? '需在商人互動中購買' : total > player.coins ? '金幣不足' : '';
-    card.append(makeButton(document, '購買', 'buy', {
+    card.append(makeElement(document, 'strong', 'ms-shop-card__total', '總價 ' + formatNumber(preview.total) + ' 金幣'));
+    const buyButton = makeButton(document, '購買', 'buy', {
       className: 'ms-button ms-button--primary',
-      disabled: Boolean(reason),
-      title: reason || '購買 ' + quantity + ' 個，總價 ' + total + ' 金幣',
+      disabled: preview.disabled,
+      title: preview.reason || '購買 ' + preview.quantity + ' 個，總價 ' + preview.total + ' 金幣',
       data: { itemId: item.id },
-    }));
-    if (reason) card.append(makeElement(document, 'span', 'ms-disabled-reason', reason));
+    });
+    buyButton.setAttribute('aria-label', '購買：' + item.name + '，數量 ' + preview.quantity + '，總價 ' + formatNumber(preview.total) + ' 金幣');
+    if (!preview.disabled) {
+      const buyPreviewNote = makeElement(
+        document,
+        'p',
+        'ms-panel-note',
+        '購買後預覽：金幣 ' + formatNumber(player.coins) + ' → ' + formatNumber(player.coins - preview.total),
+      );
+      buyPreviewNote.id = 'brightwood-first-oath-buy-preview-' + item.id;
+      buyButton.setAttribute('aria-describedby', buyPreviewNote.id);
+      card.append(buyPreviewNote);
+    }
+    card.append(buyButton);
+    if (preview.reason) card.append(makeElement(document, 'span', 'ms-disabled-reason', preview.reason));
     grid.append(card);
   }
   parent.append(makeSectionTitle(document, '商店貨品'));
+  const categoryBar = makeElement(document, 'div', 'ms-category-bar');
+  categoryBar.setAttribute('role', 'group');
+  categoryBar.setAttribute('aria-label', '商店貨品分類');
+  for (const category of SHOP_FILTERS) {
+    const count = selectShopOffers(view.catalog.rules.items, category.id).length;
+    const button = makeButton(document, category.label + '（' + count + '）', 'shop-filter', {
+      className: 'ms-chip' + (state.shopFilter === category.id ? ' is-active' : ''),
+      data: { kind: category.id },
+    });
+    button.dataset.focus = 'shop-filter-' + category.id;
+    button.setAttribute('aria-label', '商店分類：' + category.label + '，' + count + ' 件貨品');
+    button.setAttribute('aria-pressed', String(state.shopFilter === category.id));
+    categoryBar.append(button);
+  }
+  parent.append(categoryBar);
+  const categoryLabel = SHOP_FILTERS.find(({ id }) => id === state.shopFilter)?.label ?? state.shopFilter;
+  parent.append(makeElement(
+    document,
+    'p',
+    'ms-panel-note',
+    '目前分類「' + categoryLabel + '」共 ' + offers.length + ' 件貨品。只篩選購買貨品，出售清單維持全部。',
+  ));
+  if (offers.length === 0) {
+    parent.append(makeElement(document, 'p', 'ms-empty-state', '目前分類沒有可購買貨品。'));
+  }
   parent.append(grid);
 
   const sellable = player.bag
@@ -2473,39 +2982,87 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   const sellSection = makeElement(document, 'section', 'ms-sell-section');
   sellSection.append(makeSectionTitle(document, '出售背包物品'));
   // Monster materials have no other use; selling them stack by stack was tedious.
-  const materials = sellable.filter(({ item }) => item?.kind === 'material');
-  if (materials.length > 0) {
-    const total = materials.reduce((sum, { stack, item }) => sum + (item?.sellPrice ?? 0) * stack.quantity, 0);
-    sellSection.append(makeButton(document, '出售全部素材（+' + formatNumber(total) + ' 金幣）', 'sell-materials', {
-      className: 'ms-button ms-button--primary', disabled: !atMerchant,
-      title: atMerchant ? '一次出售背包中所有怪物素材' : '需在商人互動中出售',
-    }));
+  const materialSalePreview = previewMaterialSale({ player, rules: view.catalog.rules, atMerchant });
+  if (materialSalePreview.actions.length > 0) {
+    const allMaterialsSell = materialSalePreview.expectedSoldStacks === materialSalePreview.candidateStacks;
+    const label = allMaterialsSell
+      ? '出售全部素材（預計收入 +' + formatNumber(materialSalePreview.expectedProceeds) + ' 金幣）'
+      : materialSalePreview.expectedSoldStacks > 0
+        ? '依序出售素材（預計收入 +' + formatNumber(materialSalePreview.expectedProceeds) + ' 金幣）'
+        : '出售全部素材';
+    const materialSaleButton = makeButton(document, label, 'sell-materials', {
+      className: 'ms-button ms-button--primary',
+      disabled: materialSalePreview.disabled,
+      title: materialSalePreview.reason ?? '一次出售背包中所有怪物素材；預計收入 ' + formatNumber(materialSalePreview.expectedProceeds) + ' 金幣',
+    });
+    sellSection.append(materialSaleButton);
+    if (materialSalePreview.expectedSoldStacks > 0) {
+      const materialSalePreviewNote = makeElement(
+        document,
+        'p',
+        'ms-panel-note',
+        '出售後預覽：背包已用 ' + formatNumber(player.bag.length) + '／32 → ' +
+          formatNumber(player.bag.length - materialSalePreview.expectedSoldStacks) + '／32 格；騰出 ' +
+          formatNumber(materialSalePreview.expectedSoldStacks) + ' 格。 金幣預覽：' +
+          formatNumber(player.coins) + ' → ' + formatNumber(player.coins + materialSalePreview.expectedProceeds) + '。',
+      );
+      materialSalePreviewNote.id = 'brightwood-first-oath-material-sale-preview';
+      materialSaleButton.setAttribute('aria-describedby', materialSalePreviewNote.id);
+      sellSection.append(materialSalePreviewNote);
+    }
+    if (materialSalePreview.expectedSoldStacks > 0 && materialSalePreview.expectedRejectedStacks > 0) {
+      sellSection.append(makeElement(
+        document,
+        'p',
+        'ms-panel-note',
+        '預計成交 ' + materialSalePreview.expectedSoldStacks + '／' + materialSalePreview.candidateStacks + ' 組',
+      ));
+    }
+    if (materialSalePreview.reason) {
+      sellSection.append(makeElement(document, 'span', 'ms-disabled-reason', materialSalePreview.reason));
+    }
   }
   if (sellable.length === 0) sellSection.append(makeElement(document, 'p', 'ms-empty-state', '目前沒有可出售物品。'));
   for (const { stack, bagIndex, item } of sellable) {
     if (!item) continue;
     const quantity = clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity);
+    const preview = previewSale({
+      player,
+      rules: view.catalog.rules,
+      bagIndex,
+      quantity,
+      atMerchant,
+    });
     const row = makeElement(document, 'div', 'ms-sell-row');
+    const price = makeElement(document, 'span', '', '賣價 ' + formatNumber(item.sellPrice) + '／個・合計 ' + formatNumber(preview.total));
+    if (!preview.disabled) {
+      price.textContent += '；出售後預覽：金幣 ' + formatNumber(player.coins) + ' → ' + formatNumber(player.coins + preview.total);
+      price.id = 'brightwood-first-oath-shop-sale-preview-' + bagIndex;
+    }
     row.append(
       makeInterfaceIcon(document, view, item.iconKey, item.name, 'ms-sell-row__icon'),
       makeElement(document, 'strong', '', item.name + ' ×' + stack.quantity),
-      makeElement(document, 'span', '', '賣價 ' + formatNumber(item.sellPrice) + '／個・合計 ' + formatNumber(item.sellPrice * quantity)),
+      price,
     );
     const input = makeElement(document, 'input', 'ms-input ms-input--quantity');
     input.type = 'number';
     input.min = '1';
     input.max = String(stack.quantity);
     input.step = '1';
-    input.value = String(quantity);
+    input.value = String(preview.quantity);
     input.dataset.sellQuantity = String(bagIndex);
     input.dataset.focus = 'shop-sell-quantity-' + bagIndex;
     input.setAttribute('aria-label', item.name + ' 出售數量');
-    row.append(input, makeButton(document, '出售', 'sell-bag', {
+    const sellButton = makeButton(document, '出售', 'sell-bag', {
       className: 'ms-button ms-button--secondary',
-      disabled: !atMerchant,
-      title: atMerchant ? '出售所選數量' : '需在商人互動中出售',
+      disabled: preview.disabled,
+      title: preview.reason ?? '出售所選數量，可得 ' + formatNumber(preview.total) + ' 金幣',
       data: { bagIndex: String(bagIndex) },
-    }));
+    });
+    sellButton.setAttribute('aria-label', '出售：' + item.name + '，數量 ' + preview.quantity + '，收入 ' + formatNumber(preview.total) + ' 金幣');
+    if (!preview.disabled) sellButton.setAttribute('aria-describedby', price.id);
+    row.append(input, sellButton);
+    if (preview.reason) row.append(makeElement(document, 'span', 'ms-disabled-reason', preview.reason));
     sellSection.append(row);
   }
   parent.append(sellSection);
@@ -2601,16 +3158,29 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     if (quest.status === 'available') {
       card.append(makeElement(document, 'p', 'ms-reward-line', '目標：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
       card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
-      card.append(makeButton(document, '接取任務', 'accept-quest', {
+      const acceptButton = makeButton(document, '接取任務', 'accept-quest', {
         className: 'ms-button ms-button--primary',
         data: { questId: quest.questId, focus: 'dialogue-accept-' + quest.questId },
-      }));
+      });
+      acceptButton.setAttribute('aria-label', '接取任務：' + quest.title);
+      card.append(acceptButton);
     } else if (quest.status === 'ready') {
       card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
-      card.append(makeButton(document, '領取任務獎勵', 'claim-quest', {
+      const claimPreview = view.saveData
+        ? resolveQuestClaim(view.saveData, quest.questId, view.catalog)
+        : null;
+      const claimReason = claimPreview?.ok === false
+        ? claimPreview.message || '目前無法領取任務獎勵'
+        : claimPreview === null ? '目前無法領取任務獎勵' : '';
+      const claimButton = makeButton(document, '領取任務獎勵', 'claim-quest', {
         className: 'ms-button ms-button--primary',
+        disabled: !claimPreview?.ok,
+        title: claimReason || '領取任務獎勵',
         data: { questId: quest.questId, focus: 'dialogue-claim-' + quest.questId },
-      }));
+      });
+      claimButton.setAttribute('aria-label', '領取任務獎勵：' + quest.title);
+      card.append(claimButton);
+      if (claimReason) card.append(makeElement(document, 'span', 'ms-disabled-reason', claimReason));
     } else {
       card.append(makeElement(document, 'p', 'ms-reward-line', '進度：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
     }
@@ -2625,10 +3195,29 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     return;
   }
   parent.append(makeElement(document, 'p', 'ms-panel-note', 'Esc 固定用來關閉最上層面板，沒有面板時則暫停遊戲，因此不能重新綁定。'));
-  parent.append(makeButton(document, settings.muted ? '開啟音效' : '靜音', 'settings-mute', {
+  const muteButton = makeButton(document, settings.muted ? '開啟音效' : '靜音', 'settings-mute', {
     className: 'ms-button ms-button--secondary',
     title: settings.muted ? '開啟遊戲音效' : '靜音所有遊戲音效',
-  }));
+  });
+  muteButton.setAttribute('aria-describedby', 'brightwood-first-oath-audio-settings-note');
+  parent.append(muteButton);
+  let audioSettingsNoteText: string;
+  if (settings.muted) {
+    audioSettingsNoteText = '目前已靜音；調整音量不會解除靜音，可按「開啟音效」。';
+  } else if (settings.masterVolume === 0) {
+    audioSettingsNoteText = '總音量為 0%；如需聲音，請調高總音量。';
+  } else if (settings.musicVolume === 0 && settings.sfxVolume === 0) {
+    audioSettingsNoteText = '音樂與音效音量均為 0%；可分別調高需要的音量。';
+  } else if (settings.musicVolume === 0) {
+    audioSettingsNoteText = '音樂音量為 0%；音效保留目前設定。';
+  } else if (settings.sfxVolume === 0) {
+    audioSettingsNoteText = '音效音量為 0%；音樂保留目前設定。';
+  } else {
+    audioSettingsNoteText = '總音量會共同控制音樂與音效；靜音不會清除滑桿設定。';
+  }
+  const audioSettingsNote = makeElement(document, 'p', 'ms-panel-note', audioSettingsNoteText);
+  audioSettingsNote.id = 'brightwood-first-oath-audio-settings-note';
+  parent.append(audioSettingsNote);
   const volumeGrid = makeElement(document, 'div', 'ms-volume-grid');
   const channels: { id: 'masterVolume' | 'musicVolume' | 'sfxVolume'; label: string }[] = [
     { id: 'masterVolume', label: '總音量' },
@@ -2649,17 +3238,21 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     slider.dataset.focus = 'volume-' + channel.id;
     slider.setAttribute('aria-label', channel.label);
     slider.setAttribute('aria-valuetext', Math.round(settings[channel.id] * 100) + '%');
+    slider.setAttribute('aria-describedby', 'brightwood-first-oath-audio-settings-note');
     label.append(slider);
     volumeGrid.append(label);
   }
   parent.append(volumeGrid, makeSectionTitle(document, '桌面操作說明'));
   const help = makeElement(document, 'ul', 'ms-help-list');
+  const skillKeys = (['skill1', 'skill2', 'skill3'] as const)
+    .map((action) => effectiveKeyText(settings.bindings, action))
+    .join('／');
   const helpText = [
     '用鍵盤移動、跳躍與戰鬥；畫面上的按鈕也可以用滑鼠點擊。',
     '按住拾取鍵可以連續撿起附近的掉落物。',
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板，沒有面板時暫停遊戲。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
-    '技能快捷 1／2／3 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
+    '技能快捷 ' + skillKeys + ' 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
     '普通攻擊與技能按一下施放；長按不會連續施放。',
   ];
   for (const text of helpText) help.append(makeElement(document, 'li', '', text));
@@ -2667,11 +3260,20 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   const bindingList = makeElement(document, 'div', 'ms-binding-list');
   for (const action of KEY_ACTIONS) {
     const row = makeElement(document, 'div', 'ms-binding-row');
-    const value = codeLabel(settings.bindings[action.id] ?? DEFAULT_KEY_BINDINGS[action.id as GameAction]);
-    const rebindButton = makeButton(document, state.pendingBinding === action.id ? '按鍵中…' : '更改按鍵', 'settings-rebind', {
+    const value = effectiveKeyText(settings.bindings, action.id);
+    const pending = state.pendingBinding === action.id;
+    const currentKeyText = '目前按鍵 ' + value;
+    row.setAttribute('role', 'group');
+    row.setAttribute('aria-label', action.label + '，' + currentKeyText);
+    const rebindLabel = pending
+      ? '按鍵中：' + action.label + '，' + currentKeyText + '，按 Esc 取消'
+      : '更改按鍵：' + action.label + '，' + currentKeyText;
+    const rebindButton = makeButton(document, pending ? '按鍵中…' : '更改按鍵', 'settings-rebind', {
       className: 'ms-button ms-button--small',
       data: { actionId: action.id },
     });
+    rebindButton.setAttribute('aria-label', rebindLabel);
+    rebindButton.title = rebindLabel;
     rebindButton.dataset.focus = 'binding-' + action.id;
     row.append(
       makeElement(document, 'span', '', action.label),

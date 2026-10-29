@@ -1,6 +1,8 @@
 import type { UiSnapshot } from '../contracts/ports.js';
 import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
+import { previewApAllocation } from './ap-allocation-preview.js';
+import { resolveNpcMapTarget } from './npc-map-target.js';
 
 function node<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className = '', text = ''): HTMLElementTagNameMap[K] {
   const item = document.createElement(tag);
@@ -53,6 +55,23 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     root.append(node(document, 'p', 'ms-empty-state', '角色能力尚未載入。'));
     return root;
   }
+  const describeAllocation = (label: string, stat: 'str' | 'dex', amount: number): {
+    disabled: boolean;
+    title: string;
+    ariaLabel: string;
+  } => {
+    const preview = previewApAllocation({ player, rules: view.catalog.rules, stat, amount });
+    const statName = stat === 'str' ? '力量' : '敏捷';
+    if (!preview.ok) {
+      return { disabled: true, title: preview.message, ariaLabel: label + '，' + statName + '，' + preview.message };
+    }
+    const { before, after, remainingAp } = preview.value;
+    const description = '預計消耗 ' + amount + ' AP；' + statName + '加點：攻擊 ' + before.attack + '→' + after.attack
+      + '；防禦 ' + before.defense + '→' + after.defense
+      + '；暴擊率 ' + (before.critChance * 100).toFixed(1) + '%→' + (after.critChance * 100).toFixed(1)
+      + '%；剩餘 AP ' + remainingAp;
+    return { disabled: false, title: description, ariaLabel: label + '，' + description };
+  };
   const heading = node(document, 'div', 'ms-ability-heading');
   const identity = node(document, 'div', 'ms-ability-identity');
   identity.append(picture(document, 'assets/interface/journal/hero-portrait-chibi.png', 'ms-ability-avatar'),
@@ -81,9 +100,10 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     for (const amount of [1, Math.min(5, Math.max(1, player.ap))]) {
       if (amount === 1 && actions.childElementCount > 0) continue;
       const add = button(document, '+' + amount, 'allocate-ap', { stat: spec.stat, amount: String(amount) }, 'ms-button ms-button--' + (amount === 1 ? 'primary' : 'secondary'));
-      add.disabled = player.ap < 1;
-      add.title = player.ap > 0 ? '消耗 ' + amount + ' AP 提升' + spec.name : '目前沒有可用 AP';
-      add.setAttribute('aria-label', spec.name + '增加 ' + amount + '，消耗 ' + amount + ' AP');
+      const allocation = describeAllocation('+' + amount, spec.stat as 'str' | 'dex', amount);
+      add.disabled = allocation.disabled;
+      add.title = allocation.title;
+      add.setAttribute('aria-label', allocation.ariaLabel);
       actions.append(add);
     }
     card.append(art, title, node(document, 'p', 'ms-ability-summary', spec.summary), effects, actions);
@@ -100,7 +120,17 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   );
   root.append(totals);
   const foot = node(document, 'div', 'ms-ability-foot');
-  if (player.ap > 5) foot.append(button(document, '全部 AP → 力量（' + player.ap + '）', 'allocate-ap', { stat: 'str', amount: String(player.ap) }, 'ms-button ms-button--secondary'));
+  if (player.ap > 5) {
+    for (const [stat, name] of [['str', '力量'], ['dex', '敏捷']] as const) {
+      const label = '全部 AP → ' + name + '（' + player.ap + '）';
+      const addAll = button(document, label, 'allocate-ap', { stat, amount: String(player.ap) }, 'ms-button ms-button--secondary');
+      const allocation = describeAllocation(label, stat, player.ap);
+      addAll.disabled = allocation.disabled;
+      addAll.title = allocation.title;
+      addAll.setAttribute('aria-label', allocation.ariaLabel);
+      foot.append(addAll);
+    }
+  }
   if (player.ap < 1) foot.append(node(document, 'p', 'ms-panel-note', player.level >= view.catalog.rules.progression.maxLevel ? '已達等級上限，沒有可用 AP。' : '升級時可獲得 5 AP。'));
   const help = node(document, 'details', 'ms-visual-details');
   help.dataset.detailId = 'ability-rules';
@@ -284,7 +314,19 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
     details.append(node(document, 'summary', '', '故事與任務說明'), node(document, 'p', '', story ?? definition?.summary ?? ''));
     card.append(details);
   }
-  const map = button(document, '查看世界地圖 →', 'open-panel', { panel: 'map' }, 'ms-button ms-journal-map-button');
+  const mapNpcId = selected.status === 'ready' ? definition?.turnInNpcId
+    : selected.status === 'available' ? definition?.giverNpcId
+      : undefined;
+  const mapTarget = mapNpcId ? resolveNpcMapTarget(view.catalog.world, mapNpcId) : null;
+  const map = mapTarget && mapNpcId
+    ? button(document, selected.status === 'ready' ? '查看回報 NPC 地圖 →' : '查看接取 NPC 地圖 →', 'review-npc-map', { npcId: mapNpcId }, 'ms-button ms-journal-map-button')
+    : button(document, '查看世界地圖 →', 'open-panel', { panel: 'map' }, 'ms-button ms-journal-map-button');
+  if (mapTarget) {
+    const role = selected.status === 'ready' ? '回報' : '接取';
+    const description = selected.title + ' · ' + role + ' NPC：' + mapTarget.npcName + '，所在地圖：' + mapTarget.mapName + '。只查看地圖，不會移動角色。';
+    map.title = description;
+    map.setAttribute('aria-label', description);
+  }
   card.append(map);
   root.append(card);
   return root;

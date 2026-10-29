@@ -331,13 +331,14 @@ function buildDetails(
 
   const bellBossResult = view.saveData?.location.mapId === 'ruins-bell-sanctum' && view.canReturnTown;
   const sunwellBossResult = view.saveData?.location.mapId === 'sand-sunwell-altar' && view.canReturnTown;
-  const returnLabel = bellBossResult ? '返回潮痕營站' : sunwellBossResult ? '返回日井盆地' : '返回木葉鎮';
+  const frostBossResult = view.saveData?.location.mapId === 'frost-tide-cavern' && view.canReturnTown;
+  const returnLabel = bellBossResult ? '返回潮痕營站' : sunwellBossResult ? '返回日井盆地' : frostBossResult ? '返回雪痕海岸' : '返回木葉鎮';
   const returnTown = element(document, 'button', 'ms-button ms-button--primary ms-atlas-return', returnLabel);
   returnTown.type = 'button';
   returnTown.dataset.uiAction = 'return-town';
   returnTown.dataset.focus = 'atlas-return-town';
   returnTown.disabled = !view.canReturnTown;
-  returnTown.title = view.canReturnTown ? returnLabel : view.saveData?.location.mapId === 'town' ? '目前已在木葉鎮' : view.saveData?.location.mapId === 'guardian-arena' || view.saveData?.location.mapId === 'sand-sunwell-altar' || view.saveData?.location.mapId === 'ruins-bell-sanctum' ? '首領戰尚未結束，不能返回安全地點。' : '目前狀態不允許回城。';
+  returnTown.title = view.canReturnTown ? returnLabel : view.saveData?.location.mapId === 'town' ? '目前已在木葉鎮' : view.saveData?.location.mapId === 'guardian-arena' || view.saveData?.location.mapId === 'sand-sunwell-altar' || view.saveData?.location.mapId === 'ruins-bell-sanctum' || view.saveData?.location.mapId === 'frost-tide-cavern' ? '首領戰尚未結束，不能返回安全地點。' : '目前狀態不允許回城。';
   details.append(returnTown);
   if (returnTown.disabled) details.append(element(document, 'p', 'ms-atlas-return-note', returnTown.title));
   details.append(element(document, 'p', 'ms-atlas-hint', '點選地標查看情報；實際移動仍須使用場景中已開放的傳點。'));
