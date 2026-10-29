@@ -33,3 +33,5 @@ root 已核 src/app/gameplay.ts returnTown：frost-tide-cavern 首領戰後實�
 新補丁報告 plan/reports/plan49-frost-return-fix.md；候選新 artifacts/plan49-1.0.0-beta.57／.playroom/tmp/plan49-candidate-beta57，報告 plan/reports/plan49-release-candidate.md。beta56 舊成品及報告保留。新 beta57 prepare 從唯讀 Plan38 模板映射 plan38→plan49、plan37→plan49、beta45→beta57、beta44→beta56、beta.45→beta.57、beta.44→beta.56；注意 source audit 與新 audit 都同 Plan49，只替換 beta token，不能以 plan49 token 當 legacy guard（同名合法）；以 AST／Path 精確 resolved 新57路徑及六metadata核對。必要時採獨立明確 prepare 新副本，不改原模板／audit。只三 metadata beta56→57、新候選／新log，一次 build／pack／完整 ZIP／有限 audit，成功不重跑。
 
 本補丁／Release 任務開始前 root 完整網讀八份規格 refs199–202（含尾段）。保持固定身分、格式及契約。GitHub 公開目的地已讀確認 TommyLamm/brightwood-first-oath，main 為預設分支；最新版已公開 beta10。原受限 CLI 兩個 read 呼叫無法連線，經標準網路提權後成功，未暴露憑證。發布授權已由使用者明確提供，前段不 git／tag／Release 限制在此任務範圍內被最新指令取代；原本工作資料保全與最小驗證仍適用。
+
+收尾完成：GitHub beta57 prerelease已建立，workflow success、實際附件metadata／digest／有限文字核對完成；詳既有Release收尾報告及本批交接。依最新指令本次結束，不開下一Plan。

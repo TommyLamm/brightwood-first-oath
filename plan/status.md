@@ -3,12 +3,12 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
-更新：2026-10-29（Asia/Hong_Kong）。依使用者最新要求停止新增 Plan；[Plan49](49-journal-contact-map.md)及霜潮洞窟返回誤標修補已完成，收尾簡單驗證通過，**GitHub RELEASE_PREPARING**。最近候選 beta57／TommyLamm，SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED。[交接](reports/plan49-handoff.md)／[Release 進度](reports/release-beta57-20261029.md)。
+更新：2026-10-29（Asia/Hong_Kong）。[Plan49](49-journal-contact-map.md)與霜潮洞窟返回誤標修補完成，簡單驗證與GitHub Release完成，**GITHUB_PRERELEASED／BROWSER_UNVERIFIED**。版本beta57、作者TommyLamm；依使用者要求本次收尾，停止新增Plan／排程。[交接](reports/plan49-handoff.md)／[發布結果](reports/release-beta57-20261029.md)。
 
 | 維度 | 當前結果／界線 |
 | --- | --- |
 | 指定續作排程 | 2026-10-29 HKT 02:40及07:50皆已觸發並成功刪除；[紀錄](reports/continuation-schedule-20261029.md)。最新停止／範圍指令優先，無額外排程授權。 |
-| Plan49 | 手帳 NPC 地圖／Frost 返回修補、各一次指定 tsc0 及 root 審閱完成；beta56 保留，beta57 一次 build／pack／完整 ZIP／有限 audit 通過，Release 準備中。[計畫](49-journal-contact-map.md)及[交接](reports/plan49-handoff.md)。 |
+| Plan49 | 手帳 NPC 地圖／Frost 返回修補、各一次指定 tsc0 及 root 審閱完成；beta56 保留，beta57 一次 build／pack／完整 ZIP／有限 audit 通過，GitHub prerelease完成。[計畫](49-journal-contact-map.md)及[交接](reports/plan49-handoff.md)。 |
 | Plan48 | W01 三組 focused 修正測試斷言後 PASS；W02 UI／一次指定 tsc0 及 root 審閱完成；W03 全新 Luna Max 完成 beta55 一次 build／pack／完整 ZIP／有限 audit。[計畫](48-merchant-map-shortcut.md)及[交接](reports/plan48-handoff.md)。 |
 | Plan47 | W01 全新 Luna Max 完成商店分類數／同分類 no-op、單次指定 tsc0 及 root 審閱；W02 全新 Luna Max 完成 beta54 一次 build／pack／完整 ZIP／有限 audit。[計畫](47-shop-category-counts.md)及[交接](reports/plan47-handoff.md)。 |
 | Plan46 | W01全新Luna Max任務徽章分支、單次指定tsc0及root審閱完成；W02全新Luna Max完成beta53一次build／pack／完整ZIP／有限audit，兩次prep guard失敗已記錄。[計畫](46-ready-quest-hud.md)及[交接](reports/plan46-handoff.md)。 |
@@ -40,13 +40,14 @@
 | Plan20 | 兩個獨立Luna純model、單owner UI與新候選已交付；裝卸／單筆出售按鈕和點擊同源重判，不採用preview player。作者source／dist／ZIP均為TommyLamm。[工作包](20-item-action-feedback.md#4-明確工作包與所有權)；[本批交接](reports/plan20-handoff.md)。 |
 | Plan19 | 三項改善後追加交易invalid草稿／重綁repeat修整；兩名全新Luna分別完成UI與beta26封包。[修整](reports/plan19-input-polish.md)；[實作與實際檢查](reports/plan19-handoff.md)。 |
 | Plan18 | **PROCESS_DOCS_DELIVERED／QA_FIXTURE_PREPARED**：主代理完成 W00 入口與整合；三名全新 `gpt-6-luna`／`max`／`fork none` 分別交付 W01 browser runbook／模板、W02 overlay 配方、W03 fixture／provenance。[QA 薄索引](../tools/qa/README.md)；[各包結果與實際檢查](reports/plan18-process-handoff.md#實際進度檢查與下一步)。 |
+| GitHub Release | [v1.0.0-beta.57](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.57)，HKT08:48:56發布；workflow success、唯一game.zip附件與GitHub digest一致，實際附件有限文字掃描0findings。詳發布結果；平台未上架。 |
 | 遊戲候選 | `brightwood-first-oath`／`1.0.0-beta.57`，author `TommyLamm`，**SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED**，未發布。[候選報告](reports/plan49-release-candidate.md)；[game.zip](../artifacts/plan49-1.0.0-beta.57/game.zip)。所有歷史成品保留。 |
 | 已驗表面／方法 | 歷史 beta24 **640×360 portal 指定畫面實畫 PASS（所見）**：新隔離 profile／空 canonical origin、validator 曾接受的合成 format5 `camp/right` fixture，正常 Continue／一次 Space；完整 hint、toast、profile、actions、quickbar、footer 無互遮。[直接方法、rect 與圖片證據](reports/base-experience-browser-recovery.md#測試方法與實測)。 |
 | 其他沿用結果 | beta23 修復 actions 遮擋後，動作／排隊 960×540 與 640×360、640 冷卻與小紅切大紅限定視審已過；beta22 NPC／合成恢復卡呈現沿用。[集中交接](reports/base-experience-handoff.md#新增內容視覺補驗與最新候選)保留時間鏈與 4 檔 27 focused／相關 tsc 歷史結果；本輪不重測。 |
 | 未驗／不推廣 | 合成前置不證正常 NPC→portal 行走、任務通關或完成傳送；更小尺寸、真 OS 失焦、正式平台／真帳號雲端、實際音訊、原生／沉浸 fullscreen、灰畫面根因與舊 q09／q10 未重演仍未驗。未標 CANDIDATE_READY 或平台通過。 |
 | QA cleanup | 本次未啟動browser／server，無新QA資源。beta25 [歷史紀錄](reports/plan19-local-review.md)：about:blank即0x6D，無server／seed；log自報daemon／Chrome退出，CIM／事後ports受限、殘留session未知，不外推全主機乾淨。profiles／log保留。 |
 | 實際檢查 | Plan49 手帳／Frost 修補各一次指定 tsc0、root 局部審閱；beta57 一次 build／pack／完整 ZIP／有限 audit 成功；既有 focused 沿用，不跑全回歸或 browser。 |
-| 下一步 | 文件／提交收束，推送 immutable beta57 tag，由既有 workflow 建立 GitHub prerelease；完成後停止，不開新 Plan／排程，不操作平台上架。 |
+| 下一步 | 本次收尾完成，停止新增Plan／排程，等待新指令；保留真資料／全部候選，不自行操作平台匯入／確認／上架。 |
 
 下方全部為有日期的階段歷史；其中「最新」「未驗」「停止」描述當時狀態，不覆蓋本區。證據原文保留，不逐條改寫舊 FAIL／UNVERIFIED。
 

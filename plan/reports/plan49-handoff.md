@@ -1,6 +1,6 @@
 # Plan49・手帳 NPC 地圖入口交接
 
-2026-10-29（Asia/Hong_Kong）。**SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED；RELEASE_PREPARING**。[Plan49](../49-journal-contact-map.md)在[Plan48](plan48-handoff.md)完成後開始。root 完整網讀八份規格（refs188–191），核現有 selected／definition／底部單一 map 按鈕／button focus 及 Plan48 查找與 handler。基線 .playroom/tmp/plan49-integration-review/illustrated-before.ts。新 beta56 artifact/tmp 與 tag 均預核未用。
+2026-10-29（Asia/Hong_Kong）。**SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED；GITHUB_PRERELEASED**。[Plan49](../49-journal-contact-map.md)在[Plan48](plan48-handoff.md)完成後開始。root 完整網讀八份規格（refs188–191），核現有 selected／definition／底部單一 map 按鈕／button focus 及 Plan48 查找與 handler。基線 .playroom/tmp/plan49-integration-review/illustrated-before.ts。新 beta56 artifact/tmp 與 tag 均預核未用。
 
 W01 全新 Luna Max 僅改 illustrated-panels 呈現與單次 tsc，root 審後 W02 新候選；不重跑未改 Plan48 或舊 checks。真 UI 未驗、不 git 寫入／發布／排程；保留 dirty／作者／ID／存檔相容／真資料及舊候選。02:40／07:50 排程已觸發刪除。
 
@@ -17,3 +17,5 @@ Plan49 含追加修補完成；[beta57 候選報告](plan49-release-candidate.md
 收尾文件引用檢查一次：10 documents／112 local links／6 anchors，failures []，exit0；git diff --check exit0（僅既有 LF／CRLF 提示，無空白錯誤）。
 
 root 完成程式／測試／metadata 提交 bcc3abe，準備文件獨立提交及 v1.0.0-beta.57。有限 repository 文字掃描192檔／8類0findings，未重跑遊戲 checks。
+
+最終完成：[beta57 GitHub prerelease](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.57)已發布，[workflow](https://github.com/TommyLamm/brightwood-first-oath/actions/runs/40796409735)success。tag commit7f99f66、source commitbcc3abe。實際附件131,528,745bytes／SHAda32d0cfdf606c86d954466a54dabc0f765edf6ba1ff116635180f703c20589f，與Windows候選4個text差異僅JSON格式／HTML換行及空行，JS/CSS及binary一致；實際附件有限14text8類0findings。詳既有Release進度報告。依使用者要求本次收尾，不建立Plan50／排程，不操作平台確認／上架，真UI仍未驗。

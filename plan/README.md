@@ -1,6 +1,6 @@
 # 經典劍士冒險：多代理實作交接索引
 
-唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。[Plan49：手帳 NPC 地圖與收尾修補](49-journal-contact-map.md)完成後依使用者最新要求停止新增 Plan，收尾簡單驗證並建立 Release；續作先讀[本批交接](reports/plan49-handoff.md)。先前各 Plan、交接及候選由狀態板對應列進入；此索引不另維護版本或驗收摘要。
+唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。[Plan49：手帳 NPC 地圖與收尾修補](49-journal-contact-map.md)及GitHub Release已完成，依使用者要求停止新增Plan；本次結果見[交接](reports/plan49-handoff.md)與[發布紀錄](reports/release-beta57-20261029.md)。先前各Plan、交接及候選由狀態板對應列進入；此索引不另維護版本或驗收摘要。
 
 ## 階段歷史（以下「最新」均指記錄當時）
 
