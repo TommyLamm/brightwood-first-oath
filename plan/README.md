@@ -1,6 +1,6 @@
 # 經典劍士冒險：多代理實作交接索引
 
-唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。本次工作依 [Plan18](18-development-feedback-improvements.md)；本輪分工、實際交付與檢查記於[流程交接](reports/plan18-process-handoff.md)。此索引不另維護一份遊戲版本或驗收摘要。
+唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。[Plan49：手帳 NPC 地圖與收尾修補](49-journal-contact-map.md)完成後依使用者最新要求停止新增 Plan，收尾簡單驗證並建立 Release；續作先讀[本批交接](reports/plan49-handoff.md)。先前各 Plan、交接及候選由狀態板對應列進入；此索引不另維護版本或驗收摘要。
 
 ## 階段歷史（以下「最新」均指記錄當時）
 

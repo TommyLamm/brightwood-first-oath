@@ -1,0 +1,11 @@
+Command: C:\Users\Tommy\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe node_modules/vitest/vitest.mjs run tests/inventory-entries.test.ts
+
+ RUN  v5.0.5 C:/Users/Tommy/Desktop/brightwood-first-oath
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  07:56:17
+   Duration  381ms (transform 56%, import 33%, worker 6%, tests 5%)
+
+Exit code: 0

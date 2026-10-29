@@ -3,18 +3,50 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
-更新：2026-10-28 10:51（Asia/Hong_Kong）。使用者已授權主代理實作 [Plan18](18-development-feedback-improvements.md)，本輪預設 W00–W03 已交付，後續要求的工作區測試與分組 commit 也已完成；此前「只規劃即停」是歷史階段。
+更新：2026-10-29（Asia/Hong_Kong）。依使用者最新要求停止新增 Plan；[Plan49](49-journal-contact-map.md)及霜潮洞窟返回誤標修補已完成，收尾簡單驗證通過，**GitHub RELEASE_PREPARING**。最近候選 beta57／TommyLamm，SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED。[交接](reports/plan49-handoff.md)／[Release 進度](reports/release-beta57-20261029.md)。
 
 | 維度 | 當前結果／界線 |
 | --- | --- |
+| 指定續作排程 | 2026-10-29 HKT 02:40及07:50皆已觸發並成功刪除；[紀錄](reports/continuation-schedule-20261029.md)。最新停止／範圍指令優先，無額外排程授權。 |
+| Plan49 | 手帳 NPC 地圖／Frost 返回修補、各一次指定 tsc0 及 root 審閱完成；beta56 保留，beta57 一次 build／pack／完整 ZIP／有限 audit 通過，Release 準備中。[計畫](49-journal-contact-map.md)及[交接](reports/plan49-handoff.md)。 |
+| Plan48 | W01 三組 focused 修正測試斷言後 PASS；W02 UI／一次指定 tsc0 及 root 審閱完成；W03 全新 Luna Max 完成 beta55 一次 build／pack／完整 ZIP／有限 audit。[計畫](48-merchant-map-shortcut.md)及[交接](reports/plan48-handoff.md)。 |
+| Plan47 | W01 全新 Luna Max 完成商店分類數／同分類 no-op、單次指定 tsc0 及 root 審閱；W02 全新 Luna Max 完成 beta54 一次 build／pack／完整 ZIP／有限 audit。[計畫](47-shop-category-counts.md)及[交接](reports/plan47-handoff.md)。 |
+| Plan46 | W01全新Luna Max任務徽章分支、單次指定tsc0及root審閱完成；W02全新Luna Max完成beta53一次build／pack／完整ZIP／有限audit，兩次prep guard失敗已記錄。[計畫](46-ready-quest-hud.md)及[交接](reports/plan46-handoff.md)。 |
+| Plan45 | W01全新Luna Max四處呈現、單次指定tsc0及root審閱完成；W02全新Luna Max完成beta52一次build／pack／完整ZIP／有限audit。[計畫](45-trade-balance-preview.md)及[交接](reports/plan45-handoff.md)。 |
+| Plan44 | W01單次5focused PASS、W02指定tsc0及root審閱完成；W03全新Luna Max完成beta51一次build／pack／完整ZIP／有限audit，setup參數錯誤已記錄。[計畫](44-inventory-category-navigation.md)及[交接](reports/plan44-handoff.md)。 |
+| Plan43 | W01五處成對描述／一次指定tsc0及root審閱完成；原W02 prepare/build成功後用量中斷，07:50全新Luna Max只接剩餘pack／ZIP／audit／報告，beta50完成，不重跑已過步驟。[計畫](43-action-preview-descriptions.md)及[交接](reports/plan43-handoff.md)。 |
+| Plan42 | W01全新Luna Max完成、單次指定tsc0及root單一hunk審閱接受；W02全新Luna Max完成beta49一次build／pack／完整ZIP／有限audit。[計畫](42-material-sale-capacity.md)及[交接](reports/plan42-handoff.md)。 |
+| Plan41 | W01單次5focused PASS、W02指定Node24.22.1單次tsc0及root審閱完成；W03全新Luna Max完成beta48一次build／pack／完整ZIP／有限audit，prep亦成功。[計畫](41-skill-learning-preview.md)及[交接](reports/plan41-handoff.md)。 |
+| Plan40 | W01全新Luna Max完成，一次指定tsc0及root單一hunk審閱接受；W02全新Luna Max完成beta47一次build／pack／完整ZIP／有限audit，prep成功。[計畫](40-item-recovery-preview.md)與[交接](reports/plan40-handoff.md)。 |
+| Plan39 | 全新Luna Max `/root/plan39_ap_ui`完成typed兩項迴圈與一次指定tsc0、root審閱；全新Luna Max `/root/plan39_candidate`完成beta46一次build／pack／完整ZIP／有限audit，prep亦成功。[計畫](39-all-ap-dexterity.md)及[交接](reports/plan39-handoff.md)。 |
+| Plan38 | 全新Luna Max `/root/plan38_audio_ui`完成settings說明／aria-describedby與一次指定Node24.22.1 tsc0、root審閱；全新Luna Max `/root/plan38_candidate`完成beta45一次build／pack／完整ZIP／有限audit，prep亦成功。[計畫](38-audio-setting-feedback.md)及[交接](reports/plan38-handoff.md)。 |
+| Plan37 | 全新Luna Max `/root/plan37_hud_ui`完成HUD inventory分支、一次指定Node24.22.1 tsc0及root審閱；全新Luna Max `/root/plan37_candidate`完成beta44一次build／pack／完整ZIP／有限audit。[計畫](37-hud-bag-capacity.md)及[交接](reports/plan37-handoff.md)。 |
+| Plan36 | 全新Luna Max `/root/plan36_equipment_stats`完成純model與單次5 focused PASS，root已審；全新Luna Max `/root/plan36_equipment_ui`完成兩builder呈現與一次指定tsc0、root審閱；全新Luna Max `/root/plan36_candidate`完成beta43一次build／pack／完整ZIP／有限audit。[計畫](36-equipment-stats-preview.md)及[交接](reports/plan36-handoff.md)。 |
+| Plan35 | 全新Luna Max `/root/plan35_journal_ui`完成接線、單次2 focused／1skip及一次指定Node24.22.1 tsc0，root審四處diff接受；全新Luna Max `/root/plan35_candidate`完成beta42一次build／pack／完整ZIP／有限audit；原日誌未另存，從已有tool結果補摘要，不重跑。[計畫](35-journal-selection-consistency.md)及[交接](reports/plan35-handoff.md)。 |
+| Plan34 | 全新Luna Max `/root/plan34_capacity_ui`完成容量p、一次指定Node24.22.1 tsc及root diff審閱；全新Luna Max `/root/plan34_candidate`完成beta41一次build／pack／完整ZIP／有限audit。[計畫](34-shop-bag-capacity.md)與[交接](reports/plan34-handoff.md)。 |
+| Plan33 | 全新Luna Max W01純預覽5 focused PASS、W02 UI一次tsc exit0及root審閱完成；W03完成beta40一次build／pack／完整ZIP／有限audit。tsc誤用PATH Node24.19.0已記錄，不重跑，build指定24.22.1。只設定數量草稿，原購買確認保留。[計畫](33-maximum-buy-quantity.md)及[交接](reports/plan33-handoff.md)。 |
+| Plan32 | W01純選取5 focused、W02 UI一次tsc與主代理審閱完成；W03 beta39既有build／pack／完整ZIP／audit成功，中斷後全新Luna只補報告，未重跑。[計畫](32-shop-category-navigation.md)與[交接](reports/plan32-handoff.md)。 |
+| Plan31 | 全新Luna Max `/root/plan31_shop_comparison_ui`完成W01與一次tsc；全新Luna Max `/root/plan31_candidate`完成beta38一次build／pack／完整ZIP驗證；audit副本路徑失敗一次後修正通過，未重跑其他checks。[計畫](31-shop-equipment-comparison.md)與[交接](reports/plan31-handoff.md)列契約。 |
+| Plan30 | 全新Luna Max `/root/plan30_overlay_ui`完成W01三處語意屬性與一次tsc；全新Luna Max `/root/plan30_candidate`完成beta37一次build／pack／完整ZIP驗證。[計畫](30-overlay-control-context.md)與[交接](reports/plan30-handoff.md)列契約。 |
+| Plan29 | 全新Luna Max `/root/plan29_action_ui`完成W01三處名稱與一次tsc；全新Luna Max `/root/plan29_candidate`完成beta36一次build／pack／完整ZIP驗證。[計畫](29-progression-action-context.md)與[交接](reports/plan29-handoff.md)列契約。 |
+| Plan28 | 全新Luna Max `/root/plan28_name_ui`完成W01、精選1案例／一次tsc；全新Luna Max `/root/plan28_candidate`完成beta35一次build／pack／完整ZIP驗證。[計畫](28-character-name-feedback.md)與[交接](reports/plan28-handoff.md)列五條契約與最小驗收。 |
+| Plan27 | 全新Luna Max `/root/plan27_ap_preview`完成W01純預覽與單次6 focused PASS；全新Luna Max `/root/plan27_ap_ui`完成W02與一次tsc；全新Luna Max `/root/plan27_candidate`完成beta34一次build／pack／完整ZIP驗證。[計畫](27-ap-allocation-preview.md)與[交接](reports/plan27-handoff.md)列契約。 |
+| Plan26 | 全新Luna Max `/root/plan26_item_action_ui`完成W01七處呈現屬性與一次tsc；全新Luna Max `/root/plan26_candidate`完成beta33一次build／pack／完整ZIP驗證。[計畫](26-item-action-context.md)與[交接](reports/plan26-handoff.md)列範圍，不跑tests／browser。 |
+| Plan25 | W01 `/root/plan25_item_use_app`及W02 `/root/plan25_inventory_ui`完成；W03用量中斷後由全新Luna Max `/root/plan25_candidate_resume`接續完成beta32。新6 focused／既有精選1例、一次tsc與候選完整ZIP驗證通過。[計畫](25-inventory-item-use-feedback.md)與[交接](reports/plan25-handoff.md)列結果；browser條件未成立。 |
+| Plan24 | W01重綁控件與W02beta31均完成，兩個全新Luna Max包已回報。[計畫](24-keybinding-control-context.md)與[交接](reports/plan24-handoff.md)列範圍，本批沒有tests／browser。 |
+| Plan23 | W01只改背包builder呈現及W02beta30均完成，兩個全新Luna Max包已回報。[計畫與來源證據](23-inventory-category-clarity.md)及[交接](reports/plan23-handoff.md)列界線；本批沒有tests／browser。 |
+| Plan22 | W01共用領獎／app、W02 NPC UI及W03beta29完成，三個全新Luna Max工作包已回報。[計畫](22-quest-claim-feedback.md)與[交接](reports/plan22-handoff.md)列實際結果；browser條件未成立。 |
+| Plan21 | W01預覽、W02商店UI及W03beta28均完成，三個全新Luna Max工作包已回報；依[計畫](21-material-sale-feedback.md)與[交接](reports/plan21-handoff.md)收束，browser條件未成立。 |
+| Plan20 | 兩個獨立Luna純model、單owner UI與新候選已交付；裝卸／單筆出售按鈕和點擊同源重判，不採用preview player。作者source／dist／ZIP均為TommyLamm。[工作包](20-item-action-feedback.md#4-明確工作包與所有權)；[本批交接](reports/plan20-handoff.md)。 |
+| Plan19 | 三項改善後追加交易invalid草稿／重綁repeat修整；兩名全新Luna分別完成UI與beta26封包。[修整](reports/plan19-input-polish.md)；[實作與實際檢查](reports/plan19-handoff.md)。 |
 | Plan18 | **PROCESS_DOCS_DELIVERED／QA_FIXTURE_PREPARED**：主代理完成 W00 入口與整合；三名全新 `gpt-6-luna`／`max`／`fork none` 分別交付 W01 browser runbook／模板、W02 overlay 配方、W03 fixture／provenance。[QA 薄索引](../tools/qa/README.md)；[各包結果與實際檢查](reports/plan18-process-handoff.md#實際進度檢查與下一步)。 |
-| 遊戲候選 | `brightwood-first-oath`／`1.0.0-beta.24`，**SOURCE_DELIVERED／ZIP_VALIDATED／LOCAL_ACCEPTANCE_PARTIAL**，未發布。[候選與封包報告](reports/base-experience-toast-fix.md)；[既有指紋摘要](../artifacts/base-experience-1.0.0-beta.24/fingerprints.json)。本輪無 runtime 改動，不造新候選或覆寫指紋。 |
+| 遊戲候選 | `brightwood-first-oath`／`1.0.0-beta.57`，author `TommyLamm`，**SOURCE_DELIVERED／ZIP_VALIDATED／BROWSER_UNVERIFIED**，未發布。[候選報告](reports/plan49-release-candidate.md)；[game.zip](../artifacts/plan49-1.0.0-beta.57/game.zip)。所有歷史成品保留。 |
 | 已驗表面／方法 | 歷史 beta24 **640×360 portal 指定畫面實畫 PASS（所見）**：新隔離 profile／空 canonical origin、validator 曾接受的合成 format5 `camp/right` fixture，正常 Continue／一次 Space；完整 hint、toast、profile、actions、quickbar、footer 無互遮。[直接方法、rect 與圖片證據](reports/base-experience-browser-recovery.md#測試方法與實測)。 |
 | 其他沿用結果 | beta23 修復 actions 遮擋後，動作／排隊 960×540 與 640×360、640 冷卻與小紅切大紅限定視審已過；beta22 NPC／合成恢復卡呈現沿用。[集中交接](reports/base-experience-handoff.md#新增內容視覺補驗與最新候選)保留時間鏈與 4 檔 27 focused／相關 tsc 歷史結果；本輪不重測。 |
 | 未驗／不推廣 | 合成前置不證正常 NPC→portal 行走、任務通關或完成傳送；更小尺寸、真 OS 失焦、正式平台／真帳號雲端、實際音訊、原生／沉浸 fullscreen、灰畫面根因與舊 q09／q10 未重演仍未驗。未標 CANDIDATE_READY 或平台通過。 |
-| QA cleanup | Plan17 自有 session／Chrome／daemon／server 已按當時 owner 證據收束，profiles／raw／原圖／日誌保留，見[歷史收束](reports/base-experience-browser-recovery.md#收束)。**Plan18 未啟動 browser／server，無本輪 QA 資源**，不稱重新清理通過。 |
-| 提交前驗證 | 本次主工作區 **45 檔／327 項測試通過**，typecheck、content、隔離 build 與 Plan18 文件／fixture 檢查通過。已修正測試誤收舊工作樹及過時格式／catalog 斷言，runtime 未因本次修測改變；[實際檢查與提交範圍](reports/workspace-commit-validation-20261028.md)。不把自動測試通過升格為正式平台／雲端或完整 browser 驗收。 |
-| 下一步 | **本輪預設實作、測試與分組提交已完成。** 五組內容 commit 涵蓋全部 430 個可追蹤變更檔，另以文件收束 commit 記錄結果；既有忽略資料保留。C01–C04 未觸發，更窄尺寸、新 harness fixture 接入、fingerprint 共用化與新候選依 [Plan18 條件](18-development-feedback-improvements.md#5-有條件工作新證據才啟動)留待獨立理由。不升版／pack／push／發布或建排程。 |
+| QA cleanup | 本次未啟動browser／server，無新QA資源。beta25 [歷史紀錄](reports/plan19-local-review.md)：about:blank即0x6D，無server／seed；log自報daemon／Chrome退出，CIM／事後ports受限、殘留session未知，不外推全主機乾淨。profiles／log保留。 |
+| 實際檢查 | Plan49 手帳／Frost 修補各一次指定 tsc0、root 局部審閱；beta57 一次 build／pack／完整 ZIP／有限 audit 成功；既有 focused 沿用，不跑全回歸或 browser。 |
+| 下一步 | 文件／提交收束，推送 immutable beta57 tag，由既有 workflow 建立 GitHub prerelease；完成後停止，不開新 Plan／排程，不操作平台上架。 |
 
 下方全部為有日期的階段歷史；其中「最新」「未驗」「停止」描述當時狀態，不覆蓋本區。證據原文保留，不逐條改寫舊 FAIL／UNVERIFIED。
 
