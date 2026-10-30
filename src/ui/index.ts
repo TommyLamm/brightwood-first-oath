@@ -2,6 +2,8 @@ import './styles.css';
 import './journal.css';
 import './world-map.css';
 import './illustrated-panels.css';
+import './control-art.css';
+import { controlImage, decorateControl, installControlSkins, setControlLabel } from './control-art.js';
 import { buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
 import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
@@ -220,6 +222,7 @@ function makeButton(
   button.disabled = options.disabled ?? false;
   if (options.title) button.title = options.title;
   for (const [key, value] of Object.entries(options.data ?? {})) button.dataset[key] = value;
+  decorateControl(button, label, action);
   return button;
 }
 
@@ -235,6 +238,10 @@ function makeJournalIcon(document: Document, name: string): HTMLElement {
   };
   const icon = makeElement(document, 'span', 'ms-journal-icon');
   icon.setAttribute('aria-hidden', 'true');
+  if (name === 'shop' || name === 'dialogue') {
+    icon.append(controlImage(document, name === 'shop' ? 'trade' : 'dialogue'));
+    return icon;
+  }
   const asset = assets[name];
   if (asset) {
     const image = makeElement(document, 'img', 'ms-journal-icon__image');
@@ -242,7 +249,7 @@ function makeJournalIcon(document: Document, name: string): HTMLElement {
     image.alt = '';
     image.draggable = false;
     icon.append(image);
-  } else icon.textContent = '⚙';
+  } else icon.append(controlImage(document, 'settings'));
   return icon;
 }
 
@@ -468,6 +475,7 @@ function preserveFocus(container: HTMLElement, renderContent: () => void, skipDi
 export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) => void): UiController {
   const document = root.ownerDocument;
   const shell = makeElement(document, 'section', 'maple-ui');
+  installControlSkins(shell);
   shell.setAttribute('aria-label', 'Brightwood: First Oath 遊戲介面');
   // Resolve public artwork from the entry URL so version/preview subdirectories work.
   for (const [name, file] of Object.entries({
@@ -730,7 +738,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   };
 
   const renderKeyGuide = (view: UiSnapshot | null): void => {
-    keyGuideToggle.textContent = '?';
+    setControlLabel(keyGuideToggle, '?');
     keyGuideToggle.classList.toggle('is-active', keyGuideExpanded);
     keyGuideToggle.setAttribute('aria-expanded', String(keyGuideExpanded));
     keyGuideCard.hidden = !keyGuideExpanded;
@@ -1038,8 +1046,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     pickupButton.disabled = !canAct;
     interactButton.disabled = !canAct;
     const bindings = view.saveData?.settings.bindings ?? {};
-    pickupButton.textContent = effectiveKeyText(bindings, 'pickup') + ' 拾取';
-    interactButton.textContent = effectiveKeyText(bindings, 'interact') + ' 互動';
+    setControlLabel(pickupButton, effectiveKeyText(bindings, 'pickup') + ' 拾取');
+    setControlLabel(interactButton, effectiveKeyText(bindings, 'interact') + ' 互動');
     pauseButton.hidden = !playing;
     pauseButton.disabled = !canAct;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
@@ -3226,7 +3234,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
   ];
   for (const channel of channels) {
     const label = makeElement(document, 'label', 'ms-volume-control');
-    label.append(makeElement(document, 'span', '', channel.label + ' ' + Math.round(settings[channel.id] * 100) + '%'));
+    label.append(controlImage(document, channel.id === 'musicVolume' ? 'music' : channel.id === 'sfxVolume' ? 'sfx' : 'volume-on'), makeElement(document, 'span', '', channel.label + ' ' + Math.round(settings[channel.id] * 100) + '%'));
     const slider = makeElement(document, 'input', 'ms-range');
     slider.type = 'range';
     slider.min = '0';

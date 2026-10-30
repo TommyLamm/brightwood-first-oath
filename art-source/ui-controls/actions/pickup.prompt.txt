@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: single transparent UI action icon for a fantasy RPG, final export 128x128
+Primary request: Create a pickup action icon: one simplified leather-gloved hand clearly lifting a small drawstring loot pouch. Keep the hand and pouch joined as one unmistakable compact silhouette.
+Input images: Image 1 (backpack) and Image 2 (tunic) are palette and style references only; Image 3 (trade coins) is a same-set style reference. Do not copy their subjects.
+Scene/backdrop: no scene, genuinely transparent background
+Subject: a pale cream leather glove with a short moss-green cuff lifting a small warm walnut leather pouch by its drawstring; no coins
+Style/medium: crisp painterly pixel art matching the attached references: dark walnut outlines, stepped pixel clusters, hand-painted warm copper-brown shadows, cream highlights, restrained moss-green accents, classic fantasy RPG inventory icon
+Composition/framing: the pouch sits above the open supporting hand, with a small upward lift gesture implied by the pose; keep all parts large and readable at 24–32 px; one centered compact silhouette occupying about 75% of a square canvas with generous transparent padding
+Lighting/mood: warm upper-left highlights, grounded soft pixel shading, clear contrast
+Color palette: dark walnut, copper brown, cream glove, antique brass drawstring bead, restrained moss green
+Materials/textures: chunky hand-painted pixel shading, clean stepped edges, no blur
+Text (verbatim): none
+Constraints: transparent alpha, one icon only, no backdrop, no frame, no UI button, no letters, no words, no numbers, no watermark; preserve a clean recognizable silhouette at 24–32 px
+Avoid: extra props, background scenery, tiny decorative details, blurry edges

@@ -8,3 +8,5 @@ artifacts/
 
 .playwright-cli/
 output/playwright/
+output/qa/
+output/plan50/

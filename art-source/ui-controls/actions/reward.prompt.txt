@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: single transparent UI action icon for a fantasy RPG, final export 128x128
+Primary request: Create a reward action icon represented by a small treasure chest.
+Input images: Image 1 (backpack) and Image 2 (tunic) are palette and style references only; Image 3 (trade coins) is a same-set style reference. Do not copy their subjects.
+Scene/backdrop: no scene, genuinely transparent background
+Subject: one closed walnut wooden treasure chest with chunky copper-gold bands, a simple brass clasp, and a little cream-gold glow escaping from the lid seam
+Style/medium: crisp painterly pixel art matching the attached references: dark walnut outlines, stepped pixel clusters, hand-painted warm copper-brown shadows, cream highlights, restrained moss-green accents, classic fantasy RPG inventory icon
+Composition/framing: front three-quarter view, chest only, centered compact silhouette; no coins, gems, characters, or surrounding scene; one centered compact silhouette occupying about 75% of a square canvas with generous transparent padding
+Lighting/mood: warm upper-left highlights, grounded soft pixel shading, clear contrast
+Color palette: dark walnut, copper, antique gold, cream glow, restrained moss green only as a tiny clasp accent
+Materials/textures: chunky hand-painted pixel shading, clean stepped edges, no blur
+Text (verbatim): none
+Constraints: transparent alpha, one icon only, no backdrop, no frame, no UI button, no letters, no words, no numbers, no watermark; preserve a clean recognizable silhouette at 24–32 px
+Avoid: extra props, background scenery, tiny decorative details, blurry edges

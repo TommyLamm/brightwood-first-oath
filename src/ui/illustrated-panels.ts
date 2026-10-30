@@ -1,4 +1,5 @@
 import type { UiSnapshot } from '../contracts/ports.js';
+import { decorateControl } from './control-art.js';
 import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
@@ -24,6 +25,7 @@ function button(document: Document, label: string, action: string, data: Record<
   item.dataset.uiAction = action;
   Object.assign(item.dataset, data);
   item.dataset.focus = action + ':' + Object.values(data).join(':');
+  decorateControl(item, label, action);
   return item;
 }
 function icon(document: Document, view: UiSnapshot, key: string, label: string): HTMLElement {

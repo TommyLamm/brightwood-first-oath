@@ -581,6 +581,266 @@
       "displayHeight": 32,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "control:close",
+      "url": "assets/interface/controls/close.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:settings",
+      "url": "assets/interface/controls/settings.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:pause",
+      "url": "assets/interface/controls/pause.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:play",
+      "url": "assets/interface/controls/play.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:keyboard",
+      "url": "assets/interface/controls/keyboard.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:back",
+      "url": "assets/interface/controls/back.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:confirm",
+      "url": "assets/interface/controls/confirm.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:retry",
+      "url": "assets/interface/controls/retry.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:cloud",
+      "url": "assets/interface/controls/cloud.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:warning",
+      "url": "assets/interface/controls/warning.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:pickup",
+      "url": "assets/interface/controls/pickup.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:dialogue",
+      "url": "assets/interface/controls/dialogue.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:home",
+      "url": "assets/interface/controls/home.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:trade",
+      "url": "assets/interface/controls/trade.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:equip",
+      "url": "assets/interface/controls/equip.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:unequip",
+      "url": "assets/interface/controls/unequip.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:upgrade",
+      "url": "assets/interface/controls/upgrade.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:reward",
+      "url": "assets/interface/controls/reward.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:inspect",
+      "url": "assets/interface/controls/inspect.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:volume-on",
+      "url": "assets/interface/controls/volume-on.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:volume-off",
+      "url": "assets/interface/controls/volume-off.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:music",
+      "url": "assets/interface/controls/music.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:sfx",
+      "url": "assets/interface/controls/sfx.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:button-normal",
+      "url": "assets/interface/controls/button-normal.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 64,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:button-hover",
+      "url": "assets/interface/controls/button-hover.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 64,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "control:button-pressed",
+      "url": "assets/interface/controls/button-pressed.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 192,
+      "displayHeight": 64,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [

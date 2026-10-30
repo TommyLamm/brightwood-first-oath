@@ -1,4 +1,5 @@
 import type { UiSnapshot } from '../contracts/ports.js';
+import { decorateControl } from './control-art.js';
 import {
   WORLD_LANDMARKS,
   FROST_LANDMARKS,
@@ -31,6 +32,7 @@ function mapButton(document: Document, id: string, label: string, className: str
   button.dataset.uiAction = 'select-map';
   button.dataset.mapId = id;
   button.dataset.focus = className + ':' + id;
+  decorateControl(button, label, 'select-map', className.includes('locate') ? '#marker-player-v1' : '@icon-map');
   return button;
 }
 
@@ -336,6 +338,7 @@ function buildDetails(
   const returnTown = element(document, 'button', 'ms-button ms-button--primary ms-atlas-return', returnLabel);
   returnTown.type = 'button';
   returnTown.dataset.uiAction = 'return-town';
+  decorateControl(returnTown, returnLabel, 'return-town');
   returnTown.dataset.focus = 'atlas-return-town';
   returnTown.disabled = !view.canReturnTown;
   returnTown.title = view.canReturnTown ? returnLabel : view.saveData?.location.mapId === 'town' ? '目前已在木葉鎮' : view.saveData?.location.mapId === 'guardian-arena' || view.saveData?.location.mapId === 'sand-sunwell-altar' || view.saveData?.location.mapId === 'ruins-bell-sanctum' || view.saveData?.location.mapId === 'frost-tide-cavern' ? '首領戰尚未結束，不能返回安全地點。' : '目前狀態不允許回城。';

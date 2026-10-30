@@ -1,0 +1,14 @@
+Use case: stylized-concept
+Asset type: single transparent UI action icon for a fantasy RPG, final export 128x128
+Primary request: Create a volume-off action icon represented by a muted speaker.
+Input images: Image 1 (backpack) and Image 2 (tunic) are palette and style references only; Image 3 (trade coins) is a same-set style reference. Do not copy their subjects.
+Scene/backdrop: no scene, genuinely transparent background
+Subject: one compact dark walnut speaker with a copper-rimmed cone and a clear copper X-shaped mute mark over the sound area
+Style/medium: crisp painterly pixel art matching the attached references: dark walnut outlines, stepped pixel clusters, hand-painted warm copper-brown shadows, cream highlights, restrained moss-green accents, classic fantasy RPG inventory icon
+Composition/framing: speaker on the left, simple crossed mute mark on the right; keep the X distinct and the silhouette uncluttered at 24–32 px; one centered compact silhouette occupying about 75% of a square canvas with generous transparent padding
+Lighting/mood: warm upper-left highlights, grounded soft pixel shading, clear contrast
+Color palette: dark walnut, copper, antique gold, cream highlights, restrained moss green
+Materials/textures: chunky hand-painted pixel shading, clean stepped edges, no blur
+Text (verbatim): none
+Constraints: transparent alpha, one icon only, no backdrop, no frame, no UI button, no letters, no words, no numbers, no watermark; preserve a clean recognizable silhouette at 24–32 px
+Avoid: extra props, background scenery, tiny decorative details, blurry edges

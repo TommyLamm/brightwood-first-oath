@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: single transparent UI action icon for a fantasy RPG
+Primary request: Create one clear trade icon represented by a compact stack of gold coins with one coin standing upright; make the coins immediately readable as valuable trade currency.
+Scene/backdrop: no scene, genuinely transparent background
+Subject: chunky gold coins with warm copper rims and bright cream-gold faces, a small tied coin pouch is not needed
+Style/medium: crisp painterly pixel-art matching the attached backpack and tunic icon references: dark walnut outlines, stepped pixel clusters, warm copper-brown shadows, cream highlights, restrained moss-green accent only if useful; handcrafted classic fantasy RPG inventory icon
+Composition/framing: one centered, compact silhouette occupying about 75% of a square 128x128 canvas, generous transparent padding, readable when displayed at 24–32 px
+Lighting/mood: warm highlights from upper left, grounded soft pixel shading
+Color palette: walnut brown, copper, antique gold, cream, tiny moss-green accent
+Materials/textures: hand-painted pixel shading with clean chunky edges and no blur
+Constraints: transparent alpha, one icon only, no backdrop, no frame, no UI button, no letters, no text, no numbers, no watermark; preserve a clean silhouette and strong contrast at small size
