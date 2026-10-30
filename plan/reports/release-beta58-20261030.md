@@ -16,4 +16,14 @@
 
 程式／素材／版本與文件／Release notes分開提交；僅推送新的immutable版本標籤，由既有workflow完成CI建置、固定工具驗證、封包及Release。保留原有beta57兩份未追蹤報告與status原修改，不stage；不推main或強推、不移動既有標籤。
 
-發布結果將於成功後補記。完整玩法、音訊聽感、全螢幕、正式平台／雲端未重驗；隔離合成UI結果不當成通關／真保存證據。
+## 實際發布結果
+
+**GITHUB_PRERELEASED／ZIP_VALIDATED**。程式／素材commit `67ab58d`；文件／Release notes commit `7602bc2`；immutable tag `v1.0.0-beta.58` 指向 `7602bc2951ecb378fe103834506cd24bdab6ad6b`。只推送該新標籤，未推送main／其他branch，未強推或覆寫舊Release。
+
+[GitHub Release](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.58) 於2026-10-30 11:48:30 HKT發布，draft=false、prerelease=true。[workflow40999336557](https://github.com/TommyLamm/brightwood-first-oath/actions/runs/40999336557) completed／success、headSHA與tag相等，固定工具校驗、完整ZIP驗證及Publish release asset均成功。
+
+Release只有一個uploaded `game.zip`：132108586 bytes。GitHub回報digest `sha256:bea011ed36513ab1a50d943ef63e692580035374498f2975f6bc8ca9052d99c7`。此為Linux CI重建的發布附件，與上方Windows本機候選分別記錄；本輪未下載附件重驗，不宣稱兩包逐位元相等。API紀錄 .playroom/tmp/release-beta58/release.json；watch log位於同目錄 workflow-watch.log。
+
+workflow有checkout/setup-node舊action runtime與ubuntu-latest遷移提示，但不影響成功；未擴大修改workflow。最後結果只另作本機文件提交，不移動已發布tag。
+
+完整玩法、音訊聽感、全螢幕、正式平台／雲端未重驗，未重跑完整tests或browser；隔離合成UI結果不當成通關／真保存證據。平台匯入／確認／上架未操作。

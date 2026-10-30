@@ -28,3 +28,7 @@ Luna Max control_art_system 與 control_art_actions 以內建 imagegen 生成；
 本次素材、接線與指定視審已完成；Terra依本輪歸屬收束其session與servers，詳run-record。若後續要求發版，再以固定工具pack／完整ZIP驗證及另行授權發布。保留原本status及兩份beta57未提交報告；未stage／commit，無tag／Release／平台發布。歷史beta57成品保留。
 
 11:41:09同一桌面權限觀測本輪匹配Chrome／Node程序0、兩個專屬ports listening 0、named session 0；詳 output/qa/ui-controls-visual-20261030-111341/cleanup-observation.json。不外推全主機。server watcher對本輪profile鎖定檔記錄EBUSY，Ctrl+C退出碼1，完整log保留；沒有因此改產品source或重跑視審。output/qa及本輪build log已納入gitignore，完整QA profiles／證據留本機，避免誤stage。
+
+## 後續發布（2026-10-30）
+
+使用者另行要求「建立release」，已完成本機固定工具pack／完整ZIP驗證、提交與immutable標籤發布。[beta.58 GitHub prerelease](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.58)及唯一game.zip已建立，CI workflow success。上方「未發布」屬原實作交付時點；最新結果以[發布報告](release-beta58-20261030.md)為準。未平台上架；沒有重跑完整玩法／雲端或browser。
