@@ -85,6 +85,11 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   points.append(skills);
   heading.append(identity, points);
   root.append(heading);
+  const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
+  root.append(node(document, 'p', 'ms-panel-note', atMaxLevel
+    ? 'EXP：MAX（已達等級上限）'
+    : 'EXP：' + player.exp.toLocaleString('zh-HK') + ' / '
+      + (view.catalog.rules.progression.expToNext[player.level] ?? 0).toLocaleString('zh-HK')));
 
   const cards = node(document, 'div', 'ms-ability-cards');
   for (const spec of [
@@ -115,12 +120,23 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   const totals = node(document, 'div', 'ms-ability-totals');
   totals.append(
     token(document, view, 'item:steel-sword', '攻擊', stats.attack),
-    token(document, view, 'skill:iron-guard', '防禦', stats.defense),
+    token(document, view, 'skill:iron-guard', '基礎防禦', stats.defense),
     token(document, view, 'skill:sweep', '暴擊', (stats.critChance * 100).toFixed(1) + '%'),
     token(document, view, 'item:small-red', '最大 HP', stats.maxHp),
     token(document, view, 'item:small-blue', '最大 MP', stats.maxMp),
   );
   root.append(totals);
+  if (view.activeGuard) {
+    const guard = view.activeGuard;
+    const note = node(document, 'p', 'ms-panel-note ms-guard-note');
+    note.setAttribute('aria-live', 'off');
+    const seconds = node(document, 'span', '', String(guard.remainingSeconds));
+    seconds.dataset.guardSeconds = '';
+    note.append(document.createTextNode('堅韌守護：防禦 +' + guard.defenseBonus + '，目前戰鬥防禦 '),
+      node(document, 'strong', '', String(stats.defense + guard.defenseBonus)),
+      document.createTextNode('（基礎 ' + stats.defense + '）。剩餘 '), seconds, document.createTextNode(' 秒。'));
+    root.append(note);
+  }
   const foot = node(document, 'div', 'ms-ability-foot');
   if (player.ap > 5) {
     for (const [stat, name] of [['str', '力量'], ['dex', '敏捷']] as const) {

@@ -157,8 +157,10 @@ export class KeyboardInputState {
     if (context.textInput || (!context.focused && !(context.uiFocused && action === 'escape'))) {
       return { command: null, preventDefault: false };
     }
+    // Held game keys must not start scrolling the host page after the first keydown.
+    // Repeats must not re-arm keys cleared by blur, a modal, rebinding or map loading.
+    if (context.repeat) return { command: null, preventDefault: action !== null };
     this.heldCodes.add(code);
-    if (context.repeat) return { command: null, preventDefault: false };
 
     if (!action) return { command: null, preventDefault: false };
     if (action === 'jump') this.jumpPressed = true;
@@ -197,7 +199,8 @@ export class KeyboardInputState {
 
   isHeld(action: GameAction): boolean {
     const code = this.bindings[action];
-    return code !== undefined && this.heldCodes.has(code);
+    if (HELD_MOVEMENT_ACTIONS.has(action)) return code !== undefined && this.heldCodes.has(code);
+    return getEffectiveKeyCodes(action, this.bindings).some((candidate) => this.heldCodes.has(candidate));
   }
 
   consumeMovementFrame(): InputFrame {

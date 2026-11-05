@@ -1,0 +1,18 @@
+[
+  {
+    "asset": "forest",
+    "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81\\exec-6d73902e-3a65-432c-b390-c4185ff79002.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "asset": "mine",
+    "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81\\exec-77dfdaa7-d685-4f43-991b-137affdcb27f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "asset": "leather",
+    "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81\\exec-9f843f06-4a51-40f1-a0e0-fb661768d182.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "asset": "iron",
+    "output_hint": "Generated images are saved to C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81 as C:\\Users\\Tommy\\.codex\\generated_images\\01a1ab0c-9e11-7492-aaa7-e8da69a03c81\\exec-f51280ca-e70d-438d-b180-b17e1d505cdb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  }
+]

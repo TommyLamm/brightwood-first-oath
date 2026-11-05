@@ -10,7 +10,7 @@ import type {
 } from '../../contracts/index.js';
 
 type Platform = readonly [x1: number, y1: number, x2: number, y2: number];
-type MonsterPlacement = { monsterId: Id; x: number; roamLeft: number; roamRight: number };
+type MonsterPlacement = { monsterId: Id; x: number; y?: number; roamLeft: number; roamRight: number };
 type MapBlueprint = {
   id: Id;
   name: string;
@@ -62,8 +62,9 @@ const blueprints: MapBlueprint[] = [
   },
   {
     id: 'forest-edge', name: '嫩芽林道', width: 1920, themeKey: 'forest', musicKey: 'theme-brightwood', safe: false, boss: false,
-    platforms: [[400, 490, 800, 490], [950, 460, 1300, 460], [1400, 420, 1700, 420]],
-    ladders: [{ x: 600, topY: 490, bottomY: 600 }, { x: 1500, topY: 420, bottomY: 600 }],
+    // Refuge over the first snail, then two occupied branches linked by short jumps.
+    platforms: [[380, 510, 700, 510], [750, 470, 1070, 470], [1120, 510, 1500, 510]],
+    ladders: [{ x: 410, topY: 510, bottomY: 600 }, { x: 780, topY: 470, bottomY: 600 }, { x: 1450, topY: 510, bottomY: 600 }],
     extraSpawns: [],
     portals: [
       { id: 'forest-edge:west', x: 100, y: 600, targetMapId: 'town', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
@@ -72,15 +73,16 @@ const blueprints: MapBlueprint[] = [
     npcs: [],
     monsters: [
       { monsterId: 'snail', x: 500, roamLeft: 320, roamRight: 680 },
-      { monsterId: 'snail', x: 900, roamLeft: 720, roamRight: 1080 },
-      { monsterId: 'slime', x: 1300, roamLeft: 1120, roamRight: 1480 },
+      { monsterId: 'snail', x: 900, y: 470, roamLeft: 840, roamRight: 1020 },
+      { monsterId: 'slime', x: 1300, y: 510, roamLeft: 1180, roamRight: 1440 },
       { monsterId: 'slime', x: 1650, roamLeft: 1470, roamRight: 1830 },
     ],
   },
   {
     id: 'mushroom-wood', name: '菌傘深林', width: 2160, themeKey: 'forest', musicKey: 'theme-brightwood', safe: false, boss: false,
-    platforms: [[300, 480, 700, 480], [950, 390, 1300, 390], [1450, 450, 1900, 450]],
-    ladders: [{ x: 500, topY: 480, bottomY: 600 }, { x: 1100, topY: 390, bottomY: 600 }],
+    // Cross above the first mushroom, flank the upper patrols, then drop back to the road.
+    platforms: [[300, 510, 640, 510], [690, 465, 1050, 465], [1100, 510, 1480, 510]],
+    ladders: [{ x: 330, topY: 510, bottomY: 600 }, { x: 720, topY: 465, bottomY: 600 }, { x: 1450, topY: 510, bottomY: 600 }],
     extraSpawns: [],
     portals: [
       { id: 'mushroom-wood:west', x: 100, y: 600, targetMapId: 'forest-edge', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
@@ -89,15 +91,16 @@ const blueprints: MapBlueprint[] = [
     npcs: [],
     monsters: [
       { monsterId: 'mushroom', x: 450, roamLeft: 270, roamRight: 630 },
-      { monsterId: 'mushroom', x: 850, roamLeft: 670, roamRight: 1030 },
-      { monsterId: 'mushroom', x: 1250, roamLeft: 1070, roamRight: 1430 },
+      { monsterId: 'mushroom', x: 850, y: 465, roamLeft: 780, roamRight: 990 },
+      { monsterId: 'mushroom', x: 1250, y: 510, roamLeft: 1160, roamRight: 1410 },
       { monsterId: 'slime', x: 1700, roamLeft: 1520, roamRight: 1880 },
     ],
   },
   {
     id: 'red-ridge', name: '赤岩山徑', width: 2160, themeKey: 'rock', musicKey: 'theme-ridge', safe: false, boss: false,
-    platforms: [[300, 480, 650, 480], [800, 440, 1200, 440], [1500, 500, 1900, 500]],
-    ladders: [{ x: 950, topY: 440, bottomY: 600 }, { x: 1700, topY: 500, bottomY: 600 }],
+    // A guarded middle ledge prevents a free bypass; side ledges allow retreat and re-entry.
+    platforms: [[360, 515, 690, 515], [745, 475, 1120, 475], [1175, 515, 1535, 515]],
+    ladders: [{ x: 390, topY: 515, bottomY: 600 }, { x: 775, topY: 475, bottomY: 600 }, { x: 1500, topY: 515, bottomY: 600 }],
     extraSpawns: [],
     portals: [
       { id: 'red-ridge:west', x: 100, y: 600, targetMapId: 'mushroom-wood', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
@@ -106,15 +109,16 @@ const blueprints: MapBlueprint[] = [
     npcs: [{ npcId: 'keeper', x: 250, y: 600 }],
     monsters: [
       { monsterId: 'boar', x: 450, roamLeft: 290, roamRight: 610 },
-      { monsterId: 'boar', x: 850, roamLeft: 690, roamRight: 1010 },
+      { monsterId: 'boar', x: 850, y: 475, roamLeft: 805, roamRight: 1060 },
       { monsterId: 'boar', x: 1300, roamLeft: 1140, roamRight: 1460 },
       { monsterId: 'golem', x: 1750, roamLeft: 1590, roamRight: 1910 },
     ],
   },
   {
     id: 'mine-gate', name: '古礦入口', width: 1920, themeKey: 'rock', musicKey: 'theme-ridge', safe: false, boss: false,
-    platforms: [[350, 470, 700, 470], [1000, 420, 1400, 420]],
-    ladders: [{ x: 500, topY: 470, bottomY: 600 }, { x: 1200, topY: 420, bottomY: 600 }],
+    // First scaffold clears golem melee; the connected upper scaffold has a sentinel guard.
+    platforms: [[350, 525, 740, 525], [795, 480, 1395, 480]],
+    ladders: [{ x: 390, topY: 525, bottomY: 600 }, { x: 835, topY: 480, bottomY: 600 }],
     extraSpawns: [],
     portals: [
       { id: 'mine-gate:west', x: 100, y: 600, targetMapId: 'red-ridge', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
@@ -124,14 +128,16 @@ const blueprints: MapBlueprint[] = [
     monsters: [
       { monsterId: 'golem', x: 450, roamLeft: 300, roamRight: 600 },
       { monsterId: 'golem', x: 850, roamLeft: 700, roamRight: 1000 },
-      { monsterId: 'sentinel', x: 1250, roamLeft: 1100, roamRight: 1400 },
+      { monsterId: 'sentinel', x: 1250, y: 480, roamLeft: 1130, roamRight: 1340 },
       { monsterId: 'sentinel', x: 1600, roamLeft: 1450, roamRight: 1750 },
     ],
   },
   {
     id: 'guardian-arena', name: '守衛祭壇', width: 1440, themeKey: 'rock', musicKey: 'boss-guardian', safe: false, boss: true,
-    platforms: [[250, 460, 480, 460], [960, 460, 1190, 460]],
-    ladders: [{ x: 360, topY: 460, bottomY: 600 }, { x: 1080, topY: 460, bottomY: 600 }],
+    // 70px ledges clear the 50px wave but remain inside the 100px slam.
+    // Both lie inside the boss patrol so it can retaliate against attacks from a ledge.
+    platforms: [[620, 530, 820, 530], [1040, 530, 1240, 530]],
+    ladders: [{ x: 650, topY: 530, bottomY: 600 }, { x: 1210, topY: 530, bottomY: 600 }],
     extraSpawns: [{ id: 'entry', x: 160, y: 600 }],
     portals: [
       { id: 'guardian-arena:exit', x: 100, y: 600, targetMapId: 'mine-gate', targetSpawnId: 'right', requiredQuestId: null, minLevel: 1 },
@@ -369,7 +375,7 @@ function buildMap(blueprint: MapBlueprint): MapDef {
       spawnId: `${blueprint.id}:${monster.monsterId}:${index}`,
       monsterId: monster.monsterId,
       x: monster.x,
-      y: 600,
+      y: monster.y ?? 600,
       roamLeft: monster.roamLeft,
       roamRight: monster.roamRight,
     };

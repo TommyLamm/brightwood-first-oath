@@ -17,14 +17,18 @@ if (!gameRoot || !uiRoot) {
 
 const statusView = createRootStatusView(uiRoot);
 let app: GameApp;
-const ui = createUi(uiRoot, (command) => app.dispatchUi(command));
 const appStorage = browserStorage();
+const ui = createUi(uiRoot, (command) => app.dispatchUi(command), {
+  gameId: BRIGHTWOOD_GAME_ID,
+  storage: appStorage,
+});
 app = new GameApp({
   baseUrl: import.meta.env.BASE_URL,
   fetcher: (url) => fetch(url),
   gameId: BRIGHTWOOD_GAME_ID,
   storage: appStorage,
   cloud: playroomCloudPort,
+  backgroundMotionDefault: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   audioFactory: createAudio,
   onStateChange: (state) => {
     statusView.update(state);
@@ -37,10 +41,14 @@ statusView.update(app.state);
 const game = new Phaser.Game({
   type: Phaser.CANVAS,
   parent: gameRoot,
-  width: 960,
-  height: 540,
+  // Render at twice the 960x540 world baseline so detailed actor textures
+  // survive desktop FIT scaling. The world renderer keeps the same field of view.
+  width: 1920,
+  height: 1080,
   backgroundColor: '#21323a',
   scene: createAppScenes(app, (title, details) => statusView.update(app.state, title, details)),
+  // Preserve small actor contours at the 2x world density. CSS handles the
+  // final FIT downscale separately so it does not impose a pixel grid on UI.
   render: { antialias: false },
   scale: {
     mode: Phaser.Scale.FIT,

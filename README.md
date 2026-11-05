@@ -39,7 +39,7 @@ node tools/playroom/validate.mjs artifacts/game.zip
 
 ## 操作
 
-方向鍵移動／爬梯、左 Alt 跳躍、左 Ctrl 普攻、Z 拾取、Space 互動；1–3 技能、Q/W 藥水；I/E/K/C/J/M 開啟面板，Esc 關閉面板或暫停。
+方向鍵移動／爬梯、左 Alt 跳躍、左 Ctrl 普攻、Z 拾取、Space 互動；1–3 技能、Q/W 藥水；I/E/K/C/J/M 開啟面板，Esc 關閉面板或暫停。普攻預設點按，可在設定選擇按住連續普攻，放開即停止；技能維持點按，Z 可按住連續拾取。設定也可調整鍵位、閱讀字級及背景視差。
 
 ## 候選驗收與來源
 

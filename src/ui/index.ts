@@ -3,6 +3,10 @@ import './journal.css';
 import './world-map.css';
 import './illustrated-panels.css';
 import './control-art.css';
+import './forest-hud.css';
+import './image-quality.css';
+import './reading-size.css';
+import './local-map.css';
 import { controlImage, decorateControl, installControlSkins, setControlLabel } from './control-art.js';
 import { buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
@@ -16,7 +20,7 @@ import {
   type GameAction,
 } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
-import type { UiController, UiSnapshot } from '../contracts/ports.js';
+import type { StorageLike, UiController, UiSnapshot } from '../contracts/ports.js';
 import type { Settings } from '../contracts/types.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { validatePlayerName } from '../domain/progression/index.js';
@@ -33,6 +37,12 @@ import { previewSkillLearning } from './skill-learning-preview.js';
 import { INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
 import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
+import { createQuestTrackerState, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
+import { contextHint } from './context-hint.js';
+import { createReadingPreference, type ReadingSize } from './reading-preference.js';
+import { createScreenModalFocus } from './screen-modal-focus.js';
+import { nextInventoryBagIndex } from './inventory-navigation.js';
+import { updateLocalMapPlayer } from './local-map.js';
 
 const PANEL_LABELS: Record<PanelId, string> = {
   inventory: '背包',
@@ -74,12 +84,12 @@ const KEY_ACTIONS: { id: Exclude<GameAction, 'escape'>; label: string }[] = [
 
 type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
-  | 'retry-save' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
+  | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
-  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest'
+  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest' | 'track-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
-  | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-rebind' | 'use-cloud-version'
-  | 'toggle-key-guide' | 'settings-reset-bindings' | 'reload-page';
+  | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
+  | 'toggle-key-guide' | 'toggle-quest-tracker' | 'settings-reset-bindings' | 'reload-page';
 
 type KeyGuideItem = {
   label: string;
@@ -472,8 +482,14 @@ function preserveFocus(container: HTMLElement, renderContent: () => void, skipDi
 }
 
 /** Builds the desktop UI package. All gameplay changes leave through the supplied app dispatcher. */
-export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) => void): UiController {
+export function createUi(
+  root: HTMLElement,
+  dispatch: (command: CommandDraft) => void,
+  options: { gameId: string; storage: StorageLike | null },
+): UiController {
   const document = root.ownerDocument;
+  const questTrackerState = createQuestTrackerState(options.gameId, options.storage);
+  const readingPreference = createReadingPreference(options.gameId, options.storage);
   const shell = makeElement(document, 'section', 'maple-ui');
   installControlSkins(shell);
   shell.setAttribute('aria-label', 'Brightwood: First Oath 遊戲介面');
@@ -508,11 +524,27 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   const region = makeElement(document, 'aside', 'ms-region');
   const systemControls = makeElement(document, 'nav', 'ms-system-controls');
   systemControls.setAttribute('aria-label', '遊戲系統');
-  const questTracker = makeElement(document, 'button', 'ms-quest-tracker');
-  questTracker.type = 'button';
-  questTracker.dataset.uiAction = 'open-panel';
-  questTracker.dataset.panel = 'quests';
-  questTracker.setAttribute('aria-label', '開啟任務日誌');
+  const questTracker = makeElement(document, 'section', 'ms-card ms-quest-tracker');
+  questTracker.setAttribute('aria-label', '任務追蹤');
+  const questToggle = makeButton(document, '', 'toggle-quest-tracker', { className: 'ms-quest-tracker__toggle' });
+  const questArrow = makeElement(document, 'span', 'ms-quest-tracker__arrow');
+  questArrow.setAttribute('aria-hidden', 'true');
+  const questTitle = makeElement(document, 'strong', 'ms-quest-tracker__title');
+  const questProgress = makeElement(document, 'span', 'ms-quest-tracker__progress');
+  const questTarget = makeElement(document, 'span', 'ms-quest-tracker__target');
+  const questCounter = makeElement(document, 'span', 'ms-quest-tracker__counter');
+  questCounter.setAttribute('role', 'status');
+  questCounter.setAttribute('aria-live', 'polite');
+  questProgress.append(questTarget, questCounter);
+  questToggle.append(questArrow, questTitle, questProgress);
+  const questBody = makeElement(document, 'div', 'ms-quest-tracker__body');
+  questBody.id = 'ms-quest-tracker-body';
+  questToggle.setAttribute('aria-controls', questBody.id);
+  const questDetail = makeElement(document, 'span', 'ms-quest-tracker__detail');
+  const questReview = makeButton(document, '', 'review-sidequest', { className: 'ms-quest-tracker__review' });
+  questReview.textContent = '查看任務 →';
+  questBody.append(questDetail, questReview);
+  questTracker.append(questToggle, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
   interactionHintRow.hidden = true;
   interactionHintRow.setAttribute('role', 'note');
@@ -528,7 +560,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     });
     button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
     button.title = PANEL_LABELS[panel];
-    button.replaceChildren(makeJournalIcon(document, panel), makeElement(document, 'span', '', PANEL_LABELS[panel]));
+    button.replaceChildren(makeJournalIcon(document, panel), makeElement(document, 'span', '', panel === 'map' ? '地圖' : PANEL_LABELS[panel]));
     if (panel === 'settings') {
       button.className = 'ms-button ms-system-button';
       systemControls.append(button);
@@ -538,18 +570,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     } else controls.append(button);
     panelButtons.set(panel, button);
   }
-  const pickupButton = makeButton(document, '拾取', 'pickup', { className: 'ms-button ms-button--secondary' });
-  const interactButton = makeButton(document, '互動', 'interact', { className: 'ms-button ms-button--secondary' });
   const pauseButton = makeButton(document, 'Ⅱ', 'toggle-pause', { className: 'ms-button ms-system-button', title: '暫停遊戲' });
   pauseButton.setAttribute('aria-label', '暫停遊戲');
   const returnTownButton = makeButton(document, '返回城鎮', 'return-town', { className: 'ms-button ms-button--secondary' });
-  actionBar.prepend(pickupButton, interactButton);
   actionBar.append(returnTownButton);
   systemControls.append(keyGuide, pauseButton);
   header.append(mapCard, systemControls);
   region.append(header, interactionHintRow, questTracker);
-  hud.append(profile, region);
-  bottomBar.append(actionBar, quickbar, controls);
+  hud.append(region);
+  bottomBar.append(profile, quickbar, controls);
 
   const quickSlots = makeElement(document, 'div', 'ms-quickbar__slots');
   const quickDefinitions = [
@@ -587,17 +616,21 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   toast.setAttribute('role', 'status');
   toast.setAttribute('aria-live', 'polite');
   const footer = makeElement(document, 'footer', 'ms-footer');
-  const saveState = makeElement(document, 'span', 'ms-footer__save');
   const errorText = makeElement(document, 'span', 'ms-footer__error');
   const footerActions = makeElement(document, 'div', 'ms-footer__actions');
-  footer.append(saveState, footerActions, errorText);
+  footer.append(footerActions, errorText);
+  footer.hidden = true;
 
   // The world freezes while the page has lost focus (see worldIsFrozen); say so instead of looking hung.
   const focusBanner = makeElement(document, 'div', 'ms-focus-banner', '遊戲畫面失去焦點，冒險已安全暫停。');
   focusBanner.setAttribute('role', 'status');
   focusBanner.hidden = true;
-  shell.append(hud, bottomBar, panelHost, screenLayer, toast, focusBanner, footer);
+  shell.append(hud, bottomBar, actionBar, panelHost, screenLayer, toast, focusBanner, footer);
   root.append(shell);
+  shell.dataset.readingSize = readingPreference.size;
+  const gameSurface = document.getElementById('game-root');
+  const modalFocus = createScreenModalFocus(screenLayer, [hud, bottomBar, actionBar, panelHost, toast, footer,
+    ...(gameSurface && !gameSurface.contains(root) ? [gameSurface] : [])]);
 
   let currentView: UiSnapshot | null = null;
   let lastScreenSignature = '';
@@ -825,36 +858,39 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       return;
     }
 
-    const portrait = makeElement(document, 'div', 'ms-profile__portrait');
+    const portrait = makeButton(document, '', 'open-panel', {
+      className: 'ms-profile__portrait', data: { panel: 'stats' },
+    });
     const hero = makeElement(document, 'img', 'ms-profile__hero');
     hero.src = new URL('assets/interface/journal/hero-portrait-chibi.png', document.baseURI).href;
     hero.alt = '';
     hero.draggable = false;
     portrait.append(hero);
-    portrait.setAttribute('role', 'img');
-    portrait.setAttribute('aria-label', player.name + '的角色頭像');
+    portrait.setAttribute('aria-label', '開啟' + player.name + '的角色資訊');
+    portrait.title = '角色資訊：職業、能力與經驗值';
     const main = makeElement(document, 'div', 'ms-profile__main');
     const heading = makeElement(document, 'div', 'ms-profile__heading');
     heading.append(
       makeElement(document, 'strong', '', player.name),
       makeBadge(document, 'Lv.' + player.level, 'level'),
-      makeBadge(document, jobLabel(player.job), 'job'),
     );
-    const hp = makeMeter(document, 'HP', player.hp, view.stats?.maxHp ?? player.hp, 'hp');
-    // Static (not pulsing): the profile is rebuilt on every HP change, which would restart an animation.
     const maxHp = view.stats?.maxHp ?? player.hp;
+    const hp = makeMeter(document, 'HP', player.hp, maxHp, 'hp', formatNumber(player.hp) + '/' + formatNumber(maxHp));
+    // Static (not pulsing): the profile is rebuilt on every HP change, which would restart an animation.
     if (player.hp > 0 && player.hp <= maxHp * 0.3) {
       hp.classList.add('is-low');
       hp.title = 'HP 偏低，記得按 ' + effectiveKeyText(view.saveData?.settings.bindings ?? {}, 'potionHp') + ' 喝紅色藥水';
     }
-    const mp = makeMeter(document, 'MP', player.mp, view.stats?.maxMp ?? player.mp, 'mp');
+    const maxMp = view.stats?.maxMp ?? player.mp;
+    const mp = makeMeter(document, 'MP', player.mp, maxMp, 'mp', formatNumber(player.mp) + '/' + formatNumber(maxMp));
     const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
     const nextExp = view.catalog.rules.progression.expToNext[player.level] ?? 0;
     const exp = atMaxLevel
       ? makeMeter(document, 'EXP', 1, 1, 'exp', 'MAX')
       : makeMeter(document, 'EXP', player.exp, nextExp, 'exp');
-    main.append(heading, hp, mp, exp);
-    profile.append(portrait, main);
+    exp.title = atMaxLevel ? 'EXP：MAX（已達等級上限）' : 'EXP：' + formatNumber(player.exp) + ' / ' + formatNumber(nextExp);
+    main.append(heading, hp, mp);
+    profile.append(portrait, main, exp);
   };
 
   const renderMapIndicator = (view: UiSnapshot): void => {
@@ -875,17 +911,17 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   };
 
   const renderQuestTracker = (view: UiSnapshot): void => {
+    if (view.saveData) questTrackerState.reconcile(view.questViews);
     const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
     const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
-    const signature = JSON.stringify({ quests: view.questViews, map: view.saveData?.location.mapId, chapterComplete });
+    const signature = JSON.stringify({
+      quests: view.questViews, map: view.saveData?.location.mapId, chapterComplete, worldComplete,
+      collapsed: questTrackerState.collapsed,
+      trackedQuestId: questTrackerState.trackedQuestId,
+    });
     if (signature === lastQuestSignature) return;
     lastQuestSignature = signature;
-    const quest = view.questViews.find((entry) => entry.status === 'ready')
-      ?? view.questViews.find((entry) => entry.status === 'active')
-      ?? view.questViews.find((entry) => entry.status === 'available');
-    questTracker.replaceChildren();
-    const heading = makeElement(document, 'span', 'ms-quest-tracker__heading', '任務手帳');
-    heading.prepend(makeJournalIcon(document, 'quests'));
+    const quest = selectTrackerQuest(view.questViews, questTrackerState.trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
@@ -908,15 +944,29 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
-    const detailLine = makeElement(document, 'span', 'ms-quest-tracker__detail', detail);
+    questDetail.textContent = detail;
     // Keep the map name in one piece: it used to wrap as 「（赤岩山」/「徑）」.
-    if (place) detailLine.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
-    questTracker.append(heading, makeElement(document, 'strong', '', title), detailLine);
-    questTracker.title = title + '｜' + detail + place;
+    if (place) questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
+    const summary = questTrackerSummary(quest, (objective) => targetName(view, objective.targetId, objective.type));
+    questTitle.textContent = title;
+    questTarget.textContent = summary.label;
+    questCounter.textContent = summary.value;
+    const collapsed = questTrackerState.collapsed;
+    questTracker.classList.toggle('is-collapsed', collapsed);
+    questTracker.classList.toggle('is-ready', quest?.status === 'ready');
+    questArrow.textContent = collapsed ? '▸' : '▾';
+    questToggle.setAttribute('aria-expanded', String(!collapsed));
+    questToggle.setAttribute('aria-label', (collapsed ? '展開' : '收起') + '任務追蹤：' + title + '，' + summary.label + ' ' + summary.value);
+    questBody.hidden = collapsed;
+    questReview.hidden = !quest;
+    const explicitlyTracked = quest !== undefined && quest.questId === questTrackerState.trackedQuestId;
+    questReview.textContent = explicitlyTracked ? '指定追蹤 · 查看任務 →' : '查看任務 →';
+    questReview.dataset.questId = quest?.questId ?? '';
+    questTracker.title = (explicitlyTracked ? '指定追蹤｜' : '') + title + '｜' + detail + place;
   };
 
   const updateInteractionHint = (view: UiSnapshot): void => {
-    const hint = view.interactionHint ?? null;
+    const hint = contextHint(view, (action) => effectiveKeyText(view.saveData?.settings.bindings ?? {}, action));
     const visible = view.screen === 'playing'
       && view.focusResumeRequired !== true
       && view.panels.length === 0
@@ -926,16 +976,13 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     if (!visible || !hint) {
       if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
       delete interactionHintRow.dataset.targetKey;
-      if (interactButton.title !== '') interactButton.title = '';
       return;
     }
-    const verb = hint.kind === 'portal' ? '前往' : '互動';
-    const text = effectiveKeyText(view.saveData?.settings.bindings ?? {}, 'interact') + ' ' + verb + '：' + hint.label
-      + (hint.blockedMessage ? '｜' + hint.blockedMessage : '');
+    const text = hint.text;
     if (interactionHintRow.textContent !== text) interactionHintRow.textContent = text;
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
-    if (interactionHintRow.dataset.targetKey !== hint.targetKey) interactionHintRow.dataset.targetKey = hint.targetKey;
-    if (interactButton.title !== text) interactButton.title = text;
+    const targetKey = hint.targetKey;
+    if (interactionHintRow.dataset.targetKey !== targetKey) interactionHintRow.dataset.targetKey = targetKey;
   };
 
   const updateQuickButtons = (view: UiSnapshot): void => {
@@ -957,7 +1004,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
       if (key) {
         const action = keyForSkill[slotId]!;
-        key.textContent = effectiveKeyText(view.saveData?.settings.bindings ?? {}, action);
+        const binding = effectiveKeyText(view.saveData?.settings.bindings ?? {}, action);
+        key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
+        key.title = binding;
       }
       const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
       const state = button.querySelector<HTMLElement>('.ms-quick-slot__state');
@@ -1036,6 +1085,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
+      if (buffLeftSec > 0 && view.activeGuard) button.title += '｜防禦 +' + view.activeGuard.defenseBonus;
       if (reason) button.title += '｜' + reason;
       else if (queued && !screenState && buffLeftSec === 0) button.title += '｜已排隊';
       else if (actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
@@ -1043,11 +1093,6 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       button.setAttribute('aria-label', skill.name + ' ' + displayState);
     }
 
-    pickupButton.disabled = !canAct;
-    interactButton.disabled = !canAct;
-    const bindings = view.saveData?.settings.bindings ?? {};
-    setControlLabel(pickupButton, effectiveKeyText(bindings, 'pickup') + ' 拾取');
-    setControlLabel(interactButton, effectiveKeyText(bindings, 'interact') + ' 互動');
     pauseButton.hidden = !playing;
     pauseButton.disabled = !canAct;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
@@ -1070,6 +1115,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       shopButton.disabled = view.interaction?.npcId !== 'merchant';
       shopButton.hidden = shopButton.disabled;
     }
+    actionBar.hidden = ![returnTownButton, dialogueButton, shopButton].some((button) => button && !button.hidden);
     updateInteractionHint(view);
   };
 
@@ -1080,6 +1126,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       saveStatus: view.saveStatus,
       saveUpgrade: view.saveUpgrade ?? null,
       focusResumeRequired: view.focusResumeRequired ?? false,
+      mapVisualLoad: view.mapVisualLoad ? { mapId: view.mapVisualLoad.mapId, name: view.mapVisualLoad.name,
+        status: view.mapVisualLoad.status, message: view.mapVisualLoad.message } : null,
       hasSave: view.saveData !== null,
       canReturnTown: view.canReturnTown,
       createRequested,
@@ -1106,9 +1154,34 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         screenLayer.append(card);
         return;
       }
-      if (view.screen === 'loading') {
+      if (view.screen === 'loading' && !view.mapVisualLoad) {
         screenLayer.hidden = false;
         screenLayer.append(makeScreenCard(document, '正在準備冒險', '載入世界資料與存檔狀態。'));
+        return;
+      }
+      if (view.mapVisualLoad) {
+        const load = view.mapVisualLoad;
+        const failed = load.status === 'failed';
+        const card = makeScreenCard(document, failed ? '地圖未能載入' : '正在前往' + load.name,
+          failed ? '地圖素材未能載入。請檢查連線後重試，冒險進度仍保留。' : '正在準備地圖；完成前冒險會安全暫停。');
+        if (failed) {
+          card.append(makeButton(document, '重試地圖載入', 'retry-map-load', { className: 'ms-button ms-button--primary' }),
+            makeButton(document, '返回標題', 'return-title', { className: 'ms-button ms-button--secondary' }));
+          if (load.message) {
+            const details = makeElement(document, 'details', 'ms-screen-card__details');
+            details.append(makeElement(document, 'summary', '', '技術細節'), makeElement(document, 'code', '', load.message));
+            card.append(details);
+          }
+        } else {
+          const progressHost = makeElement(document, 'div', 'ms-map-load-progress');
+          progressHost.setAttribute('aria-live', 'off');
+          const progress = makeElement(document, 'progress');
+          progress.setAttribute('aria-label', '地圖素材載入進度');
+          progressHost.append(progress, makeElement(document, 'p', 'ms-map-load-progress__label'));
+          card.append(progressHost);
+        }
+        screenLayer.hidden = false;
+        screenLayer.append(card);
         return;
       }
       if (view.saveUpgrade) {
@@ -1167,6 +1240,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         const card = makeScreenCard(document, 'Brightwood: First Oath', '森林的怪物躁動不安，古礦深處似乎有東西正在甦醒。\n從晨光營地出發，立下你的第一個誓約。');
         const status = makeElement(document, 'p', 'ms-screen-card__status', '存檔狀態：' + statusLabel(view.saveStatus));
         card.append(status);
+        card.append(buildReadingChoices(document, readingPreference.size));
         if (view.saveStatus === 'loadError') {
           card.append(
             makeElement(document, 'p', 'ms-warning', (view.saveMessage ? view.saveMessage + ' ' : '') + '請重試讀取；若存檔已無法修復，可另存備份後重新開始，或選擇不寫入正式存檔的暫時遊玩。'),
@@ -1323,12 +1397,14 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         continueButton.focus();
       }
     });
+    modalFocus.sync();
   };
 
   const renderFooter = (view: UiSnapshot): void => {
     focusBanner.hidden = !(view.windowFocused === false && view.screen === 'playing');
-    saveState.textContent = '存檔狀態：' + statusLabel(view.saveStatus);
     errorText.textContent = view.error ?? '';
+    // Keep recovery actions available without a permanent save badge occupying the HUD.
+    footer.hidden = !view.error && !['loadError', 'saveError', 'conflict'].includes(view.saveStatus);
     toast.textContent = view.toast ?? '';
     toast.hidden = !view.toast;
     // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
@@ -1435,7 +1511,12 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       selectedBagIndex,
       selectedMapId,
       selectedQuestId,
+      trackedQuestId: questTrackerState.trackedQuestId,
       inventoryFilter,
+      readingSize: readingPreference.size,
+      holdBasicAttack: view.holdBasicAttack ?? false,
+      backgroundMotion: view.backgroundMotion ?? true,
+      activeGuardBonus: panel === 'stats' ? view.activeGuard?.defenseBonus ?? 0 : 0,
       shopFilter,
       potionCooling: panel === 'inventory' && view.nowMs < view.potionReadyAtMs,
       shopQuantities: Array.from(shopQuantities.entries()),
@@ -1485,7 +1566,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         selectedBagIndex,
         selectedMapId,
         selectedQuestId,
+        trackedQuestId: questTrackerState.trackedQuestId,
         inventoryFilter,
+        readingSize: readingPreference.size,
         shopFilter,
         shopQuantities,
         sellQuantities,
@@ -1573,6 +1656,15 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     if (view.focusResumeRequired === true
       && ['attack', 'pickup', 'interact', 'return-town', 'use-item', 'inspect-stele', 'inspect-route-marker'].includes(action)) return;
     switch (action) {
+      case 'track-quest': {
+        const quest = view.questViews.find(({ questId }) => questId === button.dataset.questId);
+        if (!isTrackableQuest(quest)) return;
+        questTrackerState.trackQuest(questTrackerState.trackedQuestId === quest.questId ? null : quest.questId);
+        renderQuestTracker(view);
+        renderPanel(view, true);
+        panelHost.querySelector<HTMLButtonElement>('[data-ui-action="track-quest"]')?.focus();
+        return;
+      }
       case 'select-quest':
         if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
         selectedQuestId = button.dataset.questId!;
@@ -1649,6 +1741,9 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       case 'retry-save':
         discardConfirmed = false;
         dispatchDraft({ type: 'retrySave', payload: {} });
+        return;
+      case 'retry-map-load':
+        dispatchDraft({ type: 'retryMapLoad', payload: {} });
         return;
       case 'confirm-save-upgrade':
         {
@@ -1910,12 +2005,30 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         renderPanel(latestView, true);
         return;
       }
+      case 'settings-reading-size': {
+        const size = button.dataset.readingSize;
+        if (size !== 'standard' && size !== 'large') return;
+        readingPreference.set(size);
+        shell.dataset.readingSize = size;
+        lastScreenSignature = '';
+        renderScreen(view);
+        renderPanel(view, true);
+        const readingHost = view.panels.at(-1) === 'settings' ? panelHost : screenLayer;
+        readingHost.querySelector<HTMLButtonElement>('[data-ui-action="settings-reading-size"][data-reading-size="' + size + '"]')?.focus();
+        return;
+      }
       case 'settings-mute': {
         if (!view.saveData) return;
         const settings: Settings = { ...view.saveData.settings, muted: !view.saveData.settings.muted };
         dispatchDraft({ type: 'setSettings', payload: { settings } });
         return;
       }
+      case 'settings-hold-attack':
+        dispatchDraft({ type: 'setHoldAttack', payload: { enabled: button.dataset.holdAttack === 'true' } });
+        return;
+      case 'settings-background-motion':
+        dispatchDraft({ type: 'setBackgroundMotion', payload: { enabled: button.dataset.backgroundMotion === 'true' } });
+        return;
       case 'use-cloud-version':
         clearTransientViewState();
         dispatchDraft({ type: 'useCloudVersion', payload: {} });
@@ -1947,6 +2060,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
         focusGameCanvas(button);
         return;
       }
+      case 'toggle-quest-tracker':
+        questTrackerState.toggle();
+        renderQuestTracker(view);
+        return;
     }
   };
 
@@ -1985,8 +2102,25 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderMapIndicator(view);
     updateQuickButtons(view);
     renderScreen(view);
+    const loadProgress = screenLayer.querySelector<HTMLProgressElement>('.ms-map-load-progress progress');
+    const loadLabel = screenLayer.querySelector<HTMLElement>('.ms-map-load-progress__label');
+    if (loadProgress && loadLabel && view.mapVisualLoad) {
+      const { completed, total } = view.mapVisualLoad;
+      loadProgress.max = Math.max(1, total);
+      if (total > 0) loadProgress.value = completed;
+      else loadProgress.removeAttribute('value');
+      loadLabel.textContent = total > 0 && completed < total
+        ? '已載入 ' + completed + ' / ' + total + ' 份地圖素材'
+        : '素材已就緒，正在整理地圖…';
+    }
     renderFooter(view);
     renderPanel(view);
+    if (view.panels.at(-1) === 'map') updateLocalMapPlayer(panelHost, view);
+    if (view.panels.at(-1) === 'stats' && view.activeGuard) {
+      const seconds = panelHost.querySelector<HTMLElement>('[data-guard-seconds]');
+      const value = String(view.activeGuard.remainingSeconds);
+      if (seconds && seconds.textContent !== value) seconds.textContent = value;
+    }
     if (view.panels.length === 0) lastPanelFocus = null;
     renderKeyGuide(view);
     renderQuestTracker(view);
@@ -2051,6 +2185,8 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     const button = target.closest<HTMLButtonElement>('[data-ui-action]');
     if (!button || !shell.contains(button) || button.disabled || !currentView) return;
     handleAction(button, currentView);
+    // Pointer users can resume moving immediately; keyboard users keep the disclosure focused.
+    if (button === questToggle && event instanceof MouseEvent && event.detail > 0) focusGameCanvas(button);
   };
 
   const rememberPanelFocus = (event: Event): void => {
@@ -2176,6 +2312,25 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     event.stopPropagation();
   };
 
+  const onInventoryNavigation = (event: Event): void => {
+    if (!(event instanceof KeyboardEvent) || event.ctrlKey || event.altKey || event.metaKey || pendingBinding
+      || !screenLayer.hidden || currentView?.screen !== 'playing' || currentView.panels.at(-1) !== 'inventory') return;
+    const target = event.target;
+    const button = target instanceof Element ? target.closest<HTMLButtonElement>('.ms-bag-grid button[data-ui-action="select-bag"]') : null;
+    if (!button || !panelHost.contains(button)) return;
+    const grid = button.closest<HTMLElement>('.ms-bag-grid')!;
+    const buttons = Array.from(grid.querySelectorAll<HTMLButtonElement>('button[data-ui-action="select-bag"]'));
+    const indices = buttons.map(slot => Number(slot.dataset.bagIndex));
+    const columns = getComputedStyle(grid).gridTemplateColumns.split(/\s+/).filter(Boolean).length;
+    const next = nextInventoryBagIndex(indices, Number(button.dataset.bagIndex), event.key, columns);
+    if (next === null) return;
+    event.preventDefault(); event.stopPropagation();
+    const nextButton = buttons.find(slot => Number(slot.dataset.bagIndex) === next);
+    if (!nextButton || (nextButton === button && button.getAttribute('aria-pressed') === 'true')) return;
+    nextButton.focus();
+    nextButton.click();
+  };
+
   // The key guide floats above every panel, so Esc should fold it away first instead of
   // pausing the game (or closing the panel underneath) while the card stays open.
   const onEscapeKeyGuide = (event: Event): void => {
@@ -2198,6 +2353,7 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
     renderKeyGuide(currentView);
   };
   const keyWindow = shell.ownerDocument.defaultView;
+  const onModalTab = (event: KeyboardEvent): void => modalFocus.onKeyDown(event);
 
   shell.addEventListener('click', onClick);
   shell.addEventListener('focusin', rememberPanelFocus, true);
@@ -2205,8 +2361,10 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
   shell.addEventListener('input', onInput);
   shell.addEventListener('change', onChange);
   shell.addEventListener('keydown', onDialogueActionRepeat, true);
+  shell.addEventListener('keydown', onInventoryNavigation);
   shell.addEventListener('keydown', onKeyDown);
   keyWindow?.addEventListener('keydown', onEscapeKeyGuide, true);
+  keyWindow?.addEventListener('keydown', onModalTab, true);
 
   return {
     render,
@@ -2233,8 +2391,11 @@ export function createUi(root: HTMLElement, dispatch: (command: CommandDraft) =>
       shell.removeEventListener('input', onInput);
       shell.removeEventListener('change', onChange);
       shell.removeEventListener('keydown', onDialogueActionRepeat, true);
+      shell.removeEventListener('keydown', onInventoryNavigation);
       shell.removeEventListener('keydown', onKeyDown);
       keyWindow?.removeEventListener('keydown', onEscapeKeyGuide, true);
+      keyWindow?.removeEventListener('keydown', onModalTab, true);
+      modalFocus.dispose();
       quickIconCache.clear();
       shell.remove();
       currentView = null;
@@ -2272,6 +2433,7 @@ function makeScreenCard(document: Document, title: string, description: string):
   const card = makeElement(document, 'section', 'ms-screen-card');
   card.setAttribute('role', 'dialog');
   card.setAttribute('aria-modal', 'true');
+  card.tabIndex = -1;
   card.setAttribute('aria-label', title);
   card.append(
     makeElement(document, 'h1', '', title),
@@ -2384,7 +2546,7 @@ function buildWorldEndingFeedback(document: Document, view: UiSnapshot, showSide
   return card;
 }
 
-function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId: string | null): HTMLElement {
+function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId: string | null, trackedQuestId: string | null): HTMLElement {
   const selectedQuest = chooseJournalQuest(view.questViews, selectedQuestId);
   const journal = buildVisualQuests(document, view, selectedQuest?.questId ?? null);
   const banner = journal.querySelector<HTMLElement>('.ms-quest-journey');
@@ -2404,6 +2566,16 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
   journal.querySelector('.ms-quest-route')?.remove();
   const selectedCard = journal.querySelector<HTMLElement>('.ms-journal-sheet');
   if (!view.saveData || !selectedCard) return journal;
+  if (selectedQuest && isTrackableQuest(selectedQuest)) {
+    const tracked = trackedQuestId === selectedQuest.questId;
+    const track = makeButton(document, tracked ? '停止指定追蹤' : '追蹤這項任務', 'track-quest', {
+      title: tracked ? '恢復自動選擇追蹤任務' : '將此任務固定顯示在遊玩畫面的任務追蹤',
+    });
+    track.dataset.questId = selectedQuest.questId;
+    track.dataset.focus = 'track-quest:' + selectedQuest.questId;
+    track.setAttribute('aria-pressed', String(tracked));
+    selectedCard.querySelector('.ms-journal-heading')?.after(track);
+  }
 
   const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));
   const ending = buildWorldEndingFeedback(document, view, true);
@@ -2471,6 +2643,8 @@ type PanelBuildState = {
   selectedBagIndex: number | null;
   selectedMapId: string | null;
   selectedQuestId: string | null;
+  trackedQuestId: string | null;
+  readingSize: ReadingSize;
   inventoryFilter: InventoryFilter;
   shopFilter: ShopFilter;
   shopQuantities: Map<string, number>;
@@ -2502,7 +2676,7 @@ function buildPanelContent(
       content.append(buildVisualStats(document, view));
       break;
     case 'quests':
-      content.append(buildWorldJournal(document, view, state.selectedQuestId));
+      content.append(buildWorldJournal(document, view, state.selectedQuestId, state.trackedQuestId));
       break;
     case 'map':
       content.append(buildWorldMap(document, view, state.selectedMapId));
@@ -2555,6 +2729,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   parent.append(categoryBar);
 
   const filtered = selectInventoryEntries(player.bag, view.catalog.rules.items, state.inventoryFilter);
+  parent.append(makeElement(document, 'p', 'ms-panel-note', '物品格取得焦點後，可用方向鍵切換選取；Home／End 跳至首末物品。'));
   const categoryLabel = categories.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
   note.append(document.createTextNode(' 目前分類「' + categoryLabel + '」共 ' + filtered.length + ' 組物品。'
     + (state.inventoryFilter === 'all' ? '' : ' 其他分類的物品仍計入已用格數。')));
@@ -3196,10 +3371,52 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
   }
 }
 
+function buildReadingChoices(document: Document, size: ReadingSize): HTMLElement {
+  const readingChoices = makeElement(document, 'div', 'ms-category-bar');
+  readingChoices.classList.add('ms-reading-options');
+  readingChoices.setAttribute('role', 'group');
+  readingChoices.setAttribute('aria-label', '閱讀字級');
+  for (const [choice, label] of [['standard', '標準字級'], ['large', '較大字級']] as const) {
+    const button = makeButton(document, label, 'settings-reading-size', {
+      className: 'ms-chip' + (size === choice ? ' is-active' : ''),
+      data: { readingSize: choice },
+    });
+    button.setAttribute('aria-pressed', String(size === choice));
+    button.dataset.focus = 'reading-size:' + choice;
+    readingChoices.append(button);
+  }
+  return readingChoices;
+}
+
 function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBuildState, parent: HTMLElement): void {
+  const attackChoices = makeElement(document, 'div', 'ms-category-bar ms-reading-options');
+  attackChoices.setAttribute('role', 'group'); attackChoices.setAttribute('aria-label', '普通攻擊操作');
+  for (const [enabled, label] of [[false, '按一下施放'], [true, '按住連續攻擊']] as const) {
+    const button = makeButton(document, label, 'settings-hold-attack', {
+      className: 'ms-chip' + ((view.holdBasicAttack ?? false) === enabled ? ' is-active' : ''), data: { holdAttack: String(enabled) },
+    });
+    button.setAttribute('aria-pressed', String((view.holdBasicAttack ?? false) === enabled));
+    button.dataset.focus = 'hold-attack:' + String(enabled);
+    attackChoices.append(button);
+  }
+  parent.append(makeSectionTitle(document, '普通攻擊操作'), attackChoices,
+    makeElement(document, 'p', 'ms-panel-note', '只影響鍵盤普通攻擊；連續攻擊遵守原本的冷卻與動作時間。技能仍按一下施放。'));
   const settings = view.saveData?.settings;
+  parent.append(makeSectionTitle(document, '閱讀字級'), buildReadingChoices(document, state.readingSize),
+    makeElement(document, 'p', 'ms-panel-note', '放大對話、任務說明與操作提示的文字，保留遊戲畫面的比例。'));
+  const backgroundChoices = makeElement(document, 'div', 'ms-category-bar ms-reading-options');
+  backgroundChoices.setAttribute('role', 'group'); backgroundChoices.setAttribute('aria-label', '背景視差');
+  for (const [enabled, label] of [[true, '跟隨移動'], [false, '保持靜止']] as const) {
+    const button = makeButton(document, label, 'settings-background-motion', {
+      className: 'ms-chip' + ((view.backgroundMotion ?? true) === enabled ? ' is-active' : ''), data: { backgroundMotion: String(enabled) },
+    });
+    button.setAttribute('aria-pressed', String((view.backgroundMotion ?? true) === enabled));
+    button.dataset.focus = 'background-motion:' + String(enabled); backgroundChoices.append(button);
+  }
+  parent.append(makeSectionTitle(document, '背景視差'), backgroundChoices,
+    makeElement(document, 'p', 'ms-panel-note', '選擇遠近背景是否隨探索產生視差移動；未設定時採用系統減少動態效果偏好。'));
   if (!settings) {
-    parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可調整設定。'));
+    parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後可調整音量與操作按鍵。'));
     return;
   }
   parent.append(makeElement(document, 'p', 'ms-panel-note', 'Esc 固定用來關閉最上層面板，沒有面板時則暫停遊戲，因此不能重新綁定。'));
@@ -3261,7 +3478,8 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板，沒有面板時暫停遊戲。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
     '技能快捷 ' + skillKeys + ' 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
-    '普通攻擊與技能按一下施放；長按不會連續施放。',
+    view.holdBasicAttack ? '普通攻擊可按住連續施放，放開即停止；技能仍按一下施放。'
+      : '普通攻擊與技能按一下施放；上方可選擇按住連續普通攻擊。',
   ];
   for (const text of helpText) help.append(makeElement(document, 'li', '', text));
   parent.append(help, makeSectionTitle(document, '鍵位設定'));

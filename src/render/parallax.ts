@@ -18,6 +18,33 @@ export type TileSpriteSourceGeometry = Readonly<{
 
 export type TileSpriteParallaxInput = Omit<ParallaxTilePositionXInput, 'frameWidth' | 'viewportWidth' | 'tileScaleX'>;
 
+type CameraGeometry = Readonly<{
+  width: number;
+  height: number;
+  zoom: number;
+  originX: number;
+  originY: number;
+}>;
+
+/** Cancels the camera's zoom-pivot translation for a scrollFactor(0) background. */
+export function fixedBackgroundPosition(camera: CameraGeometry): { x: number; y: number } {
+  return {
+    x: camera.width * camera.originX * (1 - 1 / camera.zoom),
+    y: camera.height * camera.originY * (1 - 1 / camera.zoom),
+  };
+}
+
+/** Camera.scroll describes the unzoomed viewport, not the visible world's top-left. */
+export function cameraWorldViewport(camera: CameraGeometry & Readonly<{ scrollX: number; scrollY: number }>) {
+  const offset = fixedBackgroundPosition(camera);
+  return {
+    x: camera.scrollX + offset.x,
+    y: camera.scrollY + offset.y,
+    width: camera.width / camera.zoom,
+    height: camera.height / camera.zoom,
+  };
+}
+
 /**
  * Converts the final camera scroll into a TileSprite texture offset. Rounding happens in
  * screen pixels before the offset is converted back through camera zoom and tile scale.

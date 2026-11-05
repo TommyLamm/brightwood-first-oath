@@ -18,7 +18,7 @@ import {
   heroAnchorPosition,
   heroAnchorRotation,
   questMarkerGeometry,
-  questMarkerNpcIds,
+  questMarkerStates,
 } from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {
@@ -194,12 +194,26 @@ describe('renderer quest markers', () => {
       q4: { giverNpcId: 'keeper', turnInNpcId: 'keeper' },
     };
 
-    expect([...questMarkerNpcIds(views, quests)].sort()).toEqual(['guide', 'keeper']);
+    expect([...questMarkerStates(views, quests)].sort()).toEqual([['guide', 'available'], ['keeper', 'ready']]);
     expect(questMarkerGeometry({ npcId: 'guide', x: 250, y: 300 }, 96, 32)).toEqual({
       x: 250,
       y: 164,
       originX: 0.5,
       originY: 0.5,
     });
+  });
+
+  it('prioritizes a ready turn-in over an available quest at the same NPC in either order', () => {
+    const base: QuestView = { questId: 'new', title: 'New', status: 'available', objectives: [], reward: { exp: 0, coins: 0, items: [] } };
+    const views: QuestView[] = [base, { ...base, questId: 'done', status: 'ready' }];
+    const quests = { new: { giverNpcId: 'keeper', turnInNpcId: 'guide' }, done: { giverNpcId: 'guide', turnInNpcId: 'keeper' } };
+    expect([...questMarkerStates(views, quests)]).toEqual([['keeper', 'ready']]);
+    expect([...questMarkerStates([...views].reverse(), quests)]).toEqual([['keeper', 'ready']]);
+  });
+
+  it('clears the marker after claiming and ignores absent quest definitions', () => {
+    const view: QuestView = { questId: 'done', title: 'Done', status: 'claimed', objectives: [], reward: { exp: 0, coins: 0, items: [] } };
+    const quests = { done: { giverNpcId: 'guide', turnInNpcId: 'keeper' } };
+    expect(questMarkerStates([view, { ...view, questId: 'missing', status: 'ready' }], quests).size).toBe(0);
   });
 });

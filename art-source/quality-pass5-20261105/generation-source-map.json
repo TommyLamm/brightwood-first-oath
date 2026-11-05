@@ -1,0 +1,195 @@
+{
+  "tool": "built-in imagegen",
+  "records": [
+    {
+      "name": "village-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-c27e7c3d-a3a7-4e30-bddf-3173172878e5.png",
+      "workspacePath": "art-source/quality-pass5-20261105/village-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with compact warm umber footpath and small worn sandstone cobbles at the surface, brown earth with small stones below; no grass carpet, a few tiny grass sprouts at most. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "ridge-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-8f074cf9-32e8-4686-83f0-6117f348ac80.png",
+      "workspacePath": "art-source/quality-pass5-20261105/ridge-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with rust-red weathered stratified sandstone and coarse ochre shale, thin level hard-packed red gravel surface; no grass or snow. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "mine-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-0f7f272f-12de-4b33-a884-9c8bf55e3e7d.png",
+      "workspacePath": "art-source/quality-pass5-20261105/mine-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with cool charcoal slate, embedded small grey mineral veins and compacted dark gravel, a thin worn level mining track surface; no grass, gems, glowing ore or rails. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "sand-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-a7fa96c4-9d10-42c9-abb0-76e7922269da.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sand-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with thin pale honey-gold fine sand surface, compacted amber sediment and small wind-rounded sandstone fragments below; no grass, snow or big stones. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "sunwell-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-a913455a-0f7c-421b-b201-cc057df91712.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sunwell-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with level pale warm limestone paving with very restrained shallow geometric sun engravings, sand gathered only in joints; layered sandstone and dark bronze flecks below; no grass or snow. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "ruins-ground",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-36e45583-8547-4d36-9776-066d4ceff778.png",
+      "workspacePath": "art-source/quality-pass5-20261105/ruins-ground-generated.png",
+      "references": [
+        "ground-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: production 2D side-view fantasy RPG ground tile, Brightwood First Oath. Image 1 is the existing ground layout and storybook palette reference. Replace its grass-and-orange-earth material with level worn grey-green ancient limestone paving with tiny rootlets and moss in joints, layered weathered masonry and earthen stone below; no grass carpet or snow. Square 1024x1024 image. Perfectly side-on cross-section, continuous perfectly horizontal walkable edge at the very top, fully solid material fills the entire canvas to all four edges. Left/right edges must tile seamlessly; no distinctive large repeating boulder. Crisp polished hand-painted storybook material planes, upper-left lighting, clear dark/light separation and fine natural texture, no coarse enlarged pixel blocks. Keep the same top walk-line and cross-section framing. Entire tile opaque with no transparency, no holes or sky, no perspective top plane, scenery, characters, platform, ladder, external shadow, text, labels, grid or watermark.",
+      "transparentBackground": false
+    },
+    {
+      "name": "sand-platform",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-e118d591-3048-4cec-97ea-58bec8905a6e.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sand-platform-generated.png",
+      "references": [
+        "platform-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG platform. Image 1 is the previous platform framing/layout reference only. Replace the ice material completely with weathered golden sandstone shelf with a thin compacted sand walkable cap, subtle sediment layers and small driftwood braces underneath. ONE complete very long shallow horizontal object, approximately 10:1 width/height, perfect side elevation, flat continuous horizontal top, closed natural left/right ends. Crisp hand-painted storybook fantasy art, controlled upper-left light and small readable material details; no pixel blocks or heavy outlines. Wide landscape image with ample truly transparent padding around all sides, object occupies most width. Suitable for slicing five horizontal segments with a smooth uninterrupted body; no grid or separated samples. Keep shallow walkable silhouette; nothing protrudes above walk line. No ice, snow, floating island, tall decoration, vegetation above the top, support columns, ladders, scenery, external shadows, text, labels, painted checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "sunwell-platform",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-125178a5-407b-41aa-bf9c-829b81ff0840.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sunwell-platform-generated.png",
+      "references": [
+        "platform-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG platform. Image 1 is the previous platform framing/layout reference only. Replace the ice material completely with ancient pale limestone slab with shallow geometric sun motifs on its vertical fascia, sparse oxidized bronze clamps and a warm sandstone underside. ONE complete very long shallow horizontal object, approximately 10:1 width/height, perfect side elevation, flat continuous horizontal top, closed natural left/right ends. Crisp hand-painted storybook fantasy art, controlled upper-left light and small readable material details; no pixel blocks or heavy outlines. Wide landscape image with ample truly transparent padding around all sides, object occupies most width. Suitable for slicing five horizontal segments with a smooth uninterrupted body; no grid or separated samples. Keep shallow walkable silhouette; nothing protrudes above walk line. No ice, snow, floating island, tall decoration, vegetation above the top, support columns, ladders, scenery, external shadows, text, labels, painted checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "ruins-platform",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-93cc665c-5f87-44e8-8c1f-12cef394f59e.png",
+      "workspacePath": "art-source/quality-pass5-20261105/ruins-platform-generated.png",
+      "references": [
+        "platform-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG platform. Image 1 is the previous platform framing/layout reference only. Replace the ice material completely with worn grey-green ancient stone shelf, shallow faded chisel marks, small moss patches in joints and thin roots wrapping only the underside. ONE complete very long shallow horizontal object, approximately 10:1 width/height, perfect side elevation, flat continuous horizontal top, closed natural left/right ends. Crisp hand-painted storybook fantasy art, controlled upper-left light and small readable material details; no pixel blocks or heavy outlines. Wide landscape image with ample truly transparent padding around all sides, object occupies most width. Suitable for slicing five horizontal segments with a smooth uninterrupted body; no grid or separated samples. Keep shallow walkable silhouette; nothing protrudes above walk line. No ice, snow, floating island, tall decoration, vegetation above the top, support columns, ladders, scenery, external shadows, text, labels, painted checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "village-platform",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-0378387b-d4c6-4188-b0a1-5c606e892de9.png",
+      "workspacePath": "art-source/quality-pass5-20261105/village-platform-generated.png",
+      "references": [
+        "platform-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG platform. Image 1 is the previous platform framing/layout reference only. Replace the ice material completely with warm honey-brown wooden plank walkway, readable grain, restrained iron nails and compact timber crosspieces underneath. ONE complete very long shallow horizontal object, approximately 10:1 width/height, perfect side elevation, flat continuous horizontal top, closed natural left/right ends. Crisp hand-painted storybook fantasy art, controlled upper-left light and small readable material details; no pixel blocks or heavy outlines. Wide landscape image with ample truly transparent padding around all sides, object occupies most width. Suitable for slicing five horizontal segments with a smooth uninterrupted body; no grid or separated samples. Keep shallow walkable silhouette; nothing protrudes above walk line. No ice, snow, floating island, tall decoration, vegetation above the top, support columns, ladders, scenery, external shadows, text, labels, painted checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "sand-rope",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-4e4a5c62-89af-405a-b5fe-3e982f63a97c.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sand-rope-generated.png",
+      "references": [
+        "rope-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG climbing route. Image 1 is the alignment/framing reference. Replace its entire material with one continuous straight vertical tan hemp climbing rope, clear twisted fibers and small regular foothold knots, small compact driftwood anchor at top and bound end below. Complete tall slender object about 1:9 width/height, centered exact vertical axis, consistent pitch/thickness, no tilted or diagonal parts. Crisp polished hand-painted storybook fantasy game art, upper-left light, dark contour and clear material planes. Keep genuine transparent padding all around; complete top and bottom visible. Suitable for cropping top/middle/bottom and repeating the middle at native scale. No frost, snow, ice, branches, leaves, dangling objects, separate particles, scenery, ground shadow, text, labels, checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "sunwell-chain",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-341aa436-0138-4412-acfe-b6db93bf8146.png",
+      "workspacePath": "art-source/quality-pass5-20261105/sunwell-chain-generated.png",
+      "references": [
+        "chain-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG climbing route. Image 1 is the alignment/framing reference. Replace its entire material with one continuous straight vertical heavy antique bronze climbing chain, restrained gold-brown metal planes and patina in recesses, compact alternating front/side oval links, small fixed bronze ring at top. Complete tall slender object about 1:9 width/height, centered exact vertical axis, consistent pitch/thickness, no tilted or diagonal parts. Crisp polished hand-painted storybook fantasy game art, upper-left light, dark contour and clear material planes. Keep genuine transparent padding all around; complete top and bottom visible. Suitable for cropping top/middle/bottom and repeating the middle at native scale. No frost, snow, ice, branches, leaves, dangling objects, separate particles, scenery, ground shadow, text, labels, checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "ruins-chain",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-b61f5c54-2daa-47a3-ab20-62044c5911af.png",
+      "workspacePath": "art-source/quality-pass5-20261105/ruins-chain-generated.png",
+      "references": [
+        "chain-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG climbing route. Image 1 is the alignment/framing reference. Replace its entire material with one continuous straight vertical antique copper climbing chain, compact oval interlocking links alternating front/side, restrained green verdigris, small ancient stone anchor at top. Complete tall slender object about 1:9 width/height, centered exact vertical axis, consistent pitch/thickness, no tilted or diagonal parts. Crisp polished hand-painted storybook fantasy game art, upper-left light, dark contour and clear material planes. Keep genuine transparent padding all around; complete top and bottom visible. Suitable for cropping top/middle/bottom and repeating the middle at native scale. No frost, snow, ice, branches, leaves, dangling objects, separate particles, scenery, ground shadow, text, labels, checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "village-ladder",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-df81afb4-c844-449e-a16b-f4c5b3df2645.png",
+      "workspacePath": "art-source/quality-pass5-20261105/village-ladder-generated.png",
+      "references": [
+        "ladder-reference.jpg"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent production 2D side-view fantasy RPG climbing route. Image 1 is the alignment/framing reference. Replace its entire material with one complete straight vertical wooden ladder, two parallel honey-brown rails, evenly spaced level compact rungs, small iron nail fixings, complete finished top and bottom ends. Complete tall slender object about 1:9 width/height, centered exact vertical axis, consistent pitch/thickness, no tilted or diagonal parts. Crisp polished hand-painted storybook fantasy game art, upper-left light, dark contour and clear material planes. Keep genuine transparent padding all around; complete top and bottom visible. Suitable for cropping top/middle/bottom and repeating the middle at native scale. No frost, snow, ice, branches, leaves, dangling objects, separate particles, scenery, ground shadow, text, labels, checkerboard or watermark. Genuine transparent RGBA background.",
+      "transparentBackground": true
+    },
+    {
+      "name": "forest-mid",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-06fb8046-48b8-4cf3-b645-0ea2fb943bd9.png",
+      "workspacePath": "art-source/quality-pass5-20261105/forest-mid-generated.png",
+      "references": [
+        "forest-mid-target.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent panoramic MIDGROUND background layer for Brightwood First Oath. Image 1 is the EDIT TARGET. Redraw the SAME entire panoramic composition with finer authored hand-painted detail: individual small leaf clusters, bark grooves and fern divisions. Preserve every major silhouette, object location, relative size, negative space and especially the clear transparent gameplay band. No camera or zoom change. Preserve the calm muted storybook fantasy palette and upper-left illumination; add selective near-side material detail without making distant forms busy. VERY WIDE PANORAMIC image requested 3840x1080 (or widest high-resolution panorama available), same full framing as target with no cropping or aspect-fit bars. Completely transparent wherever target is transparent, no new ground, walls, characters, objects or sky. For ruins-gallery all lower two-thirds MUST remain empty transparent. No perspective or layout redesign, no text, grid, labels, watermark or painted backdrop. This is the same layer with sharper small forms, not a new scene.",
+      "transparentBackground": true
+    },
+    {
+      "name": "rock-mid",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-9a0edce6-7edb-43a0-afd5-6fe488879f7a.png",
+      "workspacePath": "art-source/quality-pass5-20261105/rock-mid-generated.png",
+      "references": [
+        "rock-mid-target.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent panoramic MIDGROUND background layer for Brightwood First Oath. Image 1 is the EDIT TARGET. Redraw the SAME entire panoramic composition with finer authored hand-painted detail: weathered layered rock facets, small cracks and dry shrub branches. Preserve every major silhouette, object location, relative size, negative space and especially the clear transparent gameplay band. No camera or zoom change. Preserve the calm muted storybook fantasy palette and upper-left illumination; add selective near-side material detail without making distant forms busy. VERY WIDE PANORAMIC image requested 3840x1080 (or widest high-resolution panorama available), same full framing as target with no cropping or aspect-fit bars. Completely transparent wherever target is transparent, no new ground, walls, characters, objects or sky. For ruins-gallery all lower two-thirds MUST remain empty transparent. No perspective or layout redesign, no text, grid, labels, watermark or painted backdrop. This is the same layer with sharper small forms, not a new scene.",
+      "transparentBackground": true
+    },
+    {
+      "name": "frost-mid",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-48780d32-5e01-4a27-ac6a-8eeee19a19c5.png",
+      "workspacePath": "art-source/quality-pass5-20261105/frost-mid-generated.png",
+      "references": [
+        "frost-mid-target.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent panoramic MIDGROUND background layer for Brightwood First Oath. Image 1 is the EDIT TARGET. Redraw the SAME entire panoramic composition with finer authored hand-painted detail: snowy rock ridges, subtle blue ice cracks and crisp sparse coastal pine branches. Preserve every major silhouette, object location, relative size, negative space and especially the clear transparent gameplay band. No camera or zoom change. Preserve the calm muted storybook fantasy palette and upper-left illumination; add selective near-side material detail without making distant forms busy. VERY WIDE PANORAMIC image requested 3840x1080 (or widest high-resolution panorama available), same full framing as target with no cropping or aspect-fit bars. Completely transparent wherever target is transparent, no new ground, walls, characters, objects or sky. For ruins-gallery all lower two-thirds MUST remain empty transparent. No perspective or layout redesign, no text, grid, labels, watermark or painted backdrop. This is the same layer with sharper small forms, not a new scene.",
+      "transparentBackground": true
+    },
+    {
+      "name": "ruins-gallery-mid",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-01305377-919f-4f1d-8011-c25c6c7afaa9.png",
+      "workspacePath": "art-source/quality-pass5-20261105/ruins-gallery-mid-generated.png",
+      "references": [
+        "ruins-gallery-mid-target.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent panoramic MIDGROUND background layer for Brightwood First Oath. Image 1 is the EDIT TARGET. Redraw the SAME entire panoramic composition with finer authored hand-painted detail: fine worn stone carving edges, root fibers and moss between ancient arch masonry. Preserve every major silhouette, object location, relative size, negative space and especially the clear transparent gameplay band. No camera or zoom change. Preserve the calm muted storybook fantasy palette and upper-left illumination; add selective near-side material detail without making distant forms busy. VERY WIDE PANORAMIC image requested 3840x1080 (or widest high-resolution panorama available), same full framing as target with no cropping or aspect-fit bars. Completely transparent wherever target is transparent, no new ground, walls, characters, objects or sky. For ruins-gallery all lower two-thirds MUST remain empty transparent. No perspective or layout redesign, no text, grid, labels, watermark or painted backdrop. This is the same layer with sharper small forms, not a new scene.",
+      "transparentBackground": true
+    },
+    {
+      "name": "mine-mid",
+      "nativePath": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1abfd-42b2-77e3-9c80-166e53cdf893\\exec-783d82e0-1850-4467-9e2b-12b308be587f.png",
+      "workspacePath": "art-source/quality-pass5-20261105/mine-mid-generated.png",
+      "references": [
+        "rock-mid-target.png"
+      ],
+      "prompt": "Use case: precise-object-edit. Asset: transparent panoramic mine entrance MIDGROUND for Brightwood First Oath. Image 1 is the shared red-rock midground EDIT TARGET. Keep the same full panoramic framing, side-view storybook palette, broad negative spaces and clear transparent lower gameplay band; replace some near-side rock clusters with readable OLD MINE ENTRANCE structure: dark recessed rock opening, compact sturdy weathered timber portal frame, short crossbeams and small iron brackets, nearby slate outcrops. Structures remain in the same upper/near-side background band and never create a wall over the lower two-thirds. No floor, rails, characters, signs, readable text or glowing lights. Retain a few sparse rust-red rock silhouettes to relate to the shared distant ridge landscape. Crisp authored timber grain, chisel facets, restrained cool shadow planes, upper-left light. VERY WIDE PANORAMIC image requested 3840x1080, same framing as image1, no aspect-fit bars or zoom change. Genuine transparent RGBA wherever empty; lower gameplay band empty. No grey matte, checkerboard, caption, watermark or unrelated buildings.",
+      "transparentBackground": true
+    }
+  ]
+}

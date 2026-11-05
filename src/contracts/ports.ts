@@ -155,9 +155,10 @@ export type WorldSnapshot = {
 };
 
 export type WorldRenderer = {
-  loadMap(map: MapDef): Promise<void>;
+  loadMap(map: MapDef, onProgress?: (progress: { completed: number; total: number }) => void): Promise<void>;
   render(snapshot: WorldSnapshot): void;
   resize(width: number, height: number): void;
+  setBackgroundMotion?(enabled: boolean): void;
   dispose(): void;
 };
 
@@ -180,6 +181,18 @@ export type UiSnapshot = {
     label: string;
     blockedMessage: string | null;
   } | null;
+  /** Contextual movement reminder; an interactable target takes priority in the HUD. */
+  movementHint?: { targetKey: string; kind: 'climb'; attached: boolean }
+    | { targetKey: string; kind: 'drop' } | null;
+  /** The unexpired nearby drop selected by the actual pickup command. */
+  pickupHint?: { targetKey: string; label: string; blockedMessage?: string | null } | null;
+  /** Runtime-only location for the open terrain guide; never persisted. */
+  playerPosition?: Vec2 | null;
+  /** Device-local opt-in for repeating the keyboard basic attack while held. */
+  holdBasicAttack?: boolean;
+  backgroundMotion?: boolean;
+  /** Runtime-only visual load gate; counts files, not transferred bytes. */
+  mapVisualLoad?: { requestId: number; mapId: string; name: string; status: 'loading' | 'failed'; completed: number; total: number; message: string | null } | null;
   /** Read-only combat timing hints for the six quickbar slots. */
   combatUi?: { actionLockUntilMs: number; bufferedSkillId: Id | null };
   /** Actor sheets, used for NPC dialogue portraits. */
@@ -201,6 +214,7 @@ export type UiSnapshot = {
   potionReadyAtMs: number;
   /** Game time when 堅韌守護's defence bonus wears off; 0 or past means inactive. */
   guardUntilMs?: number;
+  activeGuard?: { defenseBonus: number; remainingSeconds: number } | null;
 };
 
 export type UiController = {

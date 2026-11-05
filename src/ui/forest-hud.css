@@ -1,0 +1,214 @@
+/* Forest floating HUD, selected from concept B. Existing illustrated icons stay interactive DOM controls. */
+.maple-ui {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.maple-ui .ms-hud { justify-content: flex-end; }
+.maple-ui .ms-bottom-bar {
+  grid-row: 3;
+  grid-template-columns: minmax(0, 1fr) minmax(0, clamp(330px, 31.5cqw, 470px)) minmax(0, 1fr);
+  align-items: end;
+  gap: 16px;
+}
+.maple-ui .ms-bottom-bar > .ms-profile {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  width: min(100%, clamp(270px, 21.6cqw, 340px));
+  margin: 0;
+}
+
+.maple-ui .ms-quickbar {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  max-width: none;
+  padding: 12px 12px 9px;
+  border: 2px solid #ad925b;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(37, 63, 48, .96), rgba(20, 39, 32, .96));
+  box-shadow: inset 0 0 0 2px #443b28, inset 0 3px 0 #92a27355, 0 3px 0 #1d2119, 0 6px 12px #17211855;
+}
+/* Replace the old large painted tray, which extended far above and below its controls. */
+.maple-ui .ms-quickbar::before { content: none; }
+.maple-ui .ms-quickbar__slots { gap: 6px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.maple-ui .ms-quick-slot,
+.maple-ui .ms-quick-slot:disabled {
+  height: clamp(46px, 4.25cqw, 68px);
+  min-height: 46px !important;
+  padding: 4px !important;
+  border: 1px solid #b18d53;
+  border-radius: 5px;
+  background: linear-gradient(150deg, #26372d, #19271f);
+  box-shadow: inset 0 0 0 1px #3e3223, inset 0 -3px 5px #0b181888;
+}
+.maple-ui .ms-quick-slot:hover:not(:disabled) { transform: none; border-color: #f0d49a; }
+.maple-ui .ms-quick-slot:not(.is-unlearned):hover::after { content: none; }
+.maple-ui .ms-quick-slot:focus-visible { outline: 2px solid #ffe2a0; outline-offset: 3px; }
+.maple-ui .ms-quick-slot__key {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  min-width: 23px;
+  max-width: calc(100% + 8px);
+  height: 21px;
+  padding: 0 5px;
+  border: 1px solid #8d6c43;
+  border-radius: 4px;
+  color: #392c1e;
+  background: linear-gradient(#fff2d6, #dcc295);
+  box-shadow: 0 1px 1px #111c1688;
+  font-size: clamp(10px, .85cqw, 13px);
+  line-height: 19px;
+  text-shadow: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.maple-ui .ms-quick-slot__icon {
+  width: min(100%, clamp(32px, 3.6cqw, 56px));
+  height: clamp(32px, 3.6cqw, 56px);
+  filter: drop-shadow(0 2px 1px #071a1688);
+}
+.maple-ui .ms-quick-slot--item .ms-quick-slot__state { right: 2px; bottom: 2px; font-size: clamp(11px, .9cqw, 14px); line-height: 16px; }
+.maple-ui .ms-quick-slot.is-buff-active { border-color: #b8dca0; box-shadow: inset 0 0 0 1px #b8dca0, 0 0 8px #6dbe6a88; }
+/* A small CSS padlock replaces repeated unlearned labels; title and aria-label retain the reason. */
+.maple-ui .ms-quick-slot.is-unlearned .ms-quick-slot__state { width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.maple-ui .ms-quick-slot.is-unlearned::before {
+  content: "";
+  position: absolute;
+  right: 5px;
+  bottom: 10px;
+  width: 6px;
+  height: 7px;
+  border: 2px solid #ddc793;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+}
+.maple-ui .ms-quick-slot.is-unlearned::after {
+  content: "";
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #4c3b25;
+  border-radius: 2px;
+  background: #ddc793;
+  box-shadow: 0 1px 2px #111b16;
+}
+
+.maple-ui .ms-controls {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 6px;
+}
+.maple-ui .ms-controls .ms-journal-tab {
+  display: grid;
+  grid-template-rows: clamp(28px, 2.25cqw, 38px) auto;
+  align-content: center;
+  justify-items: center;
+  gap: 2px !important;
+  width: clamp(44px, 4cqw, 64px);
+  min-width: 0;
+  min-height: 62px !important;
+  padding: 2px !important;
+  border: 5px solid transparent;
+  border-image: var(--journal-panel) 95 fill / 5px / 0 stretch;
+  border-radius: 0;
+  color: #4c3522 !important;
+  background: none !important;
+  box-shadow: none;
+  font-size: clamp(11px, .95cqw, 16px) !important;
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: none;
+}
+.maple-ui .ms-controls .ms-journal-tab[data-panel="map"] { min-width: 0; flex-shrink: 1; }
+.maple-ui .ms-controls .ms-journal-tab::before { content: none; }
+.maple-ui .ms-controls .ms-journal-tab:not([data-badge])::after { content: none; }
+.maple-ui .ms-controls .ms-journal-tab[data-badge]::after {
+  content: attr(data-badge);
+  top: -3px;
+  right: -4px;
+  left: auto;
+  bottom: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid #57351f;
+  border-radius: 10px;
+  background: #b33e35;
+  color: #fff1cd;
+  font-size: 11px;
+  line-height: 16px;
+  text-shadow: none;
+}
+.maple-ui .ms-controls .ms-journal-tab .ms-journal-icon { width: clamp(26px, 2.2cqw, 36px); height: clamp(26px, 2.2cqw, 36px); filter: none; }
+.maple-ui .ms-controls .ms-journal-tab:hover { transform: none; filter: brightness(1.08); }
+.maple-ui .ms-controls .ms-journal-tab.is-active { outline: 2px solid #738452; outline-offset: -4px; color: #405733 !important; }
+.maple-ui .ms-controls .ms-journal-tab.is-active .ms-journal-icon { border-radius: 0; background: none; }
+.maple-ui .ms-controls .ms-journal-tab:focus-visible { outline: 2px solid #ffe2a0; outline-offset: 3px; }
+
+/* NPC-specific and return-town shortcuts are contextual, above the character card. */
+.maple-ui .ms-action-bar {
+  position: absolute;
+  left: var(--edge);
+  right: auto;
+  bottom: calc(var(--edge) + clamp(88px, 7.6cqw, 112px) + 8px);
+  max-width: min(340px, calc(100% - 24px));
+  justify-content: flex-start;
+}
+/* Only failures/recovery actions create this banner; ordinary save status has no HUD badge. */
+.maple-ui .ms-footer {
+  position: absolute;
+  z-index: 45;
+  left: 50%;
+  right: auto;
+  bottom: calc(var(--edge) + 110px);
+  transform: translateX(-50%);
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 6px 10px;
+  border: 1px solid #b28e61;
+  border-radius: 6px;
+  background: #26392fed;
+  pointer-events: auto;
+}
+.maple-ui .ms-footer__error { margin: 0; max-width: 100%; }
+.maple-ui.is-pregame .ms-action-bar { visibility: hidden; }
+.maple-ui .ms-toast:not(.ms-toast--top) { bottom: calc(var(--edge) + 110px); }
+
+@container (max-width: 1100px) {
+  .maple-ui .ms-bottom-bar { grid-template-columns: minmax(0, 1fr) minmax(0, 310px) minmax(0, 1fr); gap: 12px; }
+  .maple-ui .ms-bottom-bar > .ms-profile { width: min(270px, 100%); }
+  .maple-ui .ms-controls { gap: 4px; }
+  .maple-ui .ms-controls .ms-journal-tab { width: clamp(40px, 4.2cqw, 48px); min-height: 58px !important; grid-template-rows: 26px auto; border-width: 4px; border-image-width: 4px; }
+  .maple-ui .ms-controls .ms-journal-tab .ms-journal-icon { width: 26px; height: 26px; }
+}
+@container (max-width: 760px) {
+  .maple-ui .ms-bottom-bar { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+  .maple-ui .ms-bottom-bar > .ms-profile { grid-column: 1; grid-row: 1; }
+  .maple-ui .ms-controls { grid-column: 2; grid-row: 1; }
+  .maple-ui .ms-quickbar { grid-column: 1 / -1; grid-row: 2; width: min(390px, 100%); }
+  .maple-ui .ms-action-bar { bottom: calc(var(--edge) + 180px); }
+  .maple-ui .ms-footer, .maple-ui .ms-toast:not(.ms-toast--top) { bottom: calc(var(--edge) + 180px); }
+}
+@container (max-width: 420px) {
+  .maple-ui .ms-bottom-bar { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .maple-ui .ms-bottom-bar > .ms-profile { grid-column: 1; grid-row: 1; }
+  .maple-ui .ms-controls { grid-column: 1; grid-row: 2; justify-self: end; }
+  .maple-ui .ms-controls .ms-journal-tab { min-height: 48px !important; }
+  .maple-ui .ms-quickbar { grid-column: 1; grid-row: 3; }
+  .maple-ui .ms-action-bar, .maple-ui .ms-footer, .maple-ui .ms-toast:not(.ms-toast--top) { bottom: calc(var(--edge) + 240px); }
+}

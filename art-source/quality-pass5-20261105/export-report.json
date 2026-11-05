@@ -1,0 +1,549 @@
+{
+  "tool": "built-in imagegen",
+  "runtime": [
+    {
+      "key": "env:village:platform",
+      "url": "assets/environment/env-village-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "village-platform-generated.png",
+      "sourceBounds": [
+        89,
+        320,
+        2083,
+        429
+      ],
+      "sourceSha256": "a3d0483b1fe77be18939df019a8a9cdea1fd9c5d73a4d1024f48b56b3c67e7f4",
+      "outputSha256": "e50d5d7d5f0873716b2e78cb8d0a7afabef5b354c39ce976025a848a2c13362d",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 48782,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:village:ladder",
+      "url": "assets/environment/env-village-ladder-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "village-ladder-generated.png",
+      "sourceBounds": [
+        398,
+        68,
+        683,
+        1390
+      ],
+      "sourceSha256": "96a0c877c66f12528065f5f186d77c4b4c1772694fa33036651f4f043fc253a9",
+      "outputSha256": "58c860abbd4f054d9644f818c16d16348f47496aecd0d21cc6fb4bd40d932532",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 17330,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:sand:platform",
+      "url": "assets/environment/env-sand-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sand-platform-generated.png",
+      "sourceBounds": [
+        89,
+        316,
+        2083,
+        432
+      ],
+      "sourceSha256": "5e30cdaebd7e5675d54f5876e91b7ab87afd355b5ae888ef8ab543d67bc60c1c",
+      "outputSha256": "79dd90aa84452e0d167b7f6ae404d2108f2d4687baf560f8881a10bf500f26ed",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 59179,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:sand:rope",
+      "url": "assets/environment/env-sand-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sand-rope-generated.png",
+      "sourceBounds": [
+        438,
+        54,
+        529,
+        1571
+      ],
+      "sourceSha256": "b47816f939d9f232ec6dc5adae292a54531e1f17ccfac70a1e44c6de1344fea5",
+      "outputSha256": "bad3d3b4bc0f27b35155fb2fdeb65e420c18562b47bfa17388d6ebe309ddba67",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 10349,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:sunwell:platform",
+      "url": "assets/environment/env-sunwell-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sunwell-platform-generated.png",
+      "sourceBounds": [
+        88,
+        316,
+        2085,
+        436
+      ],
+      "sourceSha256": "34f5966d3537d05c490f968e07779f186cdfd5871f501c9dc9f2ac306fcaafb0",
+      "outputSha256": "19a1ed484fa8d5ee53137d031435a6d48a9b41a7272fe3cff80aacb62823e89c",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 55159,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:sunwell:chain",
+      "url": "assets/environment/env-sunwell-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sunwell-chain-generated.png",
+      "sourceBounds": [
+        433,
+        58,
+        535,
+        1582
+      ],
+      "sourceSha256": "e7016aa61b5d725d4033332752a5d149ed0d9bb9c70bdb373e92db760bf76f22",
+      "outputSha256": "05ea1f4cdb318b95b26275abcf5d1d14e632f7dc018c032c5ea3f57fb18015b6",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 12649,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:ruins:platform",
+      "url": "assets/environment/env-ruins-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ruins-platform-generated.png",
+      "sourceBounds": [
+        88,
+        319,
+        2084,
+        435
+      ],
+      "sourceSha256": "63bb77bd2ba73bbc36aa221f7b9a85bbfae57a047ad8d2003f8899b177a926e7",
+      "outputSha256": "59c35a8efe62849dd07b56f4e1a3967f3fb482c3e2cde5bc3dc8b2038b4fce10",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 56763,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:ruins:chain",
+      "url": "assets/environment/env-ruins-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ruins-chain-generated.png",
+      "sourceBounds": [
+        427,
+        51,
+        543,
+        1580
+      ],
+      "sourceSha256": "0170cc91917f9aa15132d1774b246dab16dfd65b0be189c42865b4865c551533",
+      "outputSha256": "ce76f47a19cd5c9f2483bbb02e9471954809fea2f1217f6cf35be81bfc5d7046",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 12599,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:village:ground",
+      "url": "assets/environment/env-village-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "village-ground-generated.png",
+      "sourceBounds": [
+        0,
+        70,
+        1254,
+        1254
+      ],
+      "sourceSha256": "9ebd1456a17e6efd3192e32653314076f4200389a1bdc8ffd1aebd0074f7a312",
+      "outputSha256": "3d45b928d84627823b94a6e1385100aa4d42b333d35f016b2a8ec2db439ffcc8",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 472245,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:ridge:ground",
+      "url": "assets/environment/env-ridge-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ridge-ground-generated.png",
+      "sourceBounds": [
+        0,
+        94,
+        1254,
+        1254
+      ],
+      "sourceSha256": "afce9f72ed0d7f8c53aa14ab024a08045837a2fdd0c6a57bf5f1f9a7ef1a6a1a",
+      "outputSha256": "229b81b9f6732be13e2798e2fd9f04a8f86e34dbe5e3619eeb0e927f636becef",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 551306,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:mine:ground",
+      "url": "assets/environment/env-mine-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "mine-ground-generated.png",
+      "sourceBounds": [
+        0,
+        82,
+        1254,
+        1254
+      ],
+      "sourceSha256": "7a572ff53291381cbe075d9321eccfb68fd90cdaa0bea337bde8ff09ec2f3d87",
+      "outputSha256": "0a64bf4dbdf33c6b21e95bed6caca234ff0cf00072ac60da178a7e4b0de61394",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 480657,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:sand:ground",
+      "url": "assets/environment/env-sand-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sand-ground-generated.png",
+      "sourceBounds": [
+        0,
+        82,
+        1254,
+        1254
+      ],
+      "sourceSha256": "c29c945564c05f5c956cabe8efcacc3f9712406642fc10a0f3972693afa4171f",
+      "outputSha256": "8c2880a1b8fd4d69a3005559a727637772d457b15689160bd99297ff9042fbf9",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 515375,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:sunwell:ground",
+      "url": "assets/environment/env-sunwell-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "sunwell-ground-generated.png",
+      "sourceBounds": [
+        0,
+        82,
+        1254,
+        1254
+      ],
+      "sourceSha256": "5b7006bd47416645c0373c11a8c3d348e56eecabfb454fc5b4b107b57f82eeca",
+      "outputSha256": "d4cbd777cb680cf1514138964a001997dc8f1cec4f13691211c40d59addd2df3",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 576792,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:ruins:ground",
+      "url": "assets/environment/env-ruins-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ruins-ground-generated.png",
+      "sourceBounds": [
+        0,
+        70,
+        1254,
+        1254
+      ],
+      "sourceSha256": "5fa0e771b828371c27a3e32d6e4eef6245d738aafbfec46b2539c42efcdf50d7",
+      "outputSha256": "7dbed75644bde8bc2d9d93996bef87d74aec4130bbd04de1f3838c853a3b6ce0",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 607467,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "env:forest:mid",
+      "url": "assets/environment/env-forest-mid-clarity-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "forest-mid-generated.png",
+      "sourcePixels": [
+        2172,
+        724
+      ],
+      "sourceBounds": [
+        0,
+        51,
+        2172,
+        267
+      ],
+      "sourceSha256": "3479791ae00fb2a2683307e07af2d7c534fcecb51e72e192326c64bb7477e7d2",
+      "outputSha256": "21a1a1388c14bf33abd1fadd318b180d7389b59e63a9f0f88dde202eccc4ec43",
+      "pixels": [
+        1920,
+        540
+      ],
+      "density": 1,
+      "transparentFromY": 180,
+      "previousUrl": "assets/environment/env-forest-mid-v2.png",
+      "previousBytes": 323973,
+      "previousBaseRgbaBytes": 4147200,
+      "compressedBytes": 295893,
+      "baseRgbaBytes": 4147200
+    },
+    {
+      "key": "env:rock:mid",
+      "url": "assets/environment/env-rock-mid-clarity-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "rock-mid-generated.png",
+      "sourcePixels": [
+        2172,
+        724
+      ],
+      "sourceBounds": [
+        0,
+        8,
+        2172,
+        259
+      ],
+      "sourceSha256": "8902f15640a0f86bd22b3f2a5a10d99ce6c81943bdb88c60fb7757ac29c7e76d",
+      "outputSha256": "211dd72a5e6193e2855f58f94e32112be4814bfb686c6dfb9ee92833b62129f7",
+      "pixels": [
+        1920,
+        540
+      ],
+      "density": 1,
+      "transparentFromY": 180,
+      "previousUrl": "assets/environment/env-rock-mid-v2.png",
+      "previousBytes": 226776,
+      "previousBaseRgbaBytes": 4147200,
+      "compressedBytes": 189624,
+      "baseRgbaBytes": 4147200
+    },
+    {
+      "key": "env:frost:mid",
+      "url": "assets/environment/env-frost-mid-clarity-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "frost-mid-generated.png",
+      "sourcePixels": [
+        2172,
+        724
+      ],
+      "sourceBounds": [
+        0,
+        50,
+        2172,
+        231
+      ],
+      "sourceSha256": "3e2525df37b3ea87e3713b145d6b1e194403be9f63872c18cf7ec1baea09458a",
+      "outputSha256": "35d4eb630dfc8e0525b9fec3e59186d9595362d42203dc8674ed91d5bd45d36e",
+      "pixels": [
+        1920,
+        540
+      ],
+      "density": 1,
+      "transparentFromY": 150,
+      "previousUrl": "assets/environment/env-frost-mid-v2.png",
+      "previousBytes": 168104,
+      "previousBaseRgbaBytes": 4147200,
+      "compressedBytes": 166052,
+      "baseRgbaBytes": 4147200
+    },
+    {
+      "key": "env:ruins-gallery:mid",
+      "url": "assets/environment/env-ruins-gallery-mid-clarity-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ruins-gallery-mid-generated.png",
+      "sourcePixels": [
+        2172,
+        724
+      ],
+      "sourceBounds": [
+        0,
+        51,
+        2172,
+        263
+      ],
+      "sourceSha256": "a9210b1167b83dbc74d2ffd27fbf13689b7ee4aabb19846edea64e5ce6858e09",
+      "outputSha256": "ef7bc72bc62596dcd0397d801bb28e5413a6e05fe2df971d9dcd3b1b33e684f3",
+      "pixels": [
+        1920,
+        540
+      ],
+      "density": 1,
+      "transparentFromY": 180,
+      "previousUrl": "assets/environment/env-ruins-gallery-mid-v1.png",
+      "previousBytes": 454456,
+      "previousBaseRgbaBytes": 4147200,
+      "compressedBytes": 449352,
+      "baseRgbaBytes": 4147200
+    },
+    {
+      "key": "env:mine:mid",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "url": "assets/environment/env-mine-mid-clarity-v1.png",
+      "source": "mine-mid-generated.png",
+      "sourcePixels": [
+        2172,
+        724
+      ],
+      "sourceBounds": [
+        0,
+        6,
+        2172,
+        301
+      ],
+      "sourceSha256": "2144bf5aa8756964df6e838dfefb195b7e6a7e6795445ec15ac69aa8e7695aa7",
+      "outputSha256": "c68a79520f5d0041786c0828db8f701015eaf6ce7a4511a496beb1050988d865",
+      "pixels": [
+        1920,
+        540
+      ],
+      "density": 1,
+      "transparentFromY": 180,
+      "previousUrl": null,
+      "previousBytes": 0,
+      "previousBaseRgbaBytes": 0,
+      "compressedBytes": 201289,
+      "baseRgbaBytes": 4147200
+    }
+  ],
+  "unchangedGameplayHashes": {
+    "src/content/world/maps.ts": "f20d824ff96628cad35c034ef6dc23e2ec915a4ff75d433bb3010510f88fe41b",
+    "src/content/rules/monsters.ts": "dafddd935ca1deb9dc4db9966226f5cdef5f83235c78c4d182aec1e36a831bbf",
+    "src/domain/actors/index.ts": "0378fe9920cf1969e678c95b40f67858b77eb16bec66fe8f3218989ba3959acd",
+    "src/main.ts": "22a27f7aa4dbb63de34f992003229664ed0d903c267746597aded9382726c57e"
+  },
+  "addedCompressedBytes": 4778862,
+  "activeCompressedDelta": 3605553,
+  "addedBaseRgbaBytes": 28207104,
+  "activeBaseRgbaDelta": 11618304
+}

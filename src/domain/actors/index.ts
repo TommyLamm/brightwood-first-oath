@@ -194,7 +194,14 @@ export function stepActors(
 
     if (isAggro) {
       const skillId = chooseSkillId(monster);
-      const skill = skillId ? rules.skills[skillId] : undefined;
+      let skill = skillId ? rules.skills[skillId] : undefined;
+      // A low ledge can evade a committed wave, but must not lock the boss into
+      // chasing forever while the player attacks from above. Adapt only before windup.
+      if (monster.monsterId === 'guardian' && skill?.id === 'guardian-wave'
+        && !isInsideSkillRange(monster, player, skill, definition)) {
+        const slam = rules.skills['guardian-slam'];
+        if (slam && isInsideSkillRange(monster, player, slam, definition)) skill = slam;
+      }
       if (skill && canStartAttack(monster, definition, rules, nowMs)
         && isInsideSkillRange(monster, player, skill, definition)) {
         const facing: Facing = player.position.x < monster.movement.position.x ? -1 : 1;

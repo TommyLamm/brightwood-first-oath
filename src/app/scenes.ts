@@ -18,12 +18,12 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     }
 
     create(): void {
-      this.statusText = this.add.text(480, 270, '正在檢查遊戲內容與資產套件…', {
+      this.statusText = this.add.text(this.scale.width / 2, this.scale.height / 2, '正在檢查遊戲內容與資產套件…', {
         color: '#f4eddd',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
+        fontSize: '40px',
         align: 'center',
-        wordWrap: { width: 840 },
+        wordWrap: { width: 1680 },
       }).setOrigin(0.5);
 
       void app.initialize().then((result) => {
@@ -46,6 +46,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
     private loadedWorldRevision = 0;
+    private visualRequestId: number | null = null;
     private statusText?: Phaser.GameObjects.Text;
 
     constructor() {
@@ -53,12 +54,12 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     }
 
     create(): void {
-      this.statusText = this.add.text(480, 270, '正在載入地圖資產…', {
+      this.statusText = this.add.text(this.scale.width / 2, this.scale.height / 2, '正在載入地圖資產…', {
         color: '#f4eddd',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
+        fontSize: '44px',
         align: 'center',
-        wordWrap: { width: 840 },
+        wordWrap: { width: 1680 },
       }).setOrigin(0.5);
       const catalog = app.state.catalog;
       const manifests = app.state.assetManifests;
@@ -73,25 +74,35 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
 
       const rendererFactory: WorldRendererFactory = createWorldRenderer;
       this.worldRenderer = rendererFactory(this, manifests, catalog, heroAnchors);
-      const initialMap = app.state.gameplay
+      this.worldRenderer.setBackgroundMotion?.(app.state.backgroundMotion);
+      const initialMap = app.state.gameplay && app.state.screen !== 'title' && app.state.screen !== 'create'
         ? catalog.world.maps[app.state.gameplay.saveData.location.mapId]
         : null;
-      if (initialMap) this.loadMapVisual(initialMap, false, app, reportStatus);
+      if (initialMap) this.loadMapVisual(initialMap, app);
       else this.statusText.setText('請開始新遊戲或繼續既有角色。');
       this.events.on(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     }
 
     update(_time: number, delta: number): void {
-      app.update(delta);
+      const before = app.state;
+      const simulationReady = before.screen === 'playing' && this.rendererReady && !this.transitionKey
+        && this.activeMapId === before.gameplay?.saveData.location.mapId
+        && this.loadedWorldRevision === before.worldRevision;
+      app.update(simulationReady ? delta : 0);
       const state = app.state;
+      this.worldRenderer?.setBackgroundMotion?.(state.backgroundMotion);
       const catalog = state.catalog;
       const gameplay = state.gameplay;
+      const needsVisuals = ['playing', 'paused', 'dead', 'result', 'chapter'].includes(state.screen) || Boolean(gameplay?.pendingTransition);
+      // Keep update/commands alive beneath the DOM title/create screens, without redrawing a hidden world.
+      if (this.sys.settings.visible !== needsVisuals) this.scene.setVisible(needsVisuals);
+      if (!needsVisuals) return;
       const explicitRetry = state.worldRevision !== this.loadedWorldRevision;
-      if (catalog && gameplay && this.worldRenderer && !gameplay.pendingTransition && !this.transitionKey && explicitRetry) {
+      if (catalog && gameplay && needsVisuals && this.worldRenderer && !gameplay.pendingTransition && !this.transitionKey && explicitRetry) {
         this.loadedWorldRevision = state.worldRevision;
         const map = catalog.world.maps[gameplay.saveData.location.mapId];
         if (map && shouldAttemptMapVisualLoad(map.id, this.activeMapId, this.failedMapIds, true)) {
-          this.loadMapVisual(map, false, app, reportStatus);
+          this.loadMapVisual(map, app);
         }
       }
       if (catalog && gameplay?.pendingTransition && this.worldRenderer && !this.transitionKey) {
@@ -103,8 +114,11 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
           app.failMapTransition(`找不到地圖 ${pending.mapId}。`);
           this.transitionKey = null;
         } else {
-          void this.worldRenderer.loadMap(map).then(() => {
+          const requestId = app.beginMapVisualLoad(map);
+          this.visualRequestId = requestId;
+          void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
             if (!this.sys.isActive() || this.transitionKey !== key) return;
+            app.endMapVisualLoad(requestId);
             app.completeMapTransition();
             this.activeMapId = map.id;
             this.failedMapIds.delete(map.id);
@@ -114,14 +128,14 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
             if (!this.sys.isActive() || this.transitionKey !== key) return;
             const message = error instanceof Error ? error.message : String(error);
             this.failedMapIds.add(map.id);
+            app.endMapVisualLoad(requestId);
             app.failMapTransition(message);
-            this.statusText?.setText(`地圖載入失敗\n${message}`);
-            reportStatus('地圖載入失敗', message);
+            this.statusText?.setText('');
             this.transitionKey = null;
           });
         }
       }
-      if (catalog && gameplay && !gameplay.pendingTransition && this.worldRenderer
+      if (catalog && gameplay && needsVisuals && !gameplay.pendingTransition && this.worldRenderer
         && !this.transitionKey
         && shouldAttemptMapVisualLoad(gameplay.saveData.location.mapId, this.activeMapId, this.failedMapIds, false)) {
         const map = catalog.world.maps[gameplay.saveData.location.mapId];
@@ -129,7 +143,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
           app.reportRuntimeIssue(`找不到地圖 ${gameplay.saveData.location.mapId}。`);
           return;
         }
-        this.loadMapVisual(map, false, app, reportStatus);
+        this.loadMapVisual(map, app);
       }
       if (gameplay?.pendingTransition) return;
       if (!this.rendererReady || !this.worldRenderer || !catalog || !gameplay
@@ -141,25 +155,28 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     private shutdown(): void {
       this.events.off(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
       this.worldRenderer?.dispose();
+      if (this.visualRequestId !== null) app.endMapVisualLoad(this.visualRequestId);
       this.worldRenderer = null;
       this.rendererReady = false;
       this.transitionKey = null;
       this.activeMapId = null;
       this.failedMapIds.clear();
+      this.visualRequestId = null;
     }
 
     private loadMapVisual(
       map: MapDef,
-      _isTransition: boolean,
       app: GameApp,
-      report: AppStatusReporter,
     ): void {
       if (!this.worldRenderer || this.transitionKey) return;
       const key = `initial:${map.id}`;
       this.transitionKey = key;
       this.failedMapIds.delete(map.id);
-      void this.worldRenderer.loadMap(map).then(() => {
+      const requestId = app.beginMapVisualLoad(map);
+      this.visualRequestId = requestId;
+      void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
         if (!this.sys.isActive() || this.transitionKey !== key) return;
+        app.endMapVisualLoad(requestId);
         this.activeMapId = map.id;
         this.failedMapIds.delete(map.id);
         this.rendererReady = true;
@@ -172,9 +189,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
         const message = error instanceof Error ? error.message : String(error);
         this.transitionKey = null;
         this.failedMapIds.add(map.id);
-        app.reportRuntimeIssue(`地圖載入失敗：${message}`);
-        this.statusText?.setText(`地圖載入失敗\n${message}`);
-        report('地圖載入失敗', message);
+        app.failMapVisualLoad(requestId, message);
+        this.statusText?.setText('');
       });
     }
   }

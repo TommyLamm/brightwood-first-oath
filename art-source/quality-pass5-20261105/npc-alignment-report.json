@@ -1,0 +1,195 @@
+{
+  "method": "Integer horizontal translation using bottom 15% opaque-foot registration; first frame and all timings unchanged",
+  "records": [
+    {
+      "key": "actor:guide",
+      "previousUrl": "assets/actors/npcs/guide-idle-v1.png",
+      "url": "assets/actors/npcs/guide-idle-v1-aligned-v1.png",
+      "sourceSha256": "4274cfd2d0d5cfe8960efed2d1db985aaec746d18af4bb2fd14674f6a17444ae",
+      "outputSha256": "36371cd50d0fdb17d72f042f1c1edf9c46f9160ce3b033c5fdb61ecd5a3df83c",
+      "pixels": [
+        768,
+        384
+      ],
+      "measuredSecondFrameShiftPx": 76,
+      "appliedSecondFrameShiftPx": 76,
+      "eliminatedDriftLogicalPx": 19.0,
+      "footBandStartY": 317,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 189709,
+      "previousBytes": 190407,
+      "baseRgbaBytes": 1179648
+    },
+    {
+      "key": "actor:mentor",
+      "previousUrl": "assets/actors/npcs/mentor-idle-v1.png",
+      "url": "assets/actors/npcs/mentor-idle-v1-aligned-v1.png",
+      "sourceSha256": "e4db59d38abf4b441f6e10b0772007a223800a7764e1eeb00d7c4cd22d3c75a4",
+      "outputSha256": "4de1f60d8663dd02a0d9bf24182bae419899f7809c74adfdf697eadd45d44c99",
+      "pixels": [
+        768,
+        384
+      ],
+      "measuredSecondFrameShiftPx": 48,
+      "appliedSecondFrameShiftPx": 48,
+      "eliminatedDriftLogicalPx": 12.0,
+      "footBandStartY": 321,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 205595,
+      "previousBytes": 206037,
+      "baseRgbaBytes": 1179648
+    },
+    {
+      "key": "actor:healer",
+      "previousUrl": "assets/actors/npcs/healer-idle-v1.png",
+      "url": "assets/actors/npcs/healer-idle-v1-aligned-v1.png",
+      "sourceSha256": "f0dd065db909d80b43d9f625fbab662e8cf92a486c609a19e66df052003d3d43",
+      "outputSha256": "b4a2469279e14b6522c86440c2ff26ab875cde5dbce559e7347fb6c6871787cd",
+      "pixels": [
+        768,
+        384
+      ],
+      "measuredSecondFrameShiftPx": 70,
+      "appliedSecondFrameShiftPx": 70,
+      "eliminatedDriftLogicalPx": 17.5,
+      "footBandStartY": 317,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 198899,
+      "previousBytes": 199395,
+      "baseRgbaBytes": 1179648
+    },
+    {
+      "key": "actor:keeper",
+      "previousUrl": "assets/actors/npcs/keeper-idle-v1.png",
+      "url": "assets/actors/npcs/keeper-idle-v1-aligned-v1.png",
+      "sourceSha256": "e56127a19026db5908b0183be07e65a4fc52c0eb17d2fd89e95099cee07292c9",
+      "outputSha256": "411454540f92250af0aaf83f737a239a68695b95ea248a5cb1fbd914e09218d5",
+      "pixels": [
+        768,
+        384
+      ],
+      "measuredSecondFrameShiftPx": 52,
+      "appliedSecondFrameShiftPx": 52,
+      "eliminatedDriftLogicalPx": 13.0,
+      "footBandStartY": 322,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 226933,
+      "previousBytes": 227383,
+      "baseRgbaBytes": 1179648
+    },
+    {
+      "key": "actor:merchant",
+      "previousUrl": "assets/actors/npcs/merchant-idle-v3-clarity-v1.png",
+      "url": "assets/actors/npcs/merchant-idle-v3-clarity-v1-aligned-v1.png",
+      "sourceSha256": "4d2b29c84a1f8cb1e83aad9ad84c651c1a8dfb54c0011b68fb8ae611e7a337dc",
+      "outputSha256": "8e098b6a014463c79286075c0027da1cee16833bd99b7c6910e76d7246469404",
+      "pixels": [
+        768,
+        384
+      ],
+      "measuredSecondFrameShiftPx": 49,
+      "appliedSecondFrameShiftPx": 49,
+      "eliminatedDriftLogicalPx": 12.25,
+      "footBandStartY": 321,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 238186,
+      "previousBytes": 238165,
+      "baseRgbaBytes": 1179648
+    },
+    {
+      "key": "actor:frost-guide",
+      "previousUrl": "assets/actors/npcs/frost-guide-idle-v1.png",
+      "url": "assets/actors/npcs/frost-guide-idle-v1-aligned-v1.png",
+      "sourceSha256": "951955d65e41452ce88465fc3c5e45629f587a1f8bff545a22b4253b661a7a47",
+      "outputSha256": "24e71cc96721c691b4fb3917331b3919d96c5d94cb7f2826511ea34be3695e27",
+      "pixels": [
+        1774,
+        887
+      ],
+      "measuredSecondFrameShiftPx": 112,
+      "appliedSecondFrameShiftPx": 112,
+      "eliminatedDriftLogicalPx": 12.121758737316798,
+      "footBandStartY": 740,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 826967,
+      "previousBytes": 847323,
+      "baseRgbaBytes": 6294152
+    },
+    {
+      "key": "actor:sands-guide",
+      "previousUrl": "assets/actors/npcs/sands-guide-idle-v1-clarity-v1.png",
+      "url": "assets/actors/npcs/sands-guide-idle-v1-clarity-v1-aligned-v1.png",
+      "sourceSha256": "c6174583dc18176f476ce2473c16ab30c71cfe65ac96ea8a96b599655d9c117f",
+      "outputSha256": "af421cf9e73e46f0fc85d156e510392fea77f13d0f577d2e5a06459a7e619c17",
+      "pixels": [
+        384,
+        192
+      ],
+      "measuredSecondFrameShiftPx": 22,
+      "appliedSecondFrameShiftPx": 22,
+      "eliminatedDriftLogicalPx": 11.0,
+      "footBandStartY": 150,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 56887,
+      "previousBytes": 57020,
+      "baseRgbaBytes": 294912
+    },
+    {
+      "key": "actor:ruins-archivist",
+      "previousUrl": "assets/actors/npc-ruins-archivist-v1-clarity-v1.png",
+      "url": "assets/actors/npc-ruins-archivist-v1-clarity-v1.png",
+      "sourceSha256": "2b68c6e9cf72ecef9945ac0b15f307bb11d6fb8ded3c7e797ac205567a514918",
+      "outputSha256": "2b68c6e9cf72ecef9945ac0b15f307bb11d6fb8ded3c7e797ac205567a514918",
+      "pixels": [
+        384,
+        192
+      ],
+      "measuredSecondFrameShiftPx": -1,
+      "appliedSecondFrameShiftPx": 0,
+      "eliminatedDriftLogicalPx": 0.0,
+      "footBandStartY": 164,
+      "residualRegistrationLogicalPx": 0.5,
+      "addedCompressedBytes": 0,
+      "previousBytes": 63789,
+      "baseRgbaBytes": 294912
+    },
+    {
+      "key": "actor:ruins-medic",
+      "previousUrl": "assets/actors/npc-ruins-medic-v1-clarity-v1.png",
+      "url": "assets/actors/npc-ruins-medic-v1-clarity-v1.png",
+      "sourceSha256": "09f8695a06a18b27c21bdbb831e2bfb127251388faeb1aa0718c1176ee70a809",
+      "outputSha256": "09f8695a06a18b27c21bdbb831e2bfb127251388faeb1aa0718c1176ee70a809",
+      "pixels": [
+        384,
+        192
+      ],
+      "measuredSecondFrameShiftPx": 1,
+      "appliedSecondFrameShiftPx": 0,
+      "eliminatedDriftLogicalPx": 0.0,
+      "footBandStartY": 164,
+      "residualRegistrationLogicalPx": 0.5,
+      "addedCompressedBytes": 0,
+      "previousBytes": 60985,
+      "baseRgbaBytes": 294912
+    },
+    {
+      "key": "actor:ruins-pathfinder",
+      "previousUrl": "assets/actors/npcs/ruins-pathfinder-idle-v1-clarity-v1.png",
+      "url": "assets/actors/npcs/ruins-pathfinder-idle-v1-clarity-v1.png",
+      "sourceSha256": "e83966300b341d39fa6647a9e8bf4a7abd2868b8358d664573cf1e8743b60104",
+      "outputSha256": "e83966300b341d39fa6647a9e8bf4a7abd2868b8358d664573cf1e8743b60104",
+      "pixels": [
+        384,
+        192
+      ],
+      "measuredSecondFrameShiftPx": 0,
+      "appliedSecondFrameShiftPx": 0,
+      "eliminatedDriftLogicalPx": 0.0,
+      "footBandStartY": 160,
+      "residualRegistrationLogicalPx": 0.0,
+      "addedCompressedBytes": 0,
+      "previousBytes": 50008,
+      "baseRgbaBytes": 294912
+    }
+  ]
+}

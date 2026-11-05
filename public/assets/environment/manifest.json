@@ -84,7 +84,7 @@
     },
     {
       "key": "env:forest:mid",
-      "url": "assets/environment/env-forest-mid-v2.png",
+      "url": "assets/environment/env-forest-mid-clarity-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 1920,
@@ -114,7 +114,7 @@
     },
     {
       "key": "env:rock:mid",
-      "url": "assets/environment/env-rock-mid-v2.png",
+      "url": "assets/environment/env-rock-mid-clarity-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 1920,
@@ -144,7 +144,7 @@
     },
     {
       "key": "env:frost:mid",
-      "url": "assets/environment/env-frost-mid-v2.png",
+      "url": "assets/environment/env-frost-mid-clarity-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 1920,
@@ -224,7 +224,7 @@
     },
     {
       "key": "env:tile-platform",
-      "url": "assets/environment/env-tile-platform-v1.png",
+      "url": "assets/environment/env-tile-platform-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 128,
@@ -244,7 +244,7 @@
     },
     {
       "key": "env:ladder",
-      "url": "assets/environment/env-ladder-v1.png",
+      "url": "assets/environment/env-ladder-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 32,
@@ -254,7 +254,7 @@
     },
     {
       "key": "env:portal",
-      "url": "assets/environment/env-portal-v1.png",
+      "url": "assets/environment/env-portal-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 64,
@@ -264,7 +264,7 @@
     },
     {
       "key": "env:town-sign",
-      "url": "assets/environment/env-town-sign-v1.png",
+      "url": "assets/environment/env-town-sign-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 96,
@@ -274,7 +274,7 @@
     },
     {
       "key": "env:mine-door",
-      "url": "assets/environment/env-mine-door-v1.png",
+      "url": "assets/environment/env-mine-door-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 128,
@@ -284,7 +284,7 @@
     },
     {
       "key": "env:altar",
-      "url": "assets/environment/env-altar-v1.png",
+      "url": "assets/environment/env-altar-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 112,
@@ -464,7 +464,7 @@
     },
     {
       "key": "env:ruins-gallery:mid",
-      "url": "assets/environment/env-ruins-gallery-mid-v1.png",
+      "url": "assets/environment/env-ruins-gallery-mid-clarity-v1.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 1920,
@@ -501,6 +501,296 @@
       "displayHeight": 540,
       "pivotX": 0,
       "pivotY": 0
+    },
+    {
+      "key": "env:forest:platform",
+      "url": "assets/environment/env-forest-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:vine",
+      "url": "assets/environment/env-forest-vine-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ridge:platform",
+      "url": "assets/environment/env-ridge-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ridge:rope",
+      "url": "assets/environment/env-ridge-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:mine:platform",
+      "url": "assets/environment/env-mine-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:mine:ladder",
+      "url": "assets/environment/env-mine-ladder-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:forest:supports",
+      "url": "assets/environment/env-forest-supports-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:mine:supports",
+      "url": "assets/environment/env-mine-supports-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 64,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:platform",
+      "url": "assets/environment/env-snow-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:rope",
+      "url": "assets/environment/env-snow-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost:ground",
+      "url": "assets/environment/env-snow-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:platform",
+      "url": "assets/environment/env-cave-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:chain",
+      "url": "assets/environment/env-cave-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:frost-cave:ground",
+      "url": "assets/environment/env-cave-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:village:platform",
+      "url": "assets/environment/env-village-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:village:ladder",
+      "url": "assets/environment/env-village-ladder-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand:platform",
+      "url": "assets/environment/env-sand-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand:rope",
+      "url": "assets/environment/env-sand-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:platform",
+      "url": "assets/environment/env-sunwell-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:chain",
+      "url": "assets/environment/env-sunwell-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins:platform",
+      "url": "assets/environment/env-ruins-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins:chain",
+      "url": "assets/environment/env-ruins-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:village:ground",
+      "url": "assets/environment/env-village-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ridge:ground",
+      "url": "assets/environment/env-ridge-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:mine:ground",
+      "url": "assets/environment/env-mine-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sand:ground",
+      "url": "assets/environment/env-sand-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:sunwell:ground",
+      "url": "assets/environment/env-sunwell-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:ruins:ground",
+      "url": "assets/environment/env-ruins-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0
+    },
+    {
+      "key": "env:mine:mid",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 1920,
+      "displayHeight": 540,
+      "pivotX": 0,
+      "pivotY": 0,
+      "url": "assets/environment/env-mine-mid-clarity-v1.png"
     }
   ],
   "animations": [],

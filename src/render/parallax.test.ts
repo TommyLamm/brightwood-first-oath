@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  cameraWorldViewport,
+  fixedBackgroundPosition,
   parallaxTilePositionX,
   tileSpriteBottomAnchoredTilePositionY,
   tileSpriteParallaxTilePositionX,
@@ -25,6 +27,37 @@ const baseOffset = {
 };
 
 describe('renderer background parallax geometry', () => {
+  it('uses the visible world bounds for culling and parallax at 2x zoom', () => {
+    const viewport = cameraWorldViewport({
+      width: 1920, height: 1080, zoom: 2, originX: 0.5, originY: 0.5, scrollX: -276, scrollY: -90,
+    });
+    expect(viewport).toEqual({ x: 204, y: 180, width: 960, height: 540 });
+    // A snail at x=1000 is visible here, although it lies outside scrollX + 960.
+    expect(1000).toBeGreaterThanOrEqual(viewport.x);
+    expect(1000).toBeLessThan(viewport.x + viewport.width);
+    expect(parallaxTilePositionX({ ...baseOffset, cameraScrollX: viewport.x, cameraZoom: 2 })).toBe(102);
+  });
+
+  it('fills a 1920x1080 viewport at 2x zoom without shifting fixed backgrounds offscreen', () => {
+    const camera = { width: 1920, height: 1080, zoom: 2, originX: 0.5, originY: 0.5 };
+    const position = fixedBackgroundPosition(camera);
+    expect(position).toEqual({ x: 480, y: 270 });
+    // Phaser zooms around the viewport's origin even when scrollFactor is zero.
+    const screenPoint = (x: number, y: number) => ({
+      x: (x - 960) * 2 + 960,
+      y: (y - 540) * 2 + 540,
+    });
+    expect(screenPoint(position.x, position.y)).toEqual({ x: 0, y: 0 });
+    expect(screenPoint(position.x + 960, position.y + 540)).toEqual({ x: 1920, y: 1080 });
+  });
+
+  it('retains the existing unzoomed placement and honors a top-left camera origin', () => {
+    expect(fixedBackgroundPosition({ width: 960, height: 540, zoom: 1, originX: 0.5, originY: 0.5 }))
+      .toEqual({ x: 0, y: 0 });
+    expect(fixedBackgroundPosition({ width: 1920, height: 1080, zoom: 2, originX: 0, originY: 0 }))
+      .toEqual({ x: 0, y: 0 });
+  });
+
   it('keeps the texture at its left edge and rounds the visible offset to a screen pixel', () => {
     expect(parallaxTilePositionX({ ...baseOffset, cameraScrollX: 0 })).toBe(0);
     expect(parallaxTilePositionX({ ...baseOffset, cameraScrollX: 5.2 })).toBe(3);

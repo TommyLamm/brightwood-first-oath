@@ -1,0 +1,626 @@
+{
+  "tool": "built-in imagegen",
+  "runtime": [
+    {
+      "key": "env:frost-cave:platform",
+      "url": "assets/environment/env-cave-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "cave-platform-generated.png",
+      "sourceBounds": [
+        88,
+        317,
+        2085,
+        450
+      ],
+      "sourceSha256": "d2c011cba5993f36e6bd1d04751023dd6cdc4900d006b878142f99389c3be003",
+      "outputSha256": "fd073dbe2c5409f6b1711251b0fab611d9a7ed03ac506b92287e32032edd2ee0",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 56869,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:frost-cave:chain",
+      "url": "assets/environment/env-cave-chain-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "cave-chain-generated.png",
+      "sourceBounds": [
+        433,
+        53,
+        535,
+        1578
+      ],
+      "sourceSha256": "d7bdd9c1011378fb55fc7e2e9d3e9e117910d6d862c66965109cd39f67ce334c",
+      "outputSha256": "1a4d49bc482e25504ba80ab1af8b05c1f88290a0f723d9065e327f8378936b13",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 13002,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:frost-cave:ground",
+      "url": "assets/environment/env-cave-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "cave-ground-generated.png",
+      "sourceBounds": [
+        0,
+        73,
+        1254,
+        1254
+      ],
+      "sourceSha256": "63bee260c5e65b46f9cf90d9a0a2885946bce24c893de4993d226b74e6fd97cc",
+      "outputSha256": "f67f7076d12ad1e257bf903d3492186a90e2d726cdf74731d0311788b2ece181",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 495038,
+      "baseRgbaBytes": 1048576
+    },
+    {
+      "key": "actor:frost-tide-warden",
+      "url": "assets/actors/monsters/frost-tide-warden-clarity-v1.png",
+      "pixels": [
+        1632,
+        1360
+      ],
+      "compressedBytes": 486813,
+      "baseRgbaBytes": 8878080,
+      "outputSha256": "46cc84c261b123a6987d75ce915b5793bf9cd0fd6cd4a98827a71a4246e7ae27",
+      "previousUrl": "assets/actors/monsters/frost-tide-warden-atlas-v1.png",
+      "previousBytes": 518827,
+      "previousSha256": "19df239a6ee8bd2e0be214c8450387c3559da8d2721299a6d6b763a2852b15c3",
+      "sources": [
+        {
+          "group": "sample",
+          "path": "art-source/quality-pass3-20261105/warden-sample-generated.png",
+          "sha256": "202b3598dad36fb175a742e397f68b9bae7ec58bcfe1e8f5ad97c7e2a3822871",
+          "frames": [
+            0,
+            1,
+            12,
+            14
+          ]
+        },
+        {
+          "group": "walk",
+          "path": "art-source/quality-pass4-20261105/warden-walk-generated.png",
+          "sha256": "3d8a33fcd034e3a902dc894e3dc68f4ff955037efea61f01d16d5b77da17ee4f",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "group": "action",
+          "path": "art-source/quality-pass4-20261105/warden-action-generated.png",
+          "sha256": "66dbd537a882b2d1a6c0f0b735d29aa19965f22f980cd65fede72b6c71c813dd",
+          "frames": [
+            13,
+            15,
+            18,
+            19
+          ]
+        },
+        {
+          "group": "dead",
+          "path": "art-source/quality-pass4-20261105/warden-dead-generated.png",
+          "sha256": "c8dab19cf206389af231f4a834d5399d94f2685cac0e3b6e7d0fd021062deb53",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ]
+        }
+      ],
+      "poses": [
+        {
+          "frame": 0,
+          "originalAlpha128Bounds": [
+            59,
+            167,
+            187,
+            250
+          ],
+          "outputAlpha128Bounds": [
+            59,
+            167,
+            187,
+            250
+          ],
+          "generatedCrop": [
+            137,
+            387,
+            431,
+            582
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 1,
+          "originalAlpha128Bounds": [
+            69,
+            167,
+            196,
+            250
+          ],
+          "outputAlpha128Bounds": [
+            69,
+            167,
+            196,
+            250
+          ],
+          "generatedCrop": [
+            165,
+            386,
+            462,
+            583
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 12,
+          "originalAlpha128Bounds": [
+            58,
+            166,
+            202,
+            248
+          ],
+          "outputAlpha128Bounds": [
+            58,
+            166,
+            202,
+            248
+          ],
+          "generatedCrop": [
+            134,
+            386,
+            469,
+            577
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 14,
+          "originalAlpha128Bounds": [
+            64,
+            155,
+            214,
+            251
+          ],
+          "outputAlpha128Bounds": [
+            64,
+            155,
+            214,
+            251
+          ],
+          "generatedCrop": [
+            155,
+            361,
+            499,
+            582
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 6,
+          "originalAlpha128Bounds": [
+            58,
+            156,
+            196,
+            248
+          ],
+          "outputAlpha128Bounds": [
+            58,
+            156,
+            196,
+            248
+          ],
+          "generatedCrop": [
+            104,
+            247,
+            358,
+            424
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 7,
+          "originalAlpha128Bounds": [
+            88,
+            154,
+            223,
+            247
+          ],
+          "outputAlpha128Bounds": [
+            88,
+            154,
+            223,
+            247
+          ],
+          "generatedCrop": [
+            127,
+            245,
+            392,
+            426
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 8,
+          "originalAlpha128Bounds": [
+            54,
+            156,
+            194,
+            248
+          ],
+          "outputAlpha128Bounds": [
+            54,
+            156,
+            194,
+            248
+          ],
+          "generatedCrop": [
+            96,
+            248,
+            371,
+            425
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 9,
+          "originalAlpha128Bounds": [
+            68,
+            154,
+            207,
+            247
+          ],
+          "outputAlpha128Bounds": [
+            68,
+            154,
+            207,
+            247
+          ],
+          "generatedCrop": [
+            112,
+            241,
+            377,
+            418
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 10,
+          "originalAlpha128Bounds": [
+            68,
+            154,
+            206,
+            248
+          ],
+          "outputAlpha128Bounds": [
+            68,
+            154,
+            206,
+            248
+          ],
+          "generatedCrop": [
+            107,
+            241,
+            384,
+            420
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 11,
+          "originalAlpha128Bounds": [
+            73,
+            156,
+            212,
+            247
+          ],
+          "outputAlpha128Bounds": [
+            73,
+            156,
+            212,
+            247
+          ],
+          "generatedCrop": [
+            120,
+            249,
+            397,
+            421
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 13,
+          "originalAlpha128Bounds": [
+            73,
+            128,
+            219,
+            250
+          ],
+          "outputAlpha128Bounds": [
+            73,
+            128,
+            219,
+            250
+          ],
+          "generatedCrop": [
+            155,
+            243,
+            495,
+            520
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 15,
+          "originalAlpha128Bounds": [
+            68,
+            162,
+            214,
+            251
+          ],
+          "outputAlpha128Bounds": [
+            68,
+            162,
+            214,
+            251
+          ],
+          "generatedCrop": [
+            136,
+            318,
+            475,
+            520
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 18,
+          "originalAlpha128Bounds": [
+            72,
+            138,
+            202,
+            249
+          ],
+          "outputAlpha128Bounds": [
+            72,
+            138,
+            202,
+            249
+          ],
+          "generatedCrop": [
+            151,
+            228,
+            455,
+            485
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 19,
+          "originalAlpha128Bounds": [
+            87,
+            158,
+            227,
+            249
+          ],
+          "outputAlpha128Bounds": [
+            87,
+            158,
+            227,
+            249
+          ],
+          "generatedCrop": [
+            154,
+            277,
+            479,
+            483
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 24,
+          "originalAlpha128Bounds": [
+            54,
+            153,
+            205,
+            241
+          ],
+          "outputAlpha128Bounds": [
+            54,
+            153,
+            205,
+            241
+          ],
+          "generatedCrop": [
+            118,
+            317,
+            455,
+            513
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 25,
+          "originalAlpha128Bounds": [
+            76,
+            133,
+            229,
+            209
+          ],
+          "outputAlpha128Bounds": [
+            76,
+            133,
+            229,
+            209
+          ],
+          "generatedCrop": [
+            163,
+            288,
+            509,
+            462
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 26,
+          "originalAlpha128Bounds": [
+            68,
+            172,
+            234,
+            241
+          ],
+          "outputAlpha128Bounds": [
+            68,
+            172,
+            234,
+            241
+          ],
+          "generatedCrop": [
+            141,
+            337,
+            517,
+            490
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        },
+        {
+          "frame": 27,
+          "originalAlpha128Bounds": [
+            72,
+            144,
+            228,
+            206
+          ],
+          "outputAlpha128Bounds": [
+            72,
+            144,
+            228,
+            206
+          ],
+          "generatedCrop": [
+            151,
+            277,
+            508,
+            421
+          ],
+          "opaqueFootErrorLogicalPx": 0,
+          "opaqueCenterErrorLogicalPx": 0.0
+        }
+      ],
+      "duplicatePadding": [
+        {
+          "frame": 2,
+          "sameAs": 1
+        },
+        {
+          "frame": 3,
+          "sameAs": 1
+        },
+        {
+          "frame": 4,
+          "sameAs": 1
+        },
+        {
+          "frame": 5,
+          "sameAs": 1
+        },
+        {
+          "frame": 16,
+          "sameAs": 15
+        },
+        {
+          "frame": 17,
+          "sameAs": 15
+        },
+        {
+          "frame": 20,
+          "sameAs": 19
+        },
+        {
+          "frame": 21,
+          "sameAs": 19
+        },
+        {
+          "frame": 22,
+          "sameAs": 19
+        },
+        {
+          "frame": 23,
+          "sameAs": 19
+        },
+        {
+          "frame": 28,
+          "sameAs": 27
+        },
+        {
+          "frame": 29,
+          "sameAs": 27
+        }
+      ]
+    }
+  ],
+  "uniqueWardenPoses": 18,
+  "totalAtlasCells": 30,
+  "actorAnimationContractUnchanged": true,
+  "preservedProductionHashes": {
+    "src/content/world/maps.ts": "f20d824ff96628cad35c034ef6dc23e2ec915a4ff75d433bb3010510f88fe41b",
+    "src/content/rules/monsters.ts": "dafddd935ca1deb9dc4db9966226f5cdef5f83235c78c4d182aec1e36a831bbf",
+    "src/domain/actors/index.ts": "0378fe9920cf1969e678c95b40f67858b77eb16bec66fe8f3218989ba3959acd",
+    "src/main.ts": "22a27f7aa4dbb63de34f992003229664ed0d903c267746597aded9382726c57e",
+    "src/render/index.ts": "4f2c98afa3d2734cc838c46cb8f30d72313a4a183bd3022c150570dde7d63cee",
+    "src/app/assets.ts": "ad2a85346e32c9edc2a0aa2f6d4c05aabe5166939d8c668d37464fc208c15d19"
+  },
+  "addedCompressedBytes": 1051722,
+  "activeCompressedDelta": 532895,
+  "addedBaseRgbaBytes": 10221568,
+  "activeBaseRgbaDelta": 1343488
+}

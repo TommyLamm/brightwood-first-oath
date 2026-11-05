@@ -1,0 +1,19 @@
+.ms-local-map { min-width: 0; padding: 12px; border: 1px solid #ad9466; border-radius: 7px; background: #f2e7cc; color: #493d28; }
+.ms-local-map summary { padding: 5px 0; cursor: pointer; font-weight: 700; }
+.ms-local-map summary:focus-visible { outline: 2px solid #216a73; outline-offset: 3px; }
+.ms-local-map__chart { position: relative; height: 200px; margin-top: 10px; border: 1px solid #b1aa8b; border-radius: 5px; background: linear-gradient(#dbe9dc, #f7f0d6); }
+.ms-local-map__chart svg { position: absolute; width: 100%; height: 100%; inset: 0; }
+.ms-local-map__chart line, .ms-local-map__chart rect { vector-effect: non-scaling-stroke; }
+.ms-local-map__chart .is-ground { stroke: #4e6143; stroke-width: 5; stroke-linecap: round; }
+.ms-local-map__chart .is-platform { stroke: #86632e; stroke-width: 4; stroke-dasharray: 8 4; }
+.ms-local-map__chart .is-climb { stroke: #587889; stroke-width: 5; stroke-dasharray: 2 2; }
+.ms-local-map__chart .is-wall { fill: #687a5366; stroke: #4e6143; }
+.ms-local-map__marker { position: absolute; display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 3px; transform: translate(-50%, -105%); border: 2px solid #fff8df; font-size: 11px; font-weight: 800; line-height: 1; box-shadow: 0 1px 3px #342b2670; }
+.ms-local-map__marker.is-npc { border-radius: 50%; color: white; background: #406750; }
+.ms-local-map__marker.is-portal { transform: translate(-50%, 4px); border-radius: 3px; color: white; background: #674e83; }
+.ms-local-map__player { position: absolute; z-index: 2; color: #b6412d; font-size: 23px; line-height: 1; text-shadow: 0 0 2px white, 0 0 2px white; transform: translate(-50%, -190%); }
+.ms-local-map__player[hidden] { display: none; }
+.ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
+.ms-local-map__legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding-left: 18px; line-height: 1.5; }
+.ms-local-map__legend li { overflow-wrap: anywhere; }
+@container (max-width: 620px) { .ms-local-map { padding: 9px; } .ms-local-map__chart { height: 170px; } }

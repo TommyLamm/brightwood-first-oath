@@ -5,6 +5,8 @@ import type { HeroAnchorManifest, HeroAnchorOutfit, HeroAnchorPose } from '../co
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
 import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
 import { animationConformsToUse } from './animation-contract.js';
+import { backgroundImageKey } from './background-style.js';
+import { ParallaxMotion } from './parallax-motion.js';
 import {
   claimVisualEventPlayback,
   pickAnimationFrame,
@@ -31,7 +33,7 @@ import {
   ladderSpriteGeometry,
   npcNameGeometry,
   questMarkerGeometry,
-  questMarkerNpcIds,
+  questMarkerStates,
   PLATFORM_TILE_DISPLAY_HEIGHT,
   PLATFORM_TILE_DISPLAY_WIDTH,
   platformTilePositions,
@@ -41,10 +43,24 @@ import {
   WORLD_DEPTH,
 } from './geometry.js';
 import {
+  cameraWorldViewport,
+  fixedBackgroundPosition,
   tileSpriteBottomAnchoredTilePositionY,
   tileSpriteParallaxTilePositionX,
   tileSpriteSourceDisplayWidth,
 } from './parallax.js';
+import {
+  terrainDecorationKey,
+  terrainDecorationPieces,
+  requiredTerrainImageKeys,
+  terrainStyle,
+  themedClimbPieces,
+  themedPlatformPieces,
+  THEMED_CLIMB_SIZE,
+  THEMED_PLATFORM_HEIGHT,
+  THEMED_PLATFORM_WIDTH,
+  type TerrainPiece,
+} from './terrain-style.js';
 
 type RendererAssets = {
   images: Map<string, AssetImage>;
@@ -95,6 +111,9 @@ type DrawnActor = {
 
 const BASE_WIDTH = 960;
 const BASE_HEIGHT = 540;
+// World text is drawn through the 2x desktop camera. Keep its internal texture
+// at that density while retaining the same logical font sizes and placement.
+const WORLD_TEXT_RESOLUTION = 2;
 const DAMAGE_TEXT_LIMIT = 30;
 const DAMAGE_STACK_WINDOW_MS = 700;
 const DAMAGE_STACK_RADIUS = 48;
@@ -263,13 +282,10 @@ function frameKey(imageKey: string, frame: number): string {
 
 function requiredImageKeys(map: MapDef, catalog: ContentCatalog): Set<string> {
   const keys = new Set<string>([
-    ...BACKGROUND_LAYERS.map(({ name }) => `env:${map.themeKey}:${name}`),
+    ...BACKGROUND_LAYERS.map(({ name }) => backgroundImageKey(map, name)),
     ...HERO_IMAGE_KEYS,
+    ...requiredTerrainImageKeys(map),
   ]);
-  if (map.footholds.some((foothold) => !foothold.dropThrough && foothold.y1 !== foothold.y2)) keys.add('env:tile-slope');
-  if (map.footholds.some((foothold) => foothold.dropThrough)) keys.add('env:tile-platform');
-  if (map.footholds.some((foothold) => !foothold.dropThrough && foothold.y1 === foothold.y2)) keys.add('env:tile-ground');
-  if (map.ladders.length > 0) keys.add('env:ladder');
   if (map.portals.length > 0) keys.add('env:portal');
   for (const key of VFX_IMAGE_KEYS) keys.add(key);
   for (const skill of Object.values(catalog.rules.skills)) {
@@ -368,6 +384,7 @@ export function createWorldRenderer(
     registeredTextures.set(scene.textures, textureRegistrations);
   }
   const loadedImages = new Set<string>();
+  const parallaxMotion = new ParallaxMotion();
   const ownedTextureKeys = new Set<string>();
   const actorFootOffsets = new Map<string, number[]>();
   // Visible (non-transparent) size of each actor sheet, in display pixels, used to
@@ -387,6 +404,7 @@ export function createWorldRenderer(
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
+    resolution: WORLD_TEXT_RESOLUTION,
     color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
     stroke: '#2a1d22', strokeThickness: 4,
   }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health).setVisible(false);
@@ -396,6 +414,7 @@ export function createWorldRenderer(
     let text = monsterNameTexts.get(key);
     if (!text) {
       text = scene.add.text(0, 0, '', {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: '#fff2cf', fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontStyle: 'bold',
         stroke: '#231a1d', strokeThickness: 3,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health);
@@ -531,7 +550,7 @@ export function createWorldRenderer(
     }
   };
 
-  const loadImages = async (requested: AssetImage[]): Promise<Set<string>> => {
+  const loadImages = async (requested: AssetImage[], onProgress?: (progress: { completed: number; total: number }) => void): Promise<Set<string>> => {
     if (disposed) throw new RendererAssetError('Renderer 已 dispose，不能載入資產');
     const toLoad: AssetImage[] = [];
     for (const image of requested) {
@@ -549,14 +568,23 @@ export function createWorldRenderer(
       toLoad.push(image);
     }
     const newlyLoaded = new Set<string>();
+    onProgress?.({ completed: 0, total: toLoad.length });
     if (toLoad.length === 0) return newlyLoaded;
     if (scene.load.isLoading()) throw new RendererAssetError('Phaser Scene Loader 正在處理其他載入；可稍後重試');
 
     await new Promise<void>((resolve, reject) => {
       const loadErrors: string[] = [];
+      const completedKeys = new Set<string>();
+      const requestedKeys = new Set(toLoad.map((image) => image.key));
+      const onFileComplete = (key: string): void => {
+        if (!requestedKeys.has(key)) return;
+        completedKeys.add(key);
+        onProgress?.({ completed: completedKeys.size, total: toLoad.length });
+      };
       const clean = (): void => {
         scene.load.off(Phaser.Loader.Events.COMPLETE, onComplete);
         scene.load.off(Phaser.Loader.Events.FILE_LOAD_ERROR, onFileError);
+        scene.load.off(Phaser.Loader.Events.FILE_COMPLETE, onFileComplete);
         activeLoadCancel = null;
       };
       const onComplete = (): void => {
@@ -573,6 +601,7 @@ export function createWorldRenderer(
       };
       scene.load.on(Phaser.Loader.Events.COMPLETE, onComplete);
       scene.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, onFileError);
+      scene.load.on(Phaser.Loader.Events.FILE_COMPLETE, onFileComplete);
       try {
         for (const image of toLoad) scene.load.image(image.key, resolveUrl(image.url));
         scene.load.start();
@@ -623,6 +652,31 @@ export function createWorldRenderer(
     return sprite;
   };
 
+  const addTerrainPieces = (
+    layer: Phaser.GameObjects.Container,
+    imageKey: string,
+    pieces: TerrainPiece[],
+    frameWidth: number,
+    frameHeight: number,
+    columns: number,
+  ): void => {
+    const image = assets.images.get(imageKey)!;
+    if (image.columns !== columns || image.rows !== 1
+      || image.displayWidth !== frameWidth || image.displayHeight !== frameHeight) {
+      throw new RendererAssetError(`Terrain atlas must have ${columns} ${frameWidth}x${frameHeight} display frames: ${imageKey}`, [imageKey]);
+    }
+    const scale = textureDisplayScale(image);
+    for (const piece of pieces) {
+      const sprite = scene.add.sprite(
+        piece.x - piece.cropX, piece.y - piece.cropY, imageKey, frameKey(imageKey, piece.frame),
+      ).setOrigin(0, 0).setDisplaySize(frameWidth, frameHeight);
+      if (piece.cropX || piece.cropY || piece.width !== frameWidth || piece.height !== frameHeight) {
+        sprite.setCrop(piece.cropX / scale.x, piece.cropY / scale.y, piece.width / scale.x, piece.height / scale.y);
+      }
+      layer.add(sprite);
+    }
+  };
+
   const destroyVisual = (visual: MapVisual): void => {
     for (const background of visual.backgrounds) background.destroy();
     for (const layer of visual.environmentLayers) layer.destroy(true);
@@ -633,6 +687,7 @@ export function createWorldRenderer(
     const camera = scene.cameras.main;
     const worldWidth = camera.width / camera.zoom;
     const worldHeight = camera.height / camera.zoom;
+    const backgroundPosition = fixedBackgroundPosition(camera);
     const themeScales = BACKGROUND_THEME_TILE_SCALE_Y[activeVisual.map.themeKey];
     activeVisual.backgrounds.forEach((background, index) => {
       const layer = BACKGROUND_LAYERS[index]!;
@@ -645,18 +700,18 @@ export function createWorldRenderer(
       // a far/mid cluster to fill it.
       const sourceDisplayWidth = tileSpriteSourceDisplayWidth(source);
       const backgroundWidth = layer.name === 'sky' ? worldWidth : Math.min(worldWidth, sourceDisplayWidth);
-      background.setSize(backgroundWidth, worldHeight);
+      background.setPosition(backgroundPosition.x, backgroundPosition.y).setSize(backgroundWidth, worldHeight);
     });
   };
 
-  const updateBackgroundParallax = (camera = scene.cameras.main, cameraScrollX = camera.scrollX): void => {
+  const updateBackgroundParallax = (camera = scene.cameras.main, cameraScrollX = cameraWorldViewport(camera).x): void => {
     if (!activeVisual) return;
     const worldWidth = camera.width / camera.zoom;
     const maxCameraScrollX = Math.max(0, activeVisual.map.width - worldWidth);
     activeVisual.backgrounds.forEach((background, index) => {
       const layer = BACKGROUND_LAYERS[index]!;
       background.tilePositionX = tileSpriteParallaxTilePositionX(tileSpriteWithDisplayFrame(background), {
-        cameraScrollX,
+        cameraScrollX: parallaxMotion.scrollX(cameraScrollX),
         maxCameraScrollX,
         factor: layer.parallaxFactor,
         cameraZoom: camera.zoom,
@@ -671,15 +726,16 @@ export function createWorldRenderer(
   camera.on(Phaser.Cameras.Scene2D.Events.FOLLOW_UPDATE, handleCameraFollowUpdate);
 
   const isInViewport = (position: Vec2, margin = 180): boolean => {
-    const camera = scene.cameras.main;
-    const left = camera.scrollX - margin;
-    const top = camera.scrollY - margin;
-    const right = camera.scrollX + camera.width / camera.zoom + margin;
-    const bottom = camera.scrollY + camera.height / camera.zoom + margin;
+    const viewport = cameraWorldViewport(scene.cameras.main);
+    const left = viewport.x - margin;
+    const top = viewport.y - margin;
+    const right = viewport.x + viewport.width + margin;
+    const bottom = viewport.y + viewport.height + margin;
     return position.x >= left && position.x <= right && position.y >= top && position.y <= bottom;
   };
 
   const buildMapVisual = (map: MapDef): MapVisual => {
+    const terrain = terrainStyle(map);
     const backgrounds: Phaser.GameObjects.TileSprite[] = [];
     const layers = [
       scene.add.container(0, 0).setDepth(WORLD_DEPTH.terrain),
@@ -689,6 +745,11 @@ export function createWorldRenderer(
     const terrainLayer = layers[0]!;
     const foregroundLayer = layers[1]!;
     const effectLayer = layers[2]!;
+    const decorationKey = terrainDecorationKey(map);
+    if (decorationKey) {
+      const decorations = scene.add.container(0, 0).setDepth(WORLD_DEPTH.terrain - 1);
+      layers.push(decorations);
+    }
     const environmentTextureKeys = new Set<string>();
     const npcSprites = new Map<string, {
       imageKey: string;
@@ -697,8 +758,12 @@ export function createWorldRenderer(
     }>();
 
     try {
+    if (decorationKey) {
+      addTerrainPieces(layers[3]!, decorationKey, terrainDecorationPieces(map), 64, 64, 4);
+      environmentTextureKeys.add(decorationKey);
+    }
     for (const { name, depth } of BACKGROUND_LAYERS) {
-      const key = `env:${map.themeKey}:${name}`;
+      const key = backgroundImageKey(map, name);
       const image = assets.images.get(key)!;
       const background = scene.add.tileSprite(0, 0, BASE_WIDTH, BASE_HEIGHT, key).setOrigin(0, 0).setDepth(depth);
       background.setScrollFactor(0);
@@ -719,12 +784,18 @@ export function createWorldRenderer(
     }
 
     for (const foothold of map.footholds) {
+      if (foothold.dropThrough && terrain.segmented) {
+        addTerrainPieces(terrainLayer, terrain.platformKey, themedPlatformPieces(foothold),
+          THEMED_PLATFORM_WIDTH, THEMED_PLATFORM_HEIGHT, 5);
+        environmentTextureKeys.add(terrain.platformKey);
+        continue;
+      }
       const isSlope = foothold.y1 !== foothold.y2;
       const key = foothold.dropThrough
         ? 'env:tile-platform'
-        : isSlope ? 'env:tile-slope' : 'env:tile-ground';
+        : isSlope ? 'env:tile-slope' : terrain.groundKey;
       const image = assets.images.get(key)!;
-      if (key === 'env:tile-ground') {
+      if (key === terrain.groundKey) {
         if (image.displayWidth <= GROUND_TILE_OVERLAP) {
           throw new RendererAssetError(`Ground tile display width must exceed its ${GROUND_TILE_OVERLAP}px overlap`, [key]);
         }
@@ -763,6 +834,12 @@ export function createWorldRenderer(
       environmentTextureKeys.add(key);
     }
     for (const ladder of map.ladders) {
+      if (terrain.segmented) {
+        addTerrainPieces(terrainLayer, terrain.climbKey, themedClimbPieces(ladder),
+          THEMED_CLIMB_SIZE, THEMED_CLIMB_SIZE, 3);
+        environmentTextureKeys.add(terrain.climbKey);
+        continue;
+      }
       const image = assets.images.get('env:ladder')!;
       const geometry = ladderSpriteGeometry(ladder, image.displayWidth);
       if (geometry.height <= 0) throw new RendererAssetError(`Ladder 高度必須為正：${ladder.id}`, ['env:ladder']);
@@ -781,6 +858,7 @@ export function createWorldRenderer(
           anchor.y - portalImage.displayHeight - 8,
           `前往${destination.name}`,
           {
+            resolution: WORLD_TEXT_RESOLUTION,
             color: '#fff4d4',
             fontFamily: 'system-ui, sans-serif',
             fontSize: '13px',
@@ -802,6 +880,7 @@ export function createWorldRenderer(
       const image = assets.images.get(npc.actorKey)!;
       const nameGeometry = npcNameGeometry(placement, image.displayHeight);
       const text = scene.add.text(nameGeometry.x, nameGeometry.y, npc.name, {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: '#fff4d4',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
@@ -970,7 +1049,7 @@ export function createWorldRenderer(
     const heroAlpha = snapshot.player.hp > 0 && graceLeftMs > 0 && Math.floor(graceLeftMs / 100) % 2 === 0 ? 0.35 : 1;
     playerSprite.setAlpha(heroAlpha);
     for (const sprite of gearSprites.values()) sprite.setAlpha(heroAlpha);
-    const questNpcIds = questMarkerNpcIds(snapshot.questViews, catalog.world.quests);
+    const questStates = questMarkerStates(snapshot.questViews, catalog.world.quests);
     const q17View = snapshot.questViews.find(({ questId }) => questId === 'q17');
     const tunedSteleIds = new Set(q17View?.status === 'claimed'
       ? [...STELE_NPC_IDS]
@@ -990,14 +1069,18 @@ export function createWorldRenderer(
       }
       const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
-      npcVisual.nameText.setVisible(npcInViewport);
+      const questState = questStates.get(placement.npcId);
+      const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
+      npcVisual.nameText.setText(npc.name + questLabel)
+        .setColor(questState === 'ready' ? '#c7f8c5' : '#fff4d4')
+        .setVisible(npcInViewport);
       const nameGeometry = npcNameGeometry(placement, image.displayHeight);
       npcVisual.nameText.setPosition(nameGeometry.x, nameGeometry.y);
       const markerImage = assets.images.get('marker:quest')!;
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
-        .setVisible(npcInViewport && questNpcIds.has(placement.npcId))
-        .setActive(npcInViewport && questNpcIds.has(placement.npcId));
+        .setVisible(npcInViewport && questState !== undefined)
+        .setActive(npcInViewport && questState !== undefined);
     }
     scene.cameras.main.startFollow(playerSprite, true);
     for (const monster of snapshot.monsters) {
@@ -1175,6 +1258,7 @@ export function createWorldRenderer(
     let object = dropLabels.get(id);
     if (!object) {
       object = scene.add.text(position.x, position.y, content, {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: '#ffeaa5', fontFamily: 'system-ui, sans-serif', fontSize: '12px',
         stroke: '#342e32', strokeThickness: 3,
       }).setOrigin(0.5, 1);
@@ -1228,6 +1312,7 @@ export function createWorldRenderer(
       };
       const critical = event.kind === 'hit' && event.critical === true;
       const object = scene.add.text(position.x, position.y - 20, (critical ? '暴擊 ' : '') + formatDamageNumber(event.value), {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: event.kind === 'damage' ? '#ffaaa3' : critical ? '#ffc23a' : '#fff0be',
         fontFamily: 'system-ui, sans-serif', fontSize: critical ? '23px' : '18px', fontStyle: 'bold',
         stroke: critical ? '#5a2a10' : '#502c35', strokeThickness: critical ? 5 : 4,
@@ -1244,6 +1329,7 @@ export function createWorldRenderer(
       // Sits above the killing blow's number and floats with it, in a colour no damage number uses.
       const position = { x: event.position.x, y: event.position.y - 26 };
       const object = scene.add.text(position.x, position.y - 20, 'EXP +' + formatDamageNumber(event.value), {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: '#d8f39a', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
         stroke: '#2c3a1d', strokeThickness: 3,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
@@ -1257,6 +1343,7 @@ export function createWorldRenderer(
       });
     } else if (event.kind === 'levelup') {
       const object = scene.add.text(event.position.x, event.position.y - 92, 'LEVEL UP!', {
+        resolution: WORLD_TEXT_RESOLUTION,
         color: '#fff4a8', fontFamily: 'system-ui, sans-serif', fontSize: '24px', fontStyle: 'bold',
         stroke: '#523c2b', strokeThickness: 4,
       }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.text);
@@ -1314,7 +1401,7 @@ export function createWorldRenderer(
   };
 
   const renderer: WorldRenderer = {
-    async loadMap(map): Promise<void> {
+    async loadMap(map, onProgress): Promise<void> {
       if (disposed) throw new RendererAssetError('Renderer 已 dispose，不能載入地圖');
       const missingCatalogRefs = [
         ...map.npcs.filter((placement) => !catalog.world.npcs[placement.npcId]).map((placement) => `npc:${placement.npcId}`),
@@ -1330,10 +1417,11 @@ export function createWorldRenderer(
 
       let newlyLoaded = new Set<string>();
       try {
-        newlyLoaded = await loadImages(requestedImages);
+        newlyLoaded = await loadImages(requestedImages, onProgress);
         const candidate = buildMapVisual(map);
         const old = activeVisual;
         activeVisual = candidate;
+        parallaxMotion.resetForMap();
         for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
         if (old) {
           for (const [key, sprite] of actorSprites) {
@@ -1386,6 +1474,11 @@ export function createWorldRenderer(
       camera.setZoom(viewport.zoom);
       updateBackgroundPositions();
       updateBackgroundParallax(camera);
+    },
+    setBackgroundMotion(enabled): void {
+      if (parallaxMotion.enabled === enabled) return;
+      parallaxMotion.setEnabled(enabled, cameraWorldViewport(scene.cameras.main).x);
+      updateBackgroundParallax();
     },
     dispose(): void {
       if (disposed) return;

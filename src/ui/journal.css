@@ -66,14 +66,17 @@
 
 .ms-profile {
   position: relative;
-  flex: 0 1 clamp(360px, 30cqw, 580px);
-  width: clamp(360px, 30cqw, 580px);
+  display: grid;
+  grid-template-columns: clamp(44px, 3.8cqw, 56px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 4px;
+  flex: 0 1 clamp(270px, 21.6cqw, 340px);
+  width: clamp(270px, 21.6cqw, 340px);
   min-width: 0;
-  min-height: clamp(135px, 10cqw, 190px);
-  gap: clamp(10px, 1cqw, 20px);
-  padding: 0 7px;
-  border: 24px solid transparent;
-  border-image: var(--journal-panel) 95 fill / 24px / 0 stretch;
+  min-height: 88px;
+  gap: 4px 8px;
+  padding: 4px;
+  border: 8px solid transparent;
+  border-image: var(--journal-panel) 95 fill / 8px / 0 stretch;
   background: none;
   outline: 0;
 }
@@ -85,17 +88,22 @@
   content: none;
 }
 
-.ms-profile__portrait {
+.maple-ui .ms-profile__portrait {
   position: relative;
-  flex: 0 0 clamp(80px, 6.6cqw, 126px);
-  width: clamp(80px, 6.6cqw, 126px);
-  height: clamp(100px, 8cqw, 152px);
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: clamp(48px, 4.2cqw, 64px);
+  min-height: 0;
+  padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 0;
   background: none;
   box-shadow: none;
 }
+.maple-ui .ms-profile__portrait:hover { transform: none; }
+.maple-ui .ms-profile__portrait:hover::after { content: none; }
 
 .ms-profile__hero {
   position: absolute;
@@ -112,15 +120,15 @@
 }
 
 /* minmax(0, 1fr): a long hero name used to widen the grid column and push the meter values out of the frame. */
-.ms-profile__main { gap: clamp(6px, .6cqw, 11px); grid-template-columns: minmax(0, 1fr); }
+.ms-profile__main { grid-column: 2; grid-row: 1; gap: 3px; grid-template-columns: minmax(0, 1fr); }
 .ms-profile__heading { flex-wrap: nowrap; gap: 6px; }
-.ms-profile__heading strong { flex: 1; min-width: 0; font-size: clamp(16px, 1.4cqw, 26px); color: #37271b; }
+.ms-profile__heading strong { flex: 1; min-width: 0; font-size: clamp(14px, 1.1cqw, 17px); color: #37271b; }
 .ms-badge { border-radius: 3px; border-color: #b49568; color: #614c31; background: #e0cea9; text-shadow: none; }
 .ms-badge--level, .ms-badge--category { color: #fff0bd; border-color: #b38a4d; background: #76522d; }
 .ms-badge--job, .ms-badge--success { color: #fff3d2; border-color: #92a17a; background: #4c6b50; }
 .ms-badge--warning, .ms-badge--missing { color: #7b4023; border-color: #b98a54; background: #f0d4a4; }
 .ms-badge--neutral { color: #625239; background: #e5d4b5; }
-.ms-profile__heading .ms-badge { flex-shrink: 0; min-height: 25px; padding: 2px 8px; font-size: clamp(10px, .85cqw, 16px); }
+.ms-profile__heading .ms-badge { flex-shrink: 0; min-height: 18px; padding: 1px 4px; font-size: clamp(10px, .75cqw, 12px); }
 
 .ms-meter { position: relative; display: block; padding: 0 clamp(70px, 5.8cqw, 108px) 0 35px; height: clamp(17px, 1.3cqw, 23px); }
 .ms-meter__label { position: absolute; inset: 0; align-items: center; font-size: clamp(11px, .9cqw, 17px); color: #4f3b29; }
@@ -133,6 +141,14 @@
 .ms-meter--hp.is-low .ms-meter__track { border-color: #a52d22; box-shadow: 0 0 0 1px #f06a55, 0 0 8px rgba(226, 70, 50, .65); }
 .ms-meter--hp.is-low .ms-meter__fill { background: #e8483a; }
 .ms-meter--hp.is-low .ms-meter__label strong { color: #9b1f15; }
+
+.ms-profile .ms-meter { height: clamp(14px, 1.1cqw, 18px); padding: 0 clamp(60px, 5cqw, 78px) 0 23px; }
+.ms-profile .ms-meter__label { font-size: clamp(11px, .85cqw, 14px); }
+.ms-profile .ms-meter__track { border-width: 2px; }
+.ms-profile > .ms-meter--exp { grid-column: 1 / -1; grid-row: 2; height: 4px; padding: 0; }
+.ms-profile > .ms-meter--exp .ms-meter__track { border-width: 1px; border-radius: 2px; }
+/* Keep EXP accessible and available in the character panel without another visible HUD row. */
+.ms-profile > .ms-meter--exp .ms-meter__label { width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
 .ms-region { display: grid; justify-items: end; gap: 8px; flex: 0 1 clamp(320px, 24cqw, 460px); min-width: 0; padding-right: 42px; }
 .ms-header { align-items: start; justify-content: end; gap: 9px; width: 100%; }
@@ -180,11 +196,11 @@
 .maple-ui .ms-quest-tracker {
   position: relative;
   display: grid;
-  gap: 4px;
-  width: min(310px, 100%);
-  padding: 3px 7px;
-  border: 18px solid transparent;
-  border-image: var(--journal-panel) 95 fill / 18px / 0 stretch;
+  gap: 0;
+  width: min(240px, 100%);
+  padding: 2px 4px;
+  border: 6px solid transparent;
+  border-image: var(--journal-panel) 95 fill / 6px / 0 stretch;
   border-radius: 0;
   outline: 0;
   background: none;
@@ -193,10 +209,37 @@
   text-align: left;
   pointer-events: auto;
 }
-.ms-quest-tracker__heading { display: flex; align-items: center; gap: 7px; color: #71583a; font-size: 13px; padding-bottom: 4px; border-bottom: 1px solid #c5a879; }
-.ms-quest-tracker__heading .ms-journal-icon { width: 26px; height: 26px; }
-.ms-quest-tracker > strong { font-size: 15px; }
-.ms-quest-tracker__detail { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: #766044; font-size: 13px; line-height: 1.5; }
+.maple-ui .ms-quest-tracker__toggle,
+.maple-ui .ms-quest-tracker__review {
+  min-height: 18px;
+  padding: 0;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #4f3b29;
+  text-align: left;
+}
+.maple-ui .ms-quest-tracker__toggle { display: flex; align-items: center; gap: 5px; width: 100%; }
+.maple-ui .ms-quest-tracker__toggle:hover,
+.maple-ui .ms-quest-tracker__review:hover { transform: none; }
+.maple-ui .ms-quest-tracker__toggle:hover::after,
+.maple-ui .ms-quest-tracker__review:hover::after { content: none; }
+.ms-quest-tracker__arrow { flex: 0 0 9px; font-size: 12px; color: #71583a; }
+.ms-quest-tracker__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.ms-quest-tracker__progress { display: flex; gap: 4px; align-items: center; max-width: 52%; font-size: 11px; white-space: nowrap; }
+.ms-quest-tracker__target { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ms-quest-tracker__counter { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.ms-quest-tracker:not(.is-collapsed) .ms-quest-tracker__target { display: none; }
+.ms-quest-tracker.is-ready .ms-quest-tracker__counter { color: #356740; font-weight: 800; }
+.ms-quest-tracker__body { display: grid; gap: 2px; margin-top: 3px; padding-top: 4px; border-top: 1px solid #c5a879; }
+.ms-quest-tracker__detail { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: #766044; font-size: 12px; line-height: 1.5; }
+.maple-ui .ms-quest-tracker__review { justify-self: end; font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+@media (pointer: coarse) {
+  .maple-ui .ms-quest-tracker__toggle { min-height: 32px; }
+  .maple-ui .ms-quest-tracker__review { min-height: 44px; }
+}
 
 .ms-bottom-bar { grid-row: 3; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, clamp(420px, 36cqw, 690px)) minmax(0, 1fr); align-items: end; gap: 14px; min-width: 0; }
 .ms-action-bar { position: static; display: flex; justify-content: start; align-content: end; align-items: end; max-width: 245px; gap: 6px; }
@@ -332,7 +375,8 @@
   }
   .maple-ui.is-pregame .ms-screen-card { width: min(440px, 40%); }
 }
-.maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
+/* In-game controls behind the title modal are unavailable; hide them from pointer and keyboard navigation. */
+.maple-ui.is-pregame .ms-header, .maple-ui.is-pregame .ms-key-guide, .maple-ui.is-pregame .ms-profile, .maple-ui.is-pregame .ms-map-indicator, .maple-ui.is-pregame .ms-quest-tracker, .maple-ui.is-pregame .ms-bottom-bar, .maple-ui.is-pregame .ms-footer { visibility: hidden; }
 .ms-screen-card { outline: 0; padding: 20px; }
 .ms-screen-card h1 { color: #65482b; }
 .ms-screen-card__details { color: #7a5d3f; font-size: 12px; }
@@ -352,7 +396,6 @@
   .ms-action-bar { grid-column: 1 / -1; max-width: none; }
   .ms-quickbar { max-width: 420px; }
   .ms-controls { align-self: end; }
-  .ms-profile { flex-basis: 330px; }
   .ms-region { flex-basis: 300px; }
   .ms-journal-tab { width: 44px; }
   .ms-toast { bottom: 185px; }
@@ -360,18 +403,12 @@
 
 @container (max-width: 720px) {
   .ms-hud { gap: 12px; }
-  .ms-profile { flex-basis: 285px; padding: 12px; gap: 7px; min-height: 105px; }
-  .ms-profile__portrait { flex-basis: 48px; width: 48px; height: 64px; }
-  .ms-profile__hero { top: -19px; }
-  .ms-profile__heading strong { font-size: 12px; }
   .ms-profile__heading { gap: 3px; }
-  .ms-profile__heading .ms-badge { font-size: 9px; padding-inline: 3px; }
   .ms-region { flex-basis: 190px; padding-right: 32px; }
   .ms-header { flex-wrap: wrap; gap: 7px; }
   .ms-map-indicator { flex-basis: 100%; padding: 6px 9px; }
   .ms-map-indicator strong { font-size: 13px; }
   .ms-system-controls { justify-content: end; }
-  .ms-quest-tracker { display: none !important; }
   .ms-bottom-bar { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 12px; }
   .ms-action-bar { justify-content: center; }
   .ms-controls { justify-self: center; }
@@ -383,19 +420,14 @@
 
 @container (max-width: 460px) {
   .ms-hud { flex-wrap: wrap; gap: 8px; }
-  .ms-profile { flex-basis: 100%; width: 100%; margin-right: 38px; }
+  .ms-profile { flex-basis: min(270px, calc(100% - 38px)); width: min(270px, calc(100% - 38px)); margin-right: 38px; }
   .ms-region { flex-basis: 100%; padding: 0; }
   .ms-header { flex-wrap: nowrap; }
   .ms-map-indicator { flex-basis: auto; display: flex; align-items: center; justify-content: space-between; }
-  .ms-profile__portrait { flex-basis: 50px; }
   .ms-action-bar .ms-button { min-height: 28px; }
 }
 
 @container (max-height: 520px) {
-  .ms-profile { min-height: 92px; padding-block: 9px; }
-  .ms-profile__portrait { height: 65px; flex-basis: 52px; }
-  .ms-profile__main { gap: 3px; }
-  .ms-quest-tracker { display: none !important; }
   .ms-quickbar { padding: 9px 9px 6px; }
   .ms-quick-slot { height: 45px !important; min-height: 45px !important; }
   .ms-quick-slot__icon, .ms-quick-slot__icon-image { width: 32px; height: 32px; }
@@ -424,14 +456,13 @@
 
 .ms-quest-tracker__place { display: inline-block; white-space: nowrap; }
 
-/* On 1080p and larger screens the profile and quickbar scale up with the viewport, but the quest
-   tracker, context buttons and save status kept their 11–13 px laptop sizes and looked like fine print. */
+/* Preserve readable text at 1080p without returning to the oversized status panels. */
 @container (min-width: 1800px) and (min-height: 950px) {
-  .maple-ui .ms-quest-tracker { width: min(400px, 100%); }
-  .ms-quest-tracker__heading { font-size: 16px; }
-  .ms-quest-tracker__heading .ms-journal-icon { width: 32px; height: 32px; }
-  .ms-quest-tracker > strong { font-size: 19px; }
-  .ms-quest-tracker__detail { font-size: 16px; }
+  .maple-ui .ms-quest-tracker { width: min(300px, 100%); }
+  .ms-quest-tracker__title { font-size: 16px; }
+  .ms-quest-tracker__progress { font-size: 13px; }
+  .ms-quest-tracker__detail { font-size: 14px; }
+  .maple-ui .ms-quest-tracker__review { font-size: 13px; }
   .ms-action-bar { max-width: 340px; gap: 8px; }
   .ms-action-bar .ms-button { padding: 7px 12px; min-height: 38px; font-size: 14px; }
   .ms-footer { font-size: 13px; }

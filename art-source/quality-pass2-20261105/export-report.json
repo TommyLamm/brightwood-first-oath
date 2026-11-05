@@ -1,0 +1,299 @@
+{
+  "records": [
+    {
+      "key": "actor:hero-leather",
+      "url": "assets/actors/hero-leather-v9-clarity-v2.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "bytes": 813573,
+      "decodedBytes": 9437184,
+      "previousUrl": "assets/actors/hero-leather-v9-clarity-v1.png",
+      "previousBytes": 782827,
+      "previousDecodedBytes": 9437184,
+      "source": "art-source/quality-pass2-20261105/leather-generated.png",
+      "sourceSha256": "af9bcca47a5cb69a4b21779b8a63d17a195fda6b62f2dca576cf9cba46708843",
+      "sha256": "13fe8f8b40a159c671f04bf7d911e61992ba74fe018e4e256555973a29ae2974",
+      "changedFrames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "unchangedFrameCount": 58,
+      "geometry": [
+        {
+          "frame": 32,
+          "oldBounds": [
+            42,
+            36,
+            150,
+            168
+          ],
+          "newBounds": [
+            42,
+            36,
+            150,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 33,
+          "oldBounds": [
+            38,
+            40,
+            154,
+            168
+          ],
+          "newBounds": [
+            38,
+            40,
+            154,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 34,
+          "oldBounds": [
+            32,
+            36,
+            159,
+            168
+          ],
+          "newBounds": [
+            32,
+            36,
+            159,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 35,
+          "oldBounds": [
+            38,
+            38,
+            152,
+            168
+          ],
+          "newBounds": [
+            38,
+            38,
+            152,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 36,
+          "oldBounds": [
+            39,
+            36,
+            153,
+            168
+          ],
+          "newBounds": [
+            39,
+            36,
+            153,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 37,
+          "oldBounds": [
+            33,
+            34,
+            159,
+            168
+          ],
+          "newBounds": [
+            33,
+            34,
+            159,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        }
+      ]
+    },
+    {
+      "key": "actor:hero-iron",
+      "url": "assets/actors/hero-iron-v9-clarity-v2.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "bytes": 824047,
+      "decodedBytes": 9437184,
+      "previousUrl": "assets/actors/hero-iron-v9-clarity-v1.png",
+      "previousBytes": 797468,
+      "previousDecodedBytes": 9437184,
+      "source": "art-source/quality-pass2-20261105/iron-generated.png",
+      "sourceSha256": "7e2f6999ca3d224d891cdfd9ac9247ebe8a83e1b071523cb2b28cc8965b873d8",
+      "sha256": "6291bea84e6285c30db1b6ec9353ebac195440254a3087a7920d6622bd97d7c0",
+      "changedFrames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "unchangedFrameCount": 58,
+      "geometry": [
+        {
+          "frame": 32,
+          "oldBounds": [
+            38,
+            27,
+            153,
+            168
+          ],
+          "newBounds": [
+            38,
+            27,
+            153,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 33,
+          "oldBounds": [
+            28,
+            30,
+            162,
+            168
+          ],
+          "newBounds": [
+            28,
+            30,
+            162,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 34,
+          "oldBounds": [
+            38,
+            28,
+            154,
+            168
+          ],
+          "newBounds": [
+            38,
+            28,
+            154,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 35,
+          "oldBounds": [
+            42,
+            28,
+            147,
+            168
+          ],
+          "newBounds": [
+            42,
+            28,
+            147,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 36,
+          "oldBounds": [
+            44,
+            38,
+            147,
+            168
+          ],
+          "newBounds": [
+            44,
+            38,
+            147,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        },
+        {
+          "frame": 37,
+          "oldBounds": [
+            39,
+            28,
+            153,
+            168
+          ],
+          "newBounds": [
+            39,
+            28,
+            153,
+            168
+          ],
+          "maxLogicalDelta": 0.0
+        }
+      ]
+    },
+    {
+      "key": "env:forest:supports",
+      "url": "assets/environment/env-forest-supports-v1.png",
+      "size": [
+        512,
+        128
+      ],
+      "bytes": 30210,
+      "decodedBytes": 262144,
+      "previousUrl": null,
+      "previousBytes": 0,
+      "previousDecodedBytes": 0,
+      "source": "art-source/quality-pass2-20261105/forest-generated.png",
+      "sourceSha256": "e077dd3753ae03e4d9f265b56449852a930ddafbf7bdaf6bc619c50923f70213",
+      "sha256": "7a4e29ffbd67cd75c6bd2753ead1047800b9efdadc6912021aa34ec0580f47f0",
+      "frameBands": {
+        "cap": 32,
+        "body": 32,
+        "foot": 24,
+        "tie": 28
+      }
+    },
+    {
+      "key": "env:mine:supports",
+      "url": "assets/environment/env-mine-supports-v1.png",
+      "size": [
+        512,
+        128
+      ],
+      "bytes": 25794,
+      "decodedBytes": 262144,
+      "previousUrl": null,
+      "previousBytes": 0,
+      "previousDecodedBytes": 0,
+      "source": "art-source/quality-pass2-20261105/mine-generated.png",
+      "sourceSha256": "b4022106baa2d0a658a73664636c42918e08305002426808590f20f8f6dd4430",
+      "sha256": "456f5a6b779b82e9d2b02d76d759036d91fdfa8cc2efb2acbed7b4e18b54f406",
+      "frameBands": {
+        "cap": 32,
+        "body": 32,
+        "foot": 24,
+        "tie": 28
+      }
+    }
+  ],
+  "compressedBytesDelta": 113329,
+  "decodedBytesDelta": 524288,
+  "worldAndActorRulesUnchanged": true,
+  "animationContractsUnchanged": true,
+  "newRuntimeFileBytes": 1693624
+}

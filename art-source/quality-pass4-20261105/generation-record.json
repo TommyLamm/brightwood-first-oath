@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-05 Asia/Hong_Kong",
+  "records": [
+    {
+      "name": "cave-ground",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "cave-ground-reference.jpg"
+      ],
+      "prompt": "cave-ground.prompt.txt",
+      "promptSha256": "2ba1894b7d6242991c2031d58b206bf51a4adedd17cef5ce586ae4ddf536e770",
+      "sourceSha256": "63bee260c5e65b46f9cf90d9a0a2885946bce24c893de4993d226b74e6fd97cc",
+      "workspaceOriginal": "cave-ground-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-043cd1dc-cafc-4ebd-ba7a-dfae521c8e7e.png"
+    },
+    {
+      "name": "cave-platform",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "cave-platform-reference.jpg"
+      ],
+      "prompt": "cave-platform.prompt.txt",
+      "promptSha256": "0b8c70d39832b225ab7586caea712217c6aafe745c8e07db56fc39a363fcf5e3",
+      "sourceSha256": "d2c011cba5993f36e6bd1d04751023dd6cdc4900d006b878142f99389c3be003",
+      "workspaceOriginal": "cave-platform-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-edbabebf-4ae8-412a-bd31-bb620d09cd30.png"
+    },
+    {
+      "name": "cave-chain",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "cave-chain-reference.jpg"
+      ],
+      "prompt": "cave-chain.prompt.txt",
+      "promptSha256": "cebe6bf6b53d2e020e1a1e71165bbba42b7bdc402d6b4ece6e4385a994cd60bc",
+      "sourceSha256": "d7bdd9c1011378fb55fc7e2e9d3e9e117910d6d862c66965109cd39f67ce334c",
+      "workspaceOriginal": "cave-chain-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-151bad66-6e54-48be-9b0b-07e832cc785b.png"
+    },
+    {
+      "name": "warden-walk",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "warden-walk-target-review.jpg",
+        "warden-style-reference.jpg"
+      ],
+      "prompt": "warden-walk.prompt.txt",
+      "promptSha256": "0a56f11581b96ec3bdab3cc4b02afe0c1a671d6b35ead815979777198fda167e",
+      "sourceSha256": "3d8a33fcd034e3a902dc894e3dc68f4ff955037efea61f01d16d5b77da17ee4f",
+      "workspaceOriginal": "warden-walk-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-b759aec6-a02c-49bd-a3f1-2ee60d2618ca.png"
+    },
+    {
+      "name": "warden-action",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "warden-action-target-review.jpg",
+        "warden-style-reference.jpg"
+      ],
+      "prompt": "warden-action.prompt.txt",
+      "promptSha256": "3aad443907a752bfbe39f780d916e88885aa81bb00828ed775630ce7cd6ce122",
+      "sourceSha256": "66dbd537a882b2d1a6c0f0b735d29aa19965f22f980cd65fede72b6c71c813dd",
+      "workspaceOriginal": "warden-action-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-d8998760-f623-4c91-95f7-277da297b0bd.png"
+    },
+    {
+      "name": "warden-dead",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImages": [
+        "warden-dead-target-review.jpg",
+        "warden-style-reference.jpg"
+      ],
+      "prompt": "warden-dead.prompt.txt",
+      "promptSha256": "9614cf4f9c334e6b78d92255e2e5a2c228f8df54df267d613684f2063b72713e",
+      "sourceSha256": "c8dab19cf206389af231f4a834d5399d94f2685cac0e3b6e7d0fd021062deb53",
+      "workspaceOriginal": "warden-dead-generated.png",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-020243f6-0f3b-460d-9a57-841f4721644b.png"
+    }
+  ],
+  "reusedSampleSource": "../quality-pass3-20261105/warden-sample-generated.png"
+}

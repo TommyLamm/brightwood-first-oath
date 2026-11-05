@@ -121,9 +121,20 @@ describe('app focus resume safety', () => {
     app.dispose();
   });
 
+  it('clears jump timing on manual pause so resuming cannot replay a queued jump', async () => {
+    const { app } = await startedApp(2367);
+    app.state.gameplay!.jumpAssist = { graceUntilMs: app.state.gameTimeMs + 80, bufferedUntilMs: app.state.gameTimeMs + 100 };
+    app.dispatch({ type: 'togglePause', payload: {} });
+    app.update(0);
+    expect(app.state.screen).toBe('paused');
+    expect(app.state.gameplay!.jumpAssist).toBeUndefined();
+    app.dispose();
+  });
+
   it('clears buffered input and pending transients while retaining explicit queued commands and started attacks', async () => {
     const { app } = await startedApp(2302);
     app.state.gameplay!.bufferedAttack = { skillId: 'heavy-strike', expiresAtMs: app.state.gameTimeMs + 500 };
+    app.state.gameplay!.jumpAssist = { graceUntilMs: app.state.gameTimeMs + 80, bufferedUntilMs: app.state.gameTimeMs + 100 };
     const startedAttacks = app.state.gameplay!.combat.attacks;
     app.dispatch({ type: 'attack', payload: { skillId: 'basic' } });
     app.update(5);
@@ -139,6 +150,7 @@ describe('app focus resume safety', () => {
 
     app.setWindowFocused(false);
     expect(app.state.gameplay?.bufferedAttack).toBeUndefined();
+    expect(app.state.gameplay?.jumpAssist).toBeUndefined();
     expect(app.state.gameplay?.combat.attacks).toBe(startedAttacks);
     expect(app.queuedCommandCount).toBe(1);
 

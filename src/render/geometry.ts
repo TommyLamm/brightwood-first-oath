@@ -117,19 +117,19 @@ export function heroAnchorRotation(rotationDeg: number, facing: -1 | 1): number 
   return facing > 0 ? rotationDeg : -rotationDeg;
 }
 
-/** Returns the NPCs that should display a quest marker from the shared quest projection. */
-export function questMarkerNpcIds(
+/** Turn-ins take precedence over new quests, regardless of the projection's iteration order. */
+export function questMarkerStates(
   questViews: readonly QuestView[],
   quests: Readonly<Record<string, Pick<QuestDef, 'giverNpcId' | 'turnInNpcId'>>>,
-): Set<string> {
-  const npcIds = new Set<string>();
+): Map<string, 'available' | 'ready'> {
+  const states = new Map<string, 'available' | 'ready'>();
   for (const view of questViews) {
     const quest = quests[view.questId];
     if (!quest) continue;
-    if (view.status === 'available') npcIds.add(quest.giverNpcId);
-    if (view.status === 'ready') npcIds.add(quest.turnInNpcId);
+    if (view.status === 'available' && !states.has(quest.giverNpcId)) states.set(quest.giverNpcId, 'available');
+    if (view.status === 'ready') states.set(quest.turnInNpcId, 'ready');
   }
-  return npcIds;
+  return states;
 }
 
 /** Places a quest marker above both the actor and its name label. */

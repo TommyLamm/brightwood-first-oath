@@ -11,6 +11,8 @@ import type {
   HeroAnchorOutfit,
   HeroAnchorPose,
 } from '../contracts/hero-anchors.js';
+import { TERRAIN_DECORATION_IMAGE_KEYS, THEMED_GROUND_IMAGE_KEYS, THEMED_TERRAIN_IMAGE_KEYS } from '../render/terrain-style.js';
+import { MAP_BACKGROUND_IMAGE_KEYS } from '../render/background-style.js';
 
 export const REQUIRED_ASSET_PACKS: readonly AssetPack[] = [
   'actors',
@@ -61,6 +63,10 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     ...(['camp', 'town', 'forest', 'rock', 'frost', 'frost-pine', 'frost-cave', 'sand', 'sand-dune', 'sunwell', 'ruins-camp', 'ruins-root', 'ruins-gallery', 'ruins-sanctum'] as const).flatMap((theme) =>
       (['sky', 'far', 'mid'] as const).map((layer) => `env:${theme}:${layer}`)),
     'env:tile-ground', 'env:tile-platform', 'env:tile-slope', 'env:ladder',
+    ...THEMED_TERRAIN_IMAGE_KEYS,
+    ...THEMED_GROUND_IMAGE_KEYS,
+    ...TERRAIN_DECORATION_IMAGE_KEYS,
+    ...MAP_BACKGROUND_IMAGE_KEYS,
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
   ],
   interface: [

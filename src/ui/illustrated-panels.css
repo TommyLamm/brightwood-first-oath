@@ -116,3 +116,4 @@
   .ms-journal-objective .ms-visual-actor { width: 56px; height: 56px; flex-basis: 56px; }
   .ms-journal-objective__count { font-size: 15px; }
 }
+.ms-guard-note { padding: 9px 12px; border: 1px solid #899b65; border-radius: 5px; color: #36532f; background: #edf1d9; }

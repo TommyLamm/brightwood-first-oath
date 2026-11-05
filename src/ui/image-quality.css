@@ -1,0 +1,19 @@
+/* Phaser's crisp-canvas inline style is intended for low-resolution pixel art.
+   Keep native world sampling, but allow normal final FIT downscaling. */
+#game-root canvas {
+  image-rendering: auto !important;
+}
+
+/* Illustrated PNGs already have enough source detail for the compact HUD.
+   Use normal browser resampling when shrinking them; keep layout and DOM text
+   independent from this image-only policy. */
+.maple-ui .ms-profile__hero,
+.maple-ui .ms-journal-icon__image,
+.maple-ui .ms-control-icon,
+.maple-ui .ms-quick-slot__icon-image,
+.maple-ui .ms-dialogue-portrait,
+.maple-ui .ms-item-detail__icon,
+.maple-ui .ms-equipment-slot__icon,
+.maple-ui .ms-sell-row__icon {
+  image-rendering: auto;
+}

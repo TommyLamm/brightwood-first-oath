@@ -60,6 +60,24 @@ async function startedApp(seed: number) {
 }
 
 describe('app audio wiring', () => {
+  it('plays a buffered landing jump once even though both snapshots are airborne', async () => {
+    const { app, calls } = await startedApp(1467);
+    app.dispatch({ type: 'playTemporary', payload: {} });
+    app.update(0);
+    app.update(20);
+    const gameplay = app.state.gameplay!;
+    gameplay.movement = { ...gameplay.movement, position: { x: 100, y: 598 }, mode: 'airborne', footholdId: null,
+      velocity: { x: 0, y: 300 } };
+    gameplay.jumpAssist = { graceUntilMs: 0, bufferedUntilMs: app.state.gameTimeMs + 100 };
+    app.update(20);
+    expect(app.state.gameplay!.movement.mode).toBe('airborne');
+    expect(app.state.gameplay!.movement.velocity.y).toBeLessThan(0);
+    expect(calls.sfx.filter((key) => key === 'jump')).toHaveLength(1);
+    app.update(20);
+    expect(calls.sfx.filter((key) => key === 'jump')).toHaveLength(1);
+    app.dispose();
+  });
+
   it('waits for a UI gesture, follows gameplay lifecycle, and deduplicates attack events', async () => {
     const { app, calls } = await startedApp(1401);
     expect(calls.manifestAudioCount).toBe(requiredAssetKeys('audio').length);

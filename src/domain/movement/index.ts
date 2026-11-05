@@ -332,7 +332,8 @@ function horizontalVelocity(
   return input.moveX * config.speed;
 }
 
-function findNearbyLadder(position: Vec2, map: MapDef, config: MovementConfig): Ladder | null {
+/** Shared by movement attachment and its read-only contextual control hint. */
+export function findNearbyLadder(position: Vec2, map: MapDef, config: MovementConfig): Ladder | null {
   const headY = position.y - config.height;
   return map.ladders
     .filter((ladder) => Math.abs(position.x - ladder.x) <= LADDER_X_TOLERANCE

@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0-beta.62",
+  "actors": [
+    {
+      "outfit": "cloth",
+      "url": "assets/actors/hero-cloth-v9-clarity-v2.png",
+      "sha256": "d751f7b26f33b98278b11bbf00710d54ca61550cddd285440d9d26504f7ba03b"
+    },
+    {
+      "outfit": "leather",
+      "url": "assets/actors/hero-leather-v9-clarity-v1.png",
+      "sha256": "46a54f34be1c87adfa3ec9f507eb9d9656f701f63e0b7c86397c15b7df9b523d"
+    },
+    {
+      "outfit": "iron",
+      "url": "assets/actors/hero-iron-v9-clarity-v1.png",
+      "sha256": "a30164a7f196c6aed27e75d7ac61901f68f05a0fc5f2c489ec05b223a86e1af8"
+    }
+  ],
+  "worldMapsSha256": "f20d824ff96628cad35c034ef6dc23e2ec915a4ff75d433bb3010510f88fe41b",
+  "actorRulesSha256": "0378fe9920cf1969e678c95b40f67858b77eb16bec66fe8f3218989ba3959acd"
+}

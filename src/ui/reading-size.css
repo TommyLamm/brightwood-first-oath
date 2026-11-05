@@ -1,0 +1,33 @@
+/* Readability is independent of world/canvas scale and compact icon grids. */
+.ms-reading-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-reading-options > button { flex: 1 1 110px; }
+
+.maple-ui[data-reading-size="large"] :is(.ms-panel, .ms-screen-card) {
+  font-size: 16px;
+}
+
+.maple-ui[data-reading-size="large"] :is(
+  .ms-panel-note, .ms-empty-state, .ms-journal-next, .ms-journal-locked p,
+  .ms-journal-contact strong, .ms-journal-contact span:not(.ms-visual-actor),
+  .ms-journal-objective__target strong, .ms-journal-objective__target small,
+  .ms-journal-rewards h4, .ms-journal-rewards .ms-visual-token,
+  .ms-journal-reward-item, .ms-journal-reward-extra, .ms-visual-details,
+  .ms-ability-summary, .ms-key-guide__action, .ms-key-guide__tip,
+  .ms-quest-tracker__detail, .ms-quest-tracker__review, .ms-interaction-hint
+) {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.maple-ui[data-reading-size="large"] .ms-dialogue-lines {
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.maple-ui[data-reading-size="large"] .ms-quest-stop {
+  font-size: 13px;
+}
+
+.maple-ui[data-reading-size="large"] .ms-journal-status {
+  font-size: 14px;
+}

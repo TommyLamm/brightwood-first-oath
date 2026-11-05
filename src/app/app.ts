@@ -1,6 +1,6 @@
 import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand } from '../contracts/commands.js';
-import type { ContentCatalog } from '../contracts/definitions.js';
+import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { EntityId, MonsterState, RandomSource, SaveData, Settings } from '../contracts/types.js';
 import type { AudioController, AudioFactory, CloudPort, MusicIntensity, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
 import { createAudio } from '../audio/index.js';
@@ -12,6 +12,10 @@ import { DEFAULT_KEY_BINDINGS, KeyboardControls, type GameAction, type KeyBindin
 import { appCommand, createInitialAppState, createUiSnapshot, type GameAppState, type StartupStatus, worldIsFrozen } from './state.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from './gameplay.js';
 import { BRIGHTWOOD_GAME_ID, createPersistence, SAVE_FORMAT_VERSION } from '../persistence/index.js';
+import { findPickupTarget } from './pickup-target.js';
+import { deriveCombatUiState } from './combat-ui-state.js';
+import { createHeldAttackPreference } from './held-attack-preference.js';
+import { createBackgroundMotionPreference } from './background-motion-preference.js';
 
 export type AppStartupResult = {
   ready: boolean;
@@ -38,6 +42,7 @@ export type AppOptions = {
   audioFactory?: AudioFactory;
   seed?: number;
   sessionPrefix?: string;
+  backgroundMotionDefault?: boolean;
   onStateChange?: (state: GameAppState) => void;
   onFixedStep?: (step: AppFixedStep) => void;
   onWorldSnapshot?: (snapshot: WorldSnapshot) => void;
@@ -70,6 +75,9 @@ const FOCUS_TRANSIENT_GAMEPLAY_TYPES: ReadonlySet<CommandDraft['type']> = new Se
 
 /** Owns one app state, command sequence, game clock, RNG and EntityId sequence. */
 export class GameApp {
+  private mapVisualRequest = 0;
+  private readonly heldAttackPreference: ReturnType<typeof createHeldAttackPreference>;
+  private readonly backgroundMotionPreference: ReturnType<typeof createBackgroundMotionPreference>;
   private stateValue: GameAppState;
   private readonly commands = new AppCommandQueue();
   private readonly clock = new FixedStepClock();
@@ -103,6 +111,10 @@ export class GameApp {
   constructor(options: AppOptions) {
     this.options = options;
     this.stateValue = createInitialAppState(options.seed ?? randomSeed(), options.sessionPrefix ?? randomSessionPrefix());
+    this.heldAttackPreference = createHeldAttackPreference(options.gameId ?? BRIGHTWOOD_GAME_ID, options.storage ?? null);
+    this.stateValue.holdBasicAttack = this.heldAttackPreference.enabled;
+    this.backgroundMotionPreference = createBackgroundMotionPreference(options.gameId ?? BRIGHTWOOD_GAME_ID, options.storage ?? null, options.backgroundMotionDefault ?? true);
+    this.stateValue.backgroundMotion = this.backgroundMotionPreference.enabled;
   }
 
   get state(): GameAppState {
@@ -182,9 +194,10 @@ export class GameApp {
       const shouldRequireResume = state.focusResumeRequired
         || (state.gameplay !== null && ['playing', 'paused', 'loading'].includes(state.screen));
       let gameplay = state.gameplay;
-      if (gameplay?.bufferedAttack) {
+      if (gameplay?.bufferedAttack || gameplay?.jumpAssist) {
         gameplay = { ...gameplay };
         delete gameplay.bufferedAttack;
+        delete gameplay.jumpAssist;
       }
       if (state.windowFocused || shouldRequireResume !== state.focusResumeRequired || gameplay !== state.gameplay) {
         this.setState({ ...state, windowFocused: false, focusResumeRequired: shouldRequireResume, gameplay });
@@ -197,6 +210,7 @@ export class GameApp {
 
   update(deltaMs: number): void {
     this.enqueueHeldPickup();
+    this.enqueueHeldBasicAttack();
     const wasFrozen = worldIsFrozen(this.stateValue);
     const queued = this.commands.drain();
     const gameplayCommands: GameCommand[] = [];
@@ -233,6 +247,11 @@ export class GameApp {
 
     if (wasFrozen) this.clock.clearAccumulator();
     if (worldIsFrozen(this.stateValue)) {
+      if (this.stateValue.gameplay?.jumpAssist) {
+        const gameplay = { ...this.stateValue.gameplay };
+        delete gameplay.jumpAssist;
+        this.setState({ ...this.stateValue, gameplay });
+      }
       this.clock.advance(deltaMs, true);
       if (this.stateValue.focusResumeRequired) {
         const safePendingCommands = this.pendingGameplayCommands.filter(({ type }) => !FOCUS_TRANSIENT_GAMEPLAY_TYPES.has(type));
@@ -278,10 +297,10 @@ export class GameApp {
       const previousGameplay = this.stateValue.gameplay;
       const nextPanels = result.screen !== 'playing' ? [] : this.stateValue.panels;
       this.setState({ ...this.stateValue, gameplay: result.gameplay, screen: result.screen, panels: nextPanels });
-      if (input.jumpPressed && previousGameplay && result.gameplay
-        && ['grounded', 'climbing'].includes(previousGameplay.movement.mode)
+      if (result.jumped && previousGameplay && result.gameplay
         && result.gameplay.movement.mode === 'airborne'
-        && result.gameplay.movement.velocity.y < 0) {
+        && result.gameplay.movement.velocity.y < 0
+        && result.gameplay.saveData.player.hp >= previousGameplay.saveData.player.hp) {
         this.playAudioOnce(`jump:${result.gameplay.playerEntityId}:${gameTimeMs}`, 'jump');
       }
       this.checkpointIfChanged(result.gameplay?.saveData ?? null);
@@ -307,12 +326,26 @@ export class GameApp {
 
   /** Holding the pickup key collects one nearby drop per gameplay pickup interval (150ms). */
   private enqueueHeldPickup(): void {
-    const { gameplay, screen, gameTimeMs } = this.stateValue;
-    if (screen !== 'playing' || !gameplay || !this.isActionHeld('pickup')) return;
+    const { gameplay, screen, gameTimeMs, catalog, panels } = this.stateValue;
+    if (screen !== 'playing' || !gameplay || !catalog || worldIsFrozen(this.stateValue) || panels.length > 0
+      || this.commands.length > 0 || this.pendingGameplayCommands.length > 0 || !this.isActionHeld('pickup')) return;
     if (gameTimeMs < gameplay.nextPickupAtMs) return;
-    const { x, y } = gameplay.movement.position;
-    if (!gameplay.drops.some(({ position }) => Math.hypot(position.x - x, position.y - y) <= 90)) return;
+    const target = findPickupTarget(gameplay.drops, gameplay.movement.position, gameTimeMs, gameplay.saveData.player, catalog.rules);
+    if (!target?.result.ok) return;
     this.commands.enqueue({ type: 'pickup', payload: {} });
+  }
+
+  private enqueueHeldBasicAttack(): void {
+    const state = this.stateValue;
+    const gameplay = state.gameplay;
+    if (!state.holdBasicAttack || worldIsFrozen(state) || state.panels.length > 0 || !gameplay || !state.catalog
+      || !this.isActionHeld('attack') || this.commands.length > 0 || this.pendingGameplayCommands.length > 0
+      || gameplay.saveData.player.hp <= 0 || gameplay.movement.mode === 'climbing'
+      || state.gameTimeMs < gameplay.movement.knockbackUntilMs) return;
+    const timing = deriveCombatUiState(gameplay, state.catalog, state.gameTimeMs);
+    const readyAtMs = gameplay.combat.cooldowns[gameplay.playerEntityId]?.basic ?? 0;
+    if (state.gameTimeMs < readyAtMs || state.gameTimeMs < timing.actionLockUntilMs || timing.bufferedSkillId !== null) return;
+    this.commands.enqueue({ type: 'attack', payload: { skillId: 'basic' } });
   }
 
   reportRuntimeIssue(message: string): void {
@@ -321,6 +354,44 @@ export class GameApp {
       startupStatus: 'incomplete',
       startupIssues: [...this.stateValue.startupIssues, message],
     });
+  }
+
+  beginMapVisualLoad(map: MapDef): number {
+    const requestId = ++this.mapVisualRequest;
+    this.keyboard?.input.releaseAll();
+    this.commands.discard(FOCUS_DISCARDED_COMMAND_TYPES);
+    this.pendingGameplayCommands = [];
+    this.clock.clearAccumulator();
+    const gameplay = this.stateValue.gameplay ? { ...this.stateValue.gameplay } : null;
+    if (gameplay) { delete gameplay.bufferedAttack; delete gameplay.jumpAssist; }
+    this.setState({ ...this.stateValue, gameplay,
+      mapVisualLoad: { requestId, mapId: map.id, name: map.name, status: 'loading', completed: 0, total: 0, message: null } });
+    return requestId;
+  }
+
+  updateMapVisualProgress(requestId: number, progress: { completed: number; total: number }): void {
+    const current = this.stateValue.mapVisualLoad;
+    if (!current || current.requestId !== requestId || current.status !== 'loading') return;
+    if (!Number.isFinite(progress.total) || !Number.isFinite(progress.completed)) return;
+    const total = Math.max(0, Math.floor(progress.total));
+    const completed = Math.max(0, Math.min(total, Math.floor(progress.completed)));
+    if (current.completed === completed && current.total === total) return;
+    this.setState({ ...this.stateValue, mapVisualLoad: { ...current, completed, total } });
+  }
+
+  endMapVisualLoad(requestId: number): void {
+    if (this.stateValue.mapVisualLoad?.requestId !== requestId) return;
+    this.clock.clearAccumulator();
+    this.keyboard?.input.releaseAll();
+    this.commands.discard(FOCUS_DISCARDED_COMMAND_TYPES);
+    this.pendingGameplayCommands = [];
+    this.setState({ ...this.stateValue, mapVisualLoad: null });
+  }
+
+  failMapVisualLoad(requestId: number, message: string): void {
+    const current = this.stateValue.mapVisualLoad;
+    if (current?.requestId !== requestId) return;
+    this.setState({ ...this.stateValue, mapVisualLoad: { ...current, status: 'failed', message } });
   }
 
   completeMapTransition(): void {
@@ -473,6 +544,13 @@ export class GameApp {
       case 'retrySave':
         this.retryPersistence();
         return true;
+      case 'retryMapLoad': {
+        const current = this.stateValue.mapVisualLoad;
+        if (current?.status === 'failed') this.setState({ ...this.stateValue,
+          mapVisualLoad: { ...current, requestId: ++this.mapVisualRequest, status: 'loading', completed: 0, total: 0, message: null },
+          worldRevision: this.stateValue.worldRevision + 1 });
+        return true;
+      }
       case 'confirmSaveUpgrade':
         if (this.stateValue.screen !== 'title' || !this.stateValue.saveUpgrade
           || !['upgradeRequired', 'saveError'].includes(this.stateValue.saveStatus) || !this.persistence) {
@@ -545,6 +623,14 @@ export class GameApp {
         }
         return true;
       }
+      case 'setHoldAttack':
+        this.heldAttackPreference.set(command.payload.enabled);
+        this.setState({ ...this.stateValue, holdBasicAttack: this.heldAttackPreference.enabled });
+        return true;
+      case 'setBackgroundMotion':
+        this.backgroundMotionPreference.set(command.payload.enabled);
+        this.setState({ ...this.stateValue, backgroundMotion: this.backgroundMotionPreference.enabled });
+        return true;
       default:
         return false;
     }
@@ -769,6 +855,7 @@ export class GameApp {
   }
 
   private setState(state: GameAppState): void {
+    if (!state.gameplay || ['title', 'create', 'error'].includes(state.screen)) state = { ...state, mapVisualLoad: null };
     const previousState = this.stateValue;
     this.stateValue = state;
     this.synchronizeAudio(previousState, state);
@@ -832,7 +919,7 @@ export class GameApp {
       }
     }
 
-    const paused = !next.windowFocused || next.focusResumeRequired || next.screen === 'paused';
+    const paused = !next.windowFocused || next.focusResumeRequired || next.screen === 'paused' || Boolean(next.mapVisualLoad);
     if (paused !== this.audioPaused) {
       this.audioPaused = paused;
       try { controller.setPaused(paused); } catch { /* Pause audio best-effort; gameplay remains authoritative. */ }

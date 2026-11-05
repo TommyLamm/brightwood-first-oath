@@ -44,7 +44,7 @@
     },
     {
       "key": "equip:frost-tide-sword",
-      "url": "assets/equipment/frost-tide-sword-v1.png",
+      "url": "assets/equipment/frost-tide-sword-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 64,
@@ -54,7 +54,7 @@
     },
     {
       "key": "equip:sunwell-oathblade",
-      "url": "assets/equipment/sunwell-oathblade-v1.png",
+      "url": "assets/equipment/sunwell-oathblade-clarity-v2.png",
       "columns": 1,
       "rows": 1,
       "displayWidth": 64,
@@ -94,7 +94,7 @@
     },
     {
       "key": "actor:slime",
-      "url": "assets/actors/monsters/slime-atlas-v2.png",
+      "url": "assets/actors/monsters/slime-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -104,7 +104,7 @@
     },
     {
       "key": "actor:sentinel",
-      "url": "assets/actors/monsters/sentinel-atlas-v2.png",
+      "url": "assets/actors/monsters/sentinel-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -114,7 +114,7 @@
     },
     {
       "key": "actor:guide",
-      "url": "assets/actors/npcs/guide-idle-v1.png",
+      "url": "assets/actors/npcs/guide-idle-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -124,7 +124,7 @@
     },
     {
       "key": "actor:mentor",
-      "url": "assets/actors/npcs/mentor-idle-v1.png",
+      "url": "assets/actors/npcs/mentor-idle-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -134,7 +134,7 @@
     },
     {
       "key": "actor:healer",
-      "url": "assets/actors/npcs/healer-idle-v1.png",
+      "url": "assets/actors/npcs/healer-idle-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -144,7 +144,7 @@
     },
     {
       "key": "actor:keeper",
-      "url": "assets/actors/npcs/keeper-idle-v1.png",
+      "url": "assets/actors/npcs/keeper-idle-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -154,7 +154,7 @@
     },
     {
       "key": "actor:frost-guide",
-      "url": "assets/actors/npcs/frost-guide-idle-v1.png",
+      "url": "assets/actors/npcs/frost-guide-idle-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -164,7 +164,7 @@
     },
     {
       "key": "actor:hero-cloth",
-      "url": "assets/actors/hero-cloth-v9.png",
+      "url": "assets/actors/hero-cloth-v9-clarity-v2.png",
       "columns": 8,
       "rows": 8,
       "displayWidth": 96,
@@ -174,7 +174,7 @@
     },
     {
       "key": "actor:hero-leather",
-      "url": "assets/actors/hero-leather-v9.png",
+      "url": "assets/actors/hero-leather-v9-clarity-v2.png",
       "columns": 8,
       "rows": 8,
       "displayWidth": 96,
@@ -184,7 +184,7 @@
     },
     {
       "key": "actor:hero-iron",
-      "url": "assets/actors/hero-iron-v9.png",
+      "url": "assets/actors/hero-iron-v9-clarity-v2.png",
       "columns": 8,
       "rows": 8,
       "displayWidth": 96,
@@ -194,7 +194,7 @@
     },
     {
       "key": "actor:snail",
-      "url": "assets/actors/monsters/snail-atlas-v2.png",
+      "url": "assets/actors/monsters/snail-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -204,7 +204,7 @@
     },
     {
       "key": "actor:mushroom",
-      "url": "assets/actors/monsters/mushroom-atlas-v2.png",
+      "url": "assets/actors/monsters/mushroom-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -214,7 +214,7 @@
     },
     {
       "key": "actor:boar",
-      "url": "assets/actors/monsters/boar-atlas-v2.png",
+      "url": "assets/actors/monsters/boar-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -224,7 +224,7 @@
     },
     {
       "key": "actor:golem",
-      "url": "assets/actors/monsters/golem-atlas-v2.png",
+      "url": "assets/actors/monsters/golem-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -254,7 +254,7 @@
     },
     {
       "key": "actor:frost-tide-warden",
-      "url": "assets/actors/monsters/frost-tide-warden-atlas-v1.png",
+      "url": "assets/actors/monsters/frost-tide-warden-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 192,
@@ -264,7 +264,7 @@
     },
     {
       "key": "actor:guardian",
-      "url": "assets/actors/monsters/guardian-atlas-v2.png",
+      "url": "assets/actors/monsters/guardian-atlas-v2-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 192,
@@ -274,7 +274,7 @@
     },
     {
       "key": "actor:merchant",
-      "url": "assets/actors/npcs/merchant-idle-v3.png",
+      "url": "assets/actors/npcs/merchant-idle-v3-clarity-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -284,7 +284,7 @@
     },
     {
       "key": "actor:sands-guide",
-      "url": "assets/actors/npcs/sands-guide-idle-v1.png",
+      "url": "assets/actors/npcs/sands-guide-idle-v1-clarity-v1-aligned-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -294,7 +294,7 @@
     },
     {
       "key": "actor:sand-scorpion",
-      "url": "assets/actors/monsters/sand-scorpion-atlas-v1.png",
+      "url": "assets/actors/monsters/sand-scorpion-atlas-v1-clarity-v1.png",
       "columns": 4,
       "rows": 4,
       "displayWidth": 96,
@@ -304,7 +304,7 @@
     },
     {
       "key": "actor:sunwell-beetle",
-      "url": "assets/actors/monsters/sunwell-beetle-atlas-v1.png",
+      "url": "assets/actors/monsters/sunwell-beetle-atlas-v1-clarity-v1.png",
       "columns": 4,
       "rows": 4,
       "displayWidth": 96,
@@ -314,7 +314,7 @@
     },
     {
       "key": "actor:sunwell-sentinel",
-      "url": "assets/actors/monsters/sunwell-sentinel-atlas-v1.png",
+      "url": "assets/actors/monsters/sunwell-sentinel-atlas-v1-clarity-v1.png",
       "columns": 4,
       "rows": 4,
       "displayWidth": 192,
@@ -324,7 +324,7 @@
     },
     {
       "key": "actor:ruins-archivist",
-      "url": "assets/actors/npc-ruins-archivist-v1.png",
+      "url": "assets/actors/npc-ruins-archivist-v1-clarity-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -334,7 +334,7 @@
     },
     {
       "key": "actor:ruins-medic",
-      "url": "assets/actors/npc-ruins-medic-v1.png",
+      "url": "assets/actors/npc-ruins-medic-v1-clarity-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -344,7 +344,7 @@
     },
     {
       "key": "actor:ruins-moss-carapace",
-      "url": "assets/actors/monster-ruins-moss-carapace.png",
+      "url": "assets/actors/monster-ruins-moss-carapace-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -354,7 +354,7 @@
     },
     {
       "key": "actor:ruins-pathfinder",
-      "url": "assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+      "url": "assets/actors/npcs/ruins-pathfinder-idle-v1-clarity-v1.png",
       "columns": 2,
       "rows": 1,
       "displayWidth": 96,
@@ -374,7 +374,7 @@
     },
     {
       "key": "actor:ruins-string-puppet",
-      "url": "assets/actors/monster-ruins-string-puppet.png",
+      "url": "assets/actors/monster-ruins-string-puppet-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,
@@ -384,7 +384,7 @@
     },
     {
       "key": "actor:ruins-bell-prowler",
-      "url": "assets/actors/monster-ruins-bell-prowler.png",
+      "url": "assets/actors/monster-ruins-bell-prowler-clarity-v1.png",
       "columns": 6,
       "rows": 5,
       "displayWidth": 96,

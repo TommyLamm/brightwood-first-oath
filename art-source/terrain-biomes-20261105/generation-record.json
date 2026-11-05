@@ -1,0 +1,38 @@
+[
+  {
+    "id": "forest-platform",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-bad63dbf-41ae-4cc4-8e21-d833496d212f.png",
+    "prompt": "forest-platform.prompt.txt",
+    "tool": "built-in imagegen"
+  },
+  {
+    "id": "forest-vine",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-8ddace0e-c41d-476e-b642-99f7486d92ed.png",
+    "prompt": "forest-vine.prompt.txt",
+    "tool": "built-in imagegen"
+  },
+  {
+    "id": "ridge-platform",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-46e753bd-3c36-4f23-8217-2e6cd5aee5aa.png",
+    "prompt": "ridge-platform.prompt.txt",
+    "tool": "built-in imagegen"
+  },
+  {
+    "id": "ridge-rope",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-15c9d18b-177f-414a-88b5-71ef58b9f901.png",
+    "prompt": "ridge-rope.prompt.txt",
+    "tool": "built-in imagegen"
+  },
+  {
+    "id": "mine-platform",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-6263179a-0019-4865-a93a-d263f495d879.png",
+    "prompt": "mine-platform.prompt.txt",
+    "tool": "built-in imagegen"
+  },
+  {
+    "id": "mine-ladder",
+    "source": "C:\\Users\\Tommy\\.codex\\generated_images\\01a1a951-d349-7641-9734-ed5049f38f49\\exec-b415ff16-e137-4b05-aaf7-e622ef8e2bcd.png",
+    "prompt": "mine-ladder.prompt.txt",
+    "tool": "built-in imagegen"
+  }
+]

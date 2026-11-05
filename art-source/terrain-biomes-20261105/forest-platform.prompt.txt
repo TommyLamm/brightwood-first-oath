@@ -1,0 +1,6 @@
+Use case: stylized-concept.
+Asset type: production transparent 2D side-scrolling fantasy RPG environment sprite for Brightwood First Oath.
+Primary request: A long, very shallow horizontal FOREST platform: an old warm brown fallen tree trunk with a flat continuous moss-covered walkable top, small emerald ferns and a few roots hanging down from the underside. Pale readable moss rim, curved bark grain, tiny mushrooms only toward one end. Natural closed left and right ends. Side elevation, NOT a round log viewed from its end. A narrow top surface and thin side face, no bulky floating island.
+Style: polished hand-painted storybook fantasy game art, crisp dark brown contours, carefully shaded natural materials, clear large shapes readable at small in-game size. Match the existing warm forest game art, neither photorealistic nor blurry. Light from upper left, restrained highlights, no external ground shadow.
+Composition: exactly ONE isolated complete object centered, ample transparent padding, no other objects, no captions, no text, no watermark. Genuine transparent RGBA background, no checkerboard painted into pixels.
+Format: wide landscape image. The complete platform occupies roughly 85 percent of canvas width and only 13 percent of canvas height; horizontal object perfectly level. Keep all foliage and chips close to the shallow platform silhouette.

@@ -1,0 +1,6 @@
+Use case: stylized-concept.
+Asset type: production transparent 2D side-scrolling fantasy RPG environment sprite for Brightwood First Oath.
+Primary request: One straight vertical thick tan CLIMBING ROPE, braided hemp with several compact overhand knots evenly spaced down its length, top tied through a small dark iron piton loop, bottom a slightly frayed rope tail. The entire rope follows the exact center vertical line, including a substantial continuous rope core between knots. Whole object including both ends. NOT a ladder, no rungs.
+Style: polished hand-painted storybook fantasy game art, crisp dark brown contours, carefully shaded natural materials, clear large shapes readable at small in-game size. Match the existing warm forest game art, neither photorealistic nor blurry. Light from upper left, restrained highlights, no external ground shadow.
+Composition: exactly ONE isolated complete object centered, ample transparent padding, no other objects, no captions, no text, no watermark. Genuine transparent RGBA background, no checkerboard painted into pixels.
+Format: portrait image. The complete object occupies roughly 82 percent of canvas height. Tall slender silhouette, roughly 1:7 width-to-height including side leaves; clean empty transparency surrounds it. Stable thickness and lighting all the way down.

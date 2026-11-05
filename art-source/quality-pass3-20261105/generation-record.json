@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-05 Asia/Hong_Kong",
+  "records": [
+    {
+      "name": "snow-ground",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImage": "ground-reference.jpg",
+      "prompt": "snow-ground.prompt.txt",
+      "promptSha256": "28e62d53faf98434883514a6108950c079d54885186d59454b81c8ed9002d42b",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-cf7d0f1b-fed6-4834-bbc9-a178a9c88223.png",
+      "workspaceOriginal": "snow-ground-generated.png",
+      "sourceSha256": "3cda4d48aca68d62129bd5ad05b905b47048e8a89b16698fcd331726e92f9643",
+      "runtimeAdopted": true
+    },
+    {
+      "name": "snow-platform",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImage": "platform-reference.jpg",
+      "prompt": "snow-platform.prompt.txt",
+      "promptSha256": "006da6ac831dda6b56cf2edd84f3bcb1a070ee9f82b5d0a1c991f4b6644befb2",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-37c24f75-d81f-4a56-b40c-285dcb98287d.png",
+      "workspaceOriginal": "snow-platform-generated.png",
+      "sourceSha256": "8f3b17a38ce8f942a8416d55bb08bbd6df0fc098ace0cd76ae593adacb9a7d61",
+      "runtimeAdopted": true
+    },
+    {
+      "name": "snow-rope",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImage": "rope-reference.jpg",
+      "prompt": "snow-rope.prompt.txt",
+      "promptSha256": "00d48da547e8a0e7e9150882012ba806d52134dc9cdc0ffc93d0259122fc0c18",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-17227e90-3674-4b9d-91bd-cae254d3aa43.png",
+      "workspaceOriginal": "snow-rope-generated.png",
+      "sourceSha256": "339cd23cbf17d836e1874f8e763e69c2a71b153158a957b8703ea0000c951815",
+      "runtimeAdopted": true
+    },
+    {
+      "name": "warden-sample",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "edit",
+      "transparent_background": true,
+      "referencedImage": "warden-edit-target-review.jpg",
+      "prompt": "warden-sample.prompt.txt",
+      "promptSha256": "bc241edef2702c360f29db989476ad1f70301e858ecbef7270af634c163dbe4a",
+      "nativePath": "C:/Users/Tommy/.codex/generated_images/01a1abfd-42b2-77e3-9c80-166e53cdf893/exec-0f71d751-e446-4989-80b8-d68c5ee2dc37.png",
+      "workspaceOriginal": "warden-sample-generated.png",
+      "sourceSha256": "202b3598dad36fb175a742e397f68b9bae7ec58bcfe1e8f5ad97c7e2a3822871",
+      "runtimeAdopted": false
+    }
+  ]
+}

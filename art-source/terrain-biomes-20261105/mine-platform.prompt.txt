@@ -1,0 +1,6 @@
+Use case: stylized-concept.
+Asset type: production transparent 2D side-scrolling fantasy RPG environment sprite for Brightwood First Oath.
+Primary request: A long, very shallow horizontal MINESHAFT wooden scaffold platform: aged dark honey-brown planks across a flat continuous walkable top, a sturdy timber beam underneath, a few dark wrought iron straps with rivets. Natural closed left and right ends, visible end grain. Side elevation, narrow top surface and thin beam face, no grass, no tall legs, no rope, no bulky floating island.
+Style: polished hand-painted storybook fantasy game art, crisp dark brown contours, carefully shaded natural materials, clear large shapes readable at small in-game size. Match the existing warm forest game art, neither photorealistic nor blurry. Light from upper left, restrained highlights, no external ground shadow.
+Composition: exactly ONE isolated complete object centered, ample transparent padding, no other objects, no captions, no text, no watermark. Genuine transparent RGBA background, no checkerboard painted into pixels.
+Format: wide landscape image. The complete platform occupies roughly 85 percent of canvas width and only 13 percent of canvas height; horizontal object perfectly level. Keep all foliage and chips close to the shallow platform silhouette.

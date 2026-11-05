@@ -1,0 +1,352 @@
+{
+  "date": "2026-11-05",
+  "benchmark": "actor:ruins-bell-keeper",
+  "records": [
+    {
+      "key": "actor:hero-cloth",
+      "method": "targeted-built-in-ImageGen-attack-edit",
+      "previousUrl": "assets/actors/hero-cloth-v9-clarity-v1.png",
+      "url": "assets/actors/hero-cloth-v9-clarity-v2.png",
+      "oldSize": [
+        1536,
+        1536
+      ],
+      "size": [
+        1536,
+        1536
+      ],
+      "display": [
+        96,
+        96
+      ],
+      "previousBytes": 659372,
+      "bytes": 662146,
+      "oldDecodedBytes": 9437184,
+      "decodedBytes": 9437184,
+      "sha256": "d751f7b26f33b98278b11bbf00710d54ca61550cddd285440d9d26504f7ba03b",
+      "sources": [
+        {
+          "path": "art-source/quality-pass1-20261105/cloth-attack-generated.png",
+          "sha256": "eaa8545b6ef452a711bbb9d083f554ddde18a9276e0c437cd037335ab05d439c"
+        }
+      ],
+      "changedFrames": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ]
+    },
+    {
+      "key": "equip:frost-tide-sword",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/equipment/frost-tide-sword-v1.png",
+      "url": "assets/equipment/frost-tide-sword-clarity-v2.png",
+      "oldSize": [
+        64,
+        64
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "display": [
+        64,
+        64
+      ],
+      "previousBytes": 2097,
+      "bytes": 24085,
+      "oldDecodedBytes": 16384,
+      "decodedBytes": 262144,
+      "sha256": "9cf1646e70276ba2c4664c75f02b749c0cc75d79f76f22efe9b74f284074c840",
+      "sources": [
+        {
+          "path": "art-source/expansion-frost/sword/frost-tide-sword-imagegen-transparent-rgba-1254.png",
+          "sha256": "417441ede61985df43828e32c83781c416638fce6601d27b6b06dd4d72eb32ed"
+        }
+      ]
+    },
+    {
+      "key": "equip:sunwell-oathblade",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/equipment/sunwell-oathblade-v1.png",
+      "url": "assets/equipment/sunwell-oathblade-clarity-v2.png",
+      "oldSize": [
+        64,
+        64
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "display": [
+        64,
+        64
+      ],
+      "previousBytes": 1703,
+      "bytes": 19796,
+      "oldDecodedBytes": 16384,
+      "decodedBytes": 262144,
+      "sha256": "5376f0c2cb4c08cd7e6a7264e0141086c72dc2ff487eb72dc68d3d8ca805e55c",
+      "sources": [
+        {
+          "path": "art-source/expansion-sands/sentinel/reward/sunwell-oathblade-raw-v1.png",
+          "sha256": "e68b361ccd8445eb70f8158b15e78b1bed8defc1e2a6c6dfdfec1df7aaf5d4b1"
+        }
+      ]
+    },
+    {
+      "key": "env:tile-platform",
+      "method": "retained-source-crop-full-colour-matched-wrap-band",
+      "previousUrl": "assets/environment/env-tile-platform-v1.png",
+      "url": "assets/environment/env-tile-platform-clarity-v2.png",
+      "oldSize": [
+        128,
+        32
+      ],
+      "size": [
+        256,
+        64
+      ],
+      "display": [
+        128,
+        32
+      ],
+      "previousBytes": 3921,
+      "bytes": 16718,
+      "oldDecodedBytes": 16384,
+      "decodedBytes": 65536,
+      "sha256": "c5c789a605ec25950414c5026b6e96fb7e76d267dd8c9fab84e963d7de20f317",
+      "sources": [
+        {
+          "path": "art-source/environment/env-tile-platform-t11-06-stone-timber-one-shot-20261018.png",
+          "sha256": "40cfc78fa389c6f2e60396a73a9bf3135237157f176e0805a004c81d9bca5b0d"
+        }
+      ]
+    },
+    {
+      "key": "env:ladder",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/environment/env-ladder-v1.png",
+      "url": "assets/environment/env-ladder-clarity-v2.png",
+      "oldSize": [
+        32,
+        128
+      ],
+      "size": [
+        64,
+        256
+      ],
+      "display": [
+        32,
+        128
+      ],
+      "previousBytes": 8575,
+      "bytes": 24942,
+      "oldDecodedBytes": 16384,
+      "decodedBytes": 65536,
+      "sha256": "0e50d2e0c8e44f173d2df861346b967da365659fe881b4ca78f5281cdc8e5fb7",
+      "sources": [
+        {
+          "path": "art-source/environment/env-ladder-v1.png",
+          "sha256": "a0308fa064e5d717c9e18907360fb6225e7ec98b847b2937f0883b5121dae605"
+        }
+      ]
+    },
+    {
+      "key": "env:portal",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/environment/env-portal-v1.png",
+      "url": "assets/environment/env-portal-clarity-v2.png",
+      "oldSize": [
+        64,
+        96
+      ],
+      "size": [
+        128,
+        192
+      ],
+      "display": [
+        64,
+        96
+      ],
+      "previousBytes": 17272,
+      "bytes": 55944,
+      "oldDecodedBytes": 24576,
+      "decodedBytes": 98304,
+      "sha256": "0b012a5f73e1bd5d6841e51298634dd08647591bd4492827887fd5b7a036cca2",
+      "sources": [
+        {
+          "path": "art-source/environment/env-portal-v1.png",
+          "sha256": "2b7d3cc95d2c9833f4f6702982900c92b17c52bb1e8086aa282891318d9be309"
+        }
+      ]
+    },
+    {
+      "key": "env:town-sign",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/environment/env-town-sign-v1.png",
+      "url": "assets/environment/env-town-sign-clarity-v2.png",
+      "oldSize": [
+        96,
+        128
+      ],
+      "size": [
+        192,
+        256
+      ],
+      "display": [
+        96,
+        128
+      ],
+      "previousBytes": 16783,
+      "bytes": 44179,
+      "oldDecodedBytes": 49152,
+      "decodedBytes": 196608,
+      "sha256": "7c6133ccc270d2207a5572963628748aa612a6d1496b85be6607b8a48a0ff203",
+      "sources": [
+        {
+          "path": "art-source/environment/env-town-sign-v1.png",
+          "sha256": "89b1ce357483884e7b92887da4d2d8a8628f7855dcf222c9562a0b27ab47f009"
+        }
+      ]
+    },
+    {
+      "key": "env:mine-door",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/environment/env-mine-door-v1.png",
+      "url": "assets/environment/env-mine-door-clarity-v2.png",
+      "oldSize": [
+        128,
+        160
+      ],
+      "size": [
+        256,
+        320
+      ],
+      "display": [
+        128,
+        160
+      ],
+      "previousBytes": 43258,
+      "bytes": 146350,
+      "oldDecodedBytes": 81920,
+      "decodedBytes": 327680,
+      "sha256": "5c21336aca059b46df1b9a8b95728e7cb520ed0180ff075bb1b41d9ad670b0cb",
+      "sources": [
+        {
+          "path": "art-source/environment/env-mine-door-v1.png",
+          "sha256": "2d7d5bc49ddce73c2393fc1d124e1362629cb83d8c2374fad390816155065520"
+        }
+      ]
+    },
+    {
+      "key": "env:altar",
+      "method": "retained-high-resolution-source",
+      "previousUrl": "assets/environment/env-altar-v1.png",
+      "url": "assets/environment/env-altar-clarity-v2.png",
+      "oldSize": [
+        112,
+        96
+      ],
+      "size": [
+        224,
+        192
+      ],
+      "display": [
+        112,
+        96
+      ],
+      "previousBytes": 19345,
+      "bytes": 65404,
+      "oldDecodedBytes": 43008,
+      "decodedBytes": 172032,
+      "sha256": "e85e3bdbbdbef39a076a54f7d8d42d0df43ffd001991b8b6dd6977c330e9cd20",
+      "sources": [
+        {
+          "path": "art-source/environment/env-altar-v1.png",
+          "sha256": "b04f0acfbf627a252118bc497e5dcd0a3b26988e893d4eda037fc8e9b5335571"
+        }
+      ]
+    },
+    {
+      "key": "vfx:heavy-strike",
+      "method": "retained-source-full-colour-alpha",
+      "previousUrl": "assets/interface/vfx-heavy-strike-v9.png",
+      "url": "assets/interface/vfx-heavy-strike-clarity-v2.png",
+      "oldSize": [
+        768,
+        128
+      ],
+      "size": [
+        1536,
+        256
+      ],
+      "display": [
+        128,
+        128
+      ],
+      "previousBytes": 4315,
+      "bytes": 43954,
+      "oldDecodedBytes": 393216,
+      "decodedBytes": 1572864,
+      "sha256": "b89c02b8356f612f66d3ae9a94d98c8daf1e63e149f9eef1710177cc967331cf",
+      "sources": [
+        {
+          "path": "art-source/interface/interface-vfx-heavy-strike-v8-attempt1.png",
+          "sha256": "fdac55c2321356377cd752f274c9dad6e22ca9af6eefc6244aa2be748c30b490"
+        }
+      ]
+    }
+  ],
+  "geometry": [
+    {
+      "key": "actor:hero-cloth",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "equip:frost-tide-sword",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0.5
+    },
+    {
+      "key": "equip:sunwell-oathblade",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0.5
+    },
+    {
+      "key": "env:tile-platform",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "env:ladder",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "env:portal",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "env:town-sign",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "env:mine-door",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "env:altar",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    },
+    {
+      "key": "vfx:heavy-strike",
+      "activeFrameBoundsMaxDifferenceWorldPx": 0
+    }
+  ],
+  "compressedBytesDelta": 326877,
+  "decodedBytesDelta": 2365440,
+  "animationContractsUnchanged": true,
+  "worldGeometryAndPivotsUnchanged": true
+}

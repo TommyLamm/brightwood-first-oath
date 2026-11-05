@@ -34,7 +34,10 @@ export type CommandDraft =
   | { type: 'setPanel'; payload: { panel: PanelId | null } }
   | { type: 'closePanel'; payload: Record<string, never> }
   | { type: 'setSettings'; payload: { settings: Settings } }
+  | { type: 'setHoldAttack'; payload: { enabled: boolean } }
+  | { type: 'setBackgroundMotion'; payload: { enabled: boolean } }
   | { type: 'retrySave'; payload: Record<string, never> }
+  | { type: 'retryMapLoad'; payload: Record<string, never> }
   | { type: 'confirmSaveUpgrade'; payload: Record<string, never> }
   | { type: 'importLegacySave'; payload: Record<string, never> }
   | { type: 'dismissLegacyImport'; payload: Record<string, never> }

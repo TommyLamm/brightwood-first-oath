@@ -1,0 +1,160 @@
+{
+  "tool": "built-in imagegen",
+  "runtime": [
+    {
+      "key": "env:frost:platform",
+      "url": "assets/environment/env-snow-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "snow-platform-generated.png",
+      "sourceBounds": [
+        87,
+        315,
+        2085,
+        452
+      ],
+      "sourceSha256": "8f3b17a38ce8f942a8416d55bb08bbd6df0fc098ace0cd76ae593adacb9a7d61",
+      "outputSha256": "ba9041ec8ad66b2336eabd5671d8ce99f8fd65ec30135d216a3e3868613e4fda",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 54230,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:frost:rope",
+      "url": "assets/environment/env-snow-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "snow-rope-generated.png",
+      "sourceBounds": [
+        436,
+        53,
+        533,
+        1576
+      ],
+      "sourceSha256": "339cd23cbf17d836e1874f8e763e69c2a71b153158a957b8703ea0000c951815",
+      "outputSha256": "962acb2d1dda7aaff1284a27ce2f2bba087d851cba5bb9f9f3092bcf7b9a9793",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 10577,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:frost:ground",
+      "url": "assets/environment/env-snow-ground-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 128,
+      "displayHeight": 128,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "snow-ground-generated.png",
+      "sourceBounds": [
+        0,
+        73,
+        1254,
+        1254
+      ],
+      "sourceSha256": "3cda4d48aca68d62129bd5ad05b905b47048e8a89b16698fcd331726e92f9643",
+      "outputSha256": "462883c636abf122f2511b6e82c200dc8011c10ef5575157d3d222e32c2326ed",
+      "pixels": [
+        512,
+        512
+      ],
+      "density": 4,
+      "compressedBytes": 485597,
+      "baseRgbaBytes": 1048576
+    }
+  ],
+  "addedCompressedBytes": 550404,
+  "addedBaseRgbaBytes": 1343488,
+  "groundSourceSurfaceRow": 73,
+  "wardenSamples": [
+    {
+      "frame": 0,
+      "originalAlpha128Bounds": [
+        59,
+        167,
+        187,
+        250
+      ],
+      "generatedCrop": [
+        137,
+        387,
+        431,
+        582
+      ],
+      "policy": "fit to original opaque body bounds; samples only, not runtime"
+    },
+    {
+      "frame": 1,
+      "originalAlpha128Bounds": [
+        69,
+        167,
+        196,
+        250
+      ],
+      "generatedCrop": [
+        165,
+        386,
+        462,
+        583
+      ],
+      "policy": "fit to original opaque body bounds; samples only, not runtime"
+    },
+    {
+      "frame": 12,
+      "originalAlpha128Bounds": [
+        58,
+        166,
+        202,
+        248
+      ],
+      "generatedCrop": [
+        134,
+        386,
+        469,
+        577
+      ],
+      "policy": "fit to original opaque body bounds; samples only, not runtime"
+    },
+    {
+      "frame": 14,
+      "originalAlpha128Bounds": [
+        64,
+        155,
+        214,
+        251
+      ],
+      "generatedCrop": [
+        155,
+        361,
+        499,
+        582
+      ],
+      "policy": "fit to original opaque body bounds; samples only, not runtime"
+    }
+  ],
+  "wardenRuntimeAdopted": false,
+  "actorManifestUnchanged": true,
+  "preservedProductionHashes": {
+    "src/content/world/maps.ts": "f20d824ff96628cad35c034ef6dc23e2ec915a4ff75d433bb3010510f88fe41b",
+    "src/content/rules/monsters.ts": "dafddd935ca1deb9dc4db9966226f5cdef5f83235c78c4d182aec1e36a831bbf",
+    "src/domain/actors/index.ts": "0378fe9920cf1969e678c95b40f67858b77eb16bec66fe8f3218989ba3959acd",
+    "src/main.ts": "22a27f7aa4dbb63de34f992003229664ed0d903c267746597aded9382726c57e"
+  }
+}

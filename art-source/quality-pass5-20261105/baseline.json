@@ -1,0 +1,7 @@
+{
+  "src/content/world/maps.ts": "f20d824ff96628cad35c034ef6dc23e2ec915a4ff75d433bb3010510f88fe41b",
+  "src/content/rules/monsters.ts": "dafddd935ca1deb9dc4db9966226f5cdef5f83235c78c4d182aec1e36a831bbf",
+  "src/domain/actors/index.ts": "0378fe9920cf1969e678c95b40f67858b77eb16bec66fe8f3218989ba3959acd",
+  "src/main.ts": "22a27f7aa4dbb63de34f992003229664ed0d903c267746597aded9382726c57e",
+  "public/assets/actors/manifest.json": "909a18bb01ed77fba16b623ec336ee0f8d595c018fa62828126b59f02f042a6d"
+}

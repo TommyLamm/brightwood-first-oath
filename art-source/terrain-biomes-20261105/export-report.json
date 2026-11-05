@@ -1,0 +1,177 @@
+{
+  "tool": "built-in imagegen",
+  "export": "premultiplied resample, alpha cleanup, slice, internal seam wrap",
+  "platformFrames": [
+    "left-cap",
+    "body-a",
+    "body-b",
+    "body-c",
+    "right-cap"
+  ],
+  "climbFrames": [
+    "top-cap",
+    "body",
+    "bottom-cap"
+  ],
+  "platformSurfaceInset": 8,
+  "records": [
+    {
+      "key": "env:forest:platform",
+      "url": "assets/environment/env-forest-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "forest-platform-generated.png",
+      "sourceBounds": [
+        100,
+        285,
+        2072,
+        487
+      ],
+      "sourceSha256": "ecbb8e86e97919c959915b000d137b58a84ceffd2abcbbb7340adffbafee9996",
+      "outputSha256": "33209193e0fd93b60c55e5237da781e2f00af3228248987cfb280777cbc71d9e",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 57822,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:forest:vine",
+      "url": "assets/environment/env-forest-vine-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "forest-vine-generated.png",
+      "sourceBounds": [
+        395,
+        39,
+        641,
+        1445
+      ],
+      "sourceSha256": "d892614eb5b001d01af0dd48fd220de78bccc9dc1e273ca2d210a2dba0d64cb5",
+      "outputSha256": "d6dbbd5119094a4394a174926bb394b8bb870c09ccb5e5e4e5c579b3cc58a6ac",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 16002,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:ridge:platform",
+      "url": "assets/environment/env-ridge-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ridge-platform-generated.png",
+      "sourceBounds": [
+        123,
+        305,
+        2050,
+        420
+      ],
+      "sourceSha256": "b08901bf75157a464f05894f63eb0376b4fd3472e742b287cb04d4878f7e8cc7",
+      "outputSha256": "d52fc0d631fb20554fa99c4add11614b0a3096945bc8434badae3e99adaba109",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 48522,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:ridge:rope",
+      "url": "assets/environment/env-ridge-rope-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "ridge-rope-generated.png",
+      "sourceBounds": [
+        438,
+        53,
+        529,
+        1575
+      ],
+      "sourceSha256": "8a43427f9c6443ace7e2da9552c01424276be7e2c4799b061c2b01000d82c437",
+      "outputSha256": "f6a85660c35e0ab3c4e6f62d3f85e136eafb11ab49230771634769485b004a84",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 9633,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    },
+    {
+      "key": "env:mine:platform",
+      "url": "assets/environment/env-mine-platform-biome-v1.png",
+      "columns": 5,
+      "rows": 1,
+      "displayWidth": 64,
+      "displayHeight": 48,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "mine-platform-generated.png",
+      "sourceBounds": [
+        93,
+        309,
+        2078,
+        429
+      ],
+      "sourceSha256": "568996b6532ff659d2ea115ad2631fc98fea96c1c81a6c5eaa20795e0d476bdc",
+      "outputSha256": "0648a878e2b29df20f6c0458d408f02d0693de1929b6132813024a34ee78037b",
+      "pixels": [
+        640,
+        96
+      ],
+      "compressedBytes": 51149,
+      "baseRgbaBytes": 245760,
+      "density": 2
+    },
+    {
+      "key": "env:mine:ladder",
+      "url": "assets/environment/env-mine-ladder-biome-v1.png",
+      "columns": 3,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0,
+      "pivotY": 0,
+      "source": "mine-ladder-generated.png",
+      "sourceBounds": [
+        395,
+        70,
+        688,
+        1390
+      ],
+      "sourceSha256": "fbe0fb3b0c5044770d802d8d040f40ab3a071f677657bcafdc87ece11802af40",
+      "outputSha256": "aa01736aaa7cc54227ebb092aa6f6c87cdfc16f08a166bbc7c3bc616628d7d06",
+      "pixels": [
+        192,
+        64
+      ],
+      "compressedBytes": 17535,
+      "baseRgbaBytes": 49152,
+      "density": 2
+    }
+  ],
+  "addedCompressedBytes": 200663,
+  "addedBaseRgbaBytes": 884736
+}

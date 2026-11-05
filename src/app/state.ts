@@ -9,7 +9,10 @@ import { getQuestView } from '../domain/quests/index.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
+import { deriveMovementHint } from './movement-hint.js';
 import { portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { findPickupTarget } from './pickup-target.js';
+import { deriveActiveGuard } from './guard-status.js';
 
 export type StartupStatus = 'loading' | 'ready' | 'incomplete';
 
@@ -20,6 +23,9 @@ export type GameAppState = {
   focusResumeRequired: boolean;
   gameTimeMs: number;
   worldRevision: number;
+  mapVisualLoad: UiSnapshot['mapVisualLoad'];
+  holdBasicAttack: boolean;
+  backgroundMotion: boolean;
   startupStatus: StartupStatus;
   startupIssues: string[];
   catalog: ContentCatalog | null;
@@ -49,6 +55,9 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
     focusResumeRequired: false,
     gameTimeMs: 0,
     worldRevision: 0,
+    mapVisualLoad: null,
+    holdBasicAttack: false,
+    backgroundMotion: true,
     startupStatus: 'loading',
     startupIssues: [],
     catalog: null,
@@ -72,7 +81,7 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
     return { state: { ...state, panels: panelState.panels }, handled: true };
   }
   if (command.type === 'togglePause') {
-    if (!state.windowFocused
+    if (!state.windowFocused || state.mapVisualLoad
       || (state.screen !== 'playing' && state.screen !== 'paused')
       || state.saveStatus === 'conflict'
       || (state.saveUpgrade !== null && state.saveUpgrade !== undefined)) {
@@ -95,7 +104,7 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
 }
 
 export function worldIsFrozen(state: GameAppState): boolean {
-  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired;
+  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad);
 }
 
 /** Builds the single UI view model from app-owned state. */
@@ -112,10 +121,22 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   const playerId = gameplay?.playerEntityId;
   const mapId = saveData?.location.mapId;
   const canShowInteractionHint = state.screen === 'playing'
+    && !state.mapVisualLoad
     && !state.focusResumeRequired
     && state.panels.length === 0;
   let interactionHint: UiSnapshot['interactionHint'] = null;
+  let pickupHint: UiSnapshot['pickupHint'] = null;
   if (gameplay && saveData && canShowInteractionHint) {
+    const pickup = findPickupTarget(gameplay.drops, gameplay.movement.position, state.gameTimeMs, saveData.player, catalog.rules);
+    if (pickup) {
+      const { drop, result } = pickup;
+      pickupHint = {
+      targetKey: 'pickup:' + drop.id,
+      label: drop.itemId === null ? drop.coins + ' 金幣'
+        : (catalog.rules.items[drop.itemId]?.name ?? drop.itemId) + ' × ' + drop.quantity,
+        blockedMessage: result.ok ? null : result.code === 'BAG_FULL' ? '背包已滿，請先整理空位' : result.message,
+      };
+    }
     const map = catalog.world.maps[mapId ?? ''];
     const target = resolveInteractionTarget(map, gameplay.movement.position);
     if (target?.kind === 'npc') {
@@ -163,6 +184,13 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     windowFocused: state.windowFocused,
     focusResumeRequired: state.focusResumeRequired,
     interactionHint,
+    pickupHint,
+    playerPosition: gameplay ? { ...gameplay.movement.position } : null,
+    holdBasicAttack: state.holdBasicAttack,
+    backgroundMotion: state.backgroundMotion,
+    mapVisualLoad: state.mapVisualLoad ? { ...state.mapVisualLoad } : null,
+    movementHint: gameplay && canShowInteractionHint
+      ? deriveMovementHint(gameplay.movement, catalog.world.maps[mapId ?? ''], catalog.rules.movement) : null,
     combatUi,
     saveStatus: state.saveStatus,
     saveMessage: state.saveMessage,
@@ -179,5 +207,6 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
       : {},
     potionReadyAtMs: gameplay?.potionReadyAtMs ?? 0,
     guardUntilMs: gameplay?.guardUntilMs ?? 0,
+    activeGuard: deriveActiveGuard(gameplay, catalog, state.gameTimeMs),
   };
 }

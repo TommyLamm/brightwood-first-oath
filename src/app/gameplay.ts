@@ -12,7 +12,8 @@ import type {
   RandomSource,
   SaveData,
 } from '../contracts/index.js';
-import { createMovement, stepMovement } from '../domain/movement/index.js';
+import { createMovement } from '../domain/movement/index.js';
+import { stepPlayerMovement, type PlayerJumpMemory } from '../domain/movement/player-jump.js';
 import { applyMonsterHit, createMonster, stepActors } from '../domain/actors/index.js';
 import { createCombatState, stepCombat, tryAttack } from '../domain/combat/index.js';
 import { applyProgressAction, createPlayer, deriveStats, validatePlayerName } from '../domain/progression/index.js';
@@ -22,6 +23,8 @@ import { questDropByQuest } from '../content/rules/index.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
+import { findPickupTarget } from './pickup-target.js';
+import { deriveActiveGuard } from './guard-status.js';
 
 const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
@@ -35,6 +38,7 @@ export type GameplayState = {
   saveData: SaveData;
   playerEntityId: EntityId;
   movement: MovementState;
+  jumpAssist?: PlayerJumpMemory;
   monsters: MonsterState[];
   combat: CombatState;
   drops: DropState[];
@@ -73,6 +77,7 @@ export type GameplayStepInput = {
 
 export type GameplayStepResult = {
   gameplay: GameplayState | null;
+  jumped?: boolean;
   screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'chapter' | 'error';
   openPanel?: PanelId;
 };
@@ -279,14 +284,17 @@ export function stepGameplay(
     ? { ...catalog.rules.movement, speed: catalog.rules.movement.speed * 0.25 }
     : catalog.rules.movement;
   const originalFacing = gameplay.movement.facing;
-  gameplay.movement = stepMovement(
+  const playerMovement = stepPlayerMovement(
     gameplay.movement,
     input.input,
     map,
     movementConfig,
     input.dtSeconds,
     input.nowMs,
+    gameplay.jumpAssist,
   );
+  gameplay.movement = playerMovement.movement;
+  gameplay.jumpAssist = playerMovement.memory;
   if (attackLocked) gameplay.movement = { ...gameplay.movement, facing: originalFacing };
 
   const combatActors = buildCombatActors(gameplay, catalog, input.nowMs);
@@ -373,7 +381,7 @@ export function stepGameplay(
   if (gameplay.bossResult && screen === 'playing' && !gameplay.drops.some(({ itemId }) => itemId !== null)) {
     screen = 'result';
   }
-  return { gameplay, screen, ...(openPanel ? { openPanel } : {}) };
+  return { gameplay, screen, ...(playerMovement.jumped ? { jumped: true } : {}), ...(openPanel ? { openPanel } : {}) };
 }
 
 function clearCombatForActors(gameplay: GameplayState, actorIds: ReadonlySet<EntityId>): void {
@@ -786,20 +794,15 @@ function refreshInteraction(gameplay: GameplayState, catalog: ContentCatalog): G
 
 function pickupNearest(gameplay: GameplayState, context: GameplayStepInput): { gameplay: GameplayState } {
   if (context.nowMs < gameplay.nextPickupAtMs) return { gameplay };
-  const drop = gameplay.drops.map((candidate) => ({ candidate, distance: Math.hypot(
-    candidate.position.x - gameplay.movement.position.x,
-    candidate.position.y - gameplay.movement.position.y,
-  ) })).filter(({ distance }) => distance <= 90)
-    .sort((a, b) => a.distance - b.distance || a.candidate.id.localeCompare(b.candidate.id))[0]?.candidate;
-  if (!drop) return withToast(gameplay, '附近沒有可以拾取的物品。');
-  const result = drop.itemId === null
-    ? applyProgressAction(gameplay.saveData.player, { type: 'gainReward', reward: { exp: 0, coins: drop.coins, items: [] } }, context.catalog.rules)
-    : applyProgressAction(gameplay.saveData.player, { type: 'addItem', stack: { itemId: drop.itemId, quantity: drop.quantity } }, context.catalog.rules);
+  // Resolve again against the command's current player; never apply a result stored by the UI.
+  const target = findPickupTarget(gameplay.drops, gameplay.movement.position, context.nowMs, gameplay.saveData.player, context.catalog.rules);
+  if (!target) return withToast(gameplay, '附近沒有可以拾取的物品。');
+  const { drop, result } = target;
+  gameplay.nextPickupAtMs = context.nowMs + 150;
   if (!result.ok) return withToast(gameplay, result.message);
   const beforePickup = gameplay.saveData;
   gameplay.saveData = { ...gameplay.saveData, player: result.value };
   gameplay.drops = gameplay.drops.filter(({ id }) => id !== drop.id);
-  gameplay.nextPickupAtMs = context.nowMs + 150;
   // Don't let the loot line bury a "quest ready" notice that is still on screen.
   if (!gameplay.stickyToast || gameplay.toast !== gameplay.stickyToast) gameplay.toast = drop.itemId === null ? `取得 ${drop.coins} 金幣。` : `取得 ${context.catalog.rules.items[drop.itemId]?.name ?? drop.itemId} × ${drop.quantity}。`;
   announceReadyQuests(gameplay, beforePickup, context.catalog);
@@ -873,6 +876,7 @@ export function completeMapTransition(
     pendingTransition: null,
     toast: null,
   };
+  delete gameplay.jumpAssist;
   if (pending.after === 'retryBoss') gameplay.bossResult = false;
   if (pending.after === 'respawn') screen = 'playing';
   return { gameplay, screen };
@@ -1090,15 +1094,13 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
 
 function playerCombatActor(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): CombatActor {
   const stats = deriveStats(gameplay.saveData.player, catalog.rules);
-  const guardRank = gameplay.guardUntilMs > nowMs
-    ? gameplay.saveData.player.skillRanks['iron-guard'] ?? 0
-    : 0;
+  const guardBonus = deriveActiveGuard(gameplay, catalog, nowMs)?.defenseBonus ?? 0;
   return {
     id: gameplay.playerEntityId,
     position: { ...gameplay.movement.position },
     facing: gameplay.movement.facing,
     hp: gameplay.saveData.player.hp,
-    stats: { ...stats, defense: stats.defense + guardRank * (catalog.rules.skills['iron-guard']?.defensePerRank ?? 0) },
+    stats: { ...stats, defense: stats.defense + guardBonus },
     faction: 'player',
     body: { width: catalog.rules.movement.width, height: catalog.rules.movement.height },
     knockbackImmune: false,

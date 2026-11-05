@@ -3,7 +3,61 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
-更新：2026-10-29（Asia/Hong_Kong）。[Plan49](49-journal-contact-map.md)與霜潮洞窟返回誤標修補完成，簡單驗證與GitHub Release完成，**GITHUB_PRERELEASED／BROWSER_UNVERIFIED**。版本beta57、作者TommyLamm；依使用者要求本次收尾，停止新增Plan／排程。[交接](reports/plan49-handoff.md)／[發布結果](reports/release-beta57-20261029.md)。
+2026-11-06 05:52 HKT，夜間改善**已收尾停止**，最終本機 **1.0.0-beta.85**／dist 已建置。05:50 觸發後只收完既有操作說明項；版本／manifest 一致性及 build 通過，沿用 beta.84 的 3 focused／typecheck，不重跑未改範圍。兩個一次性排程已刪除，未發布、未最終 ZIP、未全回歸或新 browser，原存檔與 dirty 保留。沒有本次待處理的已知失敗。詳 [最終交接](reports/night-final-20261106.md)及[結果索引](night-improvements-20261106.md)。下方持續至05:50等文字均為歷史狀態。
+
+2026-11-06 03:16 HKT，本機 **1.0.0-beta.84**：NPC 名稱區分可接取／可交付，同人優先交付；3 focused／typecheck／build 通過，文字實畫未重驗，未發布。[交接](reports/npc-quest-status-20261106.md)。持續至05:50見[夜間入口](night-improvements-20261106.md)。
+
+2026-11-06 03:05 HKT，本機 **1.0.0-beta.83**：按鍵清空後repeat不再重新啟動held，保留正常長按與瀏覽器預設攔截。Node24.22.1下9 focused／typecheck／build通過，未新增browser或發布。[交接](reports/cleared-held-input-20261106.md)。持續夜間改善見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:58 HKT，本機 **1.0.0-beta.82**：標題等不需世界時停止世界繪製，場景update仍處理繼續。Node24.22.1下typecheck／build、四階段headless可見性／active切換通過，0errors，Title QA與程序已清。[交接](reports/title-rendering-20261106.md)。未發布，持續至05:50見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:50 HKT，本機 **1.0.0-beta.81**：能力面板說明基礎防禦／守護加成／實際總防禦與獨立倒數；實際戰鬥與UI共用加成，永久stats／AP預覽不變。Node24.22.1下新3例＋既有施放精選1例、typecheck／build通過，未新增browser或發布。[交接](reports/guard-explanation-20261106.md)。夜間續作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:39 HKT，本機 **1.0.0-beta.80**：背包方向鍵／Home／End同步焦點與選取，3 focused／typecheck／build通過。一次限定headless確認兩物品六鍵、可選右Ctrl連續普攻／停止及實際平台下跳，0errors，QA資料／程序已清。[交接](reports/inventory-keyboard-20261106.md)。未發布，持續至05:50見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:24 HKT，本機 **1.0.0-beta.79**：滿包不再讓最近受阻物擋住範圍內金幣／可合併物，全部受阻會提示原因，held停止無效重試並尊重面板。Node24.22.1下10 focused／typecheck／build通過，未新增browser或發布。[交接](reports/pickup-capacity-20261106.md)。夜間續作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:15 HKT，本機 **1.0.0-beta.78**：背景視差可跟隨或靜止，初值採系統reduce、手動偏好覆蓋，保留當前phase且換圖reset。Node24.22.1下5 focused／typecheck／build與營地headless相機／phase／重載觀察通過，0errors，QA存檔／程序已清。[交接](reports/background-motion-20261106.md)。未發布，夜間續作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 02:04 HKT，本機 **1.0.0-beta.77**：設定可選按住連續普通攻擊，預設仍單次；沿用原攻速／動作鎖與技能優先，裝置偏好不進存檔，右Ctrl held別名一致。Node24.22.1下12 focused／typecheck／build通過，未開新browser或發布。[交接](reports/held-basic-attack-20261106.md)。持續夜間工作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 01:55 HKT，本機 **1.0.0-beta.76**：載入地圖圖片期間暫停模擬、檔數進度、初始失敗明確重試／過期回呼隔離，標題延後地圖圖片。Node24.22.1下6項直接相關案例完成、typecheck／build通過；隔離headless刻意503後重試／暫停恢復成功（預期HTTP／console各1），合成存檔與程序已清。[交接](reports/map-loading-20261106.md)。未發布，持續至05:50見[入口](night-improvements-20261106.md)。
+
+2026-11-06 01:33 HKT，本機 **1.0.0-beta.75**：地圖可展開已探索地形導覽，平台／攀爬／居民／出口及即時角色標記、文字圖例與通行條件。既有Node24.22.1下4項focused／typecheck／build通過；營地1280／640有限headless觀察0橫向溢出、移動不重建、未探索隱藏，合成資料與程序已清。[交接](reports/local-terrain-guide-20261106.md)。未發布，夜間續作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 01:22 HKT，本機 **1.0.0-beta.74**：screen模態背景inert、鍵盤Tab循環與關閉還原；一般面板保留。typecheck／build及1280有限headless焦點QA通過，21筆觀察、0runtime／資源錯誤，Modal QA與專屬程序已清，未發布。[交接](reports/modal-focus-20261106.md)。持續至05:50，見[入口](night-improvements-20261106.md)。
+
+2026-11-06 01:12 HKT，本機 **1.0.0-beta.73**：長按已綁定遊戲鍵仍消耗瀏覽器預設事件，不重複觸發命令；保留文字／UI焦點處理。7項相關測試、typecheck／build通過，未開browser／發布。[交接](reports/held-key-defaults-20261106.md)。持續工作見[夜間入口](night-improvements-20261106.md)。
+
+2026-11-06 01:10 HKT，本機 **1.0.0-beta.72**：靠近掉落物顯示拾取鍵／名稱數量／按住連拾；命令、連拾與提示同源，排除到期物。11項相關測試、typecheck／build通過，未做browser／完整回歸或發布。[交接](reports/pickup-hint-20261106.md)。夜間續作見[入口](night-improvements-20261106.md)。
+
+2026-11-06 01:00 HKT，本機 **1.0.0-beta.71**：開始前header／按鍵提示加入既有HUD隱藏規則，移除被標題遮罩阻擋的可見控制；保留標題字級入口。單條CSS與版本修改，build通過，未重跑套件／browser；實畫未重驗。[交接](reports/title-controls-20261106.md)。持續夜間改善至05:50，當前項目見[夜間入口](night-improvements-20261106.md)。
+
+2026-11-06 00:55 HKT，本機 **1.0.0-beta.70**：可選較大閱讀字級完成，標題正常按鈕可於建角前選擇，裝置偏好不進存檔。3項偏好測試、typecheck／build、1920／1280有限headless面板檢查通過，無橫向溢出；合成資料及專屬程序已清。[字級交接](reports/reading-size-20261106.md)。下一項處理標題背後gear被遮罩擋住的已確認問題，持續至05:50 HKT收尾，見[夜間入口](night-improvements-20261106.md)。未發布。
+
+2026-11-06 00:34 HKT，**beta.69有限無頭檢查完成**：正常角色、森芽兩格原位動作、實際離地補跳／落地預輸入、情境提示、手帳指定／焦點／重載／停止已驗，0page／console／request／HTTP errors。專屬session/server與QA存檔已清，遊戲未再修改／未重跑套件／未發布。[QA交接](reports/night-beta69-qa-20261106.md)。持續改善至05:50收尾觸發，當前入口見[夜間續作](night-improvements-20261106.md)。
+
+2026-11-06 00:12 HKT，本機 **1.0.0-beta.69**：手帳可指定追蹤任務／恢復自動順序，裝置偏好不進存檔，13項相關測試、typecheck、build通過；手帳新按鈕尚未用瀏覽器驗收。[追蹤交接](reports/quest-tracking-20261106.md)。正在準備一次有限無頭檢查，最新範圍見[夜間入口](night-improvements-20261106.md)。未發布。
+
+2026-11-06 00:05 HKT，本機 **1.0.0-beta.68**：攀爬／跳離／下跳情境提示完成，沿用自訂鍵、互動目標優先及現有HUD提示列，8項相關測試、typecheck、build通過；未開瀏覽器／未發布。[提示交接](reports/movement-hints-20261106.md)。夜間持續改善至05:50 HKT收尾觸發，當前項目見[夜間入口](night-improvements-20261106.md)。
+
+2026-11-05 23:58 HKT，本機 **1.0.0-beta.67**：主角80ms離地寬限及100ms跳躍預輸入完成，原軌跡與底層碰撞沿用；下跳／攀爬／受擊邊界、暫停／失焦／換圖清除與音效接線已有focused coverage，最終typecheck／content check／build通過。未開瀏覽器或發布。[跳躍交接](reports/player-jump-20261105.md)。持續工作至11月6日05:50 HKT收尾觸發，下一項見[夜間入口](night-improvements-20261106.md)。
+
+2026-11-05 Plan52剩餘素材與NPC修復完成，本機 **1.0.0-beta.66**：7圖24平台／23攀爬、6種地面、4張中景細節及獨立礦入口中景已接入；7位NPC第二格腳部對齊，消除11–19邏輯px左右橫移，原動作與節拍不變。10項focused測試、typecheck、content check及build通過，未開瀏覽器／未發布。[本批交接](reports/quality-pass5-20261105.md)。Plan52確認的實作項目收完；現在依使用者授權繼續體驗改善，至11月6日05:50 HKT觸發後收尾，最新小任務見[夜間入口](night-improvements-20261106.md)。下方為歷史。
+
+2026-11-05 Plan52冰雪續作完成，本機 **1.0.0-beta.65**：冰潮洞窟接入冰岩地面／平台／鐵鏈，保留雪岸／霜松戶外材質；冰潮首領沿用4格樣本並補14姿勢，18唯一姿勢／30格完整精修已接入。素材契約檢查、7項地形測試、typecheck、content check、一次build及相關差異檢查通過；本輪未開瀏覽器／未發布。來源、逐格／GIF與未驗界線見 [冰雪續作交接](reports/quality-pass4-20261105.md)。冰雪實作段完成，砂海／遺跡未啟動。
+
+2026-11-05 Plan52首批完成，本機 **1.0.0-beta.64**：雪痕海岸／霜松隘道接入雪地、積雪岩棚與覆霜繩，地形選材及載入需求統一；冰潮首領四格細節樣本保留未接入runtime。7項地形測試、typecheck、content check、一次build及相關差異檢查通過；本輪未開瀏覽器／未發布。素材、對照與未驗界線見 [首批交接](reports/quality-pass3-20261105.md)。本批停止，其他分區／背景不自動擴展。
+
+2026-11-05 下一波畫質規劃：[Plan52・剩餘低畫質素材盤點](52-remaining-low-quality-assets.md) 已完成，狀態 **PLAN_READY／尚未實作**。以本機 beta.63 為基線，核對183筆Manifest圖像、額外18張DOM UI圖及18張正式地圖；優先為冰雪地面／平台／攀爬、冰潮首領細節小樣，中景局部與區域辨識度列後續。十圖共35平台／34攀爬仍用通用材質；低密度斜坡目前零地圖使用，暫不重製。本輪只有計畫及離線盤點，未改遊戲／素材、提高版本、執行遊戲測試／build／新瀏覽器或發布。
+
+2026-11-05 18:00 HKT：**Plan51 首批完成，本機 1.0.0-beta.63**。林道／礦入口新增分段支撐與攀爬連接件，輕革甲／鐵環甲共十二格攻擊精修；6 項地形測試、型別、內容檢查、一次建置及一個無頭視覺驗收 session 通過。正常鏡頭兩圖、兩套左右攻擊與離圖清除已驗，沒有遊戲／載入／console 錯誤；完整範圍與未驗項目見 [首批交接](reports/quality-pass2-20261105.md)。專屬瀏覽器／server 已關閉，尚未發布。首批停止擴展，後續分區／背景未啟動。使用者要求的 **今晚 19:30 單次續作** 已在本對話啟用，屆時按最新交接繼續或回報完成。
+
+2026-11-05 畫質進度：本機候選已到 **1.0.0-beta.62**。beta.59–60 角色／近景／文字、beta.61 三套分區地形及 beta.62 五圖平台戰術配置已實作；最新五圖截圖完成，beta.62 戰鬥手感仍待實玩。下一步為 [Plan51・畫質第二階段](51-visual-quality-second-pass.md)，狀態 **PLAN_READY／尚未實作**：先做林道／礦入口場景融合及輕革甲／鐵環甲攻擊精修，再分批擴展冰雪、沙海、遺跡。進度、來源與驗證界線見計畫及其所連交接；beta.59–62 未發布，本輪只更新規劃文件。下方 beta.58 及更早記錄保留為歷史。
+
+2026-10-30追加：Plan50 全互動介面圖像化 **1.0.0-beta.58** 已建立[GitHub prerelease](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.58)，11:48:30HKT發布，workflow success、唯一game.zip uploaded；本機及CI固定工具完整ZIP驗證通過。Luna Max生成23圖示＋3底板，Terra Max素材及隔離UiSnapshot畫面／指定接線短段、typecheck／build通過。未平台上架、未重驗完整玩法／雲端。詳[發布報告](reports/release-beta58-20261030.md)及[Plan50交接](reports/plan50-handoff.md)。以下beta57發布及玩法驗收紀錄保留為歷史依據。
+
+更新：2026-10-29（Asia/Hong_Kong）。使用者恢復 beta57 Terra 本機驗收；兩輪隔離瀏覽器檢查已部分完成，主要操作、存檔重開、商店、裝卸／藥水、AP／SP、批售及合成前置任務領獎的指定短段通過。Playwright 全螢幕 Esc 退出觀察失敗，實體按鍵與原因尚未確認；出售前槽移位、正常擊殺／傳點、Frost、音訊聽感及正式平台／雲端仍未驗。測試環境已按輪清理；詳見[驗收報告](reports/beta57-terra-local-acceptance-20261029.md)與[既有發布結果](reports/release-beta57-20261029.md)。
 
 | 維度 | 當前結果／界線 |
 | --- | --- |
@@ -47,7 +101,7 @@
 | 未驗／不推廣 | 合成前置不證正常 NPC→portal 行走、任務通關或完成傳送；更小尺寸、真 OS 失焦、正式平台／真帳號雲端、實際音訊、原生／沉浸 fullscreen、灰畫面根因與舊 q09／q10 未重演仍未驗。未標 CANDIDATE_READY 或平台通過。 |
 | QA cleanup | 本次未啟動browser／server，無新QA資源。beta25 [歷史紀錄](reports/plan19-local-review.md)：about:blank即0x6D，無server／seed；log自報daemon／Chrome退出，CIM／事後ports受限、殘留session未知，不外推全主機乾淨。profiles／log保留。 |
 | 實際檢查 | Plan49 手帳／Frost 修補各一次指定 tsc0、root 局部審閱；beta57 一次 build／pack／完整 ZIP／有限 audit 成功；既有 focused 沿用，不跑全回歸或 browser。 |
-| 下一步 | 本次收尾完成，停止新增Plan／排程，等待新指令；保留真資料／全部候選，不自行操作平台匯入／確認／上架。 |
+| 下一步 | 依需求補驗未驗項，並以實體 Esc 分類全螢幕觀察；正式平台與雲端驗收不在本次本機範圍。 |
 
 下方全部為有日期的階段歷史；其中「最新」「未驗」「停止」描述當時狀態，不覆蓋本區。證據原文保留，不逐條改寫舊 FAIL／UNVERIFIED。
 

@@ -148,9 +148,17 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
       seenMonsterIds.set(monster.monsterId, count);
       if (!hasRecordKey(rules.monsters, monster.monsterId)) return failure(`Unknown monster in ${mapId}: ${monster.monsterId}`);
       if (monster.spawnId !== `${mapId}:${monster.monsterId}:${count}`) return failure(`Unstable monster spawn ID: ${mapId}/${monster.spawnId}`);
-      if (monster.y !== 600 || monster.x < 0 || monster.x > map.width
+      if (![monster.x, monster.y, monster.roamLeft, monster.roamRight].every(Number.isFinite)
+        || !liesOnFoothold(map, monster.x, monster.y) || monster.x < 0 || monster.x > map.width
         || monster.roamLeft < 0 || monster.roamLeft > monster.x || monster.roamRight < monster.x || monster.roamRight > map.width) {
         return failure(`Monster position or roam range is invalid: ${mapId}/${monster.spawnId}`);
+      }
+      if (monster.y !== 600) {
+        const halfWidth = rules.monsters[monster.monsterId]!.width / 2;
+        const patrolSupported = map.footholds.some((foothold) =>
+          foothold.y1 === monster.y && foothold.y2 === monster.y
+          && foothold.x1 <= monster.roamLeft - halfWidth && foothold.x2 >= monster.roamRight + halfWidth);
+        if (!patrolSupported) return failure(`Upper patrol must fit on one platform: ${mapId}/${monster.spawnId}`);
       }
     }
     if (mapId === 'camp') {
