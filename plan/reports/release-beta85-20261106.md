@@ -20,4 +20,14 @@
 
 ## 發布結果
 
-尚待推送新 tag 與 workflow 結果；完成後補記實際 commit、Release、CI 與附件 digest。此段不代表已發布。
+**GITHUB_PRERELEASED／ZIP_VALIDATED**。程式、素材與發布文件 commit `5f64ac89dd1b1595de7a1e27725c6049c7fa2665`；不可變 annotated tag `v1.0.0-beta.85`（tag object `6e9f4fff8b872e14539323d57cd3051dcf7fff4c`）解析到同一 commit。只推送此新標籤，沒有推送分支、強推或覆寫既有版本。
+
+[GitHub Release](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.85) 於 **2026-11-06 07:33:56 HKT** 發布，draft=false、prerelease=true。[Actions 42130180267](https://github.com/TommyLamm/brightwood-first-oath/actions/runs/42130180267) completed／success，head SHA 與 tag 相等；建置、版本核對、固定工具校驗、完整 ZIP 驗證及上傳均成功。
+
+唯一附件 `game.zip`：155,498,528 bytes、374 entries、解壓 159,999,100 bytes。GitHub 回報 SHA-256 `cab0af585e366ad3ee60ce952ca694e47dd3cd5ff46446f057740b226b23c5d4`。已下載到 `artifacts/release-1.0.0-beta.85/published/game.zip`，實際 SHA-256 與 GitHub digest 一致，manifest 與 source 解析結果完全相同。此為 Linux CI 重建附件，與 Windows 本機候選分別記錄，不宣稱兩包逐位元相等。
+
+已發布附件另做 14 個文字 entry／6 類 credential pattern 有限掃描，0 findings；沒有重複執行 CI 已通過的同一附件完整 validator。發布前實際暫存的 216 個文字檔另掃同 6 類 pattern，0 findings。這些仍不涵蓋 binary 或所有機密型態。公開 API、tag、workflow 及下載核對結果保存在 `.playroom/tmp/release-beta85/`。
+
+workflow 有 checkout／setup-node 的舊 action runtime 及 ubuntu-latest 遷移提示，結果仍 success；未因此擴大修改流程。正式平台／帳號雲端、全螢幕、音訊及完整遊玩驗收沿用原未驗界線，未新開 browser 或全回歸。
+
+發布後只補交接文件並另作本機 docs commit，不移動已發布 tag。AGENTS.md 的本機修改、舊 beta.57 報告與 output 證據保留；平台匯入／人工確認／上架尚未操作。

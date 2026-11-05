@@ -1,5 +1,7 @@
 # 夜間續作入口
 
+**後續發布更新（07:36 HKT）：** 使用者另行要求建立 Release；[beta.85 GitHub prerelease](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.85)已完成，Actions／完整 ZIP 驗證成功、下載附件 digest 一致。詳[發布報告](reports/release-beta85-20261106.md)。下方保留夜間工作當時授權與停止紀錄；排程未重建、未繼續開發或平台上架。
+
 授權：在**本對話**持續改善遊戲體驗，可網路搜尋靈感，至2026-11-06 **05:50 HKT**。到時不開新項目，完成當前項目與必要測試再收尾。未授權發布。保留全部既有未提交修改。
 
 ## 最終狀態：已停止

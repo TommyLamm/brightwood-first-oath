@@ -3,6 +3,8 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
+2026-11-06 07:36 HKT，使用者另行要求建立 Release，**beta.85 已發布為 GitHub prerelease**：[v1.0.0-beta.85](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.85)。唯一 game.zip 155,498,528 bytes；Actions success、完整 ZIP 驗證成功，已下載核對 SHA-256 與 GitHub digest 一致，有限文字掃描 0 findings。只推送新不可變 tag，未推 main／其他分支或平台上架；未重跑全回歸／browser。詳 [發布報告](reports/release-beta85-20261106.md)。下方 05:52「未發布」記錄屬當時夜間收尾狀態。
+
 2026-11-06 05:52 HKT，夜間改善**已收尾停止**，最終本機 **1.0.0-beta.85**／dist 已建置。05:50 觸發後只收完既有操作說明項；版本／manifest 一致性及 build 通過，沿用 beta.84 的 3 focused／typecheck，不重跑未改範圍。兩個一次性排程已刪除，未發布、未最終 ZIP、未全回歸或新 browser，原存檔與 dirty 保留。沒有本次待處理的已知失敗。詳 [最終交接](reports/night-final-20261106.md)及[結果索引](night-improvements-20261106.md)。下方持續至05:50等文字均為歷史狀態。
 
 2026-11-06 03:16 HKT，本機 **1.0.0-beta.84**：NPC 名稱區分可接取／可交付，同人優先交付；3 focused／typecheck／build 通過，文字實畫未重驗，未發布。[交接](reports/npc-quest-status-20261106.md)。持續至05:50見[夜間入口](night-improvements-20261106.md)。
