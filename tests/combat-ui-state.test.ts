@@ -32,11 +32,13 @@ describe('deriveCombatUiState', () => {
     ['basic', 1_550],
     ['heavy-strike', 1_650],
     ['sweep', 1_850],
+    ['mage-blink', 1_350],
+    ['mage-mana-bolt', 2_000],
   ])('derives the active %s action deadline', (skillId, expectedDeadlineMs) => {
     const gameplay = newGameplay();
     gameplay.combat.attacks = [attack('player-attack', gameplay.playerEntityId, skillId, 1_000)];
 
-    expect(deriveCombatUiState(gameplay, catalog, 1_400).actionLockUntilMs).toBe(expectedDeadlineMs);
+    expect(deriveCombatUiState(gameplay, catalog, Math.min(1_400, expectedDeadlineMs-1)).actionLockUntilMs).toBe(expectedDeadlineMs);
     expect(deriveCombatUiState(gameplay, catalog, expectedDeadlineMs).actionLockUntilMs).toBe(0);
   });
 

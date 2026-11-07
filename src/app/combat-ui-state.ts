@@ -20,7 +20,7 @@ export function deriveCombatUiState(
     if (attack.sourceId !== gameplay.playerEntityId) continue;
 
     const skill = catalog.rules.skills[attack.skillId];
-    if (!skill || skill.kind !== 'attack') continue;
+    if (!skill || (skill.kind !== 'attack' && skill.kind !== 'movement' && skill.kind !== 'zone')) continue;
 
     const attackEndsAtMs = attack.startedAtMs + skill.windupMs + skill.activeMs + skill.recoveryMs;
     if (nowMs >= attackEndsAtMs) continue;

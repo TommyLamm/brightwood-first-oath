@@ -411,6 +411,326 @@
       "displayHeight": 192,
       "pivotX": 0.5,
       "pivotY": 1
+    },
+    {
+      "key": "actor:archer-cloth",
+      "url": "assets/actors/archer-cloth-shoot-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:archer-leather",
+      "url": "assets/actors/archer-leather-shoot-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:archer-iron",
+      "url": "assets/actors/archer-iron-shoot-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "equip:starter-bow",
+      "url": "assets/actors/equip-starter-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "equip:iron-bow",
+      "url": "assets/actors/equip-iron-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "equip:steel-bow",
+      "url": "assets/actors/equip-steel-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "equip:guardian-bow",
+      "url": "assets/actors/equip-guardian-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "equip:frost-tide-bow",
+      "url": "assets/actors/equip-frost-tide-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "equip:sunwell-oathbow",
+      "url": "assets/actors/equip-sunwell-oathbow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.6,
+      "pivotY": 0.5
+    },
+    {
+      "key": "actor:archer-mentor",
+      "url": "assets/actors/archer-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 76.8,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:archery-target",
+      "url": "assets/actors/archery-target-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 48,
+      "displayHeight": 64,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "vfx:arrow",
+      "url": "assets/actors/arrow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 24,
+      "displayHeight": 6,
+      "pivotX": 1,
+      "pivotY": 0.5
+    },
+    {
+      "key": "actor:mage-cloth",
+      "url": "assets/actors/mage-cloth-cast-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:mage-leather",
+      "url": "assets/actors/mage-leather-cast-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:mage-iron",
+      "url": "assets/actors/mage-iron-cast-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "equip:starter-staff",
+      "url": "assets/actors/equip-starter-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "equip:iron-staff",
+      "url": "assets/actors/equip-iron-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "equip:steel-staff",
+      "url": "assets/actors/equip-steel-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "equip:guardian-staff",
+      "url": "assets/actors/equip-guardian-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "equip:frost-tide-staff",
+      "url": "assets/actors/equip-frost-tide-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "equip:sunwell-oathstaff",
+      "url": "assets/actors/equip-sunwell-oathstaff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 28,
+      "displayHeight": 56,
+      "pivotX": 0.5,
+      "pivotY": 0.63
+    },
+    {
+      "key": "actor:mage-mentor",
+      "url": "assets/actors/mage-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 76.8,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "equip:starter-dagger",
+      "url": "assets/actors/equip-starter-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:iron-dagger",
+      "url": "assets/actors/equip-iron-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:steel-dagger",
+      "url": "assets/actors/equip-steel-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:guardian-dagger",
+      "url": "assets/actors/equip-guardian-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:frost-tide-dagger",
+      "url": "assets/actors/equip-frost-tide-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "equip:sunwell-oathdagger",
+      "url": "assets/actors/equip-sunwell-oathdagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 25,
+      "displayHeight": 35,
+      "pivotX": 0.5,
+      "pivotY": 0.8
+    },
+    {
+      "key": "actor:rogue-mentor",
+      "url": "assets/actors/rogue-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 76.8,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:rogue-cloth",
+      "url": "assets/actors/rogue-cloth-stab-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:rogue-leather",
+      "url": "assets/actors/rogue-leather-stab-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
+    },
+    {
+      "key": "actor:rogue-iron",
+      "url": "assets/actors/rogue-iron-stab-v1.png",
+      "columns": 4,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 1
     }
   ],
   "animations": [
@@ -2357,6 +2677,237 @@
         100,
         100,
         100
+      ],
+      "loop": false
+    },
+    {
+      "key": "archer:cloth:attack",
+      "imageKey": "actor:archer-cloth",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        72,
+        108,
+        60,
+        410
+      ],
+      "loop": false
+    },
+    {
+      "key": "archer:leather:attack",
+      "imageKey": "actor:archer-leather",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        72,
+        108,
+        60,
+        410
+      ],
+      "loop": false
+    },
+    {
+      "key": "archer:iron:attack",
+      "imageKey": "actor:archer-iron",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        72,
+        108,
+        60,
+        410
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:archer-mentor:idle",
+      "imageKey": "actor:archer-mentor",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:archery-target-low:idle",
+      "imageKey": "actor:archery-target",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:archery-target-high:idle",
+      "imageKey": "actor:archery-target",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:archery-target-far:idle",
+      "imageKey": "actor:archery-target",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "mage:cloth:attack",
+      "imageKey": "actor:mage-cloth",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        100,
+        150,
+        80,
+        420
+      ],
+      "loop": false
+    },
+    {
+      "key": "mage:leather:attack",
+      "imageKey": "actor:mage-leather",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        100,
+        150,
+        80,
+        420
+      ],
+      "loop": false
+    },
+    {
+      "key": "mage:iron:attack",
+      "imageKey": "actor:mage-iron",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        100,
+        150,
+        80,
+        420
+      ],
+      "loop": false
+    },
+    {
+      "key": "npc:mage-mentor:idle",
+      "imageKey": "actor:mage-mentor",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "npc:rogue-mentor:idle",
+      "imageKey": "actor:rogue-mentor",
+      "frames": [
+        0,
+        0
+      ],
+      "frameMs": [
+        350,
+        350
+      ],
+      "loop": true
+    },
+    {
+      "key": "rogue:cloth:attack",
+      "imageKey": "actor:rogue-cloth",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        110,
+        80,
+        80,
+        150
+      ],
+      "loop": false
+    },
+    {
+      "key": "rogue:leather:attack",
+      "imageKey": "actor:rogue-leather",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        110,
+        80,
+        80,
+        150
+      ],
+      "loop": false
+    },
+    {
+      "key": "rogue:iron:attack",
+      "imageKey": "actor:rogue-iron",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameMs": [
+        110,
+        80,
+        80,
+        150
       ],
       "loop": false
     }

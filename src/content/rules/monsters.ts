@@ -2,6 +2,7 @@ import type { Id, MonsterDef } from '../../contracts/index.js';
 
 export const monsters: Record<Id, MonsterDef> = {
   snail: {
+    projectileHeight: 42,
     id: 'snail', name: '苔殼蝸牛', level: 1, maxHp: 50, attack: 6, defense: 0, exp: 20, coins: 5,
     speed: 32, width: 28, height: 24, aggroRange: 300, attackRange: 55,
     attackWindupMs: 350, attackCooldownMs: 1400, respawnMs: 8000, actorKey: 'actor:snail',

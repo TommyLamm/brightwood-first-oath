@@ -181,7 +181,7 @@ describe('app focus resume safety', () => {
 
     app.dispatch({ type: 'returnTitle', payload: {} });
     app.update(0);
-    expect(app.state.screen).toBe('loading');
+    expect(app.state.screen).toBe('title');
     expect(app.state.focusResumeRequired).toBe(false);
     app.dispose();
   });

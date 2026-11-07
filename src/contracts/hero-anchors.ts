@@ -7,6 +7,11 @@ export type HeroAnchorFrame = {
   head: { x: number; y: number };
 };
 
+export type ArcheryAnchorFrame = HeroAnchorFrame & {
+  rearHand: { x: number; y: number };
+  arrow: { x: number; y: number };
+};
+
 export type HeroAnchorCoordinateSpace = {
   width: 96;
   height: 96;
@@ -20,4 +25,8 @@ export type HeroAnchorManifest = {
   version: 1;
   coordinateSpace: HeroAnchorCoordinateSpace;
   heroes: Record<HeroAnchorOutfit, Record<HeroAnchorPose, HeroAnchorFrame[]>>;
+  /** Additive extension: sword frames and the v1 coordinate space remain unchanged. */
+  archery?: { version: 1; shoot: Record<HeroAnchorOutfit, ArcheryAnchorFrame[]> };
+  casting?: { version: 1; cast: Record<HeroAnchorOutfit, HeroAnchorFrame[]> };
+  dagger?: { version: 1; cast: Record<HeroAnchorOutfit, HeroAnchorFrame[]> };
 };

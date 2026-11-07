@@ -1,14 +1,16 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
+import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, questForPlayer } from './class-quests.js';
 
 const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'ruins-tide-camp', 'ruins-root-causeway', 'sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar', 'ruins-echo-gallery', 'ruins-bell-sanctum'];
-const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide', 'ruins-archivist', 'ruins-medic', 'ruins-pathfinder', 'ruins-stele-west', 'ruins-stele-east', 'frost-route-marker'];
+const expectedNpcIds = ['guide', 'mentor', 'merchant', 'healer', 'keeper', 'frost-guide', 'sands-guide', 'ruins-archivist', 'ruins-medic', 'ruins-pathfinder', 'ruins-stele-west', 'ruins-stele-east', 'frost-route-marker', 'archer-mentor', 'mage-mentor', 'rogue-mentor', ...ROGUE_TRIAL_IDS, ...ARCHERY_TARGET_IDS];
 const expectedQuestIds = ['q01', 'q02', 'q03', 'q04', 'q05', 'q06', 'q07', 'q08', 'q09', 'q10', 'q11', 'q12', 'q13', 'q14', 'q15', 'q16', 'q17', 'q18', 'q19', 'q20', 'q21', 'q22'];
 const expectedNpcPlacements: Record<Id, Id> = {
   guide: 'camp', mentor: 'town', merchant: 'town', healer: 'town', keeper: 'red-ridge', 'frost-guide': 'frost-shore', 'sands-guide': 'sand-glass-shore',
   'ruins-archivist': 'ruins-tide-camp', 'ruins-medic': 'ruins-tide-camp',
   'ruins-pathfinder': 'ruins-echo-gallery', 'ruins-stele-west': 'ruins-echo-gallery', 'ruins-stele-east': 'ruins-echo-gallery',
   'frost-route-marker': 'frost-pine-pass',
+  'rogue-mentor': 'town', 'rogue-target-close': 'town', 'rogue-target-double': 'town', 'rogue-target-evade': 'town', 'archer-mentor': 'town', 'mage-mentor': 'town', 'archery-target-low': 'town', 'archery-target-high': 'town', 'archery-target-far': 'town',
 };
 const expectedThemes: Record<Id, string> = {
   camp: 'camp', town: 'town', 'forest-edge': 'forest', 'mushroom-wood': 'forest',
@@ -24,11 +26,18 @@ const requiredOrdinaryMonsterIds = [
   'snail', 'slime', 'mushroom', 'boar', 'golem', 'sentinel', 'frost-wolf', 'frost-crab', 'sand-scorpion', 'sunwell-beetle',
   'ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler',
 ];
-const inspectNpcIds = new Set<Id>(['ruins-stele-west', 'ruins-stele-east', 'frost-route-marker']);
+const inspectNpcIds = new Set<Id>(['ruins-stele-west', 'ruins-stele-east', 'frost-route-marker', ...ROGUE_TRIAL_IDS, ...ARCHERY_TARGET_IDS]);
 const inspectTargetPlacements: Record<Id, { mapId: Id; x: number; y: number }> = {
+  'rogue-mentor': { mapId: 'town', x: 400, y: 350 },
   'ruins-stele-west': { mapId: 'ruins-echo-gallery', x: 900, y: 420 },
   'ruins-stele-east': { mapId: 'ruins-echo-gallery', x: 2000, y: 360 },
   'frost-route-marker': { mapId: 'frost-pine-pass', x: 1770, y: 430 },
+  'rogue-target-close': { mapId: 'town', x: 560, y: 350 },
+  'rogue-target-double': { mapId: 'town', x: 720, y: 350 },
+  'rogue-target-evade': { mapId: 'town', x: 880, y: 350 },
+  'archery-target-low': { mapId: 'town', x: 480, y: 600 },
+  'archery-target-high': { mapId: 'town', x: 600, y: 500 },
+  'archery-target-far': { mapId: 'town', x: 1500, y: 500 },
 };
 const interactionRangePx = 64;
 
@@ -171,6 +180,12 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     }
     for (const placement of map.npcs) {
       const inspectTarget = inspectTargetPlacements[placement.npcId];
+      if ((placement.npcId.startsWith('archery-target-') || placement.npcId.startsWith('rogue-')) && placement.y < 600) {
+        const platform = map.footholds.find((line) => line.y1 === placement.y && line.y2 === placement.y
+          && placement.x >= line.x1 && placement.x <= line.x2);
+        if (!platform || !map.ladders.some((ladder) => ladder.topY === placement.y && ladder.bottomY === 600
+          && ladder.x >= platform.x1 && ladder.x <= platform.x2)) return failure(`Archery target requires an accessible ladder: ${placement.npcId}`);
+      }
       const isApprovedInspectPosition = inspectTarget?.mapId === mapId
         && placement.x === inspectTarget.x && placement.y === inspectTarget.y;
       const isGroundPosition = placement.y === 600 && liesOnFoothold(map, placement.x, placement.y);
@@ -271,7 +286,8 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   }
 
   for (const [npcId, npc] of Object.entries(world.npcs)) {
-    const expectedActorKey = inspectNpcIds.has(npcId) ? 'actor:ruins-stele' : `actor:${npcId}`;
+    const expectedActorKey = [...ARCHERY_TARGET_IDS, ...ROGUE_TRIAL_IDS].some((id) => id === npcId) ? 'actor:archery-target'
+      : inspectNpcIds.has(npcId) ? 'actor:ruins-stele' : `actor:${npcId}`;
     if (npc.id !== npcId || npc.actorKey !== expectedActorKey || npc.dialogueId.length === 0) return failure(`NPC identity or actor key invalid: ${npcId}`);
     const expectedMapId = expectedNpcPlacements[npcId];
     const placements = Object.entries(world.maps).flatMap(([mapId, map]) => map.npcs
@@ -302,7 +318,8 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     if (item.kind === 'quest' && !questItemSources.has(item.id)) return failure(`Quest item has no T01 drop source: ${item.id}`);
   }
 
-  for (const [questId, quest] of Object.entries(world.quests)) {
+  for (const [questId, quest] of Object.entries(world.quests).flatMap(([id, quest]) =>
+    [[id, quest], [id, questForPlayer(quest, { job: 'archer' }, rules.items)], [id, questForPlayer(quest, { job: 'mage' }, rules.items)], [id, questForPlayer(quest, { job: 'rogue' }, rules.items)]] as [Id, QuestDef][])) {
     if (quest.id !== questId || !hasRecordKey(world.npcs, quest.giverNpcId) || !hasRecordKey(world.npcs, quest.turnInNpcId)) {
       return failure(`Quest identity or NPC reference invalid: ${questId}`);
     }
@@ -422,10 +439,11 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
   }
   if (reachableMaps.size !== expectedMapIds.length) return failure('All maps must be reachable from camp');
 
+  for (const job of ['swordsman', 'archer', 'mage', 'rogue'] as const) {
   const claimedQuests = new Set<Id>();
   const rewardedItems = new Set<Id>();
   for (const questId of expectedQuestIds) {
-    const quest = world.quests[questId]!;
+    const quest = questForPlayer(world.quests[questId]!, { job }, rules.items);
     const unlockedMaps = new Set<Id>(['camp']);
     const queue: Id[] = ['camp'];
     while (queue.length) {
@@ -483,6 +501,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
     }
     claimedQuests.add(questId);
     for (const rewardItem of quest.reward.items) rewardedItems.add(rewardItem.itemId);
+  }
   }
 
   return { ok: true, value: world };

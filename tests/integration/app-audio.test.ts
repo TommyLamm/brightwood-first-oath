@@ -286,3 +286,43 @@ describe('app audio wiring', () => {
     app.dispose();
   });
 });
+
+
+describe('archer audio timing', () => {
+  it('plays one draw and two releases rather than a sword swing or a baked double sound', async () => {
+    const { app, calls } = await startedApp(1486);
+    app.dispatchUi({ type: 'playTemporary', payload: {} }); app.update(0); await flushAudioUnlock();
+    const game = app.state.gameplay!;
+    game.saveData.player.job='archer'; game.saveData.player.plannedJob='archer';
+    game.saveData.player.level=14; game.saveData.player.mp=60;
+    game.saveData.player.equipment.weapon='starter-bow'; game.saveData.player.skillRanks={'archer-double-shot':1};
+    game.monsters=[];
+    app.dispatch({type:'attack',payload:{skillId:'archer-double-shot'}});
+    app.update(20);
+    expect(app.state.gameplay?.combat.attacks.length, JSON.stringify({screen:app.state.screen,toast:app.state.gameplay?.toast,panels:app.state.panels})).toBe(1);
+    for(let n=0;n<24;n+=1) app.update(20);
+    expect(calls.sfx.filter((key)=>key==='bow-draw')).toHaveLength(1);
+    expect(calls.sfx.filter((key)=>key==='bow-release')).toHaveLength(2);
+    expect(calls.sfx).not.toContain('attack');
+    app.dispose();
+  });
+});
+
+describe('mage audio timing', () => {
+  it('plays one cast and one bolt release at the actual windup boundary', async () => {
+    const {app,calls}=await startedApp(1487);
+    app.dispatchUi({type:'playTemporary',payload:{}});app.update(0);await flushAudioUnlock();
+    const game=app.state.gameplay!;
+    game.saveData.player.job='mage';game.saveData.player.plannedJob='mage';
+    game.saveData.player.str=4;game.saveData.player.dex=4;game.saveData.player.int=12;
+    game.saveData.player.level=14;game.saveData.player.mp=100;
+    game.saveData.player.equipment.weapon='starter-staff';game.saveData.player.skillRanks={'mage-mana-bolt':1};
+    game.monsters=[];game.movement.mode='grounded';game.movement.footholdId='camp:ground';
+    app.dispatch({type:'attack',payload:{skillId:'mage-mana-bolt'}});app.update(20);
+    expect(calls.sfx.filter(key=>key==='mage-cast')).toHaveLength(1);
+    expect(calls.sfx.filter(key=>key==='mage-bolt')).toHaveLength(0);
+    for(let n=0;n<24;n++)app.update(20);
+    expect(calls.sfx.filter(key=>key==='mage-bolt')).toHaveLength(1);
+    expect(calls.sfx).not.toContain('bow-draw');app.dispose();
+  });
+});

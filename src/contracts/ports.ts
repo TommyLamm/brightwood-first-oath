@@ -12,9 +12,11 @@ import type {
 import type {
   AttackInstance,
   EntityId,
+  GameProfile,
   Id,
   MovementState,
   MonsterState,
+  ProjectileState,
   SaveData,
   Settings,
   Telegraph,
@@ -46,9 +48,9 @@ export type CloudRecord = {
 export type CloudSaved = CloudRecord & { saved: true };
 
 export type CloudSaveInput = {
-  data: SaveData;
+  data: GameProfile;
   revision: number;
-  formatVersion: 5;
+  formatVersion: 9;
   requestId: string;
 };
 
@@ -87,6 +89,8 @@ export type LoadOutcome = {
   mode: 'local' | 'cloud' | 'preview' | 'memory';
   status: SaveStatus;
   data: SaveData | null;
+  /** Canonical format-6 data; data above is only the active character projection. */
+  profile?: GameProfile | null;
   message?: string | null;
   legacyImportAvailable?: boolean;
   legacyImportMessage?: string | null;
@@ -96,9 +100,13 @@ export type LoadOutcome = {
 export type Persistence = {
   initialize(): Promise<LoadOutcome>;
   importLegacySave?(): Promise<LoadOutcome>;
-  /** Explicitly approves upgrading a loaded format 1–4 save to the current write format. */
+  /** Explicitly approves upgrading a loaded format 1–5 save to the current write format. */
   confirmSaveUpgrade(): void;
   checkpoint(data: SaveData): void;
+  checkpointProfile?(profile: GameProfile): void;
+  getProfile?(): GameProfile | null;
+  /** Flushes queued checkpoints; false means progress has not been confirmed. */
+  flush?(): Promise<boolean>;
   retry(): Promise<void>;
   invalidate(): void;
   /** Moves an unreadable local save aside (kept under a backup key) so a new character can be created. */
@@ -120,6 +128,8 @@ export type VisualEvent = {
   key?: Id;
   /** A DEX critical hit; the number is drawn larger and gold. */
   critical?: boolean;
+  projectile?: boolean;
+  magic?: boolean;
   atMs: number;
 };
 
@@ -133,6 +143,7 @@ export type DropState = {
 };
 
 export type WorldSnapshot = {
+  poisonedIds?: EntityId[];
   mapId: Id;
   nowMs: number;
   questViews: QuestView[];
@@ -145,11 +156,15 @@ export type WorldSnapshot = {
     visual: { weapon: Id | null; body: Id | null; hat: Id | null };
     /** Hit or respawn grace period; the renderer flickers the hero until then. */
     invulnerableUntilMs?: number;
+    aimReady?: boolean;
+    rhythmStacks?: number;
   };
   monsters: MonsterState[];
   drops: DropState[];
   npcs: MapDef['npcs'];
   attacks: AttackInstance[];
+  projectiles?: ProjectileState[];
+  smoke?: { position: Vec2; expiresAtMs: number };
   telegraphs: Telegraph[];
   effects: VisualEvent[];
 };
@@ -165,6 +180,9 @@ export type WorldRenderer = {
 export type UiSnapshot = {
   screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'chapter' | 'error';
   error?: string;
+  profile?: GameProfile | null;
+  characterBusy?: boolean;
+  aimReady?: boolean;
   saveData: SaveData | null;
   stats: import('./types.js').DerivedStats | null;
   questViews: QuestView[];

@@ -9,6 +9,7 @@ import type {
   Result,
   SaveData,
 } from '../../contracts/index.js';
+import { questForPlayer } from '../../content/world/class-quests.js';
 
 export type QuestEvent =
   | { type: 'reached'; mapId: Id }
@@ -76,7 +77,8 @@ function isReady(data: SaveData, questId: Id, quest: QuestDef, catalog: ContentC
 }
 
 export function getQuestView(data: SaveData, questId: Id, catalog: ContentCatalog): QuestView {
-  const quest = catalog.world.quests[questId];
+  const base = catalog.world.quests[questId];
+  const quest = base ? questForPlayer(base, data.player, catalog.rules.items) : undefined;
   if (!quest) throw new RangeError(`Unknown quest ID: ${questId}`);
 
   const state = data.quests[questId];
@@ -88,6 +90,8 @@ export function getQuestView(data: SaveData, questId: Id, catalog: ContentCatalo
 
   return {
     questId,
+    giverNpcId: quest.giverNpcId,
+    turnInNpcId: quest.turnInNpcId,
     title: quest.name,
     status,
     // Claimed quests consumed their items and may have unequipped gear since; report them as met.
@@ -105,7 +109,8 @@ function error<T>(code: 'INVALID' | 'LOCKED' | 'NOT_FOUND' | 'REQUIREMENT' | 'NO
 }
 
 export function acceptQuest(data: SaveData, questId: Id, catalog: ContentCatalog): Result<SaveData> {
-  const quest = catalog.world.quests[questId];
+  const base = catalog.world.quests[questId];
+  const quest = base ? questForPlayer(base, data.player, catalog.rules.items) : undefined;
   if (!quest) return error('NOT_FOUND', `找不到任務資料（${questId}）。`);
   if (data.quests[questId]) return error('REQUIREMENT', `「${quest.name}」已經接取過了。`);
   if (!allPrerequisitesClaimed(data, quest)) return error('LOCKED', `請先完成前置任務，才能接取「${quest.name}」。`);
@@ -126,11 +131,13 @@ export function recordQuestEvent(
   quests: Record<Id, QuestState>,
   event: QuestEvent,
   world: ContentCatalog['world'],
+  player: Pick<SaveData['player'], 'job' | 'plannedJob'> = { job: 'swordsman' },
 ): Record<Id, QuestState> {
   const nextQuests = cloneQuests(quests);
   for (const [questId, state] of Object.entries(nextQuests)) {
     if (state.status !== 'active') continue;
-    const quest = world.quests[questId];
+    const base = world.quests[questId];
+    const quest = base ? questForPlayer(base, player) : undefined;
     if (!quest) continue;
     for (const objective of quest.objectives) {
       const matches = (event.type === 'killed' && objective.type === 'kill' && objective.targetId === event.monsterId)
@@ -146,7 +153,8 @@ export function recordQuestEvent(
 }
 
 export function planQuestClaim(data: SaveData, questId: Id, catalog: ContentCatalog): Result<QuestClaimPlan> {
-  const quest = catalog.world.quests[questId];
+  const base = catalog.world.quests[questId];
+  const quest = base ? questForPlayer(base, data.player, catalog.rules.items) : undefined;
   if (!quest) return error('NOT_FOUND', `找不到任務資料（${questId}）。`);
   if (data.quests[questId]?.status !== 'active' || !isReady(data, questId, quest, catalog)) {
     return error('NOT_READY', `「${quest.name}」的目標尚未完成。`);

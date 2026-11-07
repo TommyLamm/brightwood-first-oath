@@ -6,19 +6,22 @@ import type {
   ContentCatalog,
   LoadOutcome,
   Persistence,
+  GameProfile,
   SaveData,
   SaveUpgradeRequired,
   SaveStatus,
   StorageLike,
 } from '../contracts/index.js';
 import {
-  cloneSaveData,
-  measureSaveData,
+  measureProfile,
+  prepareProfile,
   prepareSave,
   READABLE_SAVE_FORMATS,
   SAVE_FORMAT_VERSION,
   SAVE_WARNING_BYTES,
 } from './validate.js';
+import { activeSaveData, cloneProfile, profileFromLegacySave, updateActiveCharacter } from './profile.js';
+import { deriveStats } from '../domain/progression/index.js';
 
 const ORDINARY_INTERVAL_MS = 15_000;
 const CLOUD_WINDOW_MS = 60_000;
@@ -38,21 +41,21 @@ export type PersistenceOptions = {
 };
 
 type Mode = 'local' | 'cloud' | 'preview' | 'memory';
-type Snapshot = { data: SaveData; important: boolean };
+type Snapshot = { data: GameProfile; important: boolean };
 type CloudAttempt = {
-  data: SaveData;
+  data: GameProfile;
   revision: number;
   requestId: string;
 };
 
 type LegacyCandidate = {
   raw: string;
-  data: SaveData;
+  data: GameProfile;
   formatVersion: number;
 };
 
 type LocalSaveValidation =
-  | { ok: true; data: SaveData; formatVersion: number; repairMessage?: string }
+  | { ok: true; data: GameProfile; formatVersion: number; repairMessage?: string }
   | { ok: false; status: 'loadError' | 'incompatible'; message: string; unreadable: boolean };
 
 type Runtime = {
@@ -66,8 +69,9 @@ type Runtime = {
   busy: boolean;
   pending: Snapshot | null;
   retryAttempt: CloudAttempt | null;
-  retryLocal: SaveData | null;
-  lastCheckpoint: SaveData | null;
+  retryLocal: GameProfile | null;
+  lastCheckpoint: GameProfile | null;
+  profile: GameProfile | null;
   lastWriteStartedAt: number;
   writeStarts: number[];
   timer: ReturnType<typeof setTimeout> | null;
@@ -111,14 +115,11 @@ function errorStatus(error: unknown): SaveStatus | null {
 }
 
 function isFullRecovery(player: SaveData['player'], catalog: ContentCatalog): boolean {
-  const hpBonus = Object.values(player.equipment).reduce((sum, itemId) =>
-    sum + (itemId === null ? 0 : catalog.rules.items[itemId]?.hpBonus ?? 0), 0);
-  const maxHp = 80 + 20 * (player.level - 1) + 12 * (player.skillRanks.vitality ?? 0) + hpBonus;
-  const maxMp = 40 + 2 * (player.level - 1);
+  const { maxHp, maxMp } = deriveStats(player, catalog.rules);
   return player.hp === maxHp && player.mp === maxMp;
 }
 
-function isImportantChange(previous: SaveData | null, next: SaveData, catalog: ContentCatalog): boolean {
+function isImportantCharacterChange(previous: SaveData | null, next: SaveData, catalog: ContentCatalog): boolean {
   if (!previous) return true;
   const a = previous.player;
   const b = next.player;
@@ -130,11 +131,22 @@ function isImportantChange(previous: SaveData | null, next: SaveData, catalog: C
     || JSON.stringify(previous.quests) !== JSON.stringify(next.quests)
     || JSON.stringify(previous.flags) !== JSON.stringify(next.flags)
     || a.job !== b.job || a.level !== b.level
-    || a.str !== b.str || a.dex !== b.dex || a.ap !== b.ap || a.sp !== b.sp
+    || a.str !== b.str || a.dex !== b.dex || a.int !== b.int || a.ap !== b.ap || a.sp !== b.sp
     || JSON.stringify(a.skillRanks) !== JSON.stringify(b.skillRanks)
     || JSON.stringify(a.bag) !== JSON.stringify(b.bag)
     || JSON.stringify(a.equipment) !== JSON.stringify(b.equipment)
     || diedOrRevived || restoredToFull;
+}
+
+function isImportantChange(previous: GameProfile | null, next: GameProfile, catalog: ContentCatalog): boolean {
+  if (!previous || previous.activeCharacterId !== next.activeCharacterId
+    || JSON.stringify(previous.slots) !== JSON.stringify(next.slots)) return true;
+  return Object.keys(next.characters).some((id) => {
+    const character = next.characters[id]!;
+    const before = previous.characters[id];
+    return isImportantCharacterChange(before ? { ...before, settings: previous.settings } : null,
+      { ...character, settings: next.settings }, catalog);
+  });
 }
 
 function newRequestId(): string {
@@ -171,7 +183,7 @@ function validateLocalSave(rawText: string, catalog: ContentCatalog): LocalSaveV
   if (!hasExactKeys(envelope, ['formatVersion', 'data', 'savedAt']) || typeof envelope.savedAt !== 'string') {
     return { ok: false, status: 'loadError', message: '本機存檔封套結構無效；原始資料已保留。', unreadable: true };
   }
-  const prepared = prepareSave(envelope.data, catalog);
+  const prepared = prepareProfile(envelope.data, catalog, envelope.formatVersion);
   if (!prepared.ok) {
     return { ok: false, status: 'loadError', message: `${prepared.message} 原始資料已保留。`, unreadable: true };
   }
@@ -209,6 +221,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     retryAttempt: null,
     retryLocal: null,
     lastCheckpoint: null,
+    profile: null,
     lastWriteStartedAt: 0,
     writeStarts: [],
     timer: null,
@@ -221,6 +234,15 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     unreadableLocal: false,
   };
 
+  const flushWaiters = new Set<(saved: boolean) => void>();
+  const settleFlush = (): void => {
+    const failed = runtime.disposed || !runtime.initialized || runtime.mode === 'memory'
+      || ['saveError', 'loadError', 'incompatible', 'conflict', 'authLost', 'unavailable', 'upgradeRequired'].includes(runtime.status);
+    if (!failed && (runtime.busy || runtime.pending || runtime.retryAttempt || runtime.retryLocal)) return;
+    for (const resolve of flushWaiters) resolve(!failed);
+    flushWaiters.clear();
+  };
+
   const setStatus = (status: SaveStatus, message?: string): void => {
     if (runtime.disposed) return;
     runtime.status = status;
@@ -229,6 +251,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     } catch {
       // A presentation callback must not interrupt persistence.
     }
+    settleFlush();
   };
 
   const clearTimer = (): void => {
@@ -270,6 +293,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
     if (rawText === null) {
       runtime.lastCheckpoint = null;
+      runtime.profile = null;
       if (legacyKey && runtime.cloudReady?.mode !== 'authenticated') {
         let legacyRaw: string | null;
         try {
@@ -294,7 +318,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
           }
           runtime.legacyCandidate = {
             raw: legacyRaw,
-            data: cloneSaveData(candidate.data),
+            data: cloneProfile(candidate.data),
             formatVersion: candidate.formatVersion,
           };
           runtime.initialized = true;
@@ -323,7 +347,8 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       return { mode: 'memory', status: validated.status, data: null, message: validated.message };
     }
     if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
-    runtime.lastCheckpoint = cloneSaveData(validated.data);
+    runtime.lastCheckpoint = cloneProfile(validated.data);
+    runtime.profile = cloneProfile(validated.data);
     runtime.initialized = true;
     const saveUpgrade = validated.formatVersion < SAVE_FORMAT_VERSION
       ? { formatVersion: validated.formatVersion, source: 'local' as const }
@@ -335,17 +360,17 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       ? `本機存檔為 format ${saveUpgrade.formatVersion}；首次寫入 format ${SAVE_FORMAT_VERSION} 前請選擇備份並升級，或暫不升級。`
       : validated.repairMessage ?? '本機存檔已載入。';
     setStatus(status, message);
-    return { mode: 'local', status, data: validated.data, saveUpgrade };
+    return { mode: 'local', status, data: activeSaveData(validated.data), profile: cloneProfile(validated.data), saveUpgrade };
   };
 
-  const validateCloudRecord = (record: unknown): { data: SaveData; revision: number; formatVersion: number; repaired: boolean; repairMessage?: string } | null => {
+  const validateCloudRecord = (record: unknown): { data: GameProfile; revision: number; formatVersion: number; repaired: boolean; repairMessage?: string } | null => {
     if (!isRecord(record) || !isValidRevision(record.revision)) throw new Error('雲端存檔 revision 無效。');
     if (!isSupportedSaveFormat(record.formatVersion)) {
       const error = new Error('雲端存檔格式版本不相容。') as CloudError;
       error.machineCode = 'SAVE_FORMAT_INCOMPATIBLE';
       throw error;
     }
-    const prepared = prepareSave(record.data, options.catalog);
+    const prepared = prepareProfile(record.data, options.catalog, record.formatVersion);
     if (!prepared.ok) throw new Error(prepared.message);
     return {
       data: prepared.value.data,
@@ -366,6 +391,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.busy = false;
     runtime.initialized = false;
     runtime.mode = null;
+    runtime.profile = null;
     runtime.cloudReady = null;
     runtime.legacyCandidate = null;
     runtime.saveUpgrade = null;
@@ -401,6 +427,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         if (record === null) {
           runtime.revision = 0;
           runtime.lastCheckpoint = null;
+      runtime.profile = null;
           runtime.initialized = true;
           runtime.saveUpgrade = null;
           const status: SaveStatus = preview ? 'previewOnly' : 'ready';
@@ -410,7 +437,8 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         const loaded = validateCloudRecord(record);
         if (!loaded) throw new Error('雲端存檔結構無效。');
         runtime.revision = loaded.revision;
-        runtime.lastCheckpoint = cloneSaveData(loaded.data);
+        runtime.lastCheckpoint = cloneProfile(loaded.data);
+        runtime.profile = cloneProfile(loaded.data);
         runtime.initialized = true;
         const saveUpgrade = loaded.formatVersion < SAVE_FORMAT_VERSION
           ? { formatVersion: loaded.formatVersion, source: preview ? 'preview' as const : 'cloud' as const }
@@ -421,7 +449,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
           ? `雲端存檔為 format ${saveUpgrade.formatVersion}；確認升級後會送出 format ${SAVE_FORMAT_VERSION}。平台若回覆格式不相容，會停止寫入。`
           : loaded.repairMessage ?? (preview ? '預覽存檔已載入。' : '雲端存檔已載入。');
         setStatus(status, message);
-        return { mode: preview ? 'preview' : 'cloud', status, data: loaded.data, saveUpgrade };
+        return { mode: preview ? 'preview' : 'cloud', status, data: activeSaveData(loaded.data), profile: cloneProfile(loaded.data), saveUpgrade };
       } catch (error) {
         if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
         runtime.mode = 'memory';
@@ -550,7 +578,8 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     }
 
     runtime.legacyCandidate = null;
-    runtime.lastCheckpoint = cloneSaveData(validated.data);
+    runtime.lastCheckpoint = cloneProfile(validated.data);
+    runtime.profile = cloneProfile(validated.data);
     runtime.initialized = true;
     const saveUpgrade = validated.formatVersion < SAVE_FORMAT_VERSION
       ? { formatVersion: validated.formatVersion, source: 'local' as const }
@@ -564,10 +593,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         ? `舊版進度已匯入並安全修復；原件仍保留。${validated.repairMessage}`
         : '舊版進度已匯入；原件仍保留。';
     setStatus(status, message);
-    return { mode: 'local', status, data: validated.data, message, saveUpgrade };
+    return { mode: 'local', status, data: activeSaveData(validated.data), profile: cloneProfile(validated.data), message, saveUpgrade };
   };
 
-  const writeLocal = (snapshot: SaveData, generation: number): void => {
+  const writeLocal = (snapshot: GameProfile, generation: number): void => {
     if (!options.storage) {
       setStatus('unavailable', '尚未提供本機儲存介面。');
       return;
@@ -576,7 +605,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     try {
       previousRaw = options.storage.getItem(key);
     } catch (error) {
-      runtime.retryLocal = cloneSaveData(snapshot);
+      runtime.retryLocal = cloneProfile(snapshot);
       setStatus('saveError', errorMessage(error, '檢查本機原存檔失敗；原始資料已保留。'));
       return;
     }
@@ -602,7 +631,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         setStatus('incompatible', '本機存檔格式不相容；原始資料已保留，已停止寫入。');
         return;
       }
-      const previousSave = prepareSave(previousEnvelope.data, options.catalog);
+      const previousSave = prepareProfile(previousEnvelope.data, options.catalog, previousEnvelope.formatVersion);
       if (!previousSave.ok) {
         runtime.mode = 'memory';
         runtime.initialized = false;
@@ -620,7 +649,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     }
     const envelope = {
       formatVersion: SAVE_FORMAT_VERSION,
-      data: cloneSaveData(snapshot),
+      data: cloneProfile(snapshot),
       savedAt: new Date().toISOString(),
     };
     try {
@@ -628,13 +657,13 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       if (serialized === undefined) throw new Error('本機存檔無法序列化。');
       options.storage.setItem(key, serialized);
       if (generation !== runtime.generation) return;
-      runtime.lastCheckpoint = cloneSaveData(snapshot);
+      runtime.lastCheckpoint = cloneProfile(snapshot);
       runtime.legacyCandidate = null;
       runtime.retryLocal = null;
       setStatus('localSaved');
     } catch (error) {
       if (generation !== runtime.generation) return;
-      runtime.retryLocal = cloneSaveData(snapshot);
+      runtime.retryLocal = cloneProfile(snapshot);
       setStatus('saveError', errorMessage(error, '寫入本機存檔失敗；可重試。'));
     }
   };
@@ -689,15 +718,19 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
     const envelope = {
       formatVersion: SAVE_FORMAT_VERSION,
-      data: cloneSaveData(snapshot),
+      data: cloneProfile(snapshot),
       savedAt: new Date().toISOString(),
     };
     try {
       const serialized = JSON.stringify(envelope);
       if (serialized === undefined) throw new Error('本機存檔無法序列化。');
+      if (storage.getItem(key) !== originalRaw) {
+        stopForChangedSource('備份期間本機存檔已改變；未覆寫，請重新載入。');
+        return;
+      }
       storage.setItem(key, serialized);
       if (storage.getItem(key) !== serialized) throw new Error('新存檔未能讀回核對。');
-      runtime.lastCheckpoint = cloneSaveData(snapshot);
+      runtime.lastCheckpoint = cloneProfile(snapshot);
       runtime.saveUpgrade = null;
       runtime.upgradeRaw = null;
       runtime.upgradeConfirmed = false;
@@ -733,6 +766,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
   };
 
   const pump = (): void => {
+    settleFlush();
     if (runtime.disposed || !runtime.initialized || runtime.busy || !runtime.mode) return;
     if (runtime.saveUpgrade && !runtime.upgradeConfirmed) return;
     if (runtime.mode === 'memory') return;
@@ -797,7 +831,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     }
     runtime.pending = null;
     const attempt: CloudAttempt = {
-      data: cloneSaveData(pending.data),
+      data: cloneProfile(pending.data),
       revision: runtime.revision,
       requestId: newRequestId(),
     };
@@ -819,7 +853,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (retry) runtime.retryRequested = false;
     setStatus('saving');
     const input: CloudSaveInput = {
-      data: cloneSaveData(attempt.data),
+      data: cloneProfile(attempt.data),
       revision: attempt.revision,
       formatVersion: SAVE_FORMAT_VERSION,
       requestId: attempt.requestId,
@@ -843,7 +877,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       runtime.revision = saved.revision;
       runtime.retryAttempt = null;
       runtime.retryRequested = false;
-      runtime.lastCheckpoint = cloneSaveData(attempt.data);
+      runtime.lastCheckpoint = cloneProfile(attempt.data);
       if (runtime.saveUpgrade && runtime.upgradeConfirmed && runtime.mode === 'cloud') {
         runtime.saveUpgrade = null;
         runtime.upgradeConfirmed = false;
@@ -858,26 +892,50 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     });
   };
 
-  const checkpoint = (data: SaveData): void => {
+  const checkpointProfile = (data: GameProfile): void => {
     if (runtime.disposed || !runtime.initialized || !runtime.mode || runtime.mode === 'memory') return;
     if (runtime.saveUpgrade && !runtime.upgradeConfirmed) return;
-    const prepared = prepareSave(data, options.catalog);
+    const prepared = prepareProfile(data, options.catalog);
     if (!prepared.ok) {
       setStatus('saveError', prepared.message);
       return;
     }
     runtime.legacyCandidate = null;
-    const snapshot = cloneSaveData(prepared.value.data);
-    const metrics = measureSaveData(snapshot);
+    const snapshot = cloneProfile(prepared.value.data);
+    runtime.profile = cloneProfile(snapshot);
+    const metrics = measureProfile(snapshot);
     if (!metrics.error && metrics.bytes >= SAVE_WARNING_BYTES) {
       setStatus(runtime.status, `存檔已達 ${metrics.bytes} bytes，接近 64 KiB 上限。`);
     }
     const important = isImportantChange(runtime.lastCheckpoint, snapshot, options.catalog)
-      || isImportantChange(runtime.pending?.data ?? null, snapshot, options.catalog);
+      || isImportantChange(runtime.pending?.data ?? runtime.lastCheckpoint, snapshot, options.catalog);
     const existingImportant = runtime.pending?.important ?? false;
     runtime.pending = { data: snapshot, important: important || existingImportant };
     pump();
   };
+
+  const checkpoint = (data: SaveData): void => {
+    const prepared = prepareSave(data, options.catalog);
+    if (!prepared.ok) {
+      setStatus('saveError', prepared.message);
+      return;
+    }
+    const profile = runtime.profile;
+    // Compatibility projection for the world simulation; never replaces inactive characters.
+    if (profile && !profile.activeCharacterId) {
+      setStatus('saveError', '請先在角色列表選擇角色。');
+      return;
+    }
+    checkpointProfile(profile ? updateActiveCharacter(profile, prepared.value.data) : profileFromLegacySave(prepared.value.data));
+  };
+
+  const flush = (): Promise<boolean> => new Promise((resolve) => {
+    flushWaiters.add(resolve);
+    if (runtime.pending) runtime.pending.important = true;
+    clearTimer();
+    pump();
+    settleFlush();
+  });
 
   const confirmSaveUpgrade = (): void => {
     if (runtime.disposed || !runtime.initialized || !runtime.saveUpgrade) {
@@ -901,7 +959,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         setStatus('saveError', '無法確認目前的雲端存檔；未送出升級寫入。');
         return;
       }
-      runtime.pending = { data: cloneSaveData(runtime.lastCheckpoint), important: true };
+      runtime.pending = { data: cloneProfile(runtime.lastCheckpoint), important: true };
       runtime.retryRequested = false;
       pump();
       return;
@@ -948,11 +1006,13 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.retryLocal = null;
     runtime.retryRequested = false;
     runtime.lastCheckpoint = null;
+      runtime.profile = null;
     runtime.legacyCandidate = null;
     runtime.saveUpgrade = null;
     runtime.upgradeRaw = null;
     runtime.upgradeConfirmed = false;
     runtime.status = 'unavailable';
+    settleFlush();
   };
 
   const discardUnreadableLocalSave = (): boolean => {
@@ -975,16 +1035,16 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.disposed = true;
   };
 
-  return { initialize, importLegacySave, checkpoint, confirmSaveUpgrade, retry, invalidate, discardUnreadableLocalSave, dispose };
+  return { initialize, importLegacySave, checkpoint, checkpointProfile, flush, getProfile: () => runtime.profile ? cloneProfile(runtime.profile) : null, confirmSaveUpgrade, retry, invalidate, discardUnreadableLocalSave, dispose };
 }
 
-export { validateSave } from './validate.js';
+export { validateSave, cloneSaveData, measureSaveData, prepareSave } from './validate.js';
 export {
-  cloneSaveData,
-  measureSaveData,
-  prepareSave,
+  measureProfile,
+  prepareProfile,
   MAX_SAVE_BYTES,
   READABLE_SAVE_FORMATS,
   SAVE_FORMAT_VERSION,
   SAVE_WARNING_BYTES,
 } from './validate.js';
+export { activeSaveData, cloneProfile, createEmptyProfile, profileFromLegacySave, updateActiveCharacter } from './profile.js';

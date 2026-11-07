@@ -131,6 +131,11 @@ export class KeyboardInputState {
   private bindings: EffectiveKeyBindings = resolveEffectiveBindings();
   private heldCodes = new Set<string>();
   private jumpPressed = false;
+  private attackSkills: readonly [string, string, string, string] = ['basic', 'heavy-strike', 'sweep', 'iron-guard'];
+
+  setAttackSkills(skills: readonly [string, string, string, string]): void {
+    this.attackSkills = skills;
+  }
 
   constructor(bindings: KeyBindings = {}) {
     this.setBindings(bindings);
@@ -181,12 +186,12 @@ export class KeyboardInputState {
       case 'climbDown':
       case 'jump':
         return { command: null, preventDefault: true };
-      case 'attack': return { command: { type: 'attack', payload: { skillId: 'basic' } }, preventDefault: true };
+      case 'attack': return { command: { type: 'attack', payload: { skillId: this.attackSkills[0] } }, preventDefault: true };
       case 'pickup': return { command: { type: 'pickup', payload: {} }, preventDefault: true };
       case 'interact': return { command: { type: 'interact', payload: {} }, preventDefault: true };
-      case 'skill1': return { command: { type: 'attack', payload: { skillId: 'heavy-strike' } }, preventDefault: true };
-      case 'skill2': return { command: { type: 'attack', payload: { skillId: 'sweep' } }, preventDefault: true };
-      case 'skill3': return { command: { type: 'attack', payload: { skillId: 'iron-guard' } }, preventDefault: true };
+      case 'skill1': return { command: { type: 'attack', payload: { skillId: this.attackSkills[1] } }, preventDefault: true };
+      case 'skill2': return { command: { type: 'attack', payload: { skillId: this.attackSkills[2] } }, preventDefault: true };
+      case 'skill3': return { command: { type: 'attack', payload: { skillId: this.attackSkills[3] } }, preventDefault: true };
       case 'potionHp': return { command: { type: 'useItem', payload: { itemId: 'small-red' } }, preventDefault: true };
       case 'potionMp': return { command: { type: 'useItem', payload: { itemId: 'small-blue' } }, preventDefault: true };
       default: return { command: null, preventDefault: false };

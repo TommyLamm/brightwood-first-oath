@@ -469,7 +469,7 @@ function crossingAtFoot(
   return { time, y: surfaceYAtClamped(foothold, x) };
 }
 
-function resolveHorizontalPosition(
+export function resolveHorizontalPosition(
   fromX: number,
   requestedX: number,
   footY: number,

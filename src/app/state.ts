@@ -2,7 +2,7 @@ import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand, PanelId } from '../contracts/commands.js';
 import type { ContentCatalog } from '../contracts/definitions.js';
 import type { HeroAnchorManifest } from '../contracts/hero-anchors.js';
-import type { RandomSource, SaveStatus, SaveUpgradeRequired, UiSnapshot } from '../contracts/index.js';
+import type { GameProfile, RandomSource, SaveStatus, SaveUpgradeRequired, UiSnapshot } from '../contracts/index.js';
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
 import { getQuestView } from '../domain/quests/index.js';
@@ -13,6 +13,7 @@ import { deriveMovementHint } from './movement-hint.js';
 import { portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
+import { classCatalog } from '../content/world/class-quests.js';
 
 export type StartupStatus = 'loading' | 'ready' | 'incomplete';
 
@@ -32,6 +33,8 @@ export type GameAppState = {
   assetManifests: AssetManifest[] | null;
   heroAnchors: HeroAnchorManifest | null;
   gameplay: GameplayState | null;
+  profile: GameProfile | null;
+  characterBusy: boolean;
   saveStatus: SaveStatus;
   saveMessage: string | null;
   saveUpgrade: SaveUpgradeRequired | null;
@@ -64,6 +67,8 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
     assetManifests: null,
     heroAnchors: null,
     gameplay: null,
+    profile: null,
+    characterBusy: false,
     saveStatus: 'unavailable',
     saveMessage: null,
     saveUpgrade: null,
@@ -76,6 +81,7 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
 }
 
 export function appCommand(state: GameAppState, command: CommandDraft | GameCommand): AppCommandResult {
+  if (state.characterBusy) return { state, handled: true };
   if (command.type === 'setPanel' || command.type === 'closePanel') {
     const panelState = applyPanelCommand(state, command);
     return { state: { ...state, panels: panelState.panels }, handled: true };
@@ -104,15 +110,14 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
 }
 
 export function worldIsFrozen(state: GameAppState): boolean {
-  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad);
+  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad) || state.characterBusy;
 }
 
 /** Builds the single UI view model from app-owned state. */
 export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
-  const catalog = state.catalog;
-  if (!catalog) return null;
-
   const gameplay = state.gameplay;
+  const catalog = state.catalog && gameplay ? classCatalog(state.catalog, gameplay.saveData.player) : state.catalog;
+  if (!catalog) return null;
   const saveData = gameplay?.saveData ?? null;
   const questViews = saveData
     ? Object.keys(catalog.world.quests).map((questId) => getQuestView(saveData, questId, catalog))
@@ -174,6 +179,9 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
 
   return {
     screen: state.screen,
+    profile: state.profile,
+    characterBusy: state.characterBusy,
+    aimReady: state.gameplay?.aimReady === true,
     ...(state.startupIssues.length > 0 ? { error: state.startupIssues.at(-1) } : {}),
     saveData,
     stats,

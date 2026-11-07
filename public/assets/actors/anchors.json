@@ -1118,5 +1118,530 @@
         }
       ]
     }
+  },
+  "archery": {
+    "version": 1,
+    "shoot": {
+      "cloth": [
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 54,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 42,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 39,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 55,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        }
+      ],
+      "leather": [
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 54,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 42,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 39,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 55,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        }
+      ],
+      "iron": [
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 54,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 42,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 39,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        },
+        {
+          "hand": {
+            "x": 72,
+            "y": 52,
+            "rotationDeg": 0
+          },
+          "rearHand": {
+            "x": 55,
+            "y": 50
+          },
+          "arrow": {
+            "x": 72,
+            "y": 52
+          },
+          "head": {
+            "x": 49,
+            "y": 30
+          }
+        }
+      ]
+    }
+  },
+  "casting": {
+    "version": 1,
+    "cast": {
+      "cloth": [
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        }
+      ],
+      "leather": [
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        }
+      ],
+      "iron": [
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        },
+        {
+          "hand": {
+            "x": 41,
+            "y": 61,
+            "rotationDeg": 0
+          },
+          "head": {
+            "x": 49,
+            "y": 29
+          }
+        }
+      ]
+    }
+  },
+  "dagger": {
+    "version": 1,
+    "cast": {
+      "cloth": [
+        {
+          "hand": {
+            "x": 50,
+            "y": 66,
+            "rotationDeg": -30
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 59,
+            "y": 67,
+            "rotationDeg": -55
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 64,
+            "y": 51,
+            "rotationDeg": -70
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 53,
+            "y": 58,
+            "rotationDeg": -25
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        }
+      ],
+      "leather": [
+        {
+          "hand": {
+            "x": 50,
+            "y": 66,
+            "rotationDeg": -30
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 59,
+            "y": 67,
+            "rotationDeg": -55
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 64,
+            "y": 51,
+            "rotationDeg": -70
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 53,
+            "y": 58,
+            "rotationDeg": -25
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        }
+      ],
+      "iron": [
+        {
+          "hand": {
+            "x": 50,
+            "y": 66,
+            "rotationDeg": -30
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 59,
+            "y": 67,
+            "rotationDeg": -55
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 64,
+            "y": 51,
+            "rotationDeg": -70
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        },
+        {
+          "hand": {
+            "x": 53,
+            "y": 58,
+            "rotationDeg": -25
+          },
+          "head": {
+            "x": 49,
+            "y": 31
+          }
+        }
+      ]
+    }
   }
 }

@@ -17,7 +17,7 @@
 .ms-ability-points .ms-visual-token { border-color: #9c7b44; background: #ead29e; }
 .maple-ui .ms-ability-sp { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-size: 11px; border: 1px solid #bda47a; border-radius: 7px; background: #f7e9cb; }
 .ms-ability-sp strong { font-size: 20px; }
-.ms-ability-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ms-ability-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .ms-ability-card { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; justify-items: center; gap: 7px; padding: 14px; border: 1px solid #bb965c; border-radius: 9px; background: linear-gradient(#faf0d6, #ecd5a7); box-shadow: inset 0 0 0 3px #ffffff45; overflow: hidden; }
 .ms-ability-card--precision { background: linear-gradient(#edf0d8, #d7ddba); border-color: #9aa077; }
 .ms-ability-art { position: relative; width: 100%; height: clamp(160px, 23cqh, 220px); overflow: hidden; }
@@ -94,7 +94,7 @@
   .ms-ability-identity strong { font-size: 15px; }
   .ms-ability-points { flex: 1; justify-content: end; }
   .ms-ability-points .ms-visual-icon { display: none; }
-  .ms-ability-cards { gap: 10px; }
+  .ms-ability-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .ms-ability-card { padding: 10px; }
   .ms-ability-art { height: 145px; }
   .ms-ability-totals { grid-template-columns: repeat(3, minmax(0, 1fr)); }

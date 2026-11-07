@@ -1,3 +1,6 @@
+import { effectiveJob, resolveSkillSlot } from '../content/rules/jobs.js';
+import { playerSkillRank } from '../content/rules/specializations.js';
+import { playerClassLabel } from '../ui/class-presentation.js';
 import type { CommandDraft } from '../contracts/commands.js';
 import type { PanelId } from '../contracts/commands.js';
 import type { UiSnapshot } from '../contracts/ports.js';
@@ -68,6 +71,14 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
   nameInput.placeholder = '角色名稱';
   nameInput.value = '旅人';
   nameInput.setAttribute('aria-label', '角色名稱');
+  const routeInput = document.createElement('select');
+  routeInput.setAttribute('aria-label', '訓練路線');
+  for (const [value, label] of [['swordsman', '劍士訓練'], ['archer', '弓箭手訓練'], ['mage', '法師訓練'], ['rogue', '盜賊訓練']]) {
+    const option = document.createElement('option');
+    option.value = value!; option.textContent = label!; routeInput.append(option);
+  }
+  const createCharacter = (): void => dispatch({ type: 'newGame', payload: { name: nameInput.value,
+    plannedJob: routeInput.value === 'rogue' ? 'rogue' : routeInput.value === 'mage' ? 'mage' : routeInput.value === 'archer' ? 'archer' : 'swordsman' } });
   for (const element of [hud, actions, details]) {
     Object.assign(element.style, {
       display: 'flex',
@@ -97,6 +108,8 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
       screen: view.screen,
       error: view.error,
       saveData: view.saveData,
+      profile: view.profile,
+      characterBusy: view.characterBusy,
       stats: view.stats,
       questViews: view.questViews,
       saveStatus: view.saveStatus,
@@ -125,17 +138,17 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
 
     if (view.screen === 'title') {
       if (view.saveData) {
-        actions.append(nameInput);
+        actions.append(nameInput, routeInput);
         appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }));
         if (['ready', 'saved', 'localSaved', 'previewOnly'].includes(view.saveStatus)) {
-          appendButton(actions, '建立新角色', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+          appendButton(actions, '建立新角色', createCharacter, view.profile?.slots.every(({ characterId }) => characterId !== null));
         }
       } else if (view.saveStatus === 'loadError' || view.saveStatus === 'incompatible' || view.saveStatus === 'unavailable') {
         appendButton(actions, '重試讀取存檔', () => dispatch({ type: 'retrySave', payload: {} }));
         if (!view.error) appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
       } else {
-        actions.append(nameInput);
-        appendButton(actions, '開始新遊戲', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+        actions.append(nameInput, routeInput);
+        appendButton(actions, '開始新遊戲', createCharacter);
         appendButton(actions, '暫時遊玩', () => dispatch({ type: 'playTemporary', payload: {} }));
         appendButton(actions, '繼續遊戲', () => dispatch({ type: 'continue', payload: {} }), true);
       }
@@ -143,19 +156,24 @@ export function createAppUi(root: HTMLElement, dispatch: (command: CommandDraft)
         appendButton(actions, '匯入舊版進度', () => dispatch({ type: 'importLegacySave', payload: {} }));
         appendButton(actions, '暫不匯入', () => dispatch({ type: 'dismissLegacyImport', payload: {} }));
       }
+      for (const character of Object.values(view.profile?.characters ?? {})) {
+        appendButton(actions, `${character.player.name}・Lv.${character.player.level}｜選擇並繼續`,
+          () => dispatch({ type: 'selectCharacter', payload: { characterId: character.characterId } }),
+          view.characterBusy || view.saveStatus === 'saving' || view.saveStatus === 'saveError');
+      }
     }
     if (view.screen === 'create') {
-      actions.append(nameInput);
-      appendButton(actions, view.saveData ? '確認取代並建立' : '確認建立角色', () => dispatch({ type: 'newGame', payload: { name: nameInput.value } }));
+      actions.append(nameInput, routeInput);
+      appendButton(actions, '確認建立角色', createCharacter);
       appendButton(actions, '取消', () => dispatch({ type: 'returnTitle', payload: {} }));
     }
     if (player && (view.screen === 'playing' || view.screen === 'paused' || view.screen === 'dead' || view.screen === 'result')) {
       for (const panel of ['inventory', 'equipment', 'skills', 'stats', 'quests', 'map', 'settings'] as const) {
         appendButton(actions, panelTitle(panel), () => dispatchPanel(panel));
       }
-      appendButton(actions, '普通攻擊', () => dispatch({ type: 'attack', payload: { skillId: 'basic' } }));
-      for (const skillId of ['heavy-strike', 'sweep', 'iron-guard'] as const) {
-        if ((player.skillRanks[skillId] ?? 0) > 0) {
+      appendButton(actions, view.catalog.rules.skills[resolveSkillSlot(view.saveData!.player,0)]!.name, () => dispatch({ type: 'attack', payload: { skillId: resolveSkillSlot(view.saveData!.player,0) } }));
+      for (const skillId of ([1,2,3] as const).map((slot) => resolveSkillSlot(player, slot))) {
+        if (playerSkillRank(player, skillId) > 0) {
           const skill = view.catalog.rules.skills[skillId];
           appendButton(actions, skill?.name ?? skillId, () => dispatch({ type: 'attack', payload: { skillId } }));
         }
@@ -278,15 +296,17 @@ function renderPanel(
     }
   } else if (panel === 'stats' && view.stats && view.saveData) {
     const player = view.saveData.player;
-    content.textContent = `STR ${player.str}｜DEX ${player.dex}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜暴擊率 ${Math.round(view.stats.critChance * 1000) / 10}%｜金幣 ${player.coins}`;
+    content.textContent = `${playerClassLabel(player)}｜STR ${player.str}｜DEX ${player.dex}｜INT ${player.int ?? 4}｜LUK ${player.luk ?? 0}｜攻擊 ${view.stats.attack}｜防禦 ${view.stats.defense}｜暴擊率 ${Math.round(view.stats.critChance * 1000) / 10}%｜金幣 ${player.coins}`;
     content.textContent += `｜可用 AP ${player.ap}｜SP ${player.sp}`;
     if (player.ap > 0) {
       appendButton(details, 'STR +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'str', amount: 1 } }));
       appendButton(details, 'DEX +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'dex', amount: 1 } }));
+      appendButton(details, 'INT +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'int', amount: 1 } }));
+      appendButton(details, 'LUK +1', () => dispatch({ type: 'allocateAp', payload: { stat: 'luk', amount: 1 } }));
     }
   } else if (panel === 'skills' && view.saveData) {
     content.textContent = '';
-    for (const skill of Object.values(view.catalog.rules.skills).filter((entry) => entry.requiredJob !== 'enemy' && entry.id !== 'basic')) {
+    for (const skill of Object.values(view.catalog.rules.skills).filter((entry) => entry.requiredJob === effectiveJob(view.saveData!.player) && !entry.requiredSpecialization)) {
       const rank = view.saveData.player.skillRanks[skill.id] ?? 0;
       const line = document.createElement('span');
       line.textContent = `${skill.name} Rank ${rank}/${skill.maxRank}｜需求 Lv.${skill.requiredLevel} ${skill.requiredJob}｜MP ${skill.mpCost}`;

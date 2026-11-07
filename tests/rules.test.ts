@@ -3,7 +3,7 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(34);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(40);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
@@ -12,15 +12,19 @@ describe('rules catalog', () => {
       'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
       'broken-copper-thread', 'muted-bell-fragment', 'oathfarer-circlet',
     ]));
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(20);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(26);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
-      'basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
+      'archer-bow-mastery', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-steady-aim',
+      'basic', 'bow-basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
       'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'ruins-bell-slam', 'ruins-bell-sweep', 'ruins-carapace-bite',
       'ruins-prowler-sweep', 'ruins-puppet-slap', 'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam', 'sweep', 'vitality',
     ]);
-    expect(playerSkillIds).toHaveLength(6);
-    expect(playerLearnableIds).toHaveLength(5);
-    expect([...playerLearnableIds].sort()).toEqual(['heavy-strike', 'iron-guard', 'rest-recovery', 'sweep', 'vitality']);
+    expect(playerSkillIds).toHaveLength(12);
+    expect(playerLearnableIds).toHaveLength(10);
+    expect([...playerLearnableIds].sort()).toEqual([
+      'archer-bow-mastery', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-steady-aim',
+      'heavy-strike', 'iron-guard', 'rest-recovery', 'sweep', 'vitality',
+    ]);
     expect(rulesCatalog.skills.basic.requiredJob).toBe('any');
     expect(rulesCatalog.skills['heavy-strike'].requiredLevel).toBe(10);
     expect(rulesCatalog.skills.sweep.requiredLevel).toBe(12);

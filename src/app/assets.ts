@@ -10,6 +10,7 @@ import type {
   HeroAnchorManifest,
   HeroAnchorOutfit,
   HeroAnchorPose,
+  ArcheryAnchorFrame,
 } from '../contracts/hero-anchors.js';
 import { TERRAIN_DECORATION_IMAGE_KEYS, THEMED_GROUND_IMAGE_KEYS, THEMED_TERRAIN_IMAGE_KEYS } from '../render/terrain-style.js';
 import { MAP_BACKGROUND_IMAGE_KEYS } from '../render/background-style.js';
@@ -51,7 +52,14 @@ type PackManifestResult =
 
 const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> = {
   actors: [
+    'actor:rogue-cloth', 'actor:rogue-leather', 'actor:rogue-iron',
+    'actor:rogue-mentor',
+    ...['starter-dagger','iron-dagger','steel-dagger','guardian-dagger','frost-tide-dagger','sunwell-oathdagger'].map((id)=>`equip:${id}`),
+    'actor:mage-cloth', 'actor:mage-leather', 'actor:mage-iron', 'actor:mage-mentor',
+    ...['starter-staff','iron-staff','steel-staff','guardian-staff','frost-tide-staff','sunwell-oathstaff'].map((id)=>`equip:${id}`),
     'actor:hero-cloth', 'actor:hero-leather', 'actor:hero-iron',
+    'actor:archer-cloth', 'actor:archer-leather', 'actor:archer-iron', 'actor:archer-mentor', 'actor:archery-target', 'vfx:arrow',
+    ...['starter-bow','iron-bow','steel-bow','guardian-bow','frost-tide-bow','sunwell-oathbow'].map((id) => `equip:${id}`),
     'equip:starter-sword', 'equip:iron-sword', 'equip:steel-sword', 'equip:guardian-sword', 'equip:frost-tide-sword', 'equip:sunwell-oathblade',
     'equip:cloth-cap', 'equip:leather-cap', 'equip:iron-helm', 'equip:oathfarer-circlet',
     'actor:snail', 'actor:slime', 'actor:mushroom', 'actor:boar', 'actor:golem', 'actor:sentinel', 'actor:guardian', 'actor:frost-wolf', 'actor:frost-crab', 'actor:frost-tide-warden', 'actor:sand-scorpion', 'actor:sunwell-beetle', 'actor:sunwell-sentinel', 'actor:ruins-bell-keeper',
@@ -70,6 +78,16 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
     'env:portal', 'env:town-sign', 'env:mine-door', 'env:altar',
   ],
   interface: [
+    'portrait:rogue',
+    ...['starter-dagger','iron-dagger','steel-dagger','guardian-dagger','frost-tide-dagger','sunwell-oathdagger'].map((id)=>`item:${id}`),
+    ...['dagger-basic','rogue-double-stab','rogue-shadow-lunge','rogue-smoke','rogue-dagger-mastery','rogue-combo-rhythm'].map((id)=>`skill:${id}`),
+    'portrait:rogue-mentor',
+    ...['starter-staff','iron-staff','steel-staff','guardian-staff','frost-tide-staff','sunwell-oathstaff'].map((id)=>`item:${id}`),
+    ...['wand-basic','mage-mana-bolt','mage-frost-ring','mage-blink','mage-mana-affinity','mage-rune-study'].map((id)=>`skill:${id}`),
+    'portrait:mage', 'portrait:mage-mentor',
+    ...['starter-bow','iron-bow','steel-bow','guardian-bow','frost-tide-bow','sunwell-oathbow'].map((id) => `item:${id}`),
+    ...['bow-basic','archer-double-shot','archer-piercing-shot','archer-retreat-shot','archer-bow-mastery','archer-steady-aim'].map((id) => `skill:${id}`),
+    'portrait:archer', 'portrait:archer-mentor',
     ...[
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'frost-tide-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
@@ -87,6 +105,9 @@ const expectedImageKeys: Record<Exclude<AssetPack, 'audio'>, readonly string[]> 
 };
 
 const expectedAudioKeys = [
+  'rogue-slash', 'rogue-lunge', 'rogue-smoke',
+  'mage-cast', 'mage-bolt', 'mage-frost', 'mage-blink', 'mage-hit',
+  'bow-draw', 'bow-release', 'bow-pierce', 'bow-hit', 'bow-retreat',
   'theme-title', 'theme-town',
   ...['theme-brightwood', 'theme-ridge', 'theme-frost', 'theme-sands', 'theme-ruins'].flatMap((key) => [key, `${key}:combat`]),
   ...['boss-guardian', 'boss-frost', 'boss-sunwell', 'boss-ruins'].flatMap((key) => [key, `${key}:phase2`]),
@@ -344,7 +365,39 @@ export function parseHeroAnchorManifest(value: unknown): HeroAnchorManifest {
       leather: parseHeroAnchorOutfit(heroes.leather, 'leather'),
       iron: parseHeroAnchorOutfit(heroes.iron, 'iron'),
     },
+    ...(value.archery === undefined ? {} : { archery: parseArcheryAnchors(value.archery) }),
+    ...(value.casting === undefined ? {} : { casting: parseCastingAnchors(value.casting) }),
+    ...(value.dagger === undefined ? {} : { dagger: parseCastingAnchors(value.dagger) }),
   };
+}
+
+function parseCastingAnchors(value: unknown): NonNullable<HeroAnchorManifest['casting']> {
+  if (!isRecord(value) || value.version !== 1 || !isRecord(value.cast)) throw new Error('casting anchors require version 1 and cast outfits');
+  const cast = {} as NonNullable<HeroAnchorManifest['casting']>['cast'];
+  for (const outfit of ['cloth','leather','iron'] as const) {
+    const frames = value.cast[outfit];
+    if (!Array.isArray(frames) || frames.length !== 4) throw new Error(`casting.${outfit} requires four frames`);
+    cast[outfit] = frames.map((frame,index)=>parseHeroAnchorFrame(frame,`casting.${outfit}.${index}`));
+  }
+  return {version:1,cast};
+}
+
+function parseArcheryAnchors(value: unknown): NonNullable<HeroAnchorManifest['archery']> {
+  if (!isRecord(value) || value.version !== 1 || !isRecord(value.shoot)) throw new Error('archery anchors require version 1 and shoot outfits');
+  const shoot = {} as Record<HeroAnchorOutfit, ArcheryAnchorFrame[]>;
+  for (const outfit of ['cloth', 'leather', 'iron'] as const) {
+    const frames = value.shoot[outfit];
+    if (!Array.isArray(frames) || frames.length !== 4) throw new Error(`archery.${outfit} requires four frames`);
+    shoot[outfit] = frames.map((frame, index) => {
+      const base = parseHeroAnchorFrame(frame, `archery.${outfit}.${index}`);
+      if (!isRecord(frame)) throw new Error('invalid archery frame');
+      const rearHand = frame.rearHand; const arrow = frame.arrow;
+      if (!isRecord(rearHand) || !isRecord(arrow) || !isFiniteNumber(rearHand.x) || !isFiniteNumber(rearHand.y)
+        || !isFiniteNumber(arrow.x) || !isFiniteNumber(arrow.y)) throw new Error('archery rear hand and arrow must be finite');
+      return { ...base, rearHand: { x: rearHand.x, y: rearHand.y }, arrow: { x: arrow.x, y: arrow.y } };
+    });
+  }
+  return { version: 1, shoot };
 }
 
 /** Loads the canonical anchors beside the actor manifest, using the same entry-relative base URL. */

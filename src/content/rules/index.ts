@@ -9,6 +9,7 @@ export { maxLevel, expToNext, movement } from './progression.js';
 export { monsters, questDropByQuest } from './monsters.js';
 export { playerLearnableIds, playerSkillIds, skills } from './skills.js';
 export { validateRules } from './validate.js';
+export { jobs, isPlayerJob, effectiveJob, jobName, canEquipForJob, resolveSkillSlot } from './jobs.js';
 
 export const rulesCatalog: RulesCatalog = {
   items,

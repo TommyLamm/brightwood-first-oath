@@ -1,3 +1,4 @@
+import { ARCHER_MUZZLE } from '../contracts/archery.js';
 import type {
   CombatActor,
   CombatState,
@@ -24,6 +25,13 @@ import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.j
 import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
+import { cloneProjectile } from '../domain/combat/projectiles.js';
+import { effectiveJob, resolveSkillSlot, jobs, magePassiveRank, roguePassiveRank } from '../content/rules/jobs.js';
+import { advancedSkill, playerSkillRank, specializations } from '../content/rules/specializations.js';
+import { gainRhythm, lungeDestination, type RogueRhythm, type SmokeZone } from '../domain/combat/rogue.js';
+import { blinkDestination, MAGE_MUZZLE } from '../domain/combat/mage.js';
+import { AIM_TIME_MS, bowPassiveBonus, canStartRetreat, stepRetreat, type RetreatState } from '../domain/combat/archer.js';
+import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '../content/world/class-quests.js';
 import { deriveActiveGuard } from './guard-status.js';
 
 const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
@@ -63,6 +71,14 @@ export type GameplayState = {
   buffCastAtMs?: number;
   interaction: { npcId: Id; dialogue: string[] } | null;
   pendingTransition: { mapId: Id; spawnId: Id; after: 'travel' | 'respawn' | 'retryBoss' } | null;
+  retreat?: RetreatState;
+  aimStillMs?: number;
+  aimReady?: boolean;
+  rogueRhythm?: RogueRhythm;
+  smoke?: SmokeZone;
+  rogueTrial?: { position: { x: number; y: number }; resolveAtMs: number };
+  poisons?: { targetId: string; damage: number; nextTickAtMs: number; expiresAtMs: number }[];
+  rallyUntilMs?: number;
 };
 
 export type GameplayStepInput = {
@@ -86,10 +102,11 @@ export function startNewGame(
   name: string,
   catalog: ContentCatalog,
   nextEntityId: () => EntityId,
+  plannedJob: import('../contracts/types.js').PlayerJob = 'swordsman',
 ): { gameplay: GameplayState; normalizedName: string } | { error: string } {
   const checkedName = validatePlayerName(name);
   if (!checkedName.ok) return { error: checkedName.message };
-  const player = createPlayer(checkedName.value, catalog.rules);
+  const player = createPlayer(checkedName.value, catalog.rules, plannedJob);
   const map = catalog.world.maps.camp;
   const spawn = map?.spawns.find(({ id }) => id === 'start');
   if (!map || !spawn) return { error: '起始地圖缺少 camp/start 出生點。' };
@@ -214,7 +231,7 @@ export function stepGameplay(
   if (!gameplay) {
     const createCommand = commands.find((command) => command.type === 'newGame');
     if (!createCommand || createCommand.type !== 'newGame') return { gameplay: null, screen };
-    const started = startNewGame(createCommand.payload.name, input.catalog, input.nextEntityId);
+    const started = startNewGame(createCommand.payload.name, input.catalog, input.nextEntityId, createCommand.payload.plannedJob);
     if ('error' in started) return { gameplay: null, screen: 'create' };
     gameplay = started.gameplay;
     screen = 'playing';
@@ -222,6 +239,8 @@ export function stepGameplay(
   }
 
   gameplay = cloneGameplay(gameplay);
+  input = { ...input, catalog: classCatalog(input.catalog, gameplay.saveData.player) };
+  if (gameplay.movement.mode === 'climbing' || input.nowMs < gameplay.movement.knockbackUntilMs) interruptArcherCast(gameplay, input.catalog);
   if (gameplay.saveData.player.hp <= 0) {
     const actorsToClear = new Set<EntityId>([gameplay.playerEntityId]);
     for (const actorId of clearBellKeeperCombatOnPlayerDeath(gameplay)) actorsToClear.add(actorId);
@@ -260,6 +279,13 @@ export function stepGameplay(
   // AI intent and monster movement precede player movement; T06 emits attack
   // requests here but T03 resolves them only after both sides have moved.
   const playerBeforeMove = playerCombatActor(gameplay, catalog, input.nowMs);
+  if (gameplay.rogueRhythm && input.nowMs >= gameplay.rogueRhythm.expiresAtMs) delete gameplay.rogueRhythm;
+  if (gameplay.smoke && input.nowMs >= gameplay.smoke.expiresAtMs) delete gameplay.smoke;
+  gameplay.monsters = gameplay.monsters.map((monster) => ({ ...monster,
+    smokeSlowedUntilMs: gameplay.smoke && input.nowMs < gameplay.smoke.expiresAtMs
+      && Math.abs(monster.movement.position.x - gameplay.smoke.position.x) <= 105
+      && Math.abs(monster.movement.position.y - gameplay.smoke.position.y) <= 40
+      && !BOSS_MONSTER_IDS.has(monster.monsterId) ? input.nowMs + 1 : 0 }));
   // stepActors omits monsters whose respawn is due, so keep the pre-step list
   // to resolve each respawn request back to its spawn placement.
   const monstersBeforeStep = gameplay.monsters;
@@ -280,13 +306,23 @@ export function stepGameplay(
     return skill !== undefined
       && input.nowMs < attack.startedAtMs + skill.windupMs + skill.activeMs + skill.recoveryMs;
   });
-  const movementConfig = attackLocked
+  const mageWindup = effectiveJob(gameplay.saveData.player) === 'mage' && gameplay.combat.attacks.some((attack) =>
+    attack.sourceId === gameplay!.playerEntityId && input.nowMs - Math.max(0, input.dtSeconds) * 1000 < attack.startedAtMs + (catalog.rules.skills[attack.skillId]?.windupMs ?? 0));
+  const rogueLocked = effectiveJob(gameplay.saveData.player) === 'rogue' && attackLocked;
+  const movementConfig = mageWindup || rogueLocked ? { ...catalog.rules.movement, speed: 0 } : attackLocked
     ? { ...catalog.rules.movement, speed: catalog.rules.movement.speed * 0.25 }
     : catalog.rules.movement;
   const originalFacing = gameplay.movement.facing;
-  const playerMovement = stepPlayerMovement(
+  const retreatStep = gameplay.retreat
+    ? stepRetreat(gameplay.movement, gameplay.retreat, map, catalog.rules.movement, input.dtSeconds, input.nowMs) : null;
+  if (retreatStep) {
+    if (retreatStep.retreat) gameplay.retreat = retreatStep.retreat;
+    else delete gameplay.retreat;
+    delete gameplay.jumpAssist;
+  }
+  const playerMovement = retreatStep ? { movement: retreatStep.movement, memory: undefined, jumped: false } : stepPlayerMovement(
     gameplay.movement,
-    input.input,
+    mageWindup || rogueLocked ? { ...input.input, moveX: 0, climbY: 0, jumpPressed: false, downHeld: false } : input.input,
     map,
     movementConfig,
     input.dtSeconds,
@@ -296,6 +332,28 @@ export function stepGameplay(
   gameplay.movement = playerMovement.movement;
   gameplay.jumpAssist = playerMovement.memory;
   if (attackLocked) gameplay.movement = { ...gameplay.movement, facing: originalFacing };
+  if (gameplay.movement.mode === 'climbing') interruptArcherCast(gameplay, catalog);
+
+  for (const attack of gameplay.combat.attacks) {
+    const rogueSkill = catalog.rules.skills[attack.skillId];
+    if (input.dtSeconds > 0 && attack.sourceId === gameplay.playerEntityId
+      && (attack.skillId === 'rogue-shadow-lunge' || attack.skillId === 'rogue-smoke') && rogueSkill
+      && !attack.actionResolved && input.nowMs >= attack.startedAtMs + rogueSkill.windupMs) {
+      attack.actionResolved = true;
+      if (attack.skillId === 'rogue-shadow-lunge') {
+        const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
+        const destination = lungeDestination({ ...gameplay.movement, facing: attack.facing }, map, catalog.rules.movement, input.nowMs, claimed);
+        if (destination) { gameplay.movement = destination; delete gameplay.jumpAssist; }
+        attack.origin = { ...gameplay.movement.position };
+      } else gameplay.smoke = { position: { ...attack.origin }, expiresAtMs: attack.startedAtMs + rogueSkill.windupMs + rogueSkill.durationMs + (attack.rank - 1) * 100 };
+    }
+    if (input.dtSeconds <= 0 || attack.sourceId !== gameplay.playerEntityId || attack.skillId !== 'mage-blink'
+      || attack.hitIds.includes('blink:resolved') || input.nowMs < attack.startedAtMs + 100) continue;
+    attack.hitIds.push('blink:resolved');
+    const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
+    const destination = blinkDestination({ ...gameplay.movement, facing: attack.facing }, map, catalog.rules.movement, input.nowMs, claimed);
+    if (destination) { gameplay.movement = destination; delete gameplay.jumpAssist; }
+  }
 
   const combatActors = buildCombatActors(gameplay, catalog, input.nowMs);
   for (const request of actorStep.attackRequests) {
@@ -310,6 +368,7 @@ export function stepGameplay(
     if (proposal.ok) gameplay.combat = proposal.value.state;
   }
 
+  const combatSkillsById = new Map(gameplay.combat.attacks.map((attack) => [attack.id, attack.skillId]));
   const combatStep = stepCombat(
     gameplay.combat,
     combatActors,
@@ -317,10 +376,57 @@ export function stepGameplay(
     input.dtSeconds,
     input.nowMs,
     input.random,
+    map,
   );
   gameplay.combat = combatStep.state;
 
+  if (input.dtSeconds > 0 && gameplay.saveData.player.hp > 0) {
+    for (const poison of gameplay.poisons ?? []) {
+      const target = gameplay.monsters.find((monster) => monster.id === poison.targetId);
+      if (!target || target.hp <= 0) continue;
+      while (poison.nextTickAtMs <= input.nowMs && poison.nextTickAtMs <= poison.expiresAtMs) {
+        if (target.mode !== 'phase-transition') combatStep.hits.push({ attackId: 'poison', sourceId: gameplay.playerEntityId, targetId: target.id,
+          damage: poison.damage, critical: false, knockback: { x: 0, y: 0 } });
+        poison.nextTickAtMs += 1000;
+      }
+    }
+    gameplay.poisons = (gameplay.poisons ?? []).filter((poison) => poison.nextTickAtMs <= poison.expiresAtMs
+      && gameplay.monsters.some((monster) => monster.id === poison.targetId && monster.hp > 0));
+  }
+
   for (const hit of combatStep.hits) {
+    const targetId = hit.targetId.startsWith('training:') ? hit.targetId.slice('training:'.length) : null;
+    if (targetId && (hit.projectile || effectiveJob(gameplay.saveData.player) === 'rogue')) {
+      if (effectiveJob(gameplay.saveData.player) === 'rogue') {
+        const skillId = combatSkillsById.get(hit.attackId);
+        let objective: string | null = targetId === ROGUE_TRIAL_IDS[0] && skillId === 'dagger-basic' ? targetId : null;
+        const attack = combatStep.state.attacks.find(({ id }) => id === hit.attackId);
+        if (targetId === ROGUE_TRIAL_IDS[1] && skillId === 'rogue-double-stab'
+          && attack?.meleeHitIds?.[0]?.includes(hit.targetId) && attack.meleeHitIds[1]?.includes(hit.targetId)) {
+          objective = targetId;
+          if (!gameplay.rogueTrial) {
+            const placement = map.npcs.find(({ npcId }) => npcId === targetId)!;
+            gameplay.rogueTrial = { position: { x: placement.x, y: placement.y }, resolveAtMs: input.nowMs + 900 };
+            gameplay.toast = '紅框將在900ms後判定，請走出框線！';
+          }
+        }
+        if (objective) gameplay.saveData.quests = recordQuestEvent(gameplay.saveData.quests,
+          { type: 'inspected', targetId: objective }, catalog.world, gameplay.saveData.player);
+        const placement = map.npcs.find(({ npcId }) => npcId === targetId);
+        if (placement) gameplay.effects.push({ id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs });
+        continue;
+      }
+      const placement = map.npcs.find(({ npcId }) => npcId === targetId);
+      if (placement) gameplay.effects.push({ id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs, projectile: true });
+      if (placement && effectiveJob(gameplay.saveData.player) === 'mage') gameplay.effects[gameplay.effects.length-1]!.magic = true;
+      const before = gameplay.saveData;
+      gameplay.saveData = { ...before, quests: recordQuestEvent(before.quests, { type: 'inspected', targetId }, catalog.world, before.player) };
+      if (JSON.stringify(before.quests) !== JSON.stringify(gameplay.saveData.quests)) {
+        gameplay.toast = '命中' + (catalog.world.npcs[targetId]?.name ?? '試煉靶') + '。三靶全中後回' + (effectiveJob(before.player) === 'mage' ? '星蘅' : '青翎') + '領獎。';
+        announceReadyQuests(gameplay, before, catalog);
+      }
+      continue;
+    }
     if (hit.targetId === gameplay.playerEntityId) {
       if (input.nowMs < gameplay.invulnerableUntilMs) continue;
       const damaged = applyProgressAction(gameplay.saveData.player, { type: 'damage', amount: hit.damage }, catalog.rules);
@@ -328,6 +434,7 @@ export function stepGameplay(
       gameplay.saveData = { ...gameplay.saveData, player: damaged.value };
       gameplay.invulnerableUntilMs = input.nowMs + 800;
       gameplay.attackOrDamageAtMs = input.nowMs;
+      interruptArcherCast(gameplay, catalog);
       gameplay.movement = {
         ...gameplay.movement,
         velocity: { x: hit.knockback.x, y: hit.knockback.y },
@@ -340,9 +447,43 @@ export function stepGameplay(
       if (damaged.value.hp <= 0) screen = 'dead';
     } else {
       gameplay.monsters = applyMonsterHit(gameplay.monsters, hit, input.nowMs);
+      if (hit.sourceId === gameplay.playerEntityId && effectiveJob(gameplay.saveData.player) === 'rogue'
+        && roguePassiveRank(gameplay.saveData.player, catalog.rules, 'rogue-combo-rhythm') > 0) {
+        gameplay.rogueRhythm = gainRhythm(gameplay.rogueRhythm, input.nowMs);
+      }
+      const resolvedSkill = hit.skillId ?? combatSkillsById.get(hit.attackId);
+      if (resolvedSkill === 'shadowblade-venom') {
+        const damage = Math.max(1, Math.floor(deriveStats(gameplay.saveData.player, catalog.rules).attack * .12 + (gameplay.saveData.player.luk ?? 0) * .05));
+        gameplay.poisons = [...(gameplay.poisons ?? []).filter((poison) => poison.targetId !== hit.targetId),
+          { targetId: hit.targetId, damage, nextTickAtMs: input.nowMs + 1000, expiresAtMs: input.nowMs + 4000 }];
+      }
+      if (resolvedSkill === 'arcanist-siphon' && hit.sourceId === gameplay.playerEntityId) {
+        const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: 0, mp: 6 }, catalog.rules);
+        if (restored.ok) gameplay.saveData.player = restored.value;
+      }
+      if (resolvedSkill === 'mage-frost-ring' || resolvedSkill === 'elementalist-nova') gameplay.monsters = gameplay.monsters.map((monster) =>
+        monster.id === hit.targetId && !BOSS_MONSTER_IDS.has(monster.monsterId) && monster.hp > 0
+          ? { ...monster, slowedUntilMs: input.nowMs + 1500, provokedUntilMs: input.nowMs + 4000 } : monster);
       gameplay.attackOrDamageAtMs = input.nowMs;
       addEffect(gameplay, hit.targetId, 'hit', hit.damage, input.nowMs, input.nextEntityId, hit.critical);
+      if (hit.projectile) gameplay.effects[gameplay.effects.length - 1]!.projectile = true;
+      if (effectiveJob(gameplay.saveData.player) === 'mage' && hit.sourceId === gameplay.playerEntityId) gameplay.effects[gameplay.effects.length-1]!.magic = true;
     }
+  }
+
+  if (gameplay.rogueTrial && input.dtSeconds > 0) {
+    const trial = gameplay.rogueTrial;
+    if (input.nowMs >= trial.resolveAtMs) {
+      const escaped = Math.abs(gameplay.movement.position.x - trial.position.x) > 90 + catalog.rules.movement.width / 2
+        || Math.abs(gameplay.movement.position.y - trial.position.y) > 80;
+      if (escaped) {
+        gameplay.saveData.quests = recordQuestEvent(gameplay.saveData.quests,
+          { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, gameplay.saveData.player);
+        gameplay.toast = '撤離成功！完成三項訓練後回木葉鎮找夜嵐領獎。';
+      } else gameplay.toast = '仍在紅框內。再對連刺靶完成兩段連刺，即可重試撤離。';
+      delete gameplay.rogueTrial;
+    } else gameplay.telegraphs.push({ id: 'rogue-trial-warning', sourceId: 'training:rogue-target-double', kind: 'rect',
+      rect: { x: trial.position.x - 90, y: trial.position.y - 80, width: 180, height: 80 }, resolveAtMs: trial.resolveAtMs });
   }
 
   // T06's deathReported bit is the once-only event gate. Reward, drop creation
@@ -374,7 +515,8 @@ export function stepGameplay(
   gameplay.drops = gameplay.drops.filter(({ expiresAtMs }) => input.nowMs < expiresAtMs);
   if (screen === 'dead') gameplay.movement = { ...gameplay.movement, mode: 'dead', velocity: { x: 0, y: 0 } };
   if (screen === 'dead' && gameplay.deathAtMs === null) gameplay.deathAtMs = input.nowMs;
-  if (gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
+  if (input.dtSeconds > 0 && gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
+  updateArcherAim(gameplay, input);
   expireToast(gameplay, input.nowMs);
   // Hold the result screen until every guardian item (core and 守衛之刃) is picked up or has expired;
   // its 返回城鎮 button leaves the arena and would silently discard anything still on the floor.
@@ -388,10 +530,36 @@ function clearCombatForActors(gameplay: GameplayState, actorIds: ReadonlySet<Ent
   if (actorIds.size === 0) return;
   gameplay.combat = {
     attacks: gameplay.combat.attacks.filter(({ sourceId }) => !actorIds.has(sourceId)),
+    ...(gameplay.combat.projectiles ? { projectiles: gameplay.combat.projectiles.filter(({ sourceId }) => !actorIds.has(sourceId)).map(cloneProjectile) } : {}),
     cooldowns: Object.fromEntries(Object.entries(gameplay.combat.cooldowns)
       .filter(([actorId]) => !actorIds.has(actorId))
       .map(([actorId, cooldowns]) => [actorId, { ...cooldowns }])),
   };
+  if (actorIds.has(gameplay.playerEntityId)) { delete gameplay.retreat; delete gameplay.aimStillMs; delete gameplay.aimReady;
+    delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; delete gameplay.poisons; delete gameplay.rallyUntilMs; }
+}
+
+function interruptArcherCast(gameplay: GameplayState, _catalog: ContentCatalog): void {
+  if (effectiveJob(gameplay.saveData.player) === 'swordsman' && gameplay.saveData.player.specialization !== 'berserker') return;
+  gameplay.combat.attacks = gameplay.combat.attacks.filter((attack) =>
+    attack.sourceId !== gameplay.playerEntityId);
+  delete gameplay.retreat;
+  delete gameplay.aimStillMs;
+  delete gameplay.aimReady;
+  delete gameplay.bufferedAttack;
+  delete gameplay.rogueRhythm;
+}
+
+function updateArcherAim(gameplay: GameplayState, input: GameplayStepInput): void {
+  const eligible = bowPassiveBonus(gameplay.saveData.player, input.catalog.rules, 'archer-steady-aim') > 0
+    && gameplay.saveData.player.hp > 0 && gameplay.movement.mode === 'grounded'
+    && Math.abs(gameplay.movement.velocity.x) < 0.01 && !gameplay.retreat
+    && input.input.moveX === 0 && input.input.climbY === 0 && !input.input.jumpPressed
+    && input.nowMs >= gameplay.movement.knockbackUntilMs
+    && !gameplay.combat.attacks.some((attack) => attack.sourceId === gameplay.playerEntityId);
+  if (!eligible) { delete gameplay.aimStillMs; delete gameplay.aimReady; return; }
+  gameplay.aimStillMs = Math.min(AIM_TIME_MS, (gameplay.aimStillMs ?? 0) + Math.max(0, input.dtSeconds * 1000));
+  gameplay.aimReady = gameplay.aimStillMs >= AIM_TIME_MS;
 }
 
 export function makeWorldSnapshot(
@@ -425,11 +593,16 @@ export function makeWorldSnapshot(
       animationKey,
       visual: { ...gameplay.saveData.player.equipment },
       invulnerableUntilMs: gameplay.invulnerableUntilMs,
+        aimReady: gameplay.aimReady ?? false,
+      rhythmStacks: gameplay.rogueRhythm && nowMs < gameplay.rogueRhythm.expiresAtMs ? gameplay.rogueRhythm.stacks : 0,
     },
     monsters: gameplay.monsters,
+    poisonedIds: (gameplay.poisons ?? []).filter((poison) => nowMs <= poison.expiresAtMs).map((poison) => poison.targetId),
     drops: gameplay.drops,
     npcs: map.npcs,
     attacks: gameplay.combat.attacks,
+    projectiles: gameplay.combat.projectiles ?? [],
+    ...(gameplay.smoke ? { smoke: { ...gameplay.smoke, position: { ...gameplay.smoke.position } } } : {}),
     telegraphs: gameplay.telegraphs,
     effects: gameplay.effects,
   };
@@ -443,11 +616,66 @@ function processCommand(
   const { catalog } = context;
   const player = gameplay.saveData.player;
   switch (command.type) {
+    case 'advanceJob': {
+      const mentor = { swordsman: 'mentor', archer: 'archer-mentor', mage: 'mage-mentor', rogue: 'rogue-mentor' }[effectiveJob(player)];
+      if (gameplay.saveData.location.mapId !== 'town' || !nearNpc(gameplay, catalog, mentor, INTERACTION_RANGE_PX)) return withToast(gameplay, '請回木葉鎮，靠近本職業導師後選擇二轉分支。');
+      const result = applyProgressAction(player, { type: 'advanceJob', ...command.payload }, catalog.rules);
+      return result.ok ? { gameplay: withPlayer(gameplay, result.value, '已完成' + specializations[command.payload.specialization].name + '二轉；原技能和配點保留。') } : withToast(gameplay, result.message);
+    }
+    case 'setAdvancedSkill': {
+      if (gameplay.combat.attacks.some((attack) => attack.sourceId === gameplay.playerEntityId)) return withToast(gameplay, '請在動作結束後切換技能槽。');
+      const result = applyProgressAction(player, { type: 'setAdvancedSkill', ...command.payload }, catalog.rules);
+      if (result.ok) delete gameplay.bufferedAttack;
+      return result.ok ? { gameplay: withPlayer(gameplay, result.value, null) } : withToast(gameplay, result.message);
+    }
     case 'attack': {
-      const skill = catalog.rules.skills[command.payload.skillId];
-      if (!skill || (skill.kind !== 'attack' && skill.kind !== 'buff')) return withToast(gameplay, '找不到可施放的技能。');
+      const isBasic = ['basic', 'bow-basic', 'wand-basic', 'dagger-basic'].includes(command.payload.skillId);
+      const skillId = isBasic ? resolveSkillSlot(player, 0) : command.payload.skillId;
+      const skill = catalog.rules.skills[skillId];
+      if (!skill || (skill.kind !== 'attack' && skill.kind !== 'buff' && skill.kind !== 'movement' && skill.kind !== 'zone')) return withToast(gameplay, '找不到可施放的技能。');
+      const trialStab = isRogueTrial(gameplay) && skill.id === 'rogue-double-stab';
+      if (skill.requiredSpecialization && advancedSkill(player) !== skill.id) return withToast(gameplay, '尚未解鎖這個二轉分支技能。');
+      if (!isBasic && !trialStab && (skill.requiredJob !== player.job || player.level < skill.requiredLevel)) {
+        return withToast(gameplay, skillLockedMessage(skill, player));
+      }
+      if (effectiveJob(player) === 'rogue') {
+        if (!catalog.rules.items[player.equipment.weapon ?? '']?.allowedJobs?.includes('rogue')) return withToast(gameplay, '裝備短刃後才能攻擊。');
+        if (gameplay.movement.mode !== 'grounded' || context.nowMs < gameplay.movement.knockbackUntilMs) return withToast(gameplay, '請站穩後使用短刃。');
+        if (skill.id === 'rogue-shadow-lunge') {
+          const map = catalog.world.maps[gameplay.saveData.location.mapId];
+          const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
+          if (!map || !lungeDestination(gameplay.movement, map, catalog.rules.movement, context.nowMs, claimed)) return withToast(gameplay, '前方沒有安全切入空間。');
+        }
+      }
+      if (effectiveJob(player) === 'archer') {
+        const weapon = player.equipment.weapon ? catalog.rules.items[player.equipment.weapon] : null;
+        if (!weapon?.allowedJobs?.includes('archer')) return withToast(gameplay, '裝備弓後才能射箭。');
+        if (gameplay.movement.mode === 'climbing' || context.nowMs < gameplay.movement.knockbackUntilMs) {
+          return withToast(gameplay, '攀爬或受擊硬直時無法射箭。');
+        }
+      }
+      if (effectiveJob(player) === 'mage') {
+        const weapon = catalog.rules.items[player.equipment.weapon ?? ''];
+        if (!weapon?.allowedJobs?.includes('mage')) return withToast(gameplay, '裝備法杖後才能施法。');
+        if (gameplay.movement.mode !== 'grounded' || context.nowMs < gameplay.movement.knockbackUntilMs) {
+          return withToast(gameplay, '請站穩後施法。');
+        }
+        if (skill.id === 'mage-blink') {
+          const map = catalog.world.maps[gameplay.saveData.location.mapId];
+          const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
+          if (!map || !blinkDestination(gameplay.movement, map, catalog.rules.movement, context.nowMs, claimed)) {
+            return withToast(gameplay, '閃現前方沒有安全落點。');
+          }
+        }
+      }
+      if (skill.id === 'archer-retreat-shot' || skill.id === 'ranger-volley') {
+        const map = catalog.world.maps[gameplay.saveData.location.mapId];
+        if (!map || !canStartRetreat(gameplay.movement, map, catalog.rules.movement, context.nowMs)) {
+          return withToast(gameplay, '後撤射擊需要站穩，並在身後保留空間。');
+        }
+      }
       if (skill.kind === 'buff') {
-        const rank = player.skillRanks[skill.id] ?? 0;
+        const rank = playerSkillRank(player, skill.id);
         if (rank < 1 || player.job !== 'swordsman' || player.level < skill.requiredLevel) {
           return withToast(gameplay, skillLockedMessage(skill, player));
         }
@@ -466,7 +694,11 @@ function processCommand(
             },
           },
         };
-        gameplay.guardUntilMs = context.nowMs + skill.durationMs;
+        if (skill.id === 'guardian-rally') {
+          gameplay.rallyUntilMs = context.nowMs + skill.durationMs;
+          const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: Math.floor(deriveStats(player, catalog.rules).maxHp * .08), mp: 0 }, catalog.rules);
+          if (restored.ok) gameplay.saveData.player = restored.value;
+        } else gameplay.guardUntilMs = context.nowMs + skill.durationMs;
         gameplay.attackOrDamageAtMs = context.nowMs;
         gameplay.buffCastAtMs = context.nowMs;
         if (gameplay.toast !== gameplay.stickyToast) gameplay.toast = null;
@@ -477,10 +709,14 @@ function processCommand(
       const proposal = tryAttack(gameplay.combat, {
         sourceId: gameplay.playerEntityId,
         skillId: skill.id,
+        ...(gameplay.aimReady ? { firstHitBonus: bowPassiveBonus(player, catalog.rules, 'archer-steady-aim') } : {}),
+        ...(gameplay.rogueRhythm?.stacks === 3 && context.nowMs < gameplay.rogueRhythm.expiresAtMs
+          && ['rogue-double-stab', 'rogue-shadow-lunge'].includes(skill.id)
+          ? { damageBonus: 0.015 * roguePassiveRank(player, catalog.rules, 'rogue-combo-rhythm') } : {}),
       }, actors, catalog.rules, context.nowMs, context.nextEntityId);
       if (!proposal.ok) {
         // A skill pressed mid-swing is buffered briefly so it chains off the swing instead of being lost.
-        if (proposal.code === 'NOT_READY' && skill.id !== 'basic') {
+        if (proposal.code === 'NOT_READY' && !isBasic) {
           if (gameplay.bufferedAttack?.skillId !== skill.id) {
             gameplay.bufferedAttack = { skillId: skill.id, expiresAtMs: context.nowMs + ATTACK_BUFFER_MS };
           }
@@ -489,17 +725,24 @@ function processCommand(
         delete gameplay.bufferedAttack;
         // Mashing keys while a swing is still playing is normal input, not an error; neither is
         // mashing the basic attack during its own cooldown. Skill cooldowns still explain themselves.
-        if (proposal.code === 'NOT_READY' || (skill.id === 'basic' && proposal.code === 'COOLDOWN')) return { gameplay };
+        if (proposal.code === 'NOT_READY' || (isBasic && proposal.code === 'COOLDOWN')) return { gameplay };
         if (proposal.code === 'REQUIREMENT') return withToast(gameplay, skillLockedMessage(skill, player));
         return withToast(gameplay, attackFailureMessage(proposal.code));
       }
       delete gameplay.bufferedAttack;
-      const mp = skill.mpCost > 0
+      const mp = skill.mpCost > 0 && !trialStab
         ? applyProgressAction(player, { type: 'spendMp', amount: skill.mpCost }, catalog.rules)
         : { ok: true as const, value: player };
       if (!mp.ok) return withToast(gameplay, mpShortMessage(skill, player.mp, mp.message));
       gameplay.combat = proposal.value.state;
+      if (proposal.value.attack.damageBonus) delete gameplay.rogueRhythm;
       gameplay.saveData = { ...gameplay.saveData, player: mp.value };
+      if (skill.projectile) {
+        delete gameplay.aimStillMs; delete gameplay.aimReady;
+        if (skill.id === 'archer-retreat-shot' || skill.id === 'ranger-volley') gameplay.retreat = {
+          startedAtMs: context.nowMs, facing: gameplay.movement.facing, distance: 0, jumped: false,
+        };
+      }
       if (gameplay.toast !== gameplay.stickyToast) gameplay.toast = null;
       gameplay.attackOrDamageAtMs = context.nowMs;
       return { gameplay };
@@ -822,6 +1065,10 @@ function requestTransition(
     return { gameplay: { ...gameplay, toast: '目的地地圖或出生點資料不存在。' }, screen: 'playing' };
   }
   gameplay.pendingTransition = { mapId, spawnId, after };
+  gameplay.combat = createCombatState();
+  delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; delete gameplay.poisons; delete gameplay.rallyUntilMs;
+  delete gameplay.bufferedAttack;
+  delete gameplay.retreat; delete gameplay.aimStillMs; delete gameplay.aimReady;
   gameplay.toast = '正在載入地圖…';
   return { gameplay, screen: 'loading' };
 }
@@ -862,6 +1109,8 @@ export function completeMapTransition(
     playerEntityId: current.playerEntityId,
     movement: createMovement({ x: spawn.x, y: spawn.y }),
     monsters: map.monsters.map((placement) => createMonster(nextEntityId(), placement, map, catalog.rules)),
+    poisons: [],
+    rallyUntilMs: 0,
     combat: createCombatState(),
     drops: [],
     telegraphs: [],
@@ -911,7 +1160,9 @@ function expireToast(gameplay: GameplayState, nowMs: number): void {
 }
 
 function recoverWhileResting(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): void {
-  const rank = gameplay.saveData.player.skillRanks['rest-recovery'] ?? 0;
+  const mage = effectiveJob(gameplay.saveData.player) === 'mage';
+  const rank = mage ? magePassiveRank(gameplay.saveData.player, catalog.rules, 'mage-mana-affinity')
+    : gameplay.saveData.player.skillRanks['rest-recovery'] ?? 0;
   const recoveryStartsAtMs = gameplay.attackOrDamageAtMs + 3000;
   if (rank < 1 || nowMs < recoveryStartsAtMs) {
     gameplay.nextRegenAtMs = 0;
@@ -921,7 +1172,7 @@ function recoverWhileResting(gameplay: GameplayState, catalog: ContentCatalog, n
     gameplay.nextRegenAtMs = recoveryStartsAtMs;
   }
   if (nowMs < gameplay.nextRegenAtMs) return;
-  const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: rank * 2, mp: 0 }, catalog.rules);
+  const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: mage ? 0 : rank * 2, mp: mage ? rank : 0 }, catalog.rules);
   if (restored.ok) gameplay.saveData = { ...gameplay.saveData, player: restored.value };
   gameplay.nextRegenAtMs = nowMs + 2000;
 }
@@ -957,7 +1208,7 @@ function applyDeathEvent(
     if (random.next() >= drop.chance) continue;
     const span = drop.max - drop.min + 1;
     const quantity = drop.min + Math.floor(random.next() * span);
-    drops.push({ itemId: drop.itemId, quantity, coins: 0 });
+    drops.push({ itemId: classItemId(drop.itemId, gameplay.saveData.player), quantity, coins: 0 });
   }
   for (const [questId, conditional] of Object.entries(questDropByQuest)) {
     if (conditional.monsterId === monster.monsterId && gameplay.saveData.quests[questId]?.status === 'active') {
@@ -1037,7 +1288,7 @@ function applyDeathEvent(
       const gained = player.level - levelBefore;
       const atCap = player.level >= catalog.rules.progression.maxLevel;
       gameplay.toast = '升到 Lv.' + player.level + (atCap ? '（已達上限）' : '') + '！獲得 ' + gained * 5 + ' AP'
-        + (player.job === 'swordsman' ? '、' + gained + ' SP，可在能力與技能面板分配。' : '，可在能力面板分配。');
+        + (player.job !== 'beginner' ? '、' + gained + ' SP，可在能力與技能面板分配。' : '，可在能力面板分配。');
       gameplay.stickyToast = gameplay.toast;
     }
   }
@@ -1072,9 +1323,23 @@ function scatterDropPosition(
   return { x, y: origin.y + (footY - originFootY) };
 }
 
+function isRogueTrial(gameplay: GameplayState): boolean {
+  return gameplay.saveData.player.job === 'beginner' && effectiveJob(gameplay.saveData.player) === 'rogue'
+    && gameplay.saveData.location.mapId === 'town' && gameplay.saveData.quests.q02?.status === 'active';
+}
+
 function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): CombatActor[] {
   return [
     playerCombatActor(gameplay, catalog, nowMs),
+    ...(['archer', 'mage', 'rogue'].includes(effectiveJob(gameplay.saveData.player))
+      ? (catalog.world.maps[gameplay.saveData.location.mapId]?.npcs ?? [])
+        .filter(({ npcId }) => effectiveJob(gameplay.saveData.player) === 'rogue'
+          ? isRogueTrial(gameplay) && ROGUE_TRIAL_IDS.slice(0, 2).some((id) => id === npcId)
+          : ARCHERY_TARGET_IDS.some((id) => id === npcId))
+        .map((placement): CombatActor => ({ id: 'training:' + placement.npcId,
+          position: { x: placement.x, y: placement.y }, facing: 1, hp: 1, faction: 'enemy',
+          stats: { maxHp: 1, maxMp: 0, attack: 0, defense: 0, critChance: 0 }, body: { width: 30, height: 48 },
+          knockbackImmune: true, skillRanks: {} })) : []),
     ...gameplay.monsters.filter(({ hp, mode }) => hp > 0 && mode !== 'dead').map((monster): CombatActor => {
       const definition = catalog.rules.monsters[monster.monsterId]!;
       return {
@@ -1085,7 +1350,9 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         stats: { maxHp: definition.maxHp, maxMp: 0, attack: definition.attack, defense: definition.defense, critChance: 0 },
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
+        ...(definition.projectileHeight ? { projectileHeight: definition.projectileHeight } : {}),
         knockbackImmune: BOSS_MONSTER_IDS.has(monster.monsterId),
+        projectileImmune: monster.mode === 'phase-transition',
         skillRanks: monster.pendingSkillId ? { [monster.pendingSkillId]: 1 } : {},
       };
     }),
@@ -1104,7 +1371,11 @@ function playerCombatActor(gameplay: GameplayState, catalog: ContentCatalog, now
     faction: 'player',
     body: { width: catalog.rules.movement.width, height: catalog.rules.movement.height },
     knockbackImmune: false,
-    skillRanks: gameplay.saveData.player.skillRanks,
+    skillRanks: isRogueTrial(gameplay) ? { ...gameplay.saveData.player.skillRanks, 'rogue-double-stab': 1 } : gameplay.saveData.player.skillRanks,
+    ...(gameplay.saveData.player.specialization ? { specialization: gameplay.saveData.player.specialization } : {}),
+    ...(effectiveJob(gameplay.saveData.player) === 'archer' ? { projectileOffset: ARCHER_MUZZLE } : {}),
+    ...(effectiveJob(gameplay.saveData.player) === 'mage' ? { projectileOffset: MAGE_MUZZLE } : {}),
+    ...(effectiveJob(gameplay.saveData.player) === 'rogue' ? { projectileOffset: { x: 22, y: -38 } } : {}),
   };
 }
 
@@ -1159,7 +1430,7 @@ function addEffect(
 /** Claiming used to change EXP, coins and the bag silently; spell out what the hero just received. */
 function questRewardToast(
   questName: string,
-  reward: { exp: number; coins: number; items: readonly { itemId: string; quantity: number }[]; job?: string },
+  reward: { exp: number; coins: number; items: readonly { itemId: string; quantity: number }[]; job?: import('../contracts/types.js').PlayerJob },
   levelBefore: number,
   levelAfter: number,
   catalog: ContentCatalog,
@@ -1173,16 +1444,16 @@ function questRewardToast(
   const levelCap = reward.exp > 0 && levelAfter >= catalog.rules.progression.maxLevel
     ? '，已達等級上限，EXP不再累積'
     : '';
-  const job = reward.job === 'swordsman' ? '，正式成為劍士' : '';
+  const job = reward.job ? '，正式成為' + jobs[reward.job].name : '';
   return '完成「' + questName + '」：獲得 ' + parts.join('、') + levelUp + levelCap + job + '。';
 }
 
 // Names the skill and the next step instead of a generic "not learned or not allowed".
 function skillLockedMessage(
-  skill: { name: string; requiredLevel: number },
+  skill: { name: string; requiredLevel: number; requiredJob?: string },
   player: { job: string; level: number },
 ): string {
-  if (player.job !== 'swordsman') return '轉職為劍士後才能使用「' + skill.name + '」。';
+  if (player.job !== skill.requiredJob) return '轉職為' + (skill.requiredJob === 'rogue' ? '盜賊' : skill.requiredJob === 'mage' ? '法師' : skill.requiredJob === 'archer' ? '弓箭手' : '劍士') + '後才能使用「' + skill.name + '」。';
   if (player.level < skill.requiredLevel) return '「' + skill.name + '」需要 Lv.' + skill.requiredLevel + ' 才能學習。';
   return '尚未學會「' + skill.name + '」，請在技能面板用 SP 學習。';
 }
@@ -1225,6 +1496,7 @@ function withToast(gameplay: GameplayState, toast: string): { gameplay: Gameplay
 function cloneGameplay(gameplay: GameplayState): GameplayState {
   return {
     ...gameplay,
+    ...(gameplay.poisons ? { poisons: gameplay.poisons.map((poison) => ({ ...poison })) } : {}),
     saveData: {
       ...gameplay.saveData,
       player: {
@@ -1258,7 +1530,9 @@ function cloneGameplay(gameplay: GameplayState): GameplayState {
       ...(monster.bellCycle ? { bellCycle: { ...monster.bellCycle } } : {}),
     })),
     combat: {
-      attacks: gameplay.combat.attacks.map((attack) => ({ ...attack, origin: { ...attack.origin }, hitIds: [...attack.hitIds] })),
+      ...(gameplay.combat.projectiles ? { projectiles: gameplay.combat.projectiles.map(cloneProjectile) } : {}),
+      attacks: gameplay.combat.attacks.map((attack) => ({ ...attack, origin: { ...attack.origin }, hitIds: [...attack.hitIds],
+        ...(attack.meleeHitIds ? { meleeHitIds: Object.fromEntries(Object.entries(attack.meleeHitIds).map(([key, ids]) => [key, [...ids]])) } : {}) })),
       cooldowns: Object.fromEntries(Object.entries(gameplay.combat.cooldowns).map(([id, cooldowns]) => [id, { ...cooldowns }])),
     },
     drops: gameplay.drops.map((drop) => ({ ...drop, position: { ...drop.position } })),

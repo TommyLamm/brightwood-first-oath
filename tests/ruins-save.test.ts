@@ -1,3 +1,4 @@
+import { legacySaveData } from './fixtures/legacy-save.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { CloudPort, CloudReady, CloudRecord, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
@@ -78,7 +79,7 @@ describe('ruins save compatibility', () => {
   it('loads a format-1 save with no q15 or q16 record', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const original = JSON.stringify({ formatVersion: 1, data: beforeRuinsSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const original = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
 
@@ -99,12 +100,12 @@ describe('ruins save compatibility', () => {
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     await persistence.initialize();
     persistence.checkpoint(data);
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV))!).formatVersion).toBe(5));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV))!).formatVersion).toBe(8));
     persistence.dispose();
 
     const restored = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     const outcome = await restored.initialize();
-    expect(SAVE_FORMAT_VERSION).toBe(5);
+    expect(SAVE_FORMAT_VERSION).toBe(8);
     expect(outcome).toMatchObject({ mode: 'local', status: 'ready', data: {
       quests: {
         q15: { status: 'claimed' },
@@ -115,10 +116,10 @@ describe('ruins save compatibility', () => {
     restored.dispose();
   });
 
-  it('requires confirmation before upgrading a cloud format-1 record and checkpointing as format 5', async () => {
+  it('requires confirmation before upgrading a cloud format-1 record and checkpointing as format 6', async () => {
     const data = beforeRuinsSave();
     const record: CloudRecord = {
-      data,
+      data: legacySaveData(data),
       revision: 4,
       formatVersion: 1,
       gameVersion: 'legacy',
@@ -135,9 +136,9 @@ describe('ruins save compatibility', () => {
     persistence.confirmSaveUpgrade();
     persistence.checkpoint(ruinsProgress());
     await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(2));
-    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 5, revision: 4 });
+    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 8, revision: 4 });
     expect(cloud.saveProgress.mock.calls[1]?.[0]).toMatchObject({
-      formatVersion: 5, revision: 4, data: { quests: { q16: { status: 'active', counters: { 'ruins-moss-carapace': 1 } } } },
+      formatVersion: 8, revision: 4, data: { characters: { 'legacy-1': { quests: { q16: { status: 'active', counters: { 'ruins-moss-carapace': 1 } } } } } },
     });
     persistence.dispose();
   });
@@ -145,7 +146,7 @@ describe('ruins save compatibility', () => {
   it('preserves an unknown local format and stops writes from a new character', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const original = JSON.stringify({ formatVersion: 7, data: makeSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const original = JSON.stringify({ formatVersion: 9, data: makeSave(), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
 
@@ -160,7 +161,7 @@ describe('ruins save compatibility', () => {
   it('backs up the exact format-1 envelope before the confirmed format-5 write', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const original = JSON.stringify({ formatVersion: 1, data: beforeRuinsSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const original = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     const outcome = await persistence.initialize();
@@ -172,17 +173,17 @@ describe('ruins save compatibility', () => {
     persistence.confirmSaveUpgrade();
     expect(storage.entries.get(`${key}:format1-backup`)).toBe(original);
     persistence.checkpoint(ruinsProgress());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(5));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(8));
 
     expect(storage.entries.get(`${key}:format1-backup`)).toBe(original);
-    expect(JSON.parse(storage.entries.get(key)!).data.quests.q16.counters['ruins-moss-carapace']).toBe(1);
+    expect(JSON.parse(storage.entries.get(key)!).data.characters['legacy-1'].quests.q16.counters['ruins-moss-carapace']).toBe(1);
     persistence.dispose();
   });
 
   it('does not overwrite the original if the format-1 backup fails', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const original = JSON.stringify({ formatVersion: 1, data: beforeRuinsSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const original = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, original);
     storage.setItem.mockImplementation((targetKey, value) => {
       if (targetKey === `${key}:format1-backup`) throw new Error('quota exceeded');
@@ -210,7 +211,7 @@ describe('ruins save compatibility', () => {
   it('stops after cloud format incompatibility without writing a blank replacement', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const localOriginal = JSON.stringify({ formatVersion: 1, data: beforeRuinsSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const localOriginal = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, localOriginal);
     const incompatibility = Object.assign(new Error('save format incompatible'), {
       code: 409,
@@ -232,7 +233,7 @@ describe('ruins save compatibility', () => {
   it('stops cloud writes when format 5 is rejected and keeps the local record untouched', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const localOriginal = JSON.stringify({ formatVersion: 1, data: beforeRuinsSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const localOriginal = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, localOriginal);
     const incompatibility = Object.assign(new Error('save format incompatible'), {
       code: 409,
@@ -251,7 +252,7 @@ describe('ruins save compatibility', () => {
     persistence.checkpoint(makeSave());
 
     expect(cloud.saveProgress).toHaveBeenCalledTimes(1);
-    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 5, revision: 0 });
+    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 8, revision: 0 });
     expect(storage.entries.get(key)).toBe(localOriginal);
     expect(storage.setItem).not.toHaveBeenCalled();
     persistence.dispose();

@@ -2,6 +2,7 @@ import type { QuestView } from '../contracts/definitions.js';
 import type { CommandDraft } from '../contracts/commands.js';
 import type { SaveData } from '../contracts/types.js';
 import type { SaveUpgradeRequired } from '../contracts/ports.js';
+import { SAVE_FORMAT_VERSION } from '../persistence/validate.js';
 
 export type WorldQuestGroupId = 'leaf' | 'frost' | 'sand' | 'ruins' | 'sidequests';
 
@@ -90,7 +91,7 @@ export function saveUpgradePrompt(upgrade: SaveUpgradeRequired): SaveUpgradeProm
   if (upgrade.source === 'local') {
     return {
       title: '本機存檔升級確認',
-      explanation: `目前讀取的是 ${format} 本機存檔。確認後會先備份原始 ${format} 存檔，再升級至 format5 繼續；確認前不會改寫原件。`,
+      explanation: `目前讀取的是 ${format} 本機存檔。確認後會先備份原始存檔，再升級至 format${SAVE_FORMAT_VERSION}，保留既有角色、物品及配點，加入角色管理、共享倉庫與幸運能力（舊角色初值0，不扣AP）。確認前不會改寫原件；舊版本無法讀取升級後的資料。`,
       confirmLabel: `備份 ${format} 並升級繼續`,
       temporaryLabel,
     };
@@ -98,7 +99,7 @@ export function saveUpgradePrompt(upgrade: SaveUpgradeRequired): SaveUpgradeProm
   if (upgrade.source === 'cloud') {
     return {
       title: '雲端存檔升級確認',
-      explanation: `目前讀取的是 ${format} 雲端存檔。確認後會明確升級至 format5；這項操作不建立本機備份。`,
+      explanation: `目前讀取的是 ${format} 雲端存檔。確認後會升級至 format${SAVE_FORMAT_VERSION}，保留既有角色、物品及配點，加入角色管理、共享倉庫與幸運能力（舊角色初值0，不扣AP）。這項操作不建立本機備份；舊版本無法讀取升級後的資料。`,
       confirmLabel: `確認升級雲端 ${format} 並繼續`,
       temporaryLabel,
     };

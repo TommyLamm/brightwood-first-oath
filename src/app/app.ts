@@ -1,7 +1,7 @@
 import type { AssetManifest } from '../contracts/asset-manifest.js';
 import type { CommandDraft, GameCommand } from '../contracts/commands.js';
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
-import type { EntityId, MonsterState, RandomSource, SaveData, Settings } from '../contracts/types.js';
+import type { EntityId, GameProfile, MonsterState, RandomSource, SaveData, Settings } from '../contracts/types.js';
 import type { AudioController, AudioFactory, CloudPort, MusicIntensity, Persistence, StorageLike, UiSnapshot, WorldSnapshot } from '../contracts/ports.js';
 import { createAudio } from '../audio/index.js';
 import { FIXED_STEP_SECONDS, FixedStepClock } from './fixed-step.js';
@@ -11,7 +11,12 @@ import { AppCommandQueue } from './command-queue.js';
 import { DEFAULT_KEY_BINDINGS, KeyboardControls, type GameAction, type KeyBindings } from './keyboard.js';
 import { appCommand, createInitialAppState, createUiSnapshot, type GameAppState, type StartupStatus, worldIsFrozen } from './state.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from './gameplay.js';
-import { BRIGHTWOOD_GAME_ID, createPersistence, SAVE_FORMAT_VERSION } from '../persistence/index.js';
+import { activeSaveData, BRIGHTWOOD_GAME_ID, createEmptyProfile, createPersistence, profileFromLegacySave, SAVE_FORMAT_VERSION, updateActiveCharacter } from '../persistence/index.js';
+import { characterFromSave } from '../persistence/profile.js';
+import { applyProfileAction, type ProfileAction } from '../persistence/profile-actions.js';
+import { prepareProfile } from '../persistence/validate.js';
+import { isPlayerJob, resolveSkillSlot } from '../content/rules/jobs.js';
+import { createCombatState } from '../domain/combat/index.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { createHeldAttackPreference } from './held-attack-preference.js';
@@ -161,6 +166,7 @@ export class GameApp {
       onWindowFocusChange: (windowFocused) => this.setWindowFocused(windowFocused),
       onTrustedGesture: () => { void this.unlockAudioFromGesture(); },
     }, { ...bindings, ...getSavedKeyBindings(this.stateValue.gameplay?.saveData.settings.bindings) });
+    this.configureAttackKeys();
   }
 
   setKeyBindings(bindings: KeyBindings): void {
@@ -213,13 +219,16 @@ export class GameApp {
     this.enqueueHeldBasicAttack();
     const wasFrozen = worldIsFrozen(this.stateValue);
     const queued = this.commands.drain();
+    const commandGeneration = this.operationGeneration;
     const gameplayCommands: GameCommand[] = [];
     for (const command of queued) {
+      if (commandGeneration !== this.operationGeneration) break;
       const applied = appCommand(this.stateValue, command);
       if (applied.handled) this.setState(applied.state);
       else if (this.handleAppCommand(command)) continue;
       else gameplayCommands.push(command);
     }
+    if (commandGeneration !== this.operationGeneration) gameplayCommands.length = 0;
 
     const lifecycleCommands = gameplayCommands.filter((command) =>
       (command.type === 'respawn' && this.stateValue.screen === 'dead')
@@ -343,7 +352,7 @@ export class GameApp {
       || gameplay.saveData.player.hp <= 0 || gameplay.movement.mode === 'climbing'
       || state.gameTimeMs < gameplay.movement.knockbackUntilMs) return;
     const timing = deriveCombatUiState(gameplay, state.catalog, state.gameTimeMs);
-    const readyAtMs = gameplay.combat.cooldowns[gameplay.playerEntityId]?.basic ?? 0;
+    const readyAtMs = gameplay.combat.cooldowns[gameplay.playerEntityId]?.[resolveSkillSlot(gameplay.saveData.player, 0)] ?? 0;
     if (state.gameTimeMs < readyAtMs || state.gameTimeMs < timing.actionLockUntilMs || timing.bufferedSkillId !== null) return;
     this.commands.enqueue({ type: 'attack', payload: { skillId: 'basic' } });
   }
@@ -394,7 +403,8 @@ export class GameApp {
     this.setState({ ...this.stateValue, mapVisualLoad: { ...current, status: 'failed', message } });
   }
 
-  completeMapTransition(): void {
+  completeMapTransition(expectedWorldRevision = this.stateValue.worldRevision): void {
+    if (expectedWorldRevision !== this.stateValue.worldRevision) return;
     const { gameplay, catalog, nextEntityId, gameTimeMs } = this.stateValue;
     if (!gameplay || !catalog) return;
     const result = completeMapTransition(gameplay, catalog, nextEntityId, gameTimeMs);
@@ -402,7 +412,8 @@ export class GameApp {
     this.checkpointIfChanged(result.gameplay?.saveData ?? null);
   }
 
-  failMapTransition(message: string): void {
+  failMapTransition(message: string, expectedWorldRevision = this.stateValue.worldRevision): void {
+    if (expectedWorldRevision !== this.stateValue.worldRevision) return;
     const { gameplay } = this.stateValue;
     if (!gameplay) return;
     const result = failMapTransition(gameplay, message);
@@ -522,7 +533,13 @@ export class GameApp {
   private handleAppCommand(command: GameCommand): boolean {
     switch (command.type) {
       case 'newGame':
-        this.handleNewGame(command.payload.name);
+        this.handleNewGame(command.payload);
+        return true;
+      case 'selectCharacter':
+        void this.selectCharacter(command.payload.characterId);
+        return true;
+      case 'manageProfile':
+        void this.manageProfile(command.payload);
         return true;
       case 'continue':
         if (this.stateValue.saveUpgrade) {
@@ -534,8 +551,9 @@ export class GameApp {
         } else if (this.stateValue.screen !== 'title' || !this.stateValue.gameplay) {
           this.setToast('目前沒有可繼續的角色。');
         } else {
-          const dead = this.stateValue.gameplay.saveData.player.hp <= 0;
-          this.setState({ ...this.stateValue, screen: dead ? 'dead' : 'playing', worldRevision: this.stateValue.worldRevision + 1, saveMessage: null });
+          if (this.stateValue.profile?.activeCharacterId) void this.selectCharacter(this.stateValue.profile.activeCharacterId);
+          else this.setState({ ...this.stateValue, screen: this.stateValue.gameplay.saveData.player.hp <= 0 ? 'dead' : 'playing',
+            worldRevision: this.stateValue.worldRevision + 1, saveMessage: null });
         }
         return true;
       case 'playTemporary':
@@ -601,10 +619,12 @@ export class GameApp {
         } else if (!this.temporaryPlay && ['saving', 'saveError'].includes(this.stateValue.saveStatus)) {
           this.setToast('請先完成或重試存檔，再返回標題。');
         } else if (this.temporaryPlay) {
-          void this.reloadPersistence('已返回標題畫面。', true);
+          this.checkpointIfChanged(this.stateValue.gameplay?.saveData ?? null);
+          this.clearCharacterRuntime();
+          this.setState({ ...this.stateValue, screen: 'title', panels: [], mapVisualLoad: null, focusResumeRequired: false,
+            worldRevision: this.stateValue.worldRevision + 1, saveMessage: '本頁暫時進度仍保留，重新載入後不會保存。' });
         } else {
-          // Keep queued ordinary checkpoints alive; reinitializing here would cancel them.
-          this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: null });
+          void this.returnToCharacterList();
         }
         return true;
       case 'setSettings': {
@@ -636,7 +656,7 @@ export class GameApp {
     }
   }
 
-  private handleNewGame(name: string): void {
+  private handleNewGame(payload: Extract<CommandDraft, { type: 'newGame' }>['payload']): void {
     const state = this.stateValue;
     if (state.saveUpgrade && !this.temporaryPlay) {
       this.setToast('請先處理舊格式存檔；可備份並升級，或選擇暫時遊玩。');
@@ -647,24 +667,40 @@ export class GameApp {
       return;
     }
     if (state.screen !== 'title' && state.screen !== 'create') return;
-    // Ask for a second confirmation only when an existing (or unknown) save could be replaced.
-    if (state.screen === 'title' && (state.gameplay || (!this.temporaryPlay && !this.canWriteProgress()))) {
-      this.setState({ ...state, screen: 'create', saveMessage: '再次確認即可建立角色；現有角色的進度將被取代。' });
-      return;
-    }
     if (!this.temporaryPlay && !this.canWriteProgress()) {
-      this.setToast('存檔尚未安全初始化；請先重試或選擇暫時遊玩。');
+      this.setState({ ...state, screen: 'create', saveMessage: '存檔尚未安全初始化；請先重試或選擇暫時遊玩。' });
       return;
     }
-    const started = startNewGame(name, state.catalog, state.nextEntityId);
+    if (state.characterBusy || state.saveStatus === 'saving') {
+      this.setToast('請先等待目前進度保存完成。');
+      return;
+    }
+    const plannedJob = payload.plannedJob ?? 'swordsman';
+    if (!isPlayerJob(plannedJob)) { this.setToast('請選擇有效的訓練路線。'); return; }
+    const profile = state.profile ?? createEmptyProfile(state.gameplay?.saveData.settings ?? DEFAULT_AUDIO_SETTINGS);
+    const slot = payload.slotId ? profile.slots.find(({ slotId }) => slotId === payload.slotId)
+      : profile.slots.find(({ characterId }) => characterId === null);
+    if (!slot || slot.characterId !== null) { this.setToast('角色欄位已滿，請選擇空欄位。'); return; }
+    const started = startNewGame(payload.name, state.catalog, state.nextEntityId, plannedJob);
     if ('error' in started) {
       this.setState({ ...state, screen: 'create', saveMessage: started.error });
       return;
     }
+    started.gameplay.saveData.settings = structuredClone(profile.settings);
+    const characterId = `character-${globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}`;
+    const nextProfile = structuredClone(profile);
+    nextProfile.slots.find(({ slotId }) => slotId === slot.slotId)!.characterId = characterId;
+    nextProfile.characters[characterId] = characterFromSave(started.gameplay.saveData, characterId);
+    nextProfile.activeCharacterId = characterId;
+    const checkedProfile = prepareProfile(nextProfile, state.catalog);
+    if (!checkedProfile.ok) { this.setToast(checkedProfile.message); return; }
+    this.clearCharacterRuntime();
     this.saveFingerprint = null;
     this.setState({
       ...state,
       gameplay: started.gameplay,
+      profile: nextProfile,
+      mapVisualLoad: null,
       screen: 'playing',
       panels: [],
       focusResumeRequired: false,
@@ -674,7 +710,88 @@ export class GameApp {
       legacyImportMessage: null,
       worldRevision: state.worldRevision + 1,
     });
-    this.checkpointIfChanged(started.gameplay.saveData);
+    this.saveFingerprint = saveFingerprint(started.gameplay.saveData);
+    if (!this.temporaryPlay) this.persistence?.checkpointProfile?.(nextProfile);
+  }
+
+  private clearCharacterRuntime(): void {
+    this.operationGeneration += 1;
+    this.mapVisualRequest += 1;
+    this.keyboard?.input.releaseAll();
+    this.commands.drain();
+    this.pendingGameplayCommands = [];
+    this.clock.clearAccumulator();
+    this.audioMonsterStates.clear();
+    this.lastThreatAtMs = -Infinity;
+    const gameplay = this.stateValue.gameplay ? { ...this.stateValue.gameplay, combat: createCombatState(),
+      drops: [], effects: [], telegraphs: [], guardUntilMs: 0, pendingTransition: null } : null;
+    if (gameplay) { delete gameplay.bufferedAttack; delete gameplay.jumpAssist; delete gameplay.buffCastAtMs;
+      delete gameplay.retreat; delete gameplay.aimStillMs; delete gameplay.aimReady;
+      delete gameplay.poisons; delete gameplay.rallyUntilMs; delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; }
+    this.setState({ ...this.stateValue, gameplay, mapVisualLoad: null });
+  }
+
+  private async manageProfile(action: ProfileAction): Promise<void> {
+    const state = this.stateValue;
+    if (state.screen !== 'title' || state.characterBusy || state.saveUpgrade || !state.profile || !state.catalog) return;
+    if ((!this.temporaryPlay && !this.canWriteProgress()) || state.saveStatus === 'saving') {
+      this.setState({ ...state, saveMessage: '請先完成或重試保存，再管理角色與倉庫。' }); return;
+    }
+    const generation = this.operationGeneration;
+    this.setState({ ...state, characterBusy: true });
+    const saved = this.temporaryPlay || await this.persistence?.flush?.();
+    if (generation !== this.operationGeneration) return;
+    if (!saved) { this.setState({ ...this.stateValue, characterBusy: false }); return; }
+    const result = applyProfileAction(this.stateValue.profile!, action, state.catalog);
+    if (!result.ok) { this.setState({ ...this.stateValue, characterBusy: false, saveMessage: result.message }); return; }
+    const data = activeSaveData(result.value);
+    const gameplay = data ? restoreGame(data, state.catalog, state.nextEntityId).gameplay : null;
+    this.clearCharacterRuntime();
+    this.saveFingerprint = data ? saveFingerprint(data) : null;
+    this.setState({ ...this.stateValue, profile: result.value, gameplay, characterBusy: false, screen: 'title',
+      panels: [], worldRevision: this.stateValue.worldRevision + 1,
+      saveMessage: this.temporaryPlay ? '變更只保留在本頁暫時進度。' : null });
+    if (!this.temporaryPlay) this.persistence?.checkpointProfile?.(result.value);
+  }
+
+  private async returnToCharacterList(): Promise<void> {
+    if (this.stateValue.characterBusy) return;
+    const generation = this.operationGeneration;
+    this.checkpointIfChanged(this.stateValue.gameplay?.saveData ?? null);
+    this.setState({ ...this.stateValue, characterBusy: true });
+    const saved = await this.persistence?.flush?.();
+    if (generation !== this.operationGeneration) return;
+    if (!saved) {
+      this.setState({ ...this.stateValue, characterBusy: false });
+      this.setToast('進度尚未保存，請重試保存後再返回角色列表。');
+      return;
+    }
+    this.clearCharacterRuntime();
+    this.setState({ ...this.stateValue, characterBusy: false, screen: 'title', panels: [], mapVisualLoad: null,
+      focusResumeRequired: false, worldRevision: this.stateValue.worldRevision + 1 });
+  }
+
+  private async selectCharacter(characterId: string): Promise<void> {
+    const state = this.stateValue;
+    if (state.screen !== 'title' || state.characterBusy || state.saveUpgrade || !state.profile
+      || !state.catalog || !Object.hasOwn(state.profile.characters, characterId)) return;
+    if ((!this.temporaryPlay && !this.canWriteProgress()) || state.saveStatus === 'saving') {
+      this.setToast('請先完成或重試目前存檔，再切換角色。'); return;
+    }
+    const generation = this.operationGeneration;
+    this.setState({ ...state, characterBusy: true });
+    const saved = this.temporaryPlay || await this.persistence?.flush?.();
+    if (generation !== this.operationGeneration) return;
+    if (!saved) { this.setState({ ...this.stateValue, characterBusy: false }); return; }
+    const profile: GameProfile = { ...this.stateValue.profile!, activeCharacterId: characterId };
+    const data = activeSaveData(profile)!;
+    const restored = restoreGame(data, state.catalog, state.nextEntityId);
+    this.clearCharacterRuntime();
+    this.saveFingerprint = saveFingerprint(restored.gameplay.saveData);
+    this.setState({ ...this.stateValue, profile, gameplay: restored.gameplay, characterBusy: false, panels: [],
+      mapVisualLoad: null, focusResumeRequired: false, screen: data.player.hp <= 0 ? 'dead' : 'playing',
+      worldRevision: this.stateValue.worldRevision + 1 });
+    if (!this.temporaryPlay) this.persistence?.checkpointProfile?.(updateActiveCharacter(profile, restored.gameplay.saveData));
   }
 
   private startTemporaryGame(): void {
@@ -702,6 +819,8 @@ export class GameApp {
     this.setState({
       ...state,
       gameplay,
+      profile: state.profile ?? profileFromLegacySave(gameplay.saveData),
+      characterBusy: false,
       screen: gameplay.saveData.player.hp <= 0 ? 'dead' : 'playing',
       panels: [],
       saveStatus: 'unavailable',
@@ -816,6 +935,8 @@ export class GameApp {
       ...state,
       gameplay,
       screen,
+      profile: outcome.profile ?? null,
+      characterBusy: false,
       panels: [],
       saveStatus: outcome.status,
       saveMessage: repairedArenaLocation ? '首領戰存檔已安全返回礦道入口。' : outcome.message ?? null,
@@ -830,11 +951,14 @@ export class GameApp {
   }
 
   private checkpointIfChanged(data: SaveData | null): void {
-    if (!data || this.temporaryPlay || !this.persistence || this.persistenceMode === 'memory') return;
+    if (!data) return;
     const fingerprint = saveFingerprint(data);
     if (fingerprint === this.saveFingerprint) return;
     this.saveFingerprint = fingerprint;
-    this.persistence.checkpoint(data);
+    if (this.stateValue.profile?.activeCharacterId) {
+      this.setState({ ...this.stateValue, profile: updateActiveCharacter(this.stateValue.profile, data) });
+    }
+    if (!this.temporaryPlay && this.persistenceMode !== 'memory') this.persistence?.checkpoint(data);
   }
 
   private canWriteProgress(): boolean {
@@ -865,7 +989,14 @@ export class GameApp {
       this.keyboard.setBindings(getSavedKeyBindings(state.gameplay?.saveData.settings.bindings));
     }
     this.keyboardBindingsFingerprint = nextBindings;
+    this.configureAttackKeys();
     this.options.onStateChange?.(state);
+  }
+
+  private configureAttackKeys(): void {
+    const player = this.stateValue.gameplay?.saveData.player;
+    if (player) this.keyboard?.input.setAttackSkills([resolveSkillSlot(player, 0), resolveSkillSlot(player, 1),
+      resolveSkillSlot(player, 2), resolveSkillSlot(player, 3)]);
   }
 
   private initializeAudio(manifests: readonly AssetManifest[]): void {
@@ -990,14 +1121,36 @@ export class GameApp {
     const previousAttackIds = new Set(before?.combat.attacks.map(({ id }) => id) ?? []);
     for (const attack of gameplay.combat.attacks) {
       if (attack.sourceId === gameplay.playerEntityId && !previousAttackIds.has(attack.id)) {
-        this.playAudioOnce(`attack:${attack.id}`, ATTACK_SOUND_BY_SKILL[attack.skillId] ?? 'attack');
+        const bow = next.catalog?.rules.skills[attack.skillId]?.projectile;
+        const mage = next.catalog?.rules.skills[attack.skillId]?.requiredJob === 'mage' || attack.skillId === 'wand-basic';
+        const rogue = next.catalog?.rules.skills[attack.skillId]?.requiredJob === 'rogue' || attack.skillId === 'dagger-basic';
+        if (!rogue) this.playAudioOnce(`attack:${attack.id}`, mage ? 'mage-cast' : bow ? 'bow-draw' : ATTACK_SOUND_BY_SKILL[attack.skillId] ?? 'attack');
+        if (attack.skillId === 'archer-retreat-shot' || attack.skillId === 'ranger-volley') this.playAudioOnce(`retreat:${attack.id}`, 'bow-retreat');
+      }
+      const skill = next.catalog?.rules.skills[attack.skillId];
+      if (skill && (skill.requiredJob === 'rogue' || skill.id === 'dagger-basic')) {
+        for (const [index, window] of (skill.meleeWindows ?? [{offsetMs:0,activeMs:skill.activeMs}]).entries()) {
+          const atMs=attack.startedAtMs+skill.windupMs+window.offsetMs;
+          if (previous.gameTimeMs < atMs && next.gameTimeMs >= atMs) this.playAudioOnce(`rogue:${attack.id}:${index}`,
+            skill.id === 'rogue-smoke' ? 'rogue-smoke' : skill.id === 'rogue-shadow-lunge' ? 'rogue-lunge' : 'rogue-slash');
+        }
+      }
+      if (skill && (attack.skillId === 'mage-frost-ring' || attack.skillId === 'elementalist-nova' || attack.skillId === 'mage-blink')
+        && next.gameTimeMs >= attack.startedAtMs + skill.windupMs && previous.gameTimeMs < attack.startedAtMs + skill.windupMs) {
+        this.playAudioOnce(`spell:${attack.id}`, attack.skillId === 'mage-blink' ? 'mage-blink' : 'mage-frost');
+      }
+      if (!skill?.projectile) continue;
+      const previousAttack = before?.combat.attacks.find(({ id }) => id === attack.id);
+      for (let shot = previousAttack?.firedShots ?? 0; shot < (attack.firedShots ?? 0); shot += 1) {
+        this.playAudioOnce(`arrow:${attack.id}:${shot}`, skill.requiredJob === 'mage' || attack.skillId === 'wand-basic'
+          ? 'mage-bolt' : skill.requiredJob === 'rogue' ? 'rogue-slash' : attack.skillId === 'archer-piercing-shot' || attack.skillId === 'marksman-snipe' ? 'bow-pierce' : 'bow-release');
       }
     }
 
     const previousEffectIds = new Set(before?.effects.map(({ id }) => id) ?? []);
     for (const effect of gameplay.effects) {
       if (previousEffectIds.has(effect.id)) continue;
-      const key = effect.kind === 'hit' ? (effect.critical ? 'crit-hit' : 'hit')
+      const key = effect.kind === 'hit' ? (effect.magic ? 'mage-hit' : effect.projectile ? 'bow-hit' : effect.critical ? 'crit-hit' : 'hit')
         : effect.kind === 'pickup' ? 'pickup'
           : effect.kind === 'levelup' ? 'levelup'
             : effect.kind === 'buff' ? 'guard'

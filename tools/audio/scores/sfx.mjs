@@ -278,14 +278,58 @@ const RECIPES = {
   },
 };
 
-export const SFX_KEYS = Object.keys(RECIPES);
-
 /** Per-sound loudness trim (dB) applied after peak normalisation, so busy layers don't jump out. */
 const TRIM = {
   'ui-click': -9, 'panel-open': -8, dialogue: -7, jump: -6, attack: -3, 'attack-heavy': -1, 'attack-sweep': -2,
   hit: -2, 'crit-hit': -1, hurt: -2, pickup: -6, potion: -5, equip: -5, guard: -4, 'monster-die': -4,
   telegraph: -3, 'boss-phase': 0, portal: -4, 'stele-tune': -5, 'oath-bell-restored': -4,
 };
+
+// Original archery recipes; each release is a single shot, never a baked-in double.
+RECIPES['bow-draw'] = (r) => whoosh(r, 0.12, { path: [350, 820], peakAt: 0.8, q: 3 });
+RECIPES['bow-release'] = (r) => {
+  const out = buffer(0.22);
+  mixInto(out, pluck(196, 0.2, 0.7, r), 0, 0.38);
+  mixInto(out, whoosh(r, 0.18, { path: [3200, 1000], peakAt: 0.08 }), 0, 0.4);
+  return out;
+};
+RECIPES['bow-pierce'] = (r) => {
+  const out = buffer(0.28);
+  mixInto(out, RECIPES['bow-release'](r), 0, 0.7);
+  mixInto(out, whoosh(r, 0.26, { path: [4800, 1800], peakAt: 0.1, q: 3 }), 0, 0.4);
+  return out;
+};
+RECIPES['bow-hit'] = (r) => burst(r, 0.12, { freq: 1400, decay: 0.027 });
+RECIPES['bow-retreat'] = (r) => whoosh(r, 0.2, { path: [1800, 400], peakAt: 0.18, q: 1 });
+Object.assign(TRIM, { 'bow-draw': -13, 'bow-release': -6, 'bow-pierce': -6, 'bow-hit': -7, 'bow-retreat': -10 });
+
+RECIPES['mage-cast'] = (r) => ring(r, .22, [[440,.3,1],[660,.14,.7]], {decay:.12,level:.65});
+RECIPES['mage-bolt'] = (r) => {
+  const out=buffer(.28);
+  mixInto(out,whoosh(r,.25,{path:[900,3600],peakAt:.15,q:2}),0,.35);
+  mixInto(out,sparkle(r,.24,{count:3,low:1100,high:2200,spread:.08,decay:.08}),0,.3);
+  return out;
+};
+RECIPES['mage-frost'] = (r) => {
+  const out=buffer(.5);
+  mixInto(out,whoosh(r,.42,{path:[3500,800],peakAt:.08,q:1}),0,.25);
+  mixInto(out,ring(r,.46,[[784,.3,1],[1175,.16,.7],[1568,.08,.5]],{decay:.24,level:.6}),0,.4);
+  return out;
+};
+RECIPES['mage-blink'] = (r) => whoosh(r,.24,{path:[400,4200,700],peakAt:.3,q:2});
+RECIPES['mage-hit'] = (r) => sparkle(r,.18,{count:3,low:900,high:1700,spread:.04,decay:.06});
+Object.assign(TRIM,{'mage-cast':-12,'mage-bolt':-8,'mage-frost':-9,'mage-blink':-10,'mage-hit':-9});
+
+RECIPES['rogue-slash'] = (r) => whoosh(r, .12, {path:[2200,4200,900],peakAt:.18,q:2});
+RECIPES['rogue-lunge'] = (r) => whoosh(r, .26, {path:[350,2600,650],peakAt:.4,q:2});
+RECIPES['rogue-smoke'] = (r) => {
+  const out=buffer(.5);
+  mixInto(out,burst(r,.12,{freq:650,decay:.04}),0,.25);
+  mixInto(out,whoosh(r,.46,{path:[1200,300],peakAt:.15,q:1}),.02,.4);
+  return out;
+};
+Object.assign(TRIM,{'rogue-slash':-10,'rogue-lunge':-10,'rogue-smoke':-12});
+export const SFX_KEYS = Object.keys(RECIPES);
 
 export function renderSfx(key) {
   const random = rng(Math.abs([...key].reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16_777_619), 2_166_136_261)));

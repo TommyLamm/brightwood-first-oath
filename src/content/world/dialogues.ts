@@ -1,6 +1,15 @@
 import type { DialogueLine, Id } from '../../contracts/index.js';
 
 export const dialogues: Record<Id, DialogueLine[]> = {
+  'rogue-mentor-intro': [{ speaker: '夜嵐', text: '完成森芽的營地任務後，爬木葉鎮中央長梯到上層訓練臺找我。近身靶用普攻，連刺靶按技能1免費連刺，紅框出現後撤離。失敗可再連刺重試，完成後回來轉職領獎。' }],
+  'rogue-close-intro': [{ speaker: '近身靶・普攻', text: '先找夜嵐接取試煉，再靠近本靶按普攻。短刃射程48，要在相同高度近身命中。' }],
+  'rogue-double-intro': [{ speaker: '連刺靶・技能1', text: '靠近後按技能1試用免費連刺，兩段都命中後會出現900ms紅框預警，收招後走出框線。失敗可再次連刺重試。' }],
+  'rogue-evade-intro': [{ speaker: '撤離訓練標', text: '不必攻擊本標記。對連刺靶完成兩段連刺，紅框判定前讓整個身體走出框線，即可完成撤離；回木葉鎮找夜嵐領獎。' }],
+  'mage-mentor-intro': [{ speaker: '星蘅', text: '我是研究森林符文的星蘅。完成森芽的營地任務後，來接受三靶共鳴試煉。魔杖彈不耗MP，但需要站穩施法；爬到與靶相同高度，命中三座靶後回來轉職。日後學會冰霜環可以緩速普通怪，並為閃現保留MP。' }],
+  'archer-mentor-intro': [{ speaker: '青翎', text: '我是青翎，在木葉鎮教導弓術。先完成森芽的營地任務，再來接受三靶試煉；箭只會水平飛行，高臺上的箭靶需要爬到相應高度。射中後回來找我領取轉職獎勵。' }],
+  'archery-target-low-intro': [{ speaker: '低位箭靶', text: '木葉鎮的地面箭靶。接取青翎的試煉後，用短弓射中靶心；交談不會完成命中目標。' }],
+  'archery-target-high-intro': [{ speaker: '高臺箭靶', text: '木葉鎮西側高臺上的箭靶。爬上附近梯子，站在相同高度射擊，完成後回木葉鎮向青翎回報。' }],
+  'archery-target-far-intro': [{ speaker: '遠臺箭靶', text: '木葉鎮東側高臺上的箭靶。爬上東側梯子，在射程內用短弓射中靶心，再回木葉鎮找青翎領獎。' }],
   'guide-intro': [
     {
       speaker: '森芽',

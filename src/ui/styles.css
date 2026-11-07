@@ -972,6 +972,9 @@
 .ms-screen-card__status { margin: 0; color: #d0dcda; }
 .ms-screen-card__status { color: #f0d890; font-weight: 800; }
 .ms-screen-card .ms-input { width: 100%; }
+.ms-character-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ms-character-slot { white-space: normal; text-align: left; min-height: 64px; overflow-wrap: anywhere; }
+.ms-character-routes { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .ms-toast {
   position: absolute;
@@ -1064,3 +1067,12 @@
 .ms-map-load-progress { margin-top: 18px; }
 .ms-map-load-progress progress { width: 100%; height: 18px; accent-color: #6c9556; }
 .ms-map-load-progress__label { margin: 6px 0 0; font-size: .9em; }
+
+.ms-route-icon { width: 36px; height: 36px; object-fit: contain; margin-left: 8px; vertical-align: middle; }
+.ms-roster-manager { margin-top: 1rem; text-align: left; max-height: 42vh; overflow-y: auto; padding: .5rem; }
+.ms-roster-manager details { margin: .65rem 0; padding: .45rem; border: 1px solid #77613f; border-radius: .4rem; }
+.ms-roster-manager summary { cursor: pointer; padding: .4rem; font-weight: bold; }
+.ms-roster-manager label { display: block; margin: .5rem 0; }
+.ms-roster-manager input { max-width: 100%; color: #f4ead3; background: #263039; border: 1px solid #aa8a57; padding: .4rem; }
+.ms-roster-item { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .4rem 0; }
+.ms-roster-item span { flex: 1; min-width: 8rem; }

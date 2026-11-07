@@ -1,6 +1,9 @@
 import type { AssetAnimation } from '../contracts/asset-manifest.js';
 
 export function animationConformsToUse(imageKey: string, state: string, animation: AssetAnimation): boolean {
+  if ((imageKey.startsWith('actor:archer-') || imageKey.startsWith('actor:mage-') || imageKey.startsWith('actor:rogue-')) && !state.startsWith('npc:')) {
+    return state === 'attack' && animation.frames.length === 4 && !animation.loop;
+  }
   const animationState = state.split(':').at(-1) ?? state;
   const staticSteleIdle = imageKey === 'actor:ruins-stele'
     && (state === 'npc:ruins-stele-west:idle' || state === 'npc:ruins-stele-east:idle');

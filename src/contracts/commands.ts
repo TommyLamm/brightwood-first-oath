@@ -1,4 +1,4 @@
-import type { EquipmentSlot, Id, Settings } from './types.js';
+import type { EquipmentSlot, Id, PlayerJob, Settings } from './types.js';
 
 export type PanelId =
   | 'inventory'
@@ -12,7 +12,11 @@ export type PanelId =
   | 'settings';
 
 export type CommandDraft =
-  | { type: 'newGame'; payload: { name: string } }
+  | { type: 'newGame'; payload: { name: string; plannedJob?: PlayerJob; slotId?: Id } }
+  | { type: 'selectCharacter'; payload: { characterId: Id } }
+  | { type: 'manageProfile'; payload: import('../persistence/profile-actions.js').ProfileAction }
+  | { type: 'advanceJob'; payload: { specialization: import('./types.js').SpecializationId } }
+  | { type: 'setAdvancedSkill'; payload: { enabled: boolean } }
   | { type: 'continue'; payload: Record<string, never> }
   | { type: 'attack'; payload: { skillId: Id } }
   | { type: 'pickup'; payload: Record<string, never> }
@@ -25,7 +29,7 @@ export type CommandDraft =
   | { type: 'equip'; payload: { bagIndex: number } }
   | { type: 'unequip'; payload: { slot: EquipmentSlot } }
   | { type: 'useItem'; payload: { itemId: Id } }
-  | { type: 'allocateAp'; payload: { stat: 'str' | 'dex'; amount: number } }
+  | { type: 'allocateAp'; payload: { stat: 'str' | 'dex' | 'int' | 'luk'; amount: number } }
   | { type: 'learnSkill'; payload: { skillId: Id } }
   | { type: 'returnTown'; payload: Record<string, never> }
   | { type: 'retryBoss'; payload: Record<string, never> }

@@ -95,8 +95,11 @@ export function stepActors(
 
   for (const original of monsters) {
     const spawn = map.monsters.find((candidate) => candidate.spawnId === original.spawnId);
-    const definition = rules.monsters[original.monsterId];
-    if (!spawn || spawn.monsterId !== original.monsterId || !definition) continue;
+    const baseDefinition = rules.monsters[original.monsterId];
+    if (!spawn || spawn.monsterId !== original.monsterId || !baseDefinition) continue;
+    const slow = isBossMonster(original.monsterId) ? 1 : nowMs < (original.smokeSlowedUntilMs ?? 0) ? 0.5
+      : nowMs < (original.slowedUntilMs ?? 0) ? 0.6 : 1;
+    const definition = slow < 1 ? { ...baseDefinition, speed: baseDefinition.speed * slow } : baseDefinition;
 
     let monster = cloneMonster(original);
     if (monster.mode === 'dead' || monster.hp <= 0) {
@@ -132,14 +135,15 @@ export function stepActors(
     }
 
     const playerIsAlive = player.hp > 0;
-    const engageMargin = map.boss ? BOSS_ENGAGE_MARGIN_PX : 0;
+    const provoked = nowMs < (monster.provokedUntilMs ?? 0);
+    const engageMargin = map.boss ? BOSS_ENGAGE_MARGIN_PX : provoked ? 340 : 0;
     const playerInsideActivity = player.position.x >= spawn.roamLeft - engageMargin - EPSILON
       && player.position.x <= spawn.roamRight + engageMargin + EPSILON;
     const distanceX = player.position.x - monster.movement.position.x;
     const distanceY = player.position.y - monster.movement.position.y;
     const isAggro = playerIsAlive
       && playerInsideActivity
-      && distanceX * distanceX + distanceY * distanceY <= definition.aggroRange ** 2
+      && distanceX * distanceX + distanceY * distanceY <= (provoked ? Math.max(360, definition.aggroRange) : definition.aggroRange) ** 2
       && hasClearHorizontalRoute(monster, player, map, definition);
 
     if (monster.mode === 'windup') {
@@ -304,6 +308,7 @@ export function applyMonsterHit(
 
     const damage = Number.isFinite(hit.damage) ? Math.max(0, hit.damage) : 0;
     monster.hp = Math.max(0, monster.hp - damage);
+    if (hit.projectile && !isBossMonster(monster.monsterId)) monster.provokedUntilMs = nowMs + 4000;
     if (monster.hp === 0) {
       monster.mode = 'dead';
       monster.deadAtMs = nowMs;

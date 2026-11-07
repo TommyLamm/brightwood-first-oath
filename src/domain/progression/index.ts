@@ -5,11 +5,14 @@ import type {
   ErrorCode,
   Id,
   PlayerProgress,
+  PlayerJob,
   Result,
   Reward,
   RulesCatalog,
 } from '../../contracts/index.js';
 import { playerLearnableIds } from '../../content/rules/index.js';
+import { isSpecialization, specializations } from '../../content/rules/specializations.js';
+import { bowPassiveBonus, canEquipForJob, effectiveJob, isPlayerJob, jobs, magePassiveRank, roguePassiveRank } from '../../content/rules/jobs.js';
 
 const BAG_CAPACITY = 32;
 const COIN_CAP = 9_999_999;
@@ -23,12 +26,14 @@ export type ProgressAction =
   | { type: 'equip'; bagIndex: number }
   | { type: 'unequip'; slot: EquipmentSlot }
   | { type: 'useItem'; itemId: Id }
-  | { type: 'allocateAp'; stat: 'str' | 'dex'; amount: number }
+  | { type: 'allocateAp'; stat: 'str' | 'dex' | 'int' | 'luk'; amount: number }
+  | { type: 'advanceJob'; specialization: import('../../contracts/index.js').SpecializationId }
+  | { type: 'setAdvancedSkill'; enabled: boolean }
   | { type: 'learnSkill'; skillId: Id }
   | { type: 'spendMp'; amount: number }
   | { type: 'damage'; amount: number }
   | { type: 'restore'; hp: number; mp: number }
-  | { type: 'changeJob' }
+  | { type: 'changeJob'; job?: PlayerJob }
   | { type: 'setLevelFloor'; level: number };
 
 function success<T>(value: T): Result<T> {
@@ -62,18 +67,22 @@ export function validatePlayerName(name: string): Result<string> {
   if (trimmed.length < 1 || /[\u0000-\u001f\u007f]/u.test(trimmed)) {
     return failure('INVALID', '角色名稱不可空白或包含控制字元。');
   }
+  if (trimmed.length > 16) return failure('INVALID', '角色名稱最多 16 個字元。');
   return success(trimmed);
 }
 
 /** Caller should pass the normalized value returned by validatePlayerName. */
-export function createPlayer(name: string, rules: RulesCatalog): PlayerProgress {
+export function createPlayer(name: string, rules: RulesCatalog, route: PlayerJob = 'swordsman'): PlayerProgress {
   const player: PlayerProgress = {
     name,
     job: 'beginner',
+    ...(route !== 'swordsman' ? { plannedJob: route } : {}),
     level: 1,
     exp: 0,
-    str: 12,
-    dex: 4,
+    str: route === 'swordsman' ? 12 : 4,
+    dex: route === 'archer' || route === 'rogue' ? 12 : 4,
+    int: route === 'mage' ? 12 : 4,
+    luk: 0,
     ap: 0,
     sp: 0,
     hp: 80,
@@ -84,7 +93,7 @@ export function createPlayer(name: string, rules: RulesCatalog): PlayerProgress 
       { itemId: 'small-red', quantity: 10 },
       { itemId: 'small-blue', quantity: 5 },
     ],
-    equipment: { weapon: 'starter-sword', body: 'cloth-shirt', hat: null },
+    equipment: { weapon: jobs[route].starterWeapon, body: 'cloth-shirt', hat: null },
   };
   const stats = deriveStats(player, rules);
   player.hp = stats.maxHp;
@@ -97,6 +106,7 @@ export const CRIT_CHANCE_PER_DEX = 0.004;
 export const CRIT_CHANCE_CAP = 0.4;
 
 export function deriveStats(player: PlayerProgress, rules: RulesCatalog): DerivedStats {
+  const luckBonus = (player.luk ?? 0) * 0.002;
   const vitality = rules.skills.vitality;
   const vitalityRank =
     player.job === 'swordsman' && vitality !== undefined && player.level >= vitality.requiredLevel
@@ -115,6 +125,28 @@ export function deriveStats(player: PlayerProgress, rules: RulesCatalog): Derive
     equipmentHp += item.hpBonus;
   }
 
+  if (effectiveJob(player) === 'rogue') return {
+    maxHp: 60 + 13 * (player.level - 1) + equipmentHp,
+    maxMp: 48 + 3 * (player.level - 1),
+    attack: (2 * player.dex + player.str - 1 + weaponAttack) * (1 + 0.015 * roguePassiveRank(player, rules, 'rogue-dagger-mastery')),
+    defense: Math.floor(player.str / 5) + equipmentDefense,
+    critChance: Math.min(0.3, 0.05 + player.dex * 0.0015 + luckBonus),
+  };
+  if (effectiveJob(player) === 'mage') return {
+    maxHp: 56 + 12 * (player.level - 1) + equipmentHp,
+    maxMp: 72 + 6 * (player.level - 1) + 8 * magePassiveRank(player, rules, 'mage-mana-affinity'),
+    attack: (2 * (player.int ?? 4) + player.dex - 1 + weaponAttack) * (1 + 0.02 * magePassiveRank(player, rules, 'mage-rune-study')),
+    defense: Math.floor(player.str / 4) + equipmentDefense,
+    critChance: Math.min(0.3, 0.05 + luckBonus),
+  };
+  if (effectiveJob(player) === 'archer') return {
+    maxHp: 64 + 14 * (player.level - 1) + equipmentHp,
+    maxMp: 48 + 3 * (player.level - 1),
+    attack: (2 * player.dex + player.str - 1 + weaponAttack) * (1 + bowPassiveBonus(player, rules, 'archer-bow-mastery')),
+    defense: Math.floor(player.str / 4) + equipmentDefense,
+    critChance: Math.min(0.3, 0.05 + player.dex * 0.0015 + luckBonus),
+  };
+
   return {
     maxHp: 80 + 20 * (player.level - 1) + 12 * vitalityRank + equipmentHp,
     maxMp: 40 + 2 * (player.level - 1),
@@ -122,7 +154,7 @@ export function deriveStats(player: PlayerProgress, rules: RulesCatalog): Derive
     // +1 defense per 4 and +0.4% critical chance each. At the starting DEX 4 this equals the old 3 + 2×STR.
     attack: 2 * player.str + player.dex - 1 + weaponAttack,
     defense: Math.floor(player.dex / DEX_PER_DEFENSE) + equipmentDefense,
-    critChance: Math.min(CRIT_CHANCE_CAP, player.dex * CRIT_CHANCE_PER_DEX),
+    critChance: Math.min(CRIT_CHANCE_CAP, player.dex * CRIT_CHANCE_PER_DEX + luckBonus),
   };
 }
 
@@ -149,6 +181,7 @@ function validateBag(player: PlayerProgress, rules: RulesCatalog): Result<void> 
     const item = rules.items[itemId];
     if (item === undefined) return failure('NOT_FOUND', `找不到裝備：${itemId}。`);
     if (item.slot !== slot) return failure('INVALID', `裝備「${item.name}」的欄位不正確。`);
+    if (!canEquipForJob(player, item)) return failure('REQUIREMENT', '裝備不符合本角色的職業路線。');
   }
   return success(undefined);
 }
@@ -160,6 +193,8 @@ function validatePlayer(player: PlayerProgress, rules: RulesCatalog): Result<voi
     !Number.isSafeInteger(player.exp) || player.exp < 0 ||
     !Number.isSafeInteger(player.str) || player.str < 0 ||
     !Number.isSafeInteger(player.dex) || player.dex < 0 ||
+    !Number.isSafeInteger(player.int ?? 4) || (player.int ?? 4) < 0 ||
+    !Number.isSafeInteger(player.luk ?? 0) || (player.luk ?? 0) < 0 ||
     !Number.isSafeInteger(player.ap) || player.ap < 0 ||
     !Number.isSafeInteger(player.sp) || player.sp < 0 ||
     !Number.isSafeInteger(player.coins) || player.coins < 0 || player.coins > COIN_CAP ||
@@ -167,13 +202,18 @@ function validatePlayer(player: PlayerProgress, rules: RulesCatalog): Result<voi
   ) {
     return failure('INVALID', '角色數值無效，無法套用成長操作。');
   }
-  if (player.job !== 'beginner' && player.job !== 'swordsman') {
+  if ((player.job !== 'beginner' && !isPlayerJob(player.job))
+    || (player.plannedJob !== undefined && (!isPlayerJob(player.plannedJob)
+      || (player.job !== 'beginner' && player.plannedJob !== player.job)))) {
     return failure('INVALID', '角色職業資料無效。');
   }
+  if (player.specialization !== undefined && (!isSpecialization(player.specialization)
+    || specializations[player.specialization].job !== player.job || player.level < 20)) return failure('INVALID', '二轉資料無效。');
   const stats = deriveStats(player, rules);
   if (
     !Number.isSafeInteger(stats.maxHp) || !Number.isSafeInteger(stats.maxMp) ||
-    !Number.isSafeInteger(stats.attack) || !Number.isSafeInteger(stats.defense) ||
+    // Percentage passives retain their fraction until combat's final damage rounding.
+    !Number.isFinite(stats.attack) || stats.attack < 0 || stats.attack > Number.MAX_SAFE_INTEGER || !Number.isSafeInteger(stats.defense) ||
     player.hp > stats.maxHp || player.mp > stats.maxMp
   ) {
     return failure('INVALID', '角色衍生能力或目前 HP／MP 無效。');
@@ -192,7 +232,7 @@ function validatePlayer(player: PlayerProgress, rules: RulesCatalog): Result<voi
       skill === undefined ||
       !playerLearnableIds.some((learnableId) => learnableId === skillId) ||
       !Number.isSafeInteger(rank) || rank < 1 || rank > skill.maxRank ||
-      player.job !== 'swordsman' || player.level < skill.requiredLevel
+      skill.requiredJob !== player.job || player.level < skill.requiredLevel
     ) {
       return failure('INVALID', `技能「${skillId}」的等級資料無效。`);
     }
@@ -282,7 +322,7 @@ function fullRestore(player: PlayerProgress, rules: RulesCatalog): void {
 
 function advanceLevel(player: PlayerProgress): Result<void> {
   const nextAp = player.ap + 5;
-  const nextSp = player.job === 'swordsman' ? player.sp + 1 : player.sp;
+  const nextSp = player.job !== 'beginner' ? player.sp + 1 : player.sp;
   if (!Number.isSafeInteger(nextAp) || !Number.isSafeInteger(nextSp)) {
     return failure('INVALID', '升級點數超過安全整數範圍。');
   }
@@ -405,6 +445,7 @@ export function applyProgressAction(
       const item = rules.items[stack.itemId];
       if (item.slot === null) return failure('REQUIREMENT', `「${item.name}」不是裝備。`);
       if (player.level < item.minLevel) return failure('REQUIREMENT', `需要等級 ${item.minLevel} 才能裝備。`);
+      if (!canEquipForJob(player, item)) return failure('REQUIREMENT', '這件裝備不符合本角色的職業路線。');
       const slot = item.slot;
       const previousItemId = draft.equipment[slot];
       const removed = removeStacksFromDraft(draft, [{ itemId: item.id, quantity: 1 }], rules);
@@ -449,25 +490,36 @@ export function applyProgressAction(
       return success(draft);
     }
     case 'allocateAp': {
-      if (action.stat !== 'str' && action.stat !== 'dex') {
-        return failure('INVALID', 'AP 只能分配到 STR 或 DEX。');
+      if (action.stat !== 'str' && action.stat !== 'dex' && action.stat !== 'int' && action.stat !== 'luk') {
+        return failure('INVALID', 'AP只能分配到STR、DEX、INT或LUK。');
       }
       if (!isPositiveInteger(action.amount)) return failure('INVALID', 'AP 分配量必須是正整數。');
       if (action.amount > draft.ap) return failure('REQUIREMENT', '可用 AP 不足。');
-      const nextValue = draft[action.stat] + action.amount;
+      const nextValue = (draft[action.stat] ?? (action.stat === 'luk' ? 0 : 4)) + action.amount;
       if (!Number.isSafeInteger(nextValue)) return failure('INVALID', '能力值超過安全整數範圍。');
       draft[action.stat] = nextValue;
       draft.ap -= action.amount;
       return success(draft);
     }
+    case 'advanceJob': {
+      if (!isSpecialization(action.specialization) || draft.job === 'beginner' || draft.level < 20
+        || specializations[action.specialization].job !== draft.job || draft.specialization) return failure('REQUIREMENT', '二轉需要Lv20正式職業，且每個角色只能選擇一次本職業分支。');
+      draft.specialization = action.specialization;
+      draft.advancedSkillEquipped = true;
+      return success(draft);
+    }
+    case 'setAdvancedSkill':
+      if (!draft.specialization || typeof action.enabled !== 'boolean') return failure('REQUIREMENT', '請先完成二轉。');
+      draft.advancedSkillEquipped = action.enabled;
+      return success(draft);
     case 'learnSkill': {
       const skill = rules.skills[action.skillId];
       if (skill === undefined) return failure('NOT_FOUND', `找不到技能：${action.skillId}。`);
       if (!playerLearnableIds.some((id) => id === action.skillId)) {
         return failure('REQUIREMENT', `「${skill.name}」不能由玩家學習。`);
       }
-      if (draft.job !== 'swordsman' || skill.requiredJob !== 'swordsman') {
-        return failure('REQUIREMENT', '只有劍士可以學習這項技能。');
+      if (draft.job === 'beginner' || skill.requiredJob !== draft.job) {
+        return failure('REQUIREMENT', '只有' + (skill.requiredJob === 'rogue' ? '盜賊' : skill.requiredJob === 'mage' ? '法師' : skill.requiredJob === 'archer' ? '弓箭手' : '劍士') + '可以學習這項技能。');
       }
       if (draft.level < skill.requiredLevel) return failure('REQUIREMENT', `需要等級 ${skill.requiredLevel} 才能學習。`);
       if (draft.sp < 1) return failure('REQUIREMENT', '可用 SP 不足。');
@@ -496,14 +548,17 @@ export function applyProgressAction(
       draft.mp = Math.min(stats.maxMp, draft.mp + action.mp);
       return success(draft);
     }
-    case 'changeJob':
+    case 'changeJob': {
       if (draft.job !== 'beginner') return failure('REQUIREMENT', '此角色已完成轉職。');
       if (draft.level < 10) return failure('REQUIREMENT', '需要等級 10 才能轉職。');
+      const target = action.job ?? effectiveJob(draft);
+      if (!isPlayerJob(target) || target !== effectiveJob(draft)) return failure('REQUIREMENT', '轉職必須符合建立角色時選擇的路線。');
       if (!Number.isSafeInteger(draft.sp + 1)) return failure('INVALID', '技能點數超過安全整數範圍。');
-      draft.job = 'swordsman';
+      draft.job = target;
       draft.sp += 1;
       fullRestore(draft, rules);
       return success(draft);
+    }
     case 'setLevelFloor': {
       if (!Number.isSafeInteger(action.level) || action.level < 1 || action.level > rules.progression.maxLevel) {
         return failure('INVALID', '任務等級下限無效。');

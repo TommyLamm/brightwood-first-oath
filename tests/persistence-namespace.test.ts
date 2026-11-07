@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { legacySaveData } from './fixtures/legacy-save.js';
 import { readFileSync } from 'node:fs';
 import type { CloudPort, CloudReady, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
@@ -9,6 +10,7 @@ import {
   createPersistence,
   LEGACY_GAME_ID,
   localSaveKeyForGame,
+  profileFromLegacySave,
 } from '../src/persistence/index.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -25,7 +27,7 @@ function makeSave(name = '舊旅人'): SaveData {
 }
 
 function rawSave(formatVersion: number, save = makeSave()): string {
-  return JSON.stringify({ formatVersion, data: save, savedAt: '2025-01-01T00:00:00.000Z' });
+  return JSON.stringify({ formatVersion, data: formatVersion <= 5 ? legacySaveData(save) : save, savedAt: '2025-01-01T00:00:00.000Z' });
 }
 
 class MemoryStorage implements StorageLike {
@@ -212,8 +214,8 @@ describe('production save namespace and explicit legacy import', () => {
     persistence.confirmSaveUpgrade();
     expect(status).toBe('localSaved');
     expect(storage.values.get(`${key}:format${formatVersion}-backup`)).toBe(raw);
-    expect(JSON.parse(storage.values.get(key)!).formatVersion).toBe(5);
-    expect(JSON.parse(storage.values.get(key)!).data).toEqual(imported!.data);
+    expect(JSON.parse(storage.values.get(key)!).formatVersion).toBe(8);
+    expect(JSON.parse(storage.values.get(key)!).data).toEqual(profileFromLegacySave(imported!.data!));
     expect(storage.values.get(legacyKey)).toBe(raw);
     expect(storage.values.get(oldBackupKey)).toBe(oldBackup);
     persistence.dispose();
@@ -277,7 +279,7 @@ describe('production save namespace and explicit legacy import', () => {
     expect(invalidCatalogStorage.storage.values.get(invalidCatalogStorage.legacyKey)).toContain('not-in-the-current-catalog');
     invalidCatalog.dispose();
 
-    const unsupportedStorage = createLegacyStorage(rawSave(6));
+    const unsupportedStorage = createLegacyStorage(rawSave(7));
     const unsupported = createPersistence({ gameId: BRIGHTWOOD_GAME_ID, development: true, storage: unsupportedStorage.storage, cloud: null, catalog });
     const unsupportedOutcome = await unsupported.initialize();
     expect(unsupportedOutcome.status).toBe('incompatible');

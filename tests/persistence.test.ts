@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { CloudPort, CloudReady, CloudSaveInput, CloudSaved, SaveData, StorageLike } from '../src/contracts/index.js';
+import { legacySaveData } from './fixtures/legacy-save.js';
+import type { GameProfile, CloudPort, CloudReady, CloudSaveInput, CloudSaved, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { createPlayer } from '../src/domain/progression/index.js';
 import { getQuestView } from '../src/domain/quests/index.js';
-import { createPersistence, localSaveKeyForGame, SAVE_FORMAT_VERSION, validateSave } from '../src/persistence/index.js';
+import { createPersistence, localSaveKeyForGame, SAVE_FORMAT_VERSION, profileFromLegacySave, validateSave } from '../src/persistence/index.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -120,7 +121,7 @@ describe('persistence', () => {
     expect(storage.entries.get(key)).toBe(malformed);
     malformedPersistence.dispose();
 
-    const unsupported = JSON.stringify({ formatVersion: 7, data: makeSave(), savedAt: new Date(0).toISOString() });
+    const unsupported = JSON.stringify({ formatVersion: 9, data: makeSave(), savedAt: new Date(0).toISOString() });
     storage.entries.set(key, unsupported);
     const unsupportedPersistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     const unsupportedOutcome = await unsupportedPersistence.initialize();
@@ -142,9 +143,9 @@ describe('persistence', () => {
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     const raw = storage.entries.get(key);
     expect(raw).toBeDefined();
-    const envelope = JSON.parse(raw!) as { formatVersion: number; data: SaveData; savedAt: string };
+    const envelope = JSON.parse(raw!) as { formatVersion: number; data: GameProfile; savedAt: string };
     expect(Object.keys(envelope).sort()).toEqual(['data', 'formatVersion', 'savedAt']);
-    expect(envelope).toMatchObject({ formatVersion: 5, data: savedData });
+    expect(envelope).toMatchObject({ formatVersion: 8, data: profileFromLegacySave(savedData) });
     expect(typeof envelope.savedAt).toBe('string');
     persistence.dispose();
 
@@ -154,13 +155,13 @@ describe('persistence', () => {
     restored.dispose();
   });
 
-  it.each([1, 2, 3, 4])('requires explicit, verified backup before upgrading local format %i', async (formatVersion) => {
+  it.each([1, 2, 3, 4, 5])('requires explicit, verified backup before upgrading local format %i', async (formatVersion) => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     const oldData = makeSave();
     oldData.player.name = `format-${formatVersion}`;
     oldData.quests = { q01: { status: 'active', counters: { snail: 2 } } };
-    const raw = JSON.stringify({ formatVersion, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion, data: legacySaveData(oldData), savedAt: '2025-01-01T00:00:00.000Z' });
     storage.entries.set(key, raw);
     const statuses: SaveStatus[] = [];
     const persistence = createPersistence({
@@ -182,9 +183,9 @@ describe('persistence', () => {
     persistence.confirmSaveUpgrade();
     const backupKey = `${key}:format${formatVersion}-backup`;
     expect(storage.entries.get(backupKey)).toBe(raw);
-    const upgraded = JSON.parse(storage.entries.get(key)!) as { formatVersion: number; data: SaveData };
-    expect(upgraded.formatVersion).toBe(5);
-    expect(upgraded.data).toEqual(oldData);
+    const upgraded = JSON.parse(storage.entries.get(key)!) as { formatVersion: number; data: GameProfile };
+    expect(upgraded.formatVersion).toBe(8);
+    expect(upgraded.data).toEqual(profileFromLegacySave(oldData));
     expect(statuses).toContain('localSaved');
     persistence.dispose();
   });
@@ -193,7 +194,7 @@ describe('persistence', () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     const oldData = makeSave();
-    const raw = JSON.stringify({ formatVersion: 4, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion: 4, data: legacySaveData(oldData), savedAt: '2025-01-01T00:00:00.000Z' });
     const backupKey = `${key}:format4-backup`;
     storage.entries.set(key, raw);
     storage.entries.set(backupKey, 'different backup bytes');
@@ -222,7 +223,7 @@ describe('persistence', () => {
     };
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     const oldData = makeSave();
-    const raw = JSON.stringify({ formatVersion: 4, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion: 4, data: legacySaveData(oldData), savedAt: '2025-01-01T00:00:00.000Z' });
     entries.set(key, raw);
     const statuses: SaveStatus[] = [];
     const persistence = createPersistence({
@@ -248,7 +249,7 @@ describe('persistence', () => {
     const saveProgress = vi.fn(async () => { throw incompatible; });
     const cloud = cloudPort({
       loadProgress: vi.fn(async () => ({
-        data: oldData,
+        data: legacySaveData(oldData),
         revision: 7,
         formatVersion: 4,
         gameVersion: 'test',
@@ -267,7 +268,7 @@ describe('persistence', () => {
     persistence.confirmSaveUpgrade();
     await waitForStatus(statuses, 'incompatible');
     expect(saveProgress).toHaveBeenCalledTimes(1);
-    expect(saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 5, revision: 7 });
+    expect(saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 8, revision: 7 });
     await persistence.retry();
     expect(saveProgress).toHaveBeenCalledTimes(1);
     persistence.dispose();
@@ -324,7 +325,7 @@ describe('persistence', () => {
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     storage.entries.set(key, JSON.stringify({
       formatVersion: 1,
-      data: oldSave,
+      data: legacySaveData(oldSave),
       savedAt: new Date(0).toISOString(),
     }));
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
@@ -351,7 +352,7 @@ describe('persistence', () => {
     })) as SaveData['quests'];
 
     const result = validateSave(legacy, catalog);
-    expect(SAVE_FORMAT_VERSION).toBe(5);
+    expect(SAVE_FORMAT_VERSION).toBe(8);
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value.quests).not.toHaveProperty('q13');

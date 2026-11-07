@@ -1,7 +1,12 @@
 import type { Id, Result, RulesCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from './monsters.js';
+import { jobs } from './jobs.js';
+import { specializations } from './specializations.js';
 
 const approvedItemIds: readonly Id[] = [
+  'starter-dagger', 'iron-dagger', 'steel-dagger', 'guardian-dagger', 'frost-tide-dagger', 'sunwell-oathdagger',
+  'starter-staff', 'iron-staff', 'steel-staff', 'guardian-staff', 'frost-tide-staff', 'sunwell-oathstaff',
+  'starter-bow', 'iron-bow', 'steel-bow', 'guardian-bow', 'frost-tide-bow', 'sunwell-oathbow',
   'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword', 'cloth-shirt', 'leather-vest',
   'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm', 'small-red', 'large-red', 'small-blue',
   'large-blue', 'snail-shell', 'slime-gel', 'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard',
@@ -11,6 +16,10 @@ const approvedItemIds: readonly Id[] = [
 ];
 
 const approvedSkillIds: readonly Id[] = [
+  ...Object.values(specializations).map((branch) => branch.skill),
+  'dagger-basic', 'rogue-double-stab', 'rogue-shadow-lunge', 'rogue-smoke', 'rogue-dagger-mastery', 'rogue-combo-rhythm',
+  'wand-basic', 'mage-mana-bolt', 'mage-frost-ring', 'mage-blink', 'mage-mana-affinity', 'mage-rune-study',
+  'bow-basic', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-bow-mastery', 'archer-steady-aim',
   'basic', 'heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery', 'enemy-melee',
   'ruins-carapace-bite', 'guardian-slam', 'frost-crab-charge', 'sunwell-beetle-charge',
   'sand-stinger', 'guardian-wave', 'frost-tusk-slam', 'sunwell-sentinel-slam', 'low-tide-wave',
@@ -47,8 +56,8 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   const skillIds = Object.keys(catalog.skills);
   const monsterIds = Object.keys(catalog.monsters);
 
-  if (itemIds.length !== 34) return invalid('items 數量錯誤：預期 34，實際 ' + itemIds.length);
-  if (skillIds.length !== 20) return invalid('skills 數量錯誤：預期 20，實際 ' + skillIds.length);
+  if (itemIds.length !== approvedItemIds.length) return invalid('items 數量錯誤：預期 ' + approvedItemIds.length + '，實際 ' + itemIds.length);
+  if (skillIds.length !== approvedSkillIds.length) return invalid('skills 數量錯誤：預期 ' + approvedSkillIds.length + '，實際 ' + skillIds.length);
   if (monsterIds.length !== 17) return invalid('monsters 數量錯誤：預期 17，實際 ' + monsterIds.length);
   if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid('items ID 清單不符核准的 34 件物品');
   if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid('skills ID 清單不符核准的 20 個技能');
@@ -95,6 +104,8 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
   // Bosses are the monsters that never respawn (respawnMs 0). Their guaranteed gear drop is the fight's prize,
   // so the shop must not sell it too.
   for (const monster of Object.values(catalog.monsters)) {
+    if (monster.projectileHeight !== undefined && (!Number.isInteger(monster.projectileHeight)
+      || monster.projectileHeight < monster.height || monster.projectileHeight > 96)) return invalid(`怪物 ${monster.id} 的箭矢受擊高度無效`);
     if (monster.respawnMs !== 0) continue;
     for (const drop of monster.drops) {
       const item = catalog.items[drop.itemId];
@@ -109,7 +120,7 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
       skill.maxRank, skill.requiredLevel, skill.mpCost, skill.cooldownMs, skill.windupMs,
       skill.activeMs, skill.recoveryMs, skill.reach, skill.height, skill.targets,
       skill.multiplierBase, skill.multiplierPerRank, skill.durationMs, skill.defensePerRank,
-      skill.hpPerRank, skill.regenPerRank,
+      skill.hpPerRank, skill.regenPerRank, skill.damagePerRank ?? 0, skill.cooldownPerRank ?? 0,
     ];
     if (!isFiniteNonNegative(values)) return invalid(`技能 ${skill.id} 含非有限或負數欄位`);
     if (!Number.isInteger(skill.maxRank) || skill.maxRank < 1) return invalid(`技能 ${skill.id} maxRank 必須是正整數`);
@@ -119,10 +130,25 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
     if (![skill.cooldownMs, skill.windupMs, skill.activeMs, skill.recoveryMs, skill.durationMs, skill.targets].every(Number.isInteger)) {
       return invalid(`技能 ${skill.id} 時間與目標欄位必須是整數`);
     }
+    if (skill.projectile && (skill.kind !== 'attack'
+      || !Number.isFinite(skill.projectile.speed) || skill.projectile.speed <= 0
+      || !Number.isFinite(skill.projectile.radius) || skill.projectile.radius <= 0 || skill.projectile.radius > 8
+      || !Number.isFinite(skill.projectile.lifetimeMs) || skill.projectile.lifetimeMs <= 0 || skill.projectile.lifetimeMs > 2000
+      || skill.projectile.shotOffsetsMs.length < 1 || skill.projectile.shotOffsetsMs.length > 3
+      || skill.projectile.shotOffsetsMs.some((time, index, times) => !Number.isFinite(time) || time < 0
+        || time >= skill.activeMs + skill.recoveryMs || (index > 0 && time <= times[index - 1]!)))) {
+      return invalid(`投射物技能 ${skill.id} 的速度、範圍或出射排程無效`);
+    }
     if (skill.kind === 'attack') {
       if (skill.activeMs < 1 || skill.reach < 1 || skill.height < 1 || skill.targets < 1 || skill.multiplierBase <= 0) {
         return invalid(`攻擊技能 ${skill.id} 必須有有效窗、範圍、目標及正倍率`);
       }
+    } else if (skill.kind === 'movement') {
+      if (skill.id !== 'mage-blink' || skill.projectile || skill.activeMs !== 0 || skill.targets !== 0
+        || skill.reach !== 120 || skill.cooldownMs < 1 || skill.multiplierBase !== 0) return invalid('閃現定義無效');
+    } else if (skill.kind === 'zone') {
+      if (skill.id !== 'rogue-smoke' || skill.projectile || skill.activeMs !== 0 || skill.targets !== 0
+        || skill.durationMs < 1 || skill.reach <= 0 || skill.multiplierBase !== 0) return invalid('煙幕定義無效');
     } else if (skill.kind === 'buff') {
       if (skill.activeMs !== 0 || skill.targets < 1 || skill.durationMs < 1) {
         return invalid(`增益技能 ${skill.id} 必須以持續時間表示效果，不可設攻擊有效窗`);
@@ -131,15 +157,29 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
       if ([skill.cooldownMs, skill.windupMs, skill.activeMs, skill.recoveryMs, skill.reach, skill.height, skill.targets, skill.durationMs].some((value) => value !== 0)) {
         return invalid(`被動技能 ${skill.id} 的時間、範圍與目標欄位必須為 0`);
       }
-      if (skill.hpPerRank === 0 && skill.regenPerRank === 0 && skill.defensePerRank === 0) {
+      if (skill.hpPerRank === 0 && skill.regenPerRank === 0 && skill.defensePerRank === 0 && !skill.damagePerRank) {
         return invalid(`被動技能 ${skill.id} 缺少具體效果數值`);
       }
     }
   }
 
-  const learnableCount = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'swordsman').length;
+  const learnableCount = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'swordsman' && !skill.requiredSpecialization).length;
   const enemySkills = Object.values(catalog.skills).filter((skill) => skill.requiredJob === 'enemy');
   if (learnableCount !== 5) return invalid(`可學劍士技能數量錯誤：預期 5，實際 ${learnableCount}`);
+  for (const job of Object.values(jobs)) {
+    if (!catalog.items[job.starterWeapon] || !catalog.skills[job.basicSkill]
+      || new Set(job.learnableSkills).size !== 5
+      || Object.values(catalog.skills).filter((skill) => skill.requiredJob === job.id && !skill.requiredSpecialization).length !== 5
+      || job.learnableSkills.some((id) => catalog.skills[id]?.requiredJob !== job.id)
+      || job.skillSlots.some((id) => !job.learnableSkills.includes(id) || catalog.skills[id]?.kind === 'passive')) {
+      return invalid('職業 ' + job.name + ' 的技能或武器定義無效');
+    }
+  }
+  for (const [id, branch] of Object.entries(specializations)) {
+    const skill = catalog.skills[branch.skill];
+    if (!skill || skill.requiredSpecialization !== id || skill.requiredJob !== branch.job || skill.requiredLevel !== 20
+      || skill.maxRank !== 1) return invalid('二轉技能定義或職業引用無效：' + id);
+  }
   if (enemySkills.length !== 14) return invalid('敵人技能數量錯誤：預期 14，實際 ' + enemySkills.length);
   if (catalog.skills.basic?.requiredJob !== 'any') return invalid('basic 必須存在且可由任意職業使用');
   if (enemySkills.some((skill) => skill.maxRank !== 1 || skill.mpCost !== 0)) {

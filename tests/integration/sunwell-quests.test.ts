@@ -1,3 +1,4 @@
+import { legacySaveData } from '../fixtures/legacy-save.js';
 import { describe, expect, it } from 'vitest';
 import type { EntityId, SaveData, StorageLike } from '../../src/contracts/index.js';
 import type { GameCommand, CommandDraft } from '../../src/contracts/commands.js';
@@ -68,7 +69,7 @@ describe('Sunwell Sentinel finale quest', () => {
     const key = localSaveKeyForGame(gameId, import.meta.env.DEV);
     storage.entries.set(key, JSON.stringify({
       formatVersion: 1,
-      data: legacy,
+      data: legacySaveData(legacy),
       savedAt: new Date(0).toISOString(),
     }));
     const originalRaw = storage.entries.get(key)!;

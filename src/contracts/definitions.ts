@@ -2,6 +2,7 @@ import type {
   BagStack,
   Id,
   MovementConfig,
+  PlayerJob,
   QuestState,
   Reward,
 } from './types.js';
@@ -24,10 +25,11 @@ export type ItemDef = {
   sellPrice: number;
   iconKey: string;
   visualKey: string | null;
+  allowedJobs?: readonly PlayerJob[];
 };
 
-export type SkillKind = 'attack' | 'buff' | 'passive';
-export type SkillJob = 'any' | 'swordsman' | 'enemy';
+export type SkillKind = 'attack' | 'buff' | 'passive' | 'movement' | 'zone';
+export type SkillJob = 'any' | PlayerJob | 'enemy';
 
 export type SkillDef = {
   id: Id;
@@ -36,6 +38,7 @@ export type SkillDef = {
   maxRank: number;
   requiredLevel: number;
   requiredJob: SkillJob;
+  requiredSpecialization?: import('./types.js').SpecializationId;
   mpCost: number;
   cooldownMs: number;
   windupMs: number;
@@ -51,6 +54,11 @@ export type SkillDef = {
   hpPerRank: number;
   regenPerRank: number;
   effectKey: string | null;
+  /** Fractional bow damage / charged first-hit bonus per passive rank. */
+  damagePerRank?: number;
+  cooldownPerRank?: number;
+  meleeWindows?: readonly { offsetMs: number; activeMs: number }[];
+  projectile?: { speed: number; radius: number; lifetimeMs: number; shotOffsetsMs: readonly number[] };
 };
 
 export type MonsterDrop = {
@@ -61,6 +69,8 @@ export type MonsterDrop = {
 };
 
 export type MonsterDef = {
+  /** Optional visible shell height for arrows; locomotion/melee keep height. */
+  projectileHeight?: number;
   id: Id;
   name: string;
   level: number;
@@ -217,6 +227,8 @@ export type ContentCatalog = {
 
 export type QuestView = {
   questId: Id;
+  giverNpcId?: Id;
+  turnInNpcId?: Id;
   title: string;
   status: 'locked' | 'available' | 'active' | 'ready' | 'claimed';
   objectives: {

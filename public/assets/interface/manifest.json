@@ -841,6 +841,506 @@
       "displayHeight": 64,
       "pivotX": 0.5,
       "pivotY": 0.5
+    },
+    {
+      "key": "item:starter-bow",
+      "url": "assets/interface/item-starter-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-bow",
+      "url": "assets/interface/item-iron-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:steel-bow",
+      "url": "assets/interface/item-steel-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:guardian-bow",
+      "url": "assets/interface/item-guardian-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:frost-tide-bow",
+      "url": "assets/interface/item-frost-tide-bow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:sunwell-oathbow",
+      "url": "assets/interface/item-sunwell-oathbow-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:bow-basic",
+      "url": "assets/interface/skill-bow-basic-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:archer-double-shot",
+      "url": "assets/interface/skill-archer-double-shot-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:archer-piercing-shot",
+      "url": "assets/interface/skill-archer-piercing-shot-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:archer-retreat-shot",
+      "url": "assets/interface/skill-archer-retreat-shot-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:archer-bow-mastery",
+      "url": "assets/interface/skill-archer-bow-mastery-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:archer-steady-aim",
+      "url": "assets/interface/skill-archer-steady-aim-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:archer-mentor",
+      "url": "assets/interface/portrait-archer-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:archer",
+      "url": "assets/interface/portrait-archer-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:starter-staff",
+      "url": "assets/interface/item-starter-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-staff",
+      "url": "assets/interface/item-iron-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:steel-staff",
+      "url": "assets/interface/item-steel-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:guardian-staff",
+      "url": "assets/interface/item-guardian-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:frost-tide-staff",
+      "url": "assets/interface/item-frost-tide-staff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:sunwell-oathstaff",
+      "url": "assets/interface/item-sunwell-oathstaff-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:wand-basic",
+      "url": "assets/interface/skill-wand-basic-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:mage-mana-bolt",
+      "url": "assets/interface/skill-mage-mana-bolt-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:mage-frost-ring",
+      "url": "assets/interface/skill-mage-frost-ring-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:mage-blink",
+      "url": "assets/interface/skill-mage-blink-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:mage-mana-affinity",
+      "url": "assets/interface/skill-mage-mana-affinity-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:mage-rune-study",
+      "url": "assets/interface/skill-mage-rune-study-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:mage-mentor",
+      "url": "assets/interface/portrait-mage-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:mage",
+      "url": "assets/interface/portrait-mage-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:starter-dagger",
+      "url": "assets/interface/item-starter-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:iron-dagger",
+      "url": "assets/interface/item-iron-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:steel-dagger",
+      "url": "assets/interface/item-steel-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:guardian-dagger",
+      "url": "assets/interface/item-guardian-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:frost-tide-dagger",
+      "url": "assets/interface/item-frost-tide-dagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "item:sunwell-oathdagger",
+      "url": "assets/interface/item-sunwell-oathdagger-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:dagger-basic",
+      "url": "assets/interface/skill-dagger-basic-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rogue-double-stab",
+      "url": "assets/interface/skill-rogue-double-stab-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rogue-shadow-lunge",
+      "url": "assets/interface/skill-rogue-shadow-lunge-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rogue-smoke",
+      "url": "assets/interface/skill-rogue-smoke-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rogue-dagger-mastery",
+      "url": "assets/interface/skill-rogue-dagger-mastery-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:rogue-combo-rhythm",
+      "url": "assets/interface/skill-rogue-combo-rhythm-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:rogue-mentor",
+      "url": "assets/interface/portrait-rogue-mentor-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "portrait:rogue",
+      "url": "assets/interface/portrait-rogue-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 96,
+      "displayHeight": 96,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:guardian-rally",
+      "url": "assets/interface/skill-iron-guard-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:berserker-flurry",
+      "url": "assets/interface/skill-sweep-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:marksman-snipe",
+      "url": "assets/interface/skill-archer-piercing-shot-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:ranger-volley",
+      "url": "assets/interface/skill-archer-retreat-shot-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:elementalist-nova",
+      "url": "assets/interface/skill-mage-frost-ring-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:arcanist-siphon",
+      "url": "assets/interface/skill-mage-mana-bolt-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:shadowblade-venom",
+      "url": "assets/interface/skill-rogue-shadow-lunge-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
+    },
+    {
+      "key": "skill:thrower-shuriken",
+      "url": "assets/interface/skill-rogue-double-stab-v1.png",
+      "columns": 1,
+      "rows": 1,
+      "displayWidth": 32,
+      "displayHeight": 32,
+      "pivotX": 0.5,
+      "pivotY": 0.5
     }
   ],
   "animations": [

@@ -42,8 +42,8 @@ export function resolveQuestClaim(
     claimedPlayer = updated.value;
   }
 
-  if (claim.value.reward.job === 'swordsman') {
-    updated = applyProgressAction(claimedPlayer, { type: 'changeJob' }, catalog.rules);
+  if (claim.value.reward.job) {
+    updated = applyProgressAction(claimedPlayer, { type: 'changeJob', job: claim.value.reward.job }, catalog.rules);
     if (!updated.ok) return updated;
     claimedPlayer = updated.value;
   }

@@ -69,13 +69,24 @@ export type Equipment = {
   hat: Id | null;
 };
 
+export type PlayerJob = 'swordsman' | 'archer' | 'mage' | 'rogue';
+export type SpecializationId = 'guardian' | 'berserker' | 'marksman' | 'ranger' | 'elementalist' | 'arcanist' | 'shadowblade' | 'thrower';
+
 export type PlayerProgress = {
   name: string;
-  job: 'beginner' | 'swordsman';
+  job: 'beginner' | PlayerJob;
+  /** Missing on legacy swordsmen; the beginner's selected training route. */
+  plannedJob?: PlayerJob;
   level: number;
   exp: number;
   str: number;
   dex: number;
+  /** Legacy in-memory callers may omit INT; canonical format 7 always writes it. */
+  int?: number;
+  /** Added in format9; legacy characters keep all existing AP. */
+  luk?: number;
+  specialization?: SpecializationId;
+  advancedSkillEquipped?: boolean;
   ap: number;
   sp: number;
   hp: number;
@@ -109,9 +120,21 @@ export type SaveData = {
 };
 
 export type SaveEnvelope = {
-  formatVersion: 5;
-  data: SaveData;
+  formatVersion: 9;
+  data: GameProfile;
   savedAt: string;
+};
+
+/** Character progress is isolated; settings belong to the whole profile. */
+export type CharacterSave = Omit<SaveData, 'settings'> & { characterId: Id };
+
+export type GameProfile = {
+  activeCharacterId: Id | null;
+  slots: { slotId: Id; characterId: Id | null }[];
+  characters: Record<Id, CharacterSave>;
+  settings: Settings;
+  warehouse?: BagStack[];
+  deletedCharacter?: CharacterSave | null;
 };
 
 export type DerivedStats = {
@@ -128,10 +151,11 @@ export type Reward = {
   coins: number;
   items: BagStack[];
   minLevel?: number;
-  job?: 'swordsman';
+  job?: PlayerJob;
 };
 
 export type CombatActor = {
+  specialization?: SpecializationId;
   id: EntityId;
   position: Vec2;
   facing: Facing;
@@ -141,12 +165,17 @@ export type CombatActor = {
   body: { width: number; height: number };
   knockbackImmune: boolean;
   skillRanks: Record<Id, number>;
+  projectileImmune?: boolean;
+  projectileOffset?: Vec2;
+  projectileHeight?: number;
 };
 
 export type AttackRequest = {
   sourceId: EntityId;
   skillId: Id;
   reachOverride?: number;
+  firstHitBonus?: number;
+  damageBonus?: number;
 };
 
 export type AttackInstance = {
@@ -159,20 +188,49 @@ export type AttackInstance = {
   rank: number;
   hitIds: EntityId[];
   reachOverride?: number;
+  projectileStats?: DerivedStats;
+  firedShots?: number;
+  firstHitBonus?: number;
+  damageBonus?: number;
+  /** Separate hit budgets for scheduled melee strikes; runtime only. */
+  meleeHitIds?: Record<number, EntityId[]>;
+  actionResolved?: boolean;
+};
+
+/** Runtime only. A projectile retains its launch power and lifetime hit budget. */
+export type ProjectileState = {
+  launchOrigin?: Vec2;
+  id: EntityId;
+  attackId: EntityId;
+  sourceId: EntityId;
+  skillId: Id;
+  position: Vec2;
+  origin: Vec2;
+  facing: Facing;
+  rank: number;
+  firedAtMs: number;
+  expiresAtMs: number;
+  distance: number;
+  hitIds: EntityId[];
+  stats: DerivedStats;
+  firstHitBonus?: number;
 };
 
 export type CombatState = {
   attacks: AttackInstance[];
   cooldowns: Record<EntityId, Record<Id, number>>;
+  projectiles?: ProjectileState[];
 };
 
 export type Hit = {
+  skillId?: Id;
   attackId: EntityId;
   sourceId: EntityId;
   targetId: EntityId;
   damage: number;
   critical: boolean;
   knockback: Vec2;
+  projectile?: boolean;
 };
 
 export type CombatStep = {
@@ -216,6 +274,9 @@ export type MonsterState = {
   attackFacing: Facing | null;
   attackReach: number | null;
   deathReported: boolean;
+  provokedUntilMs?: number;
+  slowedUntilMs?: number;
+  smokeSlowedUntilMs?: number;
 };
 
 export type Telegraph = {

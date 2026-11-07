@@ -1,4 +1,9 @@
 import './styles.css';
+import { classPortrait, classSkillNames, classActionLabel, playerClassLabel, equipmentJobLabel } from './class-presentation.js';
+import { buildRosterManager } from './roster-manager.js';
+import { specializationPanel } from './specialization-panel.js';
+import { isSpecialization, playerSkillRank } from '../content/rules/specializations.js';
+import { canEquipForJob, effectiveJob, jobs, resolveSkillSlot } from '../content/rules/jobs.js';
 import './journal.css';
 import './world-map.css';
 import './illustrated-panels.css';
@@ -21,7 +26,7 @@ import {
 } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import type { StorageLike, UiController, UiSnapshot } from '../contracts/ports.js';
-import type { Settings } from '../contracts/types.js';
+import type { PlayerJob, Settings } from '../contracts/types.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { validatePlayerName } from '../domain/progression/index.js';
 import { resolveItemUse } from '../app/item-use.js';
@@ -83,7 +88,8 @@ const KEY_ACTIONS: { id: Exclude<GameAction, 'escape'>; label: string }[] = [
 ];
 
 type UiAction =
-  | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel'
+  | 'advance-specialization' | 'toggle-advanced-skill'
+  | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel' | 'choose-route' | 'select-character'
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
   | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest' | 'track-quest'
@@ -315,7 +321,7 @@ function percent(value: number, maximum: number): number {
 }
 
 function jobLabel(job: string): string {
-  return job === 'swordsman' ? '劍士' : '初心者';
+  return job === 'swordsman' ? '劍士' : job === 'archer' ? '弓箭手' : job === 'rogue' ? '盜賊' : job === 'mage' ? '法師' : '初心者';
 }
 
 function codeLabel(code: string | undefined): string {
@@ -374,7 +380,7 @@ function itemDetails(item: UiSnapshot['catalog']['rules']['items'][string]): str
   if (item.restoreHp) effects.push('恢復 HP ' + item.restoreHp);
   if (item.restoreMp) effects.push('恢復 MP ' + item.restoreMp);
   return [
-    '需求 Lv.' + item.minLevel,
+    '需求 Lv.' + item.minLevel + (item.slot ? '・' + equipmentJobLabel(item) : ''),
     effects.length ? effects.join('・') : '沒有直接能力效果',
     ...(item.stackLimit > 1 ? ['每格最多 ' + item.stackLimit + ' 個'] : []),
     '買價 ' + (item.buyPrice > 0 ? formatNumber(item.buyPrice) : '不可購買'),
@@ -389,6 +395,7 @@ function makeEquipmentComparison(
   item: UiSnapshot['catalog']['rules']['items'][string],
 ): HTMLElement | null {
   if (!item.slot) return null;
+  if (!canEquipForJob(player,item)) return makeElement(document,'p','ms-disabled-reason',equipmentJobLabel(item)+'，目前路線無法裝備。');
   // Compare against what is worn now so players can tell an upgrade without opening 裝備.
   const currentId = player.equipment[item.slot];
   const current = currentId ? view.catalog.rules.items[currentId] : undefined;
@@ -412,7 +419,7 @@ function isWearableUpgrade(
   player: NonNullable<UiSnapshot['saveData']>['player'],
   item: UiSnapshot['catalog']['rules']['items'][string],
 ): boolean {
-  if (!item.slot || player.level < item.minLevel) return false;
+  if (!item.slot || player.level < item.minLevel || !canEquipForJob(player,item)) return false;
   const currentId = player.equipment[item.slot];
   const current = currentId ? view.catalog.rules.items[currentId] : undefined;
   const deltas = (['attack', 'defense', 'hpBonus'] as const).map((key) => (item[key] ?? 0) - (current?.[key] ?? 0));
@@ -441,7 +448,7 @@ function objectiveText(view: UiSnapshot, objective: UiSnapshot['questViews'][num
   const action = {
     kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達', inspect: '調律',
   }[objective.type];
-  const objectiveAction = objective.type === 'inspect' && objective.targetId === 'frost-route-marker' ? '調查' : action;
+  const objectiveAction = objective.type === 'inspect' && objective.targetId.startsWith('archery-target-') ? '命中' : objective.type === 'inspect' && objective.targetId === 'frost-route-marker' ? '調查' : action;
   return objectiveAction + ' ' + targetName(view, objective.targetId, objective.type)
     + ' ' + Math.min(objective.current, objective.required) + '/' + objective.required;
 }
@@ -645,7 +652,8 @@ export function createUi(
   let selectedMapId: string | null = null;
   let selectedQuestId: string | null = null;
   let createRequested = false;
-  let replaceConfirmed = false;
+  let plannedJobDraft: PlayerJob = 'swordsman';
+  let slotDraft: string | undefined;
   let discardConfirmed = false;
   let nameDraft = '旅人';
   let shopQuantities = new Map<string, number>();
@@ -778,7 +786,8 @@ export function createUi(
     if (!keyGuideExpanded) return;
 
     const bindings = (view?.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS) as Partial<Record<GameAction, string>>;
-    const signature = JSON.stringify(bindings);
+    const signature = JSON.stringify({bindings, job:view?.saveData?.player && effectiveJob(view.saveData.player),
+      specialization:view?.saveData?.player.specialization, advancedSkillEquipped:view?.saveData?.player.advancedSkillEquipped});
     if (signature === lastKeyGuideSignature && keyGuideCard.hasChildNodes()) return;
     lastKeyGuideSignature = signature;
 
@@ -800,7 +809,7 @@ export function createUi(
       for (const item of section.items) {
         const row = makeElement(document, 'div', 'ms-key-guide__row');
         row.append(
-          makeElement(document, 'span', 'ms-key-guide__action', item.label),
+          makeElement(document, 'span', 'ms-key-guide__action', view?.saveData ? classActionLabel(view.saveData.player,view.catalog.rules,item.action ?? '') ?? item.label : item.label),
           makeElement(document, 'span', 'ms-key-guide__badge', getKeyBadgeText(bindings, item)),
         );
         grid.append(row);
@@ -862,7 +871,7 @@ export function createUi(
       className: 'ms-profile__portrait', data: { panel: 'stats' },
     });
     const hero = makeElement(document, 'img', 'ms-profile__hero');
-    hero.src = new URL('assets/interface/journal/hero-portrait-chibi.png', document.baseURI).href;
+    hero.src = new URL(classPortrait(player), document.baseURI).href;
     hero.alt = '';
     hero.draggable = false;
     portrait.append(hero);
@@ -998,12 +1007,14 @@ export function createUi(
       'small-red': 'potionHp',
       'small-blue': 'potionMp',
     };
-    for (const [slotId, button] of quickButtons) {
+    for (const [definitionId, button] of quickButtons) {
+      const slotIndex = quickDefinitions.findIndex((definition) => definition.id === definitionId);
+      const slotId = player && slotIndex < 4 ? resolveSkillSlot(player,slotIndex as 0|1|2|3) : definitionId;
       button.classList.toggle('has-action-feedback', false);
-      const slot = quickDefinitions.find((definition) => definition.id === slotId);
+      const slot = quickDefinitions.find((definition) => definition.id === definitionId);
       const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
       if (key) {
-        const action = keyForSkill[slotId]!;
+        const action = keyForSkill[definitionId]!;
         const binding = effectiveKeyText(view.saveData?.settings.bindings ?? {}, action);
         key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
         key.title = binding;
@@ -1043,10 +1054,11 @@ export function createUi(
         continue;
       }
 
-      const iconKey = slot.kind === 'skill'
+      button.dataset.skillId = slotId;
+      const iconKey = slot.kind === 'skill' || slotId === 'bow-basic' || slotId === 'wand-basic'
         ? 'skill:' + slotId
         : view.catalog.rules.items['starter-sword']?.iconKey ?? null;
-      renderQuickIcon(slotId, iconHost, view, iconKey, slot.label, 'ms-quick-slot__icon-image', slot.kind === 'attack' ? '普攻' : undefined);
+      renderQuickIcon(slotId, iconHost, view, iconKey, view.catalog.rules.skills[slotId]?.name ?? slot.label, 'ms-quick-slot__icon-image', slot.kind === 'attack' ? '普攻' : undefined);
 
       const skill = view.catalog.rules.skills[slotId];
       if (!player || !skill) {
@@ -1056,18 +1068,20 @@ export function createUi(
       }
       label.textContent = skill.name;
       button.setAttribute('aria-label', skill.name);
-      const basic = slotId === 'basic';
-      const rank = basic ? 1 : player.skillRanks[slotId] ?? 0;
+      const basic = slot.kind === 'attack';
+      const trial = slotId === 'rogue-double-stab' && effectiveJob(player) === 'rogue' && player.job === 'beginner'
+        && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
+      const rank = basic || trial ? 1 : playerSkillRank(player, slotId);
       button.classList.toggle('is-unlearned', !basic && rank === 0);
       const cooldown = Math.max(0, (view.skillReadyAtMs[slotId] ?? 0) - view.nowMs);
       const reason = basic
         ? cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : ''
         : rank === 0 ? '未學習'
-          : player.mp < skill.mpCost ? 'MP 不足'
+          : !trial && player.mp < skill.mpCost ? 'MP 不足'
             : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '';
       // Keep the active buff duration above cast blockers, as the old quickbar did.
       const buffLeftSec = skill.kind === 'buff' && rank > 0
-        ? Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
+        ? skill.id === 'guardian-rally' ? view.activeGuard?.remainingSeconds ?? 0 : Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
       const queued = view.combatUi?.bufferedSkillId === slotId;
       const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
@@ -1081,7 +1095,8 @@ export function createUi(
       button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
       // Preserve the old rank/MP/cooldown disabled policy; action lock and a live queue are display-only.
       button.disabled = !canAct || (!basic && Boolean(reason));
-      state.textContent = compactQuickSlotState(displayState);
+      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : view.aimReady && basic ? '瞄準就緒' : displayState);
+      button.classList.toggle('is-buff-active', view.aimReady === true && basic || buffLeftSec > 0);
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
@@ -1129,9 +1144,12 @@ export function createUi(
       mapVisualLoad: view.mapVisualLoad ? { mapId: view.mapVisualLoad.mapId, name: view.mapVisualLoad.name,
         status: view.mapVisualLoad.status, message: view.mapVisualLoad.message } : null,
       hasSave: view.saveData !== null,
+      profile: view.profile,
+      characterBusy: view.characterBusy,
       canReturnTown: view.canReturnTown,
       createRequested,
-      replaceConfirmed,
+      plannedJobDraft,
+      slotDraft,
       discardConfirmed,
       saveMessage: view.saveMessage,
       legacyImportAvailable: view.legacyImportAvailable,
@@ -1145,6 +1163,11 @@ export function createUi(
       screenLayer.replaceChildren();
 
       const showCreate = createRequested || view.screen === 'create';
+      if (view.characterBusy) {
+        screenLayer.hidden = false;
+        screenLayer.append(makeScreenCard(document, '正在保存角色進度', '保存完成後繼續，請稍候。'));
+        return;
+      }
       if (view.saveStatus === 'conflict') {
         const card = makeScreenCard(document, '進度版本衝突', '另一個裝置已有較新的雲端進度。請載入雲端版本後再繼續。');
         card.append(makeButton(document, '載入雲端版本', 'use-cloud-version', {
@@ -1186,7 +1209,6 @@ export function createUi(
       }
       if (view.saveUpgrade) {
         createRequested = false;
-        replaceConfirmed = false;
         const prompt = saveUpgradePrompt(view.saveUpgrade);
         const card = makeScreenCard(document, prompt.title, prompt.explanation);
         card.append(makeElement(document, 'p', 'ms-screen-card__status', '存檔狀態：' + statusLabel(view.saveStatus)));
@@ -1212,24 +1234,34 @@ export function createUi(
       }
       if ((view.screen === 'title' && !view.error) || showCreate) {
       if (showCreate) {
-        const card = makeScreenCard(document, '建立角色', view.saveData
-          ? (replaceConfirmed ? '第二次確認：既有角色進度將被取代，且無法復原。' : '建立新角色會取代目前角色，請先確認後再送出。')
-          : '輸入角色名稱，確認後開始冒險。');
+        const card = makeScreenCard(document, '建立角色', '在空欄位開始新的冒險。既有角色進度會保留；先選訓練路線，Lv.10 完成試煉後正式轉職。');
         const checkedName = validatePlayerName(nameDraft);
         const nameInput = captureNameInput(checkedName);
         const nameFeedback = makeElement(document, 'p');
         nameFeedback.id = nameFeedbackId;
         presentNameFeedback(nameInput, nameFeedback, checkedName);
         card.append(nameInput, nameFeedback);
-        if (view.saveData && !replaceConfirmed) {
-          card.append(makeButton(document, '我了解，繼續確認', 'create-confirm', { className: 'ms-button ms-button--danger' }));
-        } else {
-          card.append(makeButton(document, view.saveData ? '確認取代並建立' : '確認建立角色', 'create-confirm', {
-            className: 'ms-button ms-button--primary',
-            disabled: !checkedName.ok,
-            title: checkedName.ok ? '' : checkedName.message,
-          }));
+        const routes = makeElement(document, 'div', 'ms-character-routes');
+        routes.setAttribute('aria-label', '訓練路線');
+        for (const route of ['swordsman', 'archer', 'mage', 'rogue'] as const) {
+          const button = makeButton(document, jobs[route].name + '訓練', 'choose-route', {
+            data: { job: route }, className: 'ms-button ' + (route === plannedJobDraft ? 'ms-button--primary' : 'ms-button--secondary'),
+          });
+          button.setAttribute('aria-pressed', String(route === plannedJobDraft));
+          button.append(makeInterfaceIcon(document,view,route === 'swordsman' ? 'skill:heavy-strike' : 'skill:' + jobs[route].basicSkill,jobs[route].name,'ms-route-icon'));
+          routes.append(button);
         }
+        card.append(routes, makeElement(document, 'p', 'ms-screen-card__save', plannedJobDraft === 'rogue'
+          ? '短刃起步，敏捷為主、力量為輔。近身連刺、影步切入與煙幕撤離；沒有無敵，注意敵人預警。'
+          : plannedJobDraft === 'mage'
+          ? '魔杖起步，智力為主、敏捷為輔。站定施法、冰霜控場並保留MP閃現；零MP魔杖彈可持續冒險。'
+          : plannedJobDraft === 'archer'
+          ? '短弓起步，敏捷為主、力量為輔。角色擁有獨立背包、任務與探索進度。'
+          : '短劍起步，力量為主、敏捷為輔。角色擁有獨立背包、任務與探索進度。'));
+        card.append(makeButton(document, '確認建立角色', 'create-confirm', {
+          className: 'ms-button ms-button--primary', disabled: !checkedName.ok,
+          title: checkedName.ok ? '' : checkedName.message,
+        }));
         const confirmButton = card.querySelector<HTMLButtonElement>('[data-ui-action="create-confirm"]');
         if (confirmButton) confirmButton.dataset.focus = 'create-confirm';
         card.append(makeButton(document, '取消', 'create-cancel', { className: 'ms-button ms-button--secondary' }));
@@ -1263,11 +1295,35 @@ export function createUi(
             '上次進度：' + saved.name + '・Lv.' + saved.level + ' ' + jobLabel(saved.job) + (place ? '・' + place : '')));
           card.append(
             makeButton(document, '繼續冒險', 'continue', { className: 'ms-button ms-button--primary' }),
-            makeButton(document, '建立新角色', 'new-role', { className: 'ms-button ms-button--secondary' }),
+            makeButton(document, '建立新角色', 'new-role', { className: 'ms-button ms-button--secondary',
+              disabled: view.profile?.slots.every(({ characterId }) => characterId !== null) }),
           );
         } else {
           card.append(makeButton(document, '建立角色', 'new-role', { className: 'ms-button ms-button--primary' }));
           card.append(makeButton(document, '暫時遊玩', 'play-temporary', { className: 'ms-button ms-button--secondary' }));
+        }
+        if (view.profile && ['ready', 'saved', 'localSaved', 'previewOnly', 'saving', 'saveError', 'unavailable'].includes(view.saveStatus)) {
+          const slots = makeElement(document, 'div', 'ms-character-slots');
+          slots.setAttribute('aria-label', '角色欄位');
+          for (const [index, slot] of view.profile.slots.entries()) {
+            const character = slot.characterId ? view.profile.characters[slot.characterId] : null;
+            if (character) {
+              const place = view.catalog.world.maps[character.location.mapId]?.name ?? '';
+              slots.append(makeButton(document, (slot.characterId === view.profile.activeCharacterId ? '目前｜' : '')
+                + character.player.name + '・Lv.' + character.player.level + ' ' + playerClassLabel(character.player)
+                + '・' + place + '｜選擇並繼續', 'select-character', {
+                  data: { characterId: character.characterId }, disabled: view.saveStatus === 'saving' || view.saveStatus === 'saveError',
+                  className: 'ms-button ms-character-slot',
+                }));
+            } else {
+              slots.append(makeButton(document, '空欄位 ' + (index + 1) + '・建立角色', 'new-role', {
+                data: { slotId: slot.slotId }, className: 'ms-button ms-character-slot',
+                disabled: view.saveStatus === 'saving' || view.saveStatus === 'saveError',
+              }));
+            }
+          }
+          card.append(slots);
+          card.append(buildRosterManager(document, view, dispatchDraft));
         }
         if (view.legacyImportAvailable) {
           card.append(
@@ -1322,7 +1378,7 @@ export function createUi(
         const card = makeScreenCard(document, '第一章「守衛的誓約」完成', '古礦守衛已被擊敗，守衛核心已交付，q08 獎勵也已手動領取。接續主線時，從赤岩山徑向東穿過古礦入口回到守衛祭壇，再走東側航路前往雪痕海岸找雪芽。');
         const summary = makeElement(document, 'ul', 'ms-help-list');
         for (const line of [
-          '角色：' + player.name + '・Lv.' + player.level + '・' + jobLabel(player.job),
+          '角色：' + player.name + '・Lv.' + player.level + '・' + playerClassLabel(player),
           '第一章主線：' + firstChapterClaimed + ' / 8 項已領獎',
           '持有金幣：' + formatNumber(player.coins),
         ]) summary.append(makeElement(document, 'li', '', line));
@@ -1711,29 +1767,42 @@ export function createUi(
       case 'new-role':
         clearTransientViewState();
         createRequested = true;
-        replaceConfirmed = false;
+        slotDraft = button.dataset.slotId ?? view.profile?.slots.find(({ characterId }) => characterId === null)?.slotId;
+        plannedJobDraft = 'swordsman';
         nameDraft = '旅人';
         lastScreenSignature = '';
         renderScreen(view);
         return;
+      case 'choose-route':
+        plannedJobDraft = button.dataset.job === 'rogue' ? 'rogue' : button.dataset.job === 'mage' ? 'mage' : button.dataset.job === 'archer' ? 'archer' : 'swordsman';
+        lastScreenSignature = '';
+        renderScreen(view);
+        return;
+      case 'select-character':
+        clearTransientViewState();
+        if (button.dataset.characterId) dispatchDraft({ type: 'selectCharacter', payload: { characterId: button.dataset.characterId } });
+        focusGameCanvas(button);
+        return;
+      case 'advance-specialization': {
+        const id = button.dataset.specialization;
+        if (!isSpecialization(id)) return;
+        if (button.dataset.confirmed !== 'true') {
+          button.dataset.confirmed = 'true'; button.textContent = '再次點擊確認這個分支（此角色只能選一次）'; return;
+        }
+        dispatchDraft({ type: 'advanceJob', payload: { specialization: id } }); return;
+      }
+      case 'toggle-advanced-skill':
+        dispatchDraft({ type: 'setAdvancedSkill', payload: { enabled: !view.saveData?.player.advancedSkillEquipped } }); return;
       case 'create-confirm':
         clearTransientViewState();
-        if (view.saveData && !replaceConfirmed) {
-          replaceConfirmed = true;
-          lastScreenSignature = '';
-          renderScreen(view);
-          return;
-        }
         const checkedName = validatePlayerName(nameDraft);
         if (!checkedName.ok) return;
         createRequested = false;
-        replaceConfirmed = false;
-        dispatchDraft({ type: 'newGame', payload: { name: checkedName.value } });
+        dispatchDraft({ type: 'newGame', payload: { name: checkedName.value, plannedJob: plannedJobDraft, slotId: slotDraft } });
         focusGameCanvas(button);
         return;
       case 'create-cancel':
         createRequested = false;
-        replaceConfirmed = false;
         lastScreenSignature = '';
         if (view.screen === 'create') dispatchDraft({ type: 'returnTitle', payload: {} });
         else renderScreen(view);
@@ -1945,7 +2014,7 @@ export function createUi(
         const amount = clampInteger(Number(button.dataset.amount ?? 1), 1, Math.max(1, available));
         const latestView = currentView;
         const player = latestView?.saveData?.player;
-        if (!latestView || !player || (stat !== 'str' && stat !== 'dex')) return;
+        if (!latestView || !player || (stat !== 'str' && stat !== 'dex' && stat !== 'int' && stat !== 'luk')) return;
         const preview = previewApAllocation({ player, rules: latestView.catalog.rules, stat, amount });
         if (preview.ok) dispatchDraft({ type: 'allocateAp', payload: { stat, amount } });
         return;
@@ -2070,6 +2139,15 @@ export function createUi(
   const render = (view: UiSnapshot): void => {
     if (disposed) return;
     const previousView = currentView;
+    if (previousView?.profile?.activeCharacterId && previousView.profile.activeCharacterId !== view.profile?.activeCharacterId) {
+      clearTransientViewState();
+      selectedQuestId = null;
+      selectedMapId = null;
+      questTrackerState.trackQuest(null);
+      lastReconciledBag = [];
+      lastPanelFocus = null;
+      panelFocusBeforeResume = null;
+    }
     const previousResumeGate = previousView?.focusResumeRequired === true;
     const nextResumeGate = view.focusResumeRequired === true;
     if (nextResumeGate && !previousResumeGate && previousView) {
@@ -2206,7 +2284,7 @@ export function createUi(
       const feedback = screenLayer.querySelector<HTMLParagraphElement>(`#${nameFeedbackId}`);
       presentNameFeedback(target, feedback, checkedName);
       const confirmButton = screenLayer.querySelector<HTMLButtonElement>('[data-ui-action="create-confirm"]');
-      if (confirmButton && currentView && (!currentView.saveData || replaceConfirmed)) {
+      if (confirmButton && currentView) {
         confirmButton.disabled = !checkedName.ok;
         confirmButton.title = checkedName.ok ? '' : checkedName.message;
       }
@@ -2445,15 +2523,23 @@ function makeScreenCard(document: Document, title: string, description: string):
 function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], rank: number, includeRank = true): string {
   const parts = [
     ...(includeRank ? ['等級 ' + rank + '/' + skill.maxRank] : []),
-    '需求 Lv.' + skill.requiredLevel + ' ' + (skill.requiredJob === 'swordsman' ? '劍士' : '初心者'),
+    '需求 Lv.' + skill.requiredLevel + ' ' + (skill.requiredJob === 'rogue' ? '盜賊' : skill.requiredJob === 'mage' ? '法師' : skill.requiredJob === 'archer' ? '弓箭手' : skill.requiredJob === 'swordsman' ? '劍士' : '初心者'),
   ];
   // Passives have no cost or cooldown; "MP 0｜冷卻 0ms" only added noise.
-  if (skill.kind !== 'passive') parts.push('MP ' + skill.mpCost, '冷卻 ' + (skill.cooldownMs / 1000) + ' 秒');
+  if (skill.kind !== 'passive') parts.push('MP ' + skill.mpCost, '冷卻 ' + ((skill.cooldownMs - (skill.cooldownPerRank ?? 0) * (Math.max(1,rank)-1)) / 1000) + ' 秒');
   // Must match domain/combat calculateDamage: multiplierBase + multiplierPerRank × (rank − 1).
   if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (Math.max(1, rank) - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('持續 ' + Math.round(skill.durationMs / 1000) + ' 秒・防禦 +' + skill.defensePerRank * Math.max(1, rank));
   if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * Math.max(1, rank));
-  if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * Math.max(1, rank) + ' HP');
+  if (skill.regenPerRank) parts.push('脫戰後每 2 秒恢復 ' + skill.regenPerRank * Math.max(1, rank) + (skill.requiredJob === 'mage' ? ' MP・最大MP +' + 8 * Math.max(1, rank) : ' HP'));
+  if (skill.id === 'rogue-double-stab') parts.push('兩段各自命中・每段倍率如上・MP只扣一次');
+  if (skill.id === 'rogue-shadow-lunge') parts.push('地面切入最多96・最多2目標・不穿牆門・無無敵');
+  if (skill.kind === 'zone') parts.push('半徑105・持續' + ((2200 + (Math.max(1,rank)-1)*100)/1000).toFixed(1) + '秒・區內普通怪移速減50%・首領免疫');
+  if (skill.id === 'rogue-combo-rhythm') parts.push('有效近身命中累積3層・4秒有效・下次連刺或影步消耗・受擊清除');
+  if (skill.kind === 'movement') parts.push('地面位移最多120・碰撞阻擋・無無敵');
+  if (skill.id === 'mage-frost-ring') parts.push('半徑125・最多5目標・普通怪緩速40%／1.5秒・首領免疫緩速');
+  if (skill.damagePerRank) parts.push((skill.id === 'rogue-combo-rhythm' ? '3層後下次主動攻擊' : skill.id === 'archer-steady-aim' ? '首個命中' : '攻擊') + ' +' + Number((skill.damagePerRank * Math.max(1,rank) * 100).toFixed(1)) + '%');
+  if (skill.projectile) parts.push('水平射程 ' + skill.reach + '・最多 ' + skill.targets + ' 目標' + (skill.projectile.shotOffsetsMs.length > 1 ? '・兩箭' : ''));
   return parts.join('｜');
 }
 
@@ -2464,8 +2550,11 @@ function skillNextRankPreview(skill: UiSnapshot['catalog']['rules']['skills'][st
   const parts: string[] = [];
   if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (next - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('防禦 +' + skill.defensePerRank * next);
+  if (skill.id === 'rogue-smoke') parts.push('持續 ' + ((2200 + (next - 1) * 100) / 1000).toFixed(1) + ' 秒');
+  if (skill.cooldownPerRank) parts.push('冷卻 ' + ((skill.cooldownMs - skill.cooldownPerRank * (next-1))/1000) + ' 秒');
   if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * next);
-  if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * next + ' HP');
+  if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * next + (skill.requiredJob === 'mage' ? ' MP・最大MP +' + 8 * next : ' HP'));
+  if (skill.damagePerRank) parts.push('加成 +' + Number((skill.damagePerRank * next * 100).toFixed(1)) + '%');
   return parts.length ? '下一級：' + parts.join('｜') : '';
 }
 
@@ -2957,12 +3046,13 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   const note = makeElement(document, 'p', 'ms-panel-note', '');
   note.append(
     makeElement(document, 'strong', '', '可用 SP：' + player.sp),
-    document.createTextNode((player.job === 'swordsman' ? '。每次升級獲得 1 SP。' : '。轉職為劍士後，每次升級獲得 1 SP。') + '快捷鍵 ' + key('skill1') + '／' + key('skill2') + '／' + key('skill3') + ' 對應重斬、橫掃、堅韌守護。'),
+    document.createTextNode((player.job !== 'beginner' ? '。每次升級獲得 1 SP。' : '。正式轉職後，每次升級獲得 1 SP。') + '快捷鍵 ' + key('skill1') + '／' + key('skill2') + '／' + key('skill3') + ' 對應' + classSkillNames(player,view.catalog.rules) + '。'),
   );
   parent.append(note);
+  parent.append(specializationPanel(document, player, view));
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const skills = Object.values(view.catalog.rules.skills)
-    .filter((skill) => skill.requiredJob !== 'enemy' && skill.id !== 'basic')
+    .filter((skill) => skill.requiredJob === effectiveJob(player) && !skill.requiredSpecialization)
     // Castable skills first, in quickbar order (1 重斬, 2 橫掃, 3 堅韌守護), then passives.
     .sort((a, b) => Number(a.kind === 'passive') - Number(b.kind === 'passive')
       || a.requiredLevel - b.requiredLevel || a.id.localeCompare(b.id));
@@ -2984,6 +3074,11 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     const preview = skillNextRankPreview(skill, rank);
     if (preview) card.append(makeElement(document, 'p', 'ms-skill-card__next', preview));
     if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
+    if (skill.requiredJob === 'rogue' && skill.kind !== 'passive') card.append(makeElement(document,'p','ms-panel-note','地面出招、收招後才可移動；受擊取消未發生段落，已花MP不退回。煙幕不清除首領仇恨。'));
+    if (skill.id === 'archer-steady-aim') card.append(makeElement(document,'p','ms-panel-note','站穩不動600ms後就緒；下一次射擊只強化第一個有效命中。移動、跳躍、攀爬、受擊或射擊會消耗／中斷。'));
+    if (skill.id === 'archer-retreat-shot') card.append(makeElement(document,'p','ms-panel-note','需要地面及身後空間，後撤最多100；受地形阻擋，不提供無敵。'));
+    if (skill.requiredJob === 'mage' && skill.kind !== 'passive') card.append(makeElement(document,'p','ms-panel-note','地面施法，前搖期間站定；受擊取消未完成的法術，已消耗MP不退回。'));
+    if (skill.id === 'mage-mana-affinity') card.append(makeElement(document,'p','ms-panel-note','連續3秒沒有攻擊或受傷後開始回魔；暫停不累積。提升上限不會自動補滿MP。'));
     if (skill.id === 'vitality') card.append(makeElement(document, 'p', 'ms-panel-note', '提升最大 HP；不會自動恢復生命。'));
     if (skill.id === 'rest-recovery') card.append(makeElement(document, 'p', 'ms-panel-note', '連續 3 秒沒有攻擊或受傷時，開始逐步恢復生命。'));
     const actionLabel = !rankReady ? '已滿級' : learned ? '提升至等級 ' + (rank + 1) : '學習技能';
@@ -2992,6 +3087,8 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
         + (learningPreview.value.before.maxHp !== learningPreview.value.after.maxHp
           ? '；最大 HP ' + formatNumber(learningPreview.value.before.maxHp) + ' → ' + formatNumber(learningPreview.value.after.maxHp)
           : '')
+        + (learningPreview.value.before.maxMp !== learningPreview.value.after.maxMp
+          ? '；最大 MP ' + formatNumber(learningPreview.value.before.maxMp) + ' → ' + formatNumber(learningPreview.value.after.maxMp) : '')
       : '';
     const actionButton = makeButton(document, actionLabel, 'learn-skill', {
       className: 'ms-button ms-button--primary',
@@ -3051,7 +3148,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     document.createTextNode('。可堆疊物品可補入同類未滿堆疊；能否購買依各貨品提示。'),
   );
   parent.append(capacityNote);
-  const offers = selectShopOffers(view.catalog.rules.items, state.shopFilter);
+  const offers = selectShopOffers(view.catalog.rules.items, state.shopFilter,player);
   const grid = makeElement(document, 'div', 'ms-shop-grid');
   for (const item of offers) {
     const stackable = item.stackLimit > 1;
@@ -3062,6 +3159,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     const badges = makeElement(document, 'div', 'ms-shop-card__badges');
     badges.append(makeBadge(document, kindLabel(item.kind), 'category'));
     if (item.slot) {
+      badges.append(makeBadge(document,equipmentJobLabel(item),'neutral'));
       const owned = Object.values(player.equipment).includes(item.id) || player.bag.some((stack) => stack.itemId === item.id);
       if (player.level < item.minLevel) badges.append(makeBadge(document, 'Lv.' + item.minLevel + ' 才能裝備', 'warning'));
       if (owned) badges.append(makeBadge(document, '已擁有', 'neutral'));
@@ -3136,7 +3234,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   categoryBar.setAttribute('role', 'group');
   categoryBar.setAttribute('aria-label', '商店貨品分類');
   for (const category of SHOP_FILTERS) {
-    const count = selectShopOffers(view.catalog.rules.items, category.id).length;
+    const count = selectShopOffers(view.catalog.rules.items, category.id,player).length;
     const button = makeButton(document, category.label + '（' + count + '）', 'shop-filter', {
       className: 'ms-chip' + (state.shopFilter === category.id ? ' is-active' : ''),
       data: { kind: category.id },
@@ -3477,7 +3575,7 @@ function buildSettingsPanel(document: Document, view: UiSnapshot, state: PanelBu
     '按住拾取鍵可以連續撿起附近的掉落物。',
     '背包／裝備／技能／能力／任務／地圖可由各自快捷鍵開啟；Esc 關閉最上層面板，沒有面板時暫停遊戲。',
     '點擊「更改按鍵」後按下新按鍵；已被其他動作使用的按鍵會被拒絕，Esc 不可重綁。',
-    '技能快捷 ' + skillKeys + ' 對應重斬、橫掃、堅韌守護；未學或冷卻中會顯示狀態。',
+    '技能快捷 ' + skillKeys + ' 對應' + (view.saveData ? classSkillNames(view.saveData.player,view.catalog.rules) : '目前職業的三個主動技能') + '；未學或冷卻中會顯示狀態。',
     view.holdBasicAttack ? '普通攻擊可按住連續施放，放開即停止；技能仍按一下施放。'
       : '普通攻擊與技能按一下施放；上方可選擇按住連續普通攻擊。',
   ];

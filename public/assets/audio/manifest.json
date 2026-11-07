@@ -345,6 +345,84 @@
       "url": "assets/audio/oath-bell-restored.wav",
       "kind": "sfx",
       "loop": false
+    },
+    {
+      "key": "bow-draw",
+      "url": "assets/audio/bow-draw.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "bow-release",
+      "url": "assets/audio/bow-release.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "bow-pierce",
+      "url": "assets/audio/bow-pierce.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "bow-hit",
+      "url": "assets/audio/bow-hit.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "bow-retreat",
+      "url": "assets/audio/bow-retreat.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "mage-cast",
+      "url": "assets/audio/mage-cast.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "mage-bolt",
+      "url": "assets/audio/mage-bolt.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "mage-frost",
+      "url": "assets/audio/mage-frost.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "mage-blink",
+      "url": "assets/audio/mage-blink.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "mage-hit",
+      "url": "assets/audio/mage-hit.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "rogue-slash",
+      "url": "assets/audio/rogue-slash.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "rogue-lunge",
+      "url": "assets/audio/rogue-lunge.wav",
+      "kind": "sfx",
+      "loop": false
+    },
+    {
+      "key": "rogue-smoke",
+      "url": "assets/audio/rogue-smoke.wav",
+      "kind": "sfx",
+      "loop": false
     }
   ]
 }

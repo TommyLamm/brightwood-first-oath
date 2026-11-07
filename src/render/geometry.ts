@@ -126,8 +126,10 @@ export function questMarkerStates(
   for (const view of questViews) {
     const quest = quests[view.questId];
     if (!quest) continue;
-    if (view.status === 'available' && !states.has(quest.giverNpcId)) states.set(quest.giverNpcId, 'available');
-    if (view.status === 'ready') states.set(quest.turnInNpcId, 'ready');
+    const giver = view.giverNpcId ?? quest.giverNpcId;
+    const turnIn = view.turnInNpcId ?? quest.turnInNpcId;
+    if (view.status === 'available' && !states.has(giver)) states.set(giver, 'available');
+    if (view.status === 'ready') states.set(turnIn, 'ready');
   }
   return states;
 }

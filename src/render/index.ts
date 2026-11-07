@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { HeroAnchorManifest, HeroAnchorOutfit, HeroAnchorPose } from '../contracts/hero-anchors.js';
@@ -284,6 +285,9 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog): Set<string> {
   const keys = new Set<string>([
     ...BACKGROUND_LAYERS.map(({ name }) => backgroundImageKey(map, name)),
     ...HERO_IMAGE_KEYS,
+    'actor:archer-cloth', 'actor:archer-leather', 'actor:archer-iron', 'vfx:arrow',
+    'actor:mage-cloth', 'actor:mage-leather', 'actor:mage-iron',
+    'actor:rogue-cloth', 'actor:rogue-leather', 'actor:rogue-iron',
     ...requiredTerrainImageKeys(map),
   ]);
   if (map.portals.length > 0) keys.add('env:portal');
@@ -986,10 +990,37 @@ export function createWorldRenderer(
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
+    if (snapshot.smoke && snapshot.nowMs < snapshot.smoke.expiresAtMs) {
+      const {x,y}=snapshot.smoke.position;
+      attackGraphics.fillStyle(0x9c83bd,.15).fillEllipse(x,y-30,210,80);
+      attackGraphics.lineStyle(2,0xc6b0e8,.65).strokeEllipse(x,y-30,210,80);
+      for(let i=0;i<5;i++) attackGraphics.fillStyle(0xb3a3c7,.1).fillCircle(x-75+i*38,y-32-Math.sin(snapshot.nowMs/260+i)*8,24);
+    }
+    if (snapshot.player.rhythmStacks) {
+      for(let i=0;i<3;i++) attackGraphics.fillStyle(i<snapshot.player.rhythmStacks?0xffd56b:0x675877,.95)
+        .fillCircle(snapshot.player.movement.position.x-10+i*10,snapshot.player.movement.position.y-83,3);
+    }
+    for (const id of snapshot.poisonedIds ?? []) {
+      const target = snapshot.monsters.find((monster) => monster.id === id && monster.hp > 0);
+      if (target) attackGraphics.fillStyle(0x9edb78,.8).fillCircle(target.movement.position.x,
+        target.movement.position.y-target.height-8+Math.sin(snapshot.nowMs/160)*3,3);
+    }
     for (const label of dropLabels.values()) label.setVisible(false);
 
-    const playerKey = actorImageKey(snapshot.player.visual.body, catalog);
+    const basePlayerKey = actorImageKey(snapshot.player.visual.body, catalog);
     const playerAttack = attackStartedAt(snapshot, snapshot.player.id);
+    const bowSkill = playerAttack ? catalog.rules.skills[playerAttack.skillId] : undefined;
+    const casting = Boolean(playerAttack && (bowSkill?.requiredJob === 'mage' || bowSkill?.id === 'wand-basic')
+      && snapshot.player.hp > 0 && snapshot.player.movement.knockbackUntilMs <= snapshot.nowMs);
+    const stabbing = Boolean(playerAttack && (bowSkill?.requiredJob === 'rogue' || bowSkill?.id === 'dagger-basic')
+      && snapshot.player.hp > 0 && snapshot.player.movement.knockbackUntilMs <= snapshot.nowMs);
+    const shooting = Boolean(!casting && !stabbing && bowSkill?.projectile && playerAttack && snapshot.player.hp > 0
+      && snapshot.player.movement.knockbackUntilMs <= snapshot.nowMs);
+    const outfit = basePlayerKey.slice('actor:hero-'.length) as HeroAnchorOutfit;
+    const playerFacing = shooting || casting || stabbing ? playerAttack!.facing : snapshot.player.movement.facing;
+    const playerKey = stabbing ? `actor:rogue-${outfit}` : casting ? `actor:mage-${outfit}` : shooting ? `actor:archer-${outfit}` : basePlayerKey;
+    const shootFrame = (shooting || casting || stabbing) && playerAttack && bowSkill
+      ? archeryFrame(snapshot.nowMs - playerAttack.startedAtMs, bowSkill.windupMs, bowSkill.projectile?.shotOffsetsMs ?? [0]) : undefined;
     const playerAnimation = selectHeroAnimation(
       snapshot.player.movement,
       snapshot.player.hp,
@@ -1010,26 +1041,31 @@ export function createWorldRenderer(
       playerKey,
       playerAnimation,
       snapshot.player.movement.position,
-      snapshot.player.movement.facing,
+      playerFacing,
       snapshot.nowMs,
       playerAnimationStartedAt,
       playerAnimationDuration,
-      jumpFrame,
+      shootFrame ?? jumpFrame,
     );
     const playerSprite = drawnPlayer.sprite;
     if (heroAnchors) {
-      const outfit = playerKey.slice('actor:hero-'.length) as HeroAnchorOutfit;
       const heroImage = assets.images.get(playerKey)!;
       const heroAnimation = animationFor(assets, playerKey, playerAnimation);
       const animationFrame = Math.max(0, heroAnimation?.frames.indexOf(drawnPlayer.frame) ?? 0);
-      const anchorFrame = heroAnchors.heroes[outfit][playerAnimation][animationFrame];
+      const anchorFrame = stabbing && shootFrame !== undefined && heroAnchors.dagger
+        ? heroAnchors.dagger.cast[outfit][shootFrame]!
+        : casting && shootFrame !== undefined && heroAnchors.casting
+        ? heroAnchors.casting.cast[outfit][shootFrame]!
+        : shooting && shootFrame !== undefined && heroAnchors.archery
+        ? heroAnchors.archery.shoot[outfit][shootFrame]!
+        : heroAnchors.heroes[outfit][playerAnimation][animationFrame]!;
       const worldAnchor = (point: typeof anchorFrame.head | typeof anchorFrame.hand): Vec2 =>
         heroAnchorPosition(
           snapshot.player.movement.position,
           heroImage,
           point,
           heroAnchors.coordinateSpace,
-          snapshot.player.movement.facing,
+          playerFacing,
           drawnPlayer.footOffsetY,
         );
       const hand = worldAnchor(anchorFrame.hand);
@@ -1038,11 +1074,44 @@ export function createWorldRenderer(
         'weapon',
         snapshot.player.visual.weapon,
         hand,
-        snapshot.player.movement.facing,
+        playerFacing,
         playerSprite.depth,
-        heroAnchorRotation(anchorFrame.hand.rotationDeg, snapshot.player.movement.facing) * Math.PI / 180,
+        catalog.rules.items[snapshot.player.visual.weapon ?? '']?.allowedJobs?.includes('mage') ? 0
+        : !shooting && catalog.rules.items[snapshot.player.visual.weapon ?? '']?.allowedJobs?.includes('archer')
+          ? playerFacing * Math.PI / 2 : heroAnchorRotation(anchorFrame.hand.rotationDeg, playerFacing) * Math.PI / 180,
       );
-      drawEquipment('hat', snapshot.player.visual.hat, head, snapshot.player.movement.facing, playerSprite.depth);
+      drawEquipment('hat', snapshot.player.visual.hat, head, playerFacing, playerSprite.depth);
+      // A nocked shaft ends at the same muzzle used by the simulation; release removes it.
+      if (shooting && shootFrame !== undefined && shootFrame < 2) {
+        const muzzle = archerMuzzle(snapshot.player.movement.position, playerFacing);
+        const rear = 'rearHand' in anchorFrame ? worldAnchor(anchorFrame.rearHand as { x: number; y: number }) : hand;
+        attackGraphics.lineStyle(1, 0xf2d99b, .9).beginPath().moveTo(rear.x, muzzle.y)
+          .lineTo(muzzle.x, muzzle.y).strokePath();
+      }
+    }
+    if (snapshot.player.aimReady) {
+      const muzzle = archerMuzzle(snapshot.player.movement.position, playerFacing);
+      attackGraphics.lineStyle(1.5, 0xcfeaa0, .85).strokeCircle(muzzle.x, muzzle.y, 6);
+    }
+    if (playerAttack?.skillId === 'archer-retreat-shot') {
+      const p = snapshot.player.movement.position;
+      attackGraphics.lineStyle(2, 0x9fd8c6, .5).beginPath().moveTo(p.x + playerFacing * 18, p.y - 8)
+        .lineTo(p.x + playerFacing * 40, p.y - 8).strokePath();
+    }
+    if (casting && playerAttack && bowSkill) {
+      const age = snapshot.nowMs - playerAttack.startedAtMs;
+      const p = snapshot.player.movement.position;
+      if (age < bowSkill.windupMs) attackGraphics.lineStyle(1.5,0x91cfef,.65)
+        .strokeCircle(p.x + playerFacing*22,p.y-32,3+5*Math.min(1,age/Math.max(1,bowSkill.windupMs)));
+      if ((playerAttack.skillId === 'mage-frost-ring' || playerAttack.skillId === 'elementalist-nova') && age >= bowSkill.windupMs && age < bowSkill.windupMs+350) {
+        const progress=(age-bowSkill.windupMs)/350;
+        attackGraphics.lineStyle(3,0xa8e7ef,.75*(1-progress)).strokeCircle(playerAttack.origin.x,playerAttack.origin.y-24,bowSkill.reach*Math.min(1,.3+progress*2));
+        attackGraphics.lineStyle(1,0xd6f5ff,.6*(1-progress)).strokeCircle(playerAttack.origin.x,playerAttack.origin.y-24,(bowSkill.reach-10)*Math.min(1,.3+progress*2));
+      }
+      if (playerAttack.skillId === 'mage-blink' && age >=100) {
+        attackGraphics.lineStyle(3,0xa1e3ed,.6*Math.max(0,1-(age-100)/250)).beginPath()
+          .moveTo(playerAttack.origin.x,playerAttack.origin.y-28).lineTo(p.x,p.y-28).strokePath();
+      }
     }
     // Flicker through the post-hit grace period so the player can see they can't be hit again yet.
     const graceLeftMs = (snapshot.player.invulnerableUntilMs ?? 0) - snapshot.nowMs;
@@ -1182,6 +1251,29 @@ export function createWorldRenderer(
       drawAttackCue(attack, snapshot.nowMs, attackGraphics);
       drawSkillEffect(attack, snapshot.nowMs);
     }
+    for (const [index, arrow] of (snapshot.projectiles ?? []).entries()) {
+      const { x, y } = arrow.position;
+      if (arrow.skillId === 'thrower-shuriken') {
+        const angle = snapshot.nowMs / 65;
+        attackGraphics.lineStyle(2, 0xd6e7f2, .95);
+        for (let tip = 0; tip < 4; tip++) {
+          const a = angle + tip * Math.PI / 2;
+          attackGraphics.beginPath().moveTo(x, y).lineTo(x + Math.cos(a) * 7, y + Math.sin(a) * 7).strokePath();
+        }
+        attackGraphics.fillStyle(0x927bc2, 1).fillCircle(x, y, 2); continue;
+      }
+      if (arrow.skillId === 'wand-basic' || arrow.skillId === 'mage-mana-bolt' || arrow.skillId === 'arcanist-siphon') {
+        const strong=arrow.skillId === 'mage-mana-bolt';
+        attackGraphics.lineStyle(strong?4:2,strong?0xbba7ef:0x86daed,.6).beginPath()
+          .moveTo(x-arrow.facing*(strong?26:14),y).lineTo(x,y).strokePath();
+        attackGraphics.fillStyle(strong?0xdbc9ff:0xc7f7ff,.9).fillCircle(x,y,strong?6:4);
+        continue;
+      }
+      drawActor(`arrow-pool:${index}`, 'vfx:arrow', 'fly', { x, y }, arrow.facing, snapshot.nowMs, undefined, undefined, 0);
+      if (arrow.skillId === 'archer-piercing-shot' || arrow.skillId === 'marksman-snipe') {
+        attackGraphics.lineStyle(3, 0x81dbe3, .45).beginPath().moveTo(x - arrow.facing * 42, y).lineTo(x, y).strokePath();
+      }
+    }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
       const bossTelegraph = source ? BOSS_MONSTER_IDS.has(source.monsterId) : false;
@@ -1212,8 +1304,19 @@ export function createWorldRenderer(
 
   const drawAttackCue = (attack: AttackInstance, nowMs: number, graphics: Phaser.GameObjects.Graphics): void => {
     const skill = catalog.rules.skills[attack.skillId];
+    if (skill?.kind === 'zone') return;
+    if (skill?.meleeWindows) {
+      for (const window of skill.meleeWindows) {
+        const start=attack.startedAtMs+skill.windupMs+window.offsetMs;
+        if(nowMs>=start && nowMs<start+110) {
+          graphics.lineStyle(3,0xe4d2ff,.9).beginPath().moveTo(attack.origin.x,attack.origin.y-30)
+            .lineTo(attack.origin.x+attack.facing*skill.reach,attack.origin.y-35+(window.offsetMs?12:0)).strokePath();
+        }
+      }
+      return;
+    }
     const visibleMs = Math.max(skill?.activeMs ?? 0, 140);
-    if (!skill || nowMs < attack.startedAtMs + skill.windupMs || nowMs >= attack.startedAtMs + skill.windupMs + visibleMs) return;
+    if (!skill || skill.projectile || skill.requiredJob === 'mage' || nowMs < attack.startedAtMs + skill.windupMs || nowMs >= attack.startedAtMs + skill.windupMs + visibleMs) return;
     // Skills with their own VFX strip already show the hit; drawing the hit box on top looked like a debug overlay.
     if (skill.effectKey && assets.images.has(skill.effectKey)) return;
     // Otherwise draw a short slash arc across the reach instead of a raw rectangle.

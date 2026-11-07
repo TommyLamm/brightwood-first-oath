@@ -1,6 +1,15 @@
 import type { Id, NpcDef } from '../../contracts/index.js';
 
 export const npcs: Record<Id, NpcDef> = {
+  'rogue-mentor': { id: 'rogue-mentor', name: '夜嵐', role: 'mentor', dialogueId: 'rogue-mentor-intro', actorKey: 'actor:rogue-mentor' },
+  'rogue-target-close': { id: 'rogue-target-close', name: '近身靶・普攻', role: 'keeper', dialogueId: 'rogue-close-intro', actorKey: 'actor:archery-target' },
+  'rogue-target-double': { id: 'rogue-target-double', name: '連刺靶・技能1', role: 'keeper', dialogueId: 'rogue-double-intro', actorKey: 'actor:archery-target' },
+  'rogue-target-evade': { id: 'rogue-target-evade', name: '撤離訓練標', role: 'keeper', dialogueId: 'rogue-evade-intro', actorKey: 'actor:archery-target' },
+  'mage-mentor': { id: 'mage-mentor', name: '星蘅', role: 'mentor', dialogueId: 'mage-mentor-intro', actorKey: 'actor:mage-mentor' },
+  'archer-mentor': { id: 'archer-mentor', name: '青翎', role: 'mentor', dialogueId: 'archer-mentor-intro', actorKey: 'actor:archer-mentor' },
+  'archery-target-low': { id: 'archery-target-low', name: '低位箭靶', role: 'keeper', dialogueId: 'archery-target-low-intro', actorKey: 'actor:archery-target' },
+  'archery-target-high': { id: 'archery-target-high', name: '高臺箭靶', role: 'keeper', dialogueId: 'archery-target-high-intro', actorKey: 'actor:archery-target' },
+  'archery-target-far': { id: 'archery-target-far', name: '遠臺箭靶', role: 'keeper', dialogueId: 'archery-target-far-intro', actorKey: 'actor:archery-target' },
   guide: { id: 'guide', name: '森芽', role: 'scout', dialogueId: 'guide-intro', actorKey: 'actor:guide' },
   mentor: { id: 'mentor', name: '岩嶺教官', role: 'mentor', dialogueId: 'mentor-intro', actorKey: 'actor:mentor' },
   merchant: { id: 'merchant', name: '木葉商人', role: 'merchant', dialogueId: 'merchant-intro', actorKey: 'actor:merchant' },

@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
-  "version": "1.0.0-beta.85",
-  "description": "踏上劍士之路：探索木葉世界、霜雪航標支線、黃金沙海日井支線，並調查遠古遺跡的潮痕營站、盤根石道、回聲長廊與誓鐘內殿。",
+  "version": "1.0.0-beta.89",
+  "description": "選擇劍士、弓箭手、法師或盜賊訓練，建立獨立角色，探索木葉世界、霜雪航標、黃金沙海與遠古遺跡四區，調查森林異動與誓鐘之謎。",
   "author": "TommyLamm",
   "entry": "index.html",
   "cover": "cover.png",
@@ -22,8 +22,12 @@
       2,
       3,
       4,
-      5
+      5,
+      6,
+      7,
+      8,
+      9
     ],
-    "writeFormat": 5
+    "writeFormat": 9
   }
 }

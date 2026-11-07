@@ -1,3 +1,4 @@
+import { legacySaveData } from '../fixtures/legacy-save.js';
 import { describe, expect, it } from 'vitest';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
 import type { CloudPort, StorageLike } from '../../src/contracts/ports.js';
@@ -5,8 +6,8 @@ import { GameApp } from '../../src/app/app.js';
 import { composeContentCatalog } from '../../src/app/catalog.js';
 import { startNewGame } from '../../src/app/gameplay.js';
 import { createNextEntityId } from '../../src/contracts/helpers.js';
-import type { SaveData } from '../../src/contracts/types.js';
-import { BRIGHTWOOD_GAME_ID, LEGACY_GAME_ID, localSaveKeyForGame } from '../../src/persistence/index.js';
+import type { GameProfile, SaveData } from '../../src/contracts/types.js';
+import { BRIGHTWOOD_GAME_ID, LEGACY_GAME_ID, localSaveKeyForGame, profileFromLegacySave } from '../../src/persistence/index.js';
 import { SAVE_FORMAT_VERSION } from '../../src/persistence/validate.js';
 import { createHeroAnchorFixture, createManifestFixture } from './asset-fixtures.js';
 
@@ -49,7 +50,7 @@ describe('T14-c persistence wiring', () => {
     const cloud: CloudPort = {
       ready: async () => ({ mode: 'authenticated', progressAvailable: true, capabilities: ['load', 'save'] }),
       loadProgress: async () => ({
-        data: oldData,
+        data: legacySaveData(oldData),
         revision: 4,
         formatVersion: 4,
         gameVersion: 'test',
@@ -80,11 +81,11 @@ describe('T14-c persistence wiring', () => {
     app.dispose();
   });
 
-  it('writes format 5 only after the app receives the explicit local upgrade command', async () => {
+  it('writes the current format only after the app receives the explicit local upgrade command', async () => {
     const storage = new MemoryStorage();
     const oldData = createSave('明確升級旅人');
     const key = localSaveKeyForGame(BRIGHTWOOD_GAME_ID);
-    const raw = JSON.stringify({ formatVersion: 4, data: oldData, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion: 4, data: legacySaveData(oldData), savedAt: '2025-01-01T00:00:00.000Z' });
     storage.values.set(key, raw);
     const app = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 18 });
 
@@ -95,9 +96,9 @@ describe('T14-c persistence wiring', () => {
     expect(app.state.saveStatus).toBe('localSaved');
     expect(app.state.saveUpgrade).toBeNull();
     expect(storage.values.get(`${key}:format4-backup`)).toBe(raw);
-    const upgraded = JSON.parse(storage.values.get(key)!) as { formatVersion: number; data: SaveData };
-    expect(upgraded.formatVersion).toBe(5);
-    expect(upgraded.data).toEqual(oldData);
+    const upgraded = JSON.parse(storage.values.get(key)!) as { formatVersion: number; data: GameProfile };
+    expect(upgraded.formatVersion).toBe(8);
+    expect(upgraded.data).toEqual(profileFromLegacySave(oldData));
     app.dispose();
   });
 
@@ -136,7 +137,7 @@ describe('T14-c persistence wiring', () => {
     app.dispose();
   });
 
-  it('requires confirmation to replace a loaded character and reloads the cloud save after a revision conflict', async () => {
+  it('adds a character without replacing the old one and reloads the entire cloud profile after a revision conflict', async () => {
     const initialSave = createSave('舊角色');
     const remoteSave = { ...structuredClone(initialSave), player: { ...initialSave.player, name: '雲端角色' } };
     let loadCount = 0;
@@ -147,7 +148,7 @@ describe('T14-c persistence wiring', () => {
       loadProgress: async () => {
         loadCount += 1;
         return {
-          data: loadCount > 1 ? remoteSave : initialSave,
+          data: profileFromLegacySave(loadCount > 1 ? remoteSave : initialSave),
           revision: loadCount > 1 ? 3 : 2,
           formatVersion: SAVE_FORMAT_VERSION,
           gameVersion: 'test',
@@ -162,10 +163,8 @@ describe('T14-c persistence wiring', () => {
 
     app.dispatch({ type: 'newGame', payload: { name: '新角色' } });
     app.update(0);
-    expect(app.state.screen).toBe('create');
-    expect(app.state.gameplay?.saveData.player.name).toBe('舊角色');
-    app.dispatch({ type: 'newGame', payload: { name: '新角色' } });
-    app.update(0);
+    expect(app.state.screen).toBe('playing');
+    expect(app.state.profile?.characters['legacy-1']?.player.name).toBe('舊角色');
     await flushMicrotasks();
     expect(app.state.screen).toBe('playing');
     expect(cloudSaveCount).toBe(1);
@@ -201,10 +200,11 @@ describe('T14-c persistence wiring', () => {
     const revision = app.state.worldRevision;
     app.dispatch({ type: 'returnTitle', payload: {} });
     app.update(0);
+    await flushMicrotasks();
 
     expect(app.state.screen).toBe('title');
     expect(app.state.gameplay?.saveData.settings.muted).toBe(true);
-    expect(app.state.worldRevision).toBe(revision);
+    expect(app.state.worldRevision).toBeGreaterThan(revision);
     app.dispose();
   });
 
@@ -250,7 +250,7 @@ describe('T14-c persistence wiring', () => {
   it('lets the player defer importing and leaves the original save untouched', async () => {
     const storage = new MemoryStorage();
     const save = createSave('舊版旅人');
-    const raw = JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION, data: save, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION, data: profileFromLegacySave(save), savedAt: '2025-01-01T00:00:00.000Z' });
     const legacyKey = localSaveKeyForGame(LEGACY_GAME_ID);
     const canonicalKey = localSaveKeyForGame(BRIGHTWOOD_GAME_ID);
     storage.values.set(legacyKey, raw);
@@ -271,7 +271,7 @@ describe('T14-c persistence wiring', () => {
   it('imports only after the explicit app command and keeps the original copy', async () => {
     const storage = new MemoryStorage();
     const save = createSave('舊版角色');
-    const raw = JSON.stringify({ formatVersion: 4, data: save, savedAt: '2025-01-01T00:00:00.000Z' });
+    const raw = JSON.stringify({ formatVersion: 4, data: legacySaveData(save), savedAt: '2025-01-01T00:00:00.000Z' });
     const legacyKey = localSaveKeyForGame(LEGACY_GAME_ID);
     const canonicalKey = localSaveKeyForGame(BRIGHTWOOD_GAME_ID);
     storage.values.set(legacyKey, raw);

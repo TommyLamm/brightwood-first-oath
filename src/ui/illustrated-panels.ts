@@ -1,3 +1,5 @@
+import { effectiveJob, jobs, jobName } from '../content/rules/jobs.js';
+import { classPortrait, playerClassLabel } from './class-presentation.js';
 import type { UiSnapshot } from '../contracts/ports.js';
 import { decorateControl } from './control-art.js';
 import type { QuestView } from '../contracts/definitions.js';
@@ -57,18 +59,18 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     root.append(node(document, 'p', 'ms-empty-state', '角色能力尚未載入。'));
     return root;
   }
-  const describeAllocation = (label: string, stat: 'str' | 'dex', amount: number): {
+  const describeAllocation = (label: string, stat: 'str' | 'dex' | 'int' | 'luk', amount: number): {
     disabled: boolean;
     title: string;
     ariaLabel: string;
   } => {
     const preview = previewApAllocation({ player, rules: view.catalog.rules, stat, amount });
-    const statName = stat === 'str' ? '力量' : '敏捷';
+    const statName = stat === 'luk' ? '幸運' : stat === 'str' ? '力量' : stat === 'int' ? '智力' : '敏捷';
     if (!preview.ok) {
       return { disabled: true, title: preview.message, ariaLabel: label + '，' + statName + '，' + preview.message };
     }
     const { before, after, remainingAp } = preview.value;
-    const description = '預計消耗 ' + amount + ' AP；' + statName + '加點：攻擊 ' + before.attack + '→' + after.attack
+    const description = '預計消耗 ' + amount + ' AP；' + statName + '加點：攻擊 ' + Math.round(before.attack * 100) / 100 + '→' + Math.round(after.attack * 100) / 100
       + '；防禦 ' + before.defense + '→' + after.defense
       + '；暴擊率 ' + (before.critChance * 100).toFixed(1) + '%→' + (after.critChance * 100).toFixed(1)
       + '%；剩餘 AP ' + remainingAp;
@@ -76,12 +78,12 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   };
   const heading = node(document, 'div', 'ms-ability-heading');
   const identity = node(document, 'div', 'ms-ability-identity');
-  identity.append(picture(document, 'assets/interface/journal/hero-portrait-chibi.png', 'ms-ability-avatar'),
-    node(document, 'strong', '', player.name), node(document, 'span', '', 'Lv.' + player.level + ' · ' + (player.job === 'swordsman' ? '劍士' : '初心者')));
+  identity.append(picture(document, classPortrait(player), 'ms-ability-avatar'),
+    node(document, 'strong', '', player.name), node(document, 'span', '', 'Lv.' + player.level + ' · ' + playerClassLabel(player)));
   const points = node(document, 'div', 'ms-ability-points');
-  points.append(token(document, view, 'skill:heavy-strike', '可用 AP', player.ap));
+  points.append(token(document, view, effectiveJob(player) === 'archer' ? 'skill:bow-basic' : 'skill:heavy-strike', '可用 AP', player.ap));
   const skills = button(document, '', 'open-panel', { panel: 'skills' }, 'ms-button ms-ability-sp');
-  skills.append(icon(document, view, 'skill:iron-guard', ''), node(document, 'span', '', '技能 SP'), node(document, 'strong', '', String(player.sp)), node(document, 'span', '', '→'));
+  skills.append(icon(document, view, 'skill:'+jobs[effectiveJob(player)].skillSlots[2], ''), node(document, 'span', '', '技能 SP'), node(document, 'strong', '', String(player.sp)), node(document, 'span', '', '→'));
   points.append(skills);
   heading.append(identity, points);
   root.append(heading);
@@ -91,14 +93,19 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     : 'EXP：' + player.exp.toLocaleString('zh-HK') + ' / '
       + (view.catalog.rules.progression.expToNext[player.level] ?? 0).toLocaleString('zh-HK')));
 
+  const archer = effectiveJob(player) === 'archer';
+  const mage = effectiveJob(player) === 'mage';
+  const rogue = effectiveJob(player) === 'rogue';
   const cards = node(document, 'div', 'ms-ability-cards');
   for (const spec of [
-    { stat: 'str', name: '力量', file: 'strength-training-v1.png', value: player.str, theme: 'power', summary: '重擊更有力', effects: ['攻擊 +2／點'] },
-    { stat: 'dex', name: '敏捷', file: 'dexterity-training-v1.png', value: player.dex, theme: 'precision', summary: '精準而穩健', effects: ['攻擊 +1／點', '暴擊 +0.4%／點', '防禦 +1／4點'] },
+    { stat: 'str', name: '力量', file: 'strength-training-v1.png', value: player.str, theme: 'power', summary: rogue ? '穩固握刃' : mage ? '穩固體魄' : archer ? '穩固弓臂' : '重擊更有力', effects: rogue ? ['攻擊 +1／點','防禦 +1／5點'] : mage ? ['防禦 +1／4點'] : archer ? ['攻擊 +1／點','防禦 +1／4點'] : ['攻擊 +2／點'] },
+    { stat: 'dex', name: '敏捷', file: 'dexterity-training-v1.png', value: player.dex, theme: 'precision', summary: rogue ? '短刃主能力' : mage ? '施法輔助能力' : archer ? '弓術主能力' : '精準而穩健', effects: rogue ? ['攻擊 +2／點','暴擊 +0.15%／點'] : mage ? ['攻擊 +1／點'] : archer ? ['攻擊 +2／點','暴擊 +0.15%／點'] : ['攻擊 +1／點', '暴擊 +0.4%／點', '防禦 +1／4點'] },
+    { stat: 'int', name: '智力', file: '', value: player.int ?? 4, theme: 'precision', summary: mage ? '法術主能力' : '符文知識', effects: mage ? ['攻擊 +2／點','符文精研另行加成'] : ['目前職業無戰鬥加成'] },
+    { stat: 'luk', name: '幸運', file: '', value: player.luk ?? 0, theme: 'precision', summary: '暴擊與毒刃', effects: ['暴擊 +0.2%／點（受職業上限限制）', '影刃每次毒傷 +0.05／點'] },
   ]) {
     const card = node(document, 'section', 'ms-ability-card ms-ability-card--' + spec.theme);
     const art = node(document, 'div', 'ms-ability-art');
-    art.append(picture(document, 'assets/interface/illustrated/' + spec.file, '', spec.name + '訓練插畫'));
+    art.append(spec.stat === 'luk' ? icon(document, view, 'skill:rogue-combo-rhythm', '幸運訓練') : spec.stat === 'int' || mage ? icon(document, view, 'skill:mage-rune-study', spec.name + '訓練') : rogue ? icon(document,view,spec.stat === 'dex' ? 'skill:dagger-basic' : 'skill:rogue-dagger-mastery',spec.name+'訓練') : archer ? icon(document,view,spec.stat === 'dex' ? 'skill:bow-basic' : 'skill:archer-bow-mastery',spec.name+'訓練') : picture(document, 'assets/interface/illustrated/' + spec.file, '', spec.name + '訓練插畫'));
     const title = node(document, 'div', 'ms-ability-title');
     title.append(node(document, 'h3', '', spec.name + ' ' + spec.stat.toUpperCase()), node(document, 'strong', '', String(spec.value)));
     const effects = node(document, 'div', 'ms-ability-effects');
@@ -107,7 +114,7 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     for (const amount of [1, Math.min(5, Math.max(1, player.ap))]) {
       if (amount === 1 && actions.childElementCount > 0) continue;
       const add = button(document, '+' + amount, 'allocate-ap', { stat: spec.stat, amount: String(amount) }, 'ms-button ms-button--' + (amount === 1 ? 'primary' : 'secondary'));
-      const allocation = describeAllocation('+' + amount, spec.stat as 'str' | 'dex', amount);
+      const allocation = describeAllocation('+' + amount, spec.stat as 'str' | 'dex' | 'int' | 'luk', amount);
       add.disabled = allocation.disabled;
       add.title = allocation.title;
       add.setAttribute('aria-label', allocation.ariaLabel);
@@ -119,9 +126,9 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   root.append(cards);
   const totals = node(document, 'div', 'ms-ability-totals');
   totals.append(
-    token(document, view, 'item:steel-sword', '攻擊', stats.attack),
+    token(document, view, rogue ? 'item:steel-dagger' : mage ? 'item:steel-staff' : archer ? 'item:steel-bow' : 'item:steel-sword', '攻擊', Math.round(stats.attack * 100) / 100),
     token(document, view, 'skill:iron-guard', '基礎防禦', stats.defense),
-    token(document, view, 'skill:sweep', '暴擊', (stats.critChance * 100).toFixed(1) + '%'),
+    token(document, view, archer ? 'skill:archer-steady-aim' : 'skill:sweep', '暴擊', (stats.critChance * 100).toFixed(1) + '%'),
     token(document, view, 'item:small-red', '最大 HP', stats.maxHp),
     token(document, view, 'item:small-blue', '最大 MP', stats.maxMp),
   );
@@ -139,7 +146,7 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   }
   const foot = node(document, 'div', 'ms-ability-foot');
   if (player.ap > 5) {
-    for (const [stat, name] of [['str', '力量'], ['dex', '敏捷']] as const) {
+    for (const [stat, name] of [['str', '力量'], ['dex', '敏捷'], ['int', '智力'], ['luk', '幸運']] as const) {
       const label = '全部 AP → ' + name + '（' + player.ap + '）';
       const addAll = button(document, label, 'allocate-ap', { stat, amount: String(player.ap) }, 'ms-button ms-button--secondary');
       const allocation = describeAllocation(label, stat, player.ap);
@@ -152,7 +159,8 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
   if (player.ap < 1) foot.append(node(document, 'p', 'ms-panel-note', player.level >= view.catalog.rules.progression.maxLevel ? '已達等級上限，沒有可用 AP。' : '升級時可獲得 5 AP。'));
   const help = node(document, 'details', 'ms-visual-details');
   help.dataset.detailId = 'ability-rules';
-  help.append(node(document, 'summary', '', '能力規則'), node(document, 'p', '', '力量每點提升 2 攻擊；敏捷每點提升 1 攻擊與 0.4% 暴擊率，每 4 點提升 1 防禦。暴擊率上限 40%，暴擊傷害 ×1.5。AP 用於能力，SP 用於技能。'));
+  help.append(node(document, 'summary', '', '能力規則'), node(document, 'p', '', rogue ? '敏捷每點提升2攻擊及0.15%暴擊；力量每點提升1攻擊，每5點提升1防禦。基礎暴擊5%，上限30%，暴擊傷害×1.5。短刃精通計入攻擊；連擊節奏3層後強化下次連刺或影步，4秒未命中或受擊清除。AP用於能力，SP用於技能。' : mage ? '智力每點提升2攻擊，敏捷每點提升1攻擊，力量每4點提升1防禦；基礎暴擊5%，上限30%。符文精研加成已計入攻擊；魔力親和提高MP上限及脫戰恢復。AP用於能力，SP用於技能。' : archer ? '敏捷每點提升2攻擊與0.15%暴擊；力量每點提升1攻擊，每4點提升1防禦。基礎暴擊5%，上限30%，暴擊傷害×1.5。攻擊欄已含弓術精通；穩定瞄準是就緒後第一命中的額外加成。AP用於能力，SP用於技能。' : '力量每點提升 2 攻擊；敏捷每點提升 1 攻擊與 0.4% 暴擊率，每 4 點提升 1 防禦。暴擊率上限 40%，暴擊傷害 ×1.5。AP 用於能力，SP 用於技能。'));
+  help.append(node(document, 'p', '', '所有職業LUK每點提高0.2%暴擊率，受原職業上限限制；法師基礎暴擊為5%。影刃淬毒每跳傷害另增加0.05×LUK，最後取整。'));
   foot.append(help);
   root.append(foot);
   return root;
@@ -285,7 +293,7 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
           ? actor(document, view, inspectNpc.actorKey, targetName ?? '')
           : icon(document, view, objective.type === 'reach' ? 'marker:portal' : 'item:' + objective.targetId, targetName ?? '');
       const target = node(document, 'div', 'ms-journal-objective__target');
-      target.append(node(document, 'span', 'ms-journal-objective__verb', { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達', inspect: '調律' }[objective.type]), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
+      target.append(node(document, 'span', 'ms-journal-objective__verb', objective.targetId.startsWith('archery-target-') ? '命中' : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達', inspect: '調律' }[objective.type]), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
       const quantity = node(document, 'strong', 'ms-journal-objective__count', (done ? '✓ ' : '') + current + ' / ' + objective.required);
       const progress = node(document, 'progress', 'ms-journal-progress');
       progress.max = Math.max(1, objective.required);
@@ -324,7 +332,7 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
       rewards.append(reward);
     }
     if (selected.reward.minLevel) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '至少 Lv.' + selected.reward.minLevel));
-    if (selected.reward.job) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '轉職：劍士'));
+    if (selected.reward.job) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '轉職：'+jobName(selected.reward.job)));
     card.append(rewards);
     const details = node(document, 'details', 'ms-visual-details');
     details.dataset.detailId = 'quest-story:' + selected.questId;

@@ -2,6 +2,36 @@ import type { Id } from '../../contracts/index.js';
 import type { ItemDef } from '../../contracts/index.js';
 
 export const items: Record<Id, ItemDef> = {
+  'iron-bow': {
+    id: 'iron-bow', name: '木葉長弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 10, attack: 12, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 300, sellPrice: 75, iconKey: 'item:iron-bow', visualKey: 'equip:iron-bow', allowedJobs: ['archer'],
+  },
+  'steel-bow': {
+    id: 'steel-bow', name: '精製獵弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 20, attack: 24, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 900, sellPrice: 225, iconKey: 'item:steel-bow', visualKey: 'equip:steel-bow', allowedJobs: ['archer'],
+  },
+  'guardian-bow': {
+    id: 'guardian-bow', name: '守衛戰弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 28, attack: 38, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 450, iconKey: 'item:guardian-bow', visualKey: 'equip:guardian-bow', allowedJobs: ['archer'],
+  },
+  'frost-tide-bow': {
+    id: 'frost-tide-bow', name: '冰潮長弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 30, attack: 50, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 800, iconKey: 'item:frost-tide-bow', visualKey: 'equip:frost-tide-bow', allowedJobs: ['archer'],
+  },
+  'sunwell-oathbow': {
+    id: 'sunwell-oathbow', name: '日井誓弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 30, attack: 58, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 0, sellPrice: 1000, iconKey: 'item:sunwell-oathbow', visualKey: 'equip:sunwell-oathbow', allowedJobs: ['archer'],
+  },
+  'starter-bow': {
+    id: 'starter-bow', name: '練習短弓', kind: 'weapon', slot: 'weapon', stackLimit: 1,
+    minLevel: 1, attack: 4, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
+    buyPrice: 40, sellPrice: 10, iconKey: 'item:starter-bow', visualKey: 'equip:starter-bow', allowedJobs: ['archer'],
+  },
   'starter-sword': {
     id: 'starter-sword', name: '練習短劍', kind: 'weapon', slot: 'weapon', stackLimit: 1,
     minLevel: 1, attack: 4, defense: 0, hpBonus: 0, restoreHp: 0, restoreMp: 0,
@@ -176,3 +206,23 @@ export const items: Record<Id, ItemDef> = {
     buyPrice: 0, sellPrice: 600, iconKey: 'item:oathfarer-circlet', visualKey: 'equip:oathfarer-circlet',
   },
 };
+
+export const STAFF_BY_SWORD: Readonly<Record<string, string>> = {
+  'starter-sword': 'starter-staff', 'iron-sword': 'iron-staff', 'steel-sword': 'steel-staff',
+  'guardian-sword': 'guardian-staff', 'frost-tide-sword': 'frost-tide-staff', 'sunwell-oathblade': 'sunwell-oathstaff',
+};
+const staffNames = ['練習魔杖', '木葉符文杖', '精製星晶杖', '守衛岩晶杖', '冰潮霜晶杖', '日井誓杖'];
+Object.entries(STAFF_BY_SWORD).forEach(([source, id], index) => {
+  items[id] = { ...items[source]!, id, name: staffNames[index]!, iconKey: 'item:' + id,
+    visualKey: 'equip:' + id, allowedJobs: ['mage'] };
+});
+
+export const DAGGER_BY_SWORD: Readonly<Record<string, string>> = {
+  'starter-sword': 'starter-dagger', 'iron-sword': 'iron-dagger', 'steel-sword': 'steel-dagger',
+  'guardian-sword': 'guardian-dagger', 'frost-tide-sword': 'frost-tide-dagger', 'sunwell-oathblade': 'sunwell-oathdagger',
+};
+const daggerNames = ['練習短刃', '木葉雙刃', '精製鋼短刃', '守衛岩刃', '冰潮霜刃', '日井誓刃'];
+Object.entries(DAGGER_BY_SWORD).forEach(([source, id], index) => {
+  items[id] = { ...items[source]!, id, name: daggerNames[index]!, iconKey: 'item:' + id,
+    visualKey: 'equip:' + id, allowedJobs: ['rogue'] };
+});

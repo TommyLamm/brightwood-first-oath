@@ -107,8 +107,9 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       }
       if (catalog && gameplay?.pendingTransition && this.worldRenderer && !this.transitionKey) {
         const pending = gameplay.pendingTransition;
+        const revision = state.worldRevision;
         const map = catalog.world.maps[pending.mapId];
-        const key = `${pending.mapId}:${pending.spawnId}:${pending.after}`;
+        const key = `${revision}:${pending.mapId}:${pending.spawnId}:${pending.after}`;
         this.transitionKey = key;
         if (!map) {
           app.failMapTransition(`找不到地圖 ${pending.mapId}。`);
@@ -117,19 +118,19 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
           const requestId = app.beginMapVisualLoad(map);
           this.visualRequestId = requestId;
           void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
-            if (!this.sys.isActive() || this.transitionKey !== key) return;
+            if (!this.loadIsCurrent(app, key, revision)) return;
             app.endMapVisualLoad(requestId);
-            app.completeMapTransition();
+            app.completeMapTransition(revision);
             this.activeMapId = map.id;
             this.failedMapIds.delete(map.id);
             this.transitionKey = null;
             this.rendererReady = true;
           }).catch((error: unknown) => {
-            if (!this.sys.isActive() || this.transitionKey !== key) return;
+            if (!this.loadIsCurrent(app, key, revision)) return;
             const message = error instanceof Error ? error.message : String(error);
             this.failedMapIds.add(map.id);
             app.endMapVisualLoad(requestId);
-            app.failMapTransition(message);
+            app.failMapTransition(message, revision);
             this.statusText?.setText('');
             this.transitionKey = null;
           });
@@ -169,13 +170,14 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       app: GameApp,
     ): void {
       if (!this.worldRenderer || this.transitionKey) return;
-      const key = `initial:${map.id}`;
+      const revision = app.state.worldRevision;
+      const key = `initial:${revision}:${map.id}`;
       this.transitionKey = key;
       this.failedMapIds.delete(map.id);
       const requestId = app.beginMapVisualLoad(map);
       this.visualRequestId = requestId;
       void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
-        if (!this.sys.isActive() || this.transitionKey !== key) return;
+        if (!this.loadIsCurrent(app, key, revision)) return;
         app.endMapVisualLoad(requestId);
         this.activeMapId = map.id;
         this.failedMapIds.delete(map.id);
@@ -185,13 +187,23 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
         // ('目前地圖資產已接入 renderer。') in the status panel.
         this.statusText?.setText('');
       }).catch((error: unknown) => {
-        if (!this.sys.isActive() || this.transitionKey !== key) return;
+        if (!this.loadIsCurrent(app, key, revision)) return;
         const message = error instanceof Error ? error.message : String(error);
         this.transitionKey = null;
         this.failedMapIds.add(map.id);
         app.failMapVisualLoad(requestId, message);
         this.statusText?.setText('');
       });
+    }
+
+    private loadIsCurrent(app: GameApp, key: string, revision: number): boolean {
+      if (!this.sys.isActive() || this.transitionKey !== key) return false;
+      if (app.state.worldRevision === revision) return true;
+      // Let the old renderer load settle before starting another one, but never apply its callback.
+      this.transitionKey = null;
+      this.activeMapId = null;
+      this.rendererReady = false;
+      return false;
     }
   }
 

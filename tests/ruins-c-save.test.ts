@@ -1,3 +1,4 @@
+import { legacySaveData } from './fixtures/legacy-save.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { CloudPort, CloudReady, CloudRecord, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
@@ -52,13 +53,13 @@ function cloudPort(overrides: Partial<CloudPort> = {}): CloudPort {
 
 describe('ruins C save compatibility', () => {
   it('reads formats 1–4, writes format 5 after confirmation, and preserves q17/q20 through migration', async () => {
-    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3, 4, 5]);
-    expect(SAVE_FORMAT_VERSION).toBe(5);
+    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(SAVE_FORMAT_VERSION).toBe(8);
 
     for (const formatVersion of [1, 2, 3, 4]) {
       const storage = new MemoryStorage();
       const legacy = claimedBSave();
-      const original = ` ${JSON.stringify({ formatVersion, data: legacy, savedAt })} `;
+      const original = ` ${JSON.stringify({ formatVersion, data: legacySaveData(legacy), savedAt })} `;
       storage.entries.set(key, original);
       const persistence = createPersistence({ gameId, storage, cloud: null, catalog });
 
@@ -79,9 +80,9 @@ describe('ruins C save compatibility', () => {
       expect(storage.entries.get(key)).toBe(original);
       persistence.confirmSaveUpgrade();
       persistence.checkpoint(activeCSave());
-      await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(5));
+      await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(8));
       expect(storage.entries.get(`${key}:format${formatVersion}-backup`)).toBe(original);
-      expect(JSON.parse(storage.entries.get(key)!).data.quests).toMatchObject({
+      expect(JSON.parse(storage.entries.get(key)!).data.characters['legacy-1'].quests).toMatchObject({
         q17: { status: 'claimed' },
         q18: { status: 'active', counters: { 'ruins-bell-keeper': 0 } },
         q20: { status: 'claimed' },
@@ -98,9 +99,9 @@ describe('ruins C save compatibility', () => {
     }
   });
 
-  it.each([1, 2, 3, 4])('requires confirmation before upgrading cloud format %i and checkpointing as format 5', async (formatVersion) => {
+  it.each([1, 2, 3, 4])('requires confirmation before upgrading cloud format %i and checkpointing as format 6', async (formatVersion) => {
     const record: CloudRecord = {
-      data: claimedBSave(),
+      data: legacySaveData(claimedBSave()),
       revision: 4,
       formatVersion,
       gameVersion: 'legacy',
@@ -121,9 +122,9 @@ describe('ruins C save compatibility', () => {
     persistence.checkpoint(activeCSave());
     await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(2));
     for (const [input] of cloud.saveProgress.mock.calls) {
-      expect(input).toMatchObject({ formatVersion: 5, revision: 4 });
+      expect(input).toMatchObject({ formatVersion: 8, revision: 4 });
     }
-    expect(cloud.saveProgress.mock.calls[1]?.[0].data.quests.q18).toMatchObject({ status: 'active' });
+    expect(cloud.saveProgress.mock.calls[1]?.[0].data.characters['legacy-1'].quests.q18).toMatchObject({ status: 'active' });
     persistence.dispose();
   });
 
@@ -151,8 +152,8 @@ describe('ruins C save compatibility', () => {
 
   it('preserves the format-3 source and stops if its existing backup differs', async () => {
     const storage = new MemoryStorage();
-    const original = JSON.stringify({ formatVersion: 3, data: claimedBSave(), savedAt });
-    const differentBackup = JSON.stringify({ formatVersion: 3, data: activeCSave(), savedAt });
+    const original = JSON.stringify({ formatVersion: 3, data: legacySaveData(claimedBSave()), savedAt });
+    const differentBackup = JSON.stringify({ formatVersion: 3, data: legacySaveData(activeCSave()), savedAt });
     storage.entries.set(key, original);
     storage.entries.set(`${key}:format3-backup`, differentBackup);
     const statuses: string[] = [];
@@ -177,7 +178,7 @@ describe('ruins C save compatibility', () => {
 
   it('keeps the format-3 source untouched when its backup write fails', async () => {
     const storage = new MemoryStorage();
-    const original = JSON.stringify({ formatVersion: 3, data: claimedBSave(), savedAt });
+    const original = JSON.stringify({ formatVersion: 3, data: legacySaveData(claimedBSave()), savedAt });
     storage.entries.set(key, original);
     storage.setItem.mockImplementation((targetKey, value) => {
       if (targetKey === `${key}:format3-backup`) throw new Error('quota exceeded');
@@ -204,7 +205,7 @@ describe('ruins C save compatibility', () => {
 
   it('preserves an unknown local format and stops writes', async () => {
     const storage = new MemoryStorage();
-    const original = JSON.stringify({ formatVersion: 7, data: claimedBSave(), savedAt });
+    const original = JSON.stringify({ formatVersion: 9, data: claimedBSave(), savedAt });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId, storage, cloud: null, catalog });
 

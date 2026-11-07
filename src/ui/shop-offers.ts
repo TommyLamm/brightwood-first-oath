@@ -1,4 +1,6 @@
 import type { ItemDef, RulesCatalog } from '../contracts/definitions.js';
+import type { PlayerProgress } from '../contracts/types.js';
+import { canEquipForJob } from '../content/rules/jobs.js';
 
 export const SHOP_FILTERS = [
   { id: 'all', label: '全部' },
@@ -21,10 +23,12 @@ function matchesFilter(item: ItemDef, filter: ShopFilter): boolean {
 export function selectShopOffers(
   items: Readonly<RulesCatalog['items']>,
   filter: ShopFilter,
+  player?: Pick<PlayerProgress,'job'|'plannedJob'>,
 ): ItemDef[] {
   return Object.values(items)
     .map((item, index) => ({ item, index }))
-    .filter(({ item }) => item.buyPrice > 0 && item.kind !== 'quest' && matchesFilter(item, filter))
+    .filter(({ item }) => item.buyPrice > 0 && item.kind !== 'quest' && matchesFilter(item, filter)
+      && (!player || canEquipForJob(player,item)))
     .sort((a, b) =>
       shopKindOrder(a.item.kind) - shopKindOrder(b.item.kind)
       || a.item.minLevel - b.item.minLevel

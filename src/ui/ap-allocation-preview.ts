@@ -4,7 +4,7 @@ import { applyProgressAction, deriveStats } from '../domain/progression/index.js
 export type ApAllocationPreviewInput = {
   player: PlayerProgress;
   rules: RulesCatalog;
-  stat: 'str' | 'dex';
+  stat: 'str' | 'dex' | 'int' | 'luk';
   amount: number;
 };
 
