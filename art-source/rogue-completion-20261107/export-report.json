@@ -1,0 +1,38 @@
+[
+  {
+    "key": "actor:rogue-cloth",
+    "url": "assets/actors/rogue-cloth-stab-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "9a3d5d42a838ad3219cffe6de1fb3a02c9894919375f3522bf58b81caeda35ec"
+  },
+  {
+    "key": "actor:rogue-leather",
+    "url": "assets/actors/rogue-leather-stab-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "46feae5f3223ad984f107e318c4c63763a660d4983e2341834f9c2d2c54962ca"
+  },
+  {
+    "key": "actor:rogue-iron",
+    "url": "assets/actors/rogue-iron-stab-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "5d2ffafef3c4dce716d88b9bd9ce098deced5592d1a217d00544e283d075a3a7"
+  },
+  {
+    "key": "portrait:rogue",
+    "url": "assets/interface/portrait-rogue-v1.png",
+    "size": [
+      192,
+      192
+    ],
+    "sha256": "f52edc5ad5787601fee1f7fcb18fc0b12ca6e140076ca664db2d0a088149b69f"
+  }
+]
