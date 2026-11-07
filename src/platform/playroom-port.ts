@@ -44,8 +44,15 @@ export function createPlayroomCloudPort(
   loadSdk: PlayroomProgressSdkLoader = loadBundledPlayroomSdk,
 ): CloudPort {
   let sdkPromise: Promise<PlayroomProgressSdk> | null = null;
+  // A load in progress or already done is shared; a failed one is released so retrying can load again.
   const sdk = (): Promise<PlayroomProgressSdk> => {
-    sdkPromise ??= loadSdk();
+    if (!sdkPromise) {
+      const attempt: Promise<PlayroomProgressSdk> = loadSdk().catch((error: unknown) => {
+        if (sdkPromise === attempt) sdkPromise = null;
+        throw error;
+      });
+      sdkPromise = attempt;
+    }
     return sdkPromise;
   };
 

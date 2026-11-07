@@ -37,6 +37,39 @@ describe('createPlayroomCloudPort', () => {
     expect(loadSdk).toHaveBeenCalledTimes(1);
   });
 
+  it('loads the SDK again after a failed load', async () => {
+    const failure = new Error('SDK 載入失敗');
+    const loadSdk = vi.fn<() => Promise<PlayroomProgressSdk>>()
+      .mockRejectedValueOnce(failure)
+      .mockResolvedValue(sdk());
+    const port = createPlayroomCloudPort(loadSdk);
+
+    await expect(port.ready()).rejects.toBe(failure);
+    await expect(port.ready()).resolves.toMatchObject({ mode: 'authenticated' });
+    await port.loadProgress();
+
+    expect(loadSdk).toHaveBeenCalledTimes(2);
+  });
+
+  it('shares one load between concurrent calls, including when it fails', async () => {
+    const failure = new Error('SDK 載入失敗');
+    let rejectLoad: (error: Error) => void = () => undefined;
+    const loadSdk = vi.fn<() => Promise<PlayroomProgressSdk>>()
+      .mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectLoad = reject; }))
+      .mockResolvedValue(sdk());
+    const port = createPlayroomCloudPort(loadSdk);
+
+    const ready = port.ready();
+    const progress = port.loadProgress();
+    expect(loadSdk).toHaveBeenCalledTimes(1);
+    rejectLoad(failure);
+    await expect(ready).rejects.toBe(failure);
+    await expect(progress).rejects.toBe(failure);
+
+    await Promise.all([port.ready(), port.loadProgress()]);
+    expect(loadSdk).toHaveBeenCalledTimes(2);
+  });
+
   it('passes through a cloud record and successful save without changing the snapshot', async () => {
     const record = {
       data: { marker: 'loaded' },
