@@ -1,0 +1,331 @@
+[
+  {
+    "id": "camp",
+    "name": "晨光營地",
+    "theme": "camp",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 1,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 1,
+    "monsters": [
+      "snail"
+    ]
+  },
+  {
+    "id": "town",
+    "name": "木葉鎮",
+    "theme": "town",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 2,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 1,
+    "monsters": []
+  },
+  {
+    "id": "forest-edge",
+    "name": "嫩芽林道",
+    "theme": "forest",
+    "style": {
+      "platformKey": "env:forest:platform",
+      "climbKey": "env:forest:vine",
+      "segmented": true
+    },
+    "decoration": "env:forest:supports",
+    "platforms": 3,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 3,
+    "monsters": [
+      "snail",
+      "slime"
+    ]
+  },
+  {
+    "id": "mushroom-wood",
+    "name": "菌傘深林",
+    "theme": "forest",
+    "style": {
+      "platformKey": "env:forest:platform",
+      "climbKey": "env:forest:vine",
+      "segmented": true
+    },
+    "decoration": null,
+    "platforms": 3,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 3,
+    "monsters": [
+      "mushroom",
+      "slime"
+    ]
+  },
+  {
+    "id": "red-ridge",
+    "name": "赤岩山徑",
+    "theme": "rock",
+    "style": {
+      "platformKey": "env:ridge:platform",
+      "climbKey": "env:ridge:rope",
+      "segmented": true
+    },
+    "decoration": null,
+    "platforms": 3,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 3,
+    "monsters": [
+      "boar",
+      "golem"
+    ]
+  },
+  {
+    "id": "mine-gate",
+    "name": "古礦入口",
+    "theme": "rock",
+    "style": {
+      "platformKey": "env:mine:platform",
+      "climbKey": "env:mine:ladder",
+      "segmented": true
+    },
+    "decoration": "env:mine:supports",
+    "platforms": 2,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 2,
+    "monsters": [
+      "golem",
+      "sentinel"
+    ]
+  },
+  {
+    "id": "guardian-arena",
+    "name": "守衛祭壇",
+    "theme": "rock",
+    "style": {
+      "platformKey": "env:ridge:platform",
+      "climbKey": "env:ridge:rope",
+      "segmented": true
+    },
+    "decoration": null,
+    "platforms": 2,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 2,
+    "monsters": [
+      "guardian"
+    ]
+  },
+  {
+    "id": "frost-shore",
+    "name": "雪痕海岸",
+    "theme": "frost",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 3,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 3,
+    "monsters": [
+      "frost-wolf"
+    ]
+  },
+  {
+    "id": "frost-pine-pass",
+    "name": "霜松隘道",
+    "theme": "frost-pine",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 4,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 4,
+    "monsters": [
+      "frost-crab",
+      "frost-wolf"
+    ]
+  },
+  {
+    "id": "frost-tide-cavern",
+    "name": "冰潮洞窟",
+    "theme": "frost-cave",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 4,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 4,
+    "monsters": [
+      "frost-crab",
+      "frost-tide-warden"
+    ]
+  },
+  {
+    "id": "sand-glass-shore",
+    "name": "琥珀砂岸",
+    "theme": "sand",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 4,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 4,
+    "monsters": [
+      "sand-scorpion"
+    ]
+  },
+  {
+    "id": "ruins-tide-camp",
+    "name": "潮痕營站",
+    "theme": "ruins-camp",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 0,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 0,
+    "monsters": []
+  },
+  {
+    "id": "ruins-root-causeway",
+    "name": "盤根石道",
+    "theme": "ruins-root",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 5,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 5,
+    "monsters": [
+      "ruins-moss-carapace"
+    ]
+  },
+  {
+    "id": "ruins-echo-gallery",
+    "name": "回聲長廊",
+    "theme": "ruins-gallery",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 2,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 2,
+    "monsters": [
+      "ruins-string-puppet",
+      "ruins-bell-prowler"
+    ]
+  },
+  {
+    "id": "ruins-bell-sanctum",
+    "name": "誓鐘內殿",
+    "theme": "ruins-sanctum",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 0,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 0,
+    "monsters": [
+      "ruins-bell-keeper"
+    ]
+  },
+  {
+    "id": "sand-dune-pass",
+    "name": "砂丘關道",
+    "theme": "sand-dune",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 5,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 5,
+    "monsters": [
+      "sand-scorpion",
+      "sunwell-beetle"
+    ]
+  },
+  {
+    "id": "sand-sunwell-basin",
+    "name": "日井盆地",
+    "theme": "sunwell",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 5,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 5,
+    "monsters": [
+      "sand-scorpion",
+      "sunwell-beetle"
+    ]
+  },
+  {
+    "id": "sand-sunwell-altar",
+    "name": "日井祭壇",
+    "theme": "sunwell",
+    "style": {
+      "platformKey": "env:tile-platform",
+      "climbKey": "env:ladder",
+      "segmented": false
+    },
+    "decoration": null,
+    "platforms": 0,
+    "slopes": 0,
+    "ground": 1,
+    "ladders": 0,
+    "monsters": [
+      "sunwell-sentinel"
+    ]
+  }
+]

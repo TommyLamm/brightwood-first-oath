@@ -1,0 +1,335 @@
+[
+  {
+    "id": "forest-edge",
+    "style": {
+      "platformKey": "env:forest:platform",
+      "climbKey": "env:forest:vine",
+      "segmented": true
+    },
+    "platforms": [
+      {
+        "frame": 0,
+        "x": 0,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 3,
+        "x": 64,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 1,
+        "x": 128,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 2,
+        "x": 192,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 3,
+        "x": 256,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 1,
+        "x": 320,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 16,
+        "height": 48
+      },
+      {
+        "frame": 4,
+        "x": 336,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      }
+    ],
+    "climbs": [
+      {
+        "frame": 0,
+        "x": 454,
+        "y": 20,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 52,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 84,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 14
+      },
+      {
+        "frame": 2,
+        "x": 454,
+        "y": 98,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      }
+    ]
+  },
+  {
+    "id": "red-ridge",
+    "style": {
+      "platformKey": "env:ridge:platform",
+      "climbKey": "env:ridge:rope",
+      "segmented": true
+    },
+    "platforms": [
+      {
+        "frame": 0,
+        "x": 0,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 1,
+        "x": 64,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 2,
+        "x": 128,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 3,
+        "x": 192,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 1,
+        "x": 256,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 30,
+        "height": 48
+      },
+      {
+        "frame": 4,
+        "x": 286,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      }
+    ],
+    "climbs": [
+      {
+        "frame": 0,
+        "x": 454,
+        "y": 20,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 52,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 84,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 116,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 2,
+        "x": 454,
+        "y": 148,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      }
+    ]
+  },
+  {
+    "id": "mine-gate",
+    "style": {
+      "platformKey": "env:mine:platform",
+      "climbKey": "env:mine:ladder",
+      "segmented": true
+    },
+    "platforms": [
+      {
+        "frame": 0,
+        "x": 0,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 2,
+        "x": 64,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 3,
+        "x": 128,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 1,
+        "x": 192,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      },
+      {
+        "frame": 2,
+        "x": 256,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 30,
+        "height": 48
+      },
+      {
+        "frame": 4,
+        "x": 286,
+        "y": 12,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 64,
+        "height": 48
+      }
+    ],
+    "climbs": [
+      {
+        "frame": 0,
+        "x": 454,
+        "y": 20,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 52,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 84,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      },
+      {
+        "frame": 1,
+        "x": 454,
+        "y": 116,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 2
+      },
+      {
+        "frame": 2,
+        "x": 454,
+        "y": 118,
+        "cropX": 0,
+        "cropY": 0,
+        "width": 32,
+        "height": 32
+      }
+    ]
+  }
+]

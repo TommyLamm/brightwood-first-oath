@@ -1,0 +1,22 @@
+npm notice run brightwood-first-oath@1.0.0-beta.60 build
+npm notice run vite build
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 87 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                               1.35 kB │ gzip:   0.74 kB
+dist/assets/index-DtuNPmaQ.css               69.99 kB │ gzip:  15.64 kB
+dist/assets/rolldown-runtime-WkwZ5CU-.js      0.59 kB │ gzip:   0.36 kB
+dist/assets/index-CiYSl5Q5.js               411.06 kB │ gzip: 125.81 kB
+dist/assets/phaser-dj674HQk.js            1,196.46 kB │ gzip: 318.59 kB
+
+✓ built in 3.56s
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 2.0s of this 3.5s build (56%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin vite:prepare-out-dir renderStart (41%, 1.5s, 1 call)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:css transform (8 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+

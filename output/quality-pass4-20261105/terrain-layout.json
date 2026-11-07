@@ -1,0 +1,573 @@
+{
+  "id": "frost-tide-cavern",
+  "style": {
+    "groundKey": "env:frost-cave:ground",
+    "platformKey": "env:frost-cave:platform",
+    "climbKey": "env:frost-cave:chain",
+    "segmented": true
+  },
+  "required": [
+    "env:frost-cave:ground",
+    "env:frost-cave:platform",
+    "env:frost-cave:chain"
+  ],
+  "originX": 260,
+  "originY": 300,
+  "ground": [
+    {
+      "x": 0,
+      "y": 600
+    },
+    {
+      "x": 112,
+      "y": 600
+    },
+    {
+      "x": 224,
+      "y": 600
+    },
+    {
+      "x": 336,
+      "y": 600
+    },
+    {
+      "x": 448,
+      "y": 600
+    },
+    {
+      "x": 560,
+      "y": 600
+    },
+    {
+      "x": 672,
+      "y": 600
+    },
+    {
+      "x": 784,
+      "y": 600
+    },
+    {
+      "x": 896,
+      "y": 600
+    },
+    {
+      "x": 1008,
+      "y": 600
+    },
+    {
+      "x": 1120,
+      "y": 600
+    },
+    {
+      "x": 1232,
+      "y": 600
+    },
+    {
+      "x": 1344,
+      "y": 600
+    },
+    {
+      "x": 1456,
+      "y": 600
+    },
+    {
+      "x": 1568,
+      "y": 600
+    },
+    {
+      "x": 1680,
+      "y": 600
+    },
+    {
+      "x": 1792,
+      "y": 600
+    },
+    {
+      "x": 1904,
+      "y": 600
+    },
+    {
+      "x": 2016,
+      "y": 600
+    },
+    {
+      "x": 2128,
+      "y": 600
+    }
+  ],
+  "platforms": [
+    {
+      "frame": 0,
+      "x": 320,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 1,
+      "x": 384,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 2,
+      "x": 448,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 3,
+      "x": 512,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 1,
+      "x": 576,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 10,
+      "height": 48
+    },
+    {
+      "frame": 4,
+      "x": 586,
+      "y": 492,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 0,
+      "x": 820,
+      "y": 422,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 2,
+      "x": 884,
+      "y": 422,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 3,
+      "x": 948,
+      "y": 422,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 1,
+      "x": 1012,
+      "y": 422,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 4,
+      "x": 1076,
+      "y": 422,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 0,
+      "x": 1320,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 3,
+      "x": 1384,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 1,
+      "x": 1448,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 2,
+      "x": 1512,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 24,
+      "height": 48
+    },
+    {
+      "frame": 4,
+      "x": 1536,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 0,
+      "x": 1780,
+      "y": 397,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 1,
+      "x": 1844,
+      "y": 397,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 2,
+      "x": 1908,
+      "y": 397,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    },
+    {
+      "frame": 3,
+      "x": 1972,
+      "y": 397,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 14,
+      "height": 48
+    },
+    {
+      "frame": 4,
+      "x": 1986,
+      "y": 397,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 64,
+      "height": 48
+    }
+  ],
+  "climbs": [
+    {
+      "frame": 0,
+      "x": 464,
+      "y": 500,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 464,
+      "y": 532,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 464,
+      "y": 564,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 4
+    },
+    {
+      "frame": 2,
+      "x": 464,
+      "y": 568,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 0,
+      "x": 954,
+      "y": 430,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 954,
+      "y": 462,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 954,
+      "y": 494,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 954,
+      "y": 526,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 954,
+      "y": 558,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 10
+    },
+    {
+      "frame": 2,
+      "x": 954,
+      "y": 568,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 0,
+      "x": 1434,
+      "y": 470,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1434,
+      "y": 502,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1434,
+      "y": 534,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1434,
+      "y": 566,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 2
+    },
+    {
+      "frame": 2,
+      "x": 1434,
+      "y": 568,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 0,
+      "x": 1894,
+      "y": 405,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1894,
+      "y": 437,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1894,
+      "y": 469,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1894,
+      "y": 501,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1894,
+      "y": 533,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    },
+    {
+      "frame": 1,
+      "x": 1894,
+      "y": 565,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 3
+    },
+    {
+      "frame": 2,
+      "x": 1894,
+      "y": 568,
+      "cropX": 0,
+      "cropY": 0,
+      "width": 32,
+      "height": 32
+    }
+  ],
+  "previousPlatforms": [
+    {
+      "x": 312,
+      "y": 500
+    },
+    {
+      "x": 424,
+      "y": 500
+    },
+    {
+      "x": 536,
+      "y": 500
+    },
+    {
+      "x": 812,
+      "y": 430
+    },
+    {
+      "x": 924,
+      "y": 430
+    },
+    {
+      "x": 1036,
+      "y": 430
+    },
+    {
+      "x": 1312,
+      "y": 470
+    },
+    {
+      "x": 1424,
+      "y": 470
+    },
+    {
+      "x": 1536,
+      "y": 470
+    },
+    {
+      "x": 1772,
+      "y": 405
+    },
+    {
+      "x": 1884,
+      "y": 405
+    },
+    {
+      "x": 1996,
+      "y": 405
+    }
+  ],
+  "previousClimbs": [
+    {
+      "x": 480,
+      "y": 600,
+      "width": 32,
+      "height": 100,
+      "originX": 0.5,
+      "originY": 1
+    },
+    {
+      "x": 970,
+      "y": 600,
+      "width": 32,
+      "height": 170,
+      "originX": 0.5,
+      "originY": 1
+    },
+    {
+      "x": 1450,
+      "y": 600,
+      "width": 32,
+      "height": 130,
+      "originX": 0.5,
+      "originY": 1
+    },
+    {
+      "x": 1910,
+      "y": 600,
+      "width": 32,
+      "height": 195,
+      "originX": 0.5,
+      "originY": 1
+    }
+  ]
+}

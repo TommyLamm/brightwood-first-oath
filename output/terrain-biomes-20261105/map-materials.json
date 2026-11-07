@@ -1,0 +1,182 @@
+[
+  {
+    "id": "camp",
+    "name": "晨光營地",
+    "themeKey": "camp",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 1,
+    "climbs": 1
+  },
+  {
+    "id": "town",
+    "name": "木葉鎮",
+    "themeKey": "town",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 2,
+    "climbs": 1
+  },
+  {
+    "id": "forest-edge",
+    "name": "嫩芽林道",
+    "themeKey": "forest",
+    "platformKey": "env:forest:platform",
+    "climbKey": "env:forest:vine",
+    "segmented": true,
+    "platforms": 3,
+    "climbs": 2
+  },
+  {
+    "id": "mushroom-wood",
+    "name": "菌傘深林",
+    "themeKey": "forest",
+    "platformKey": "env:forest:platform",
+    "climbKey": "env:forest:vine",
+    "segmented": true,
+    "platforms": 3,
+    "climbs": 2
+  },
+  {
+    "id": "red-ridge",
+    "name": "赤岩山徑",
+    "themeKey": "rock",
+    "platformKey": "env:ridge:platform",
+    "climbKey": "env:ridge:rope",
+    "segmented": true,
+    "platforms": 3,
+    "climbs": 2
+  },
+  {
+    "id": "mine-gate",
+    "name": "古礦入口",
+    "themeKey": "rock",
+    "platformKey": "env:mine:platform",
+    "climbKey": "env:mine:ladder",
+    "segmented": true,
+    "platforms": 2,
+    "climbs": 2
+  },
+  {
+    "id": "guardian-arena",
+    "name": "守衛祭壇",
+    "themeKey": "rock",
+    "platformKey": "env:ridge:platform",
+    "climbKey": "env:ridge:rope",
+    "segmented": true,
+    "platforms": 2,
+    "climbs": 2
+  },
+  {
+    "id": "frost-shore",
+    "name": "雪痕海岸",
+    "themeKey": "frost",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 3,
+    "climbs": 3
+  },
+  {
+    "id": "frost-pine-pass",
+    "name": "霜松隘道",
+    "themeKey": "frost-pine",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 4,
+    "climbs": 4
+  },
+  {
+    "id": "frost-tide-cavern",
+    "name": "冰潮洞窟",
+    "themeKey": "frost-cave",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 4,
+    "climbs": 4
+  },
+  {
+    "id": "sand-glass-shore",
+    "name": "琥珀砂岸",
+    "themeKey": "sand",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 4,
+    "climbs": 4
+  },
+  {
+    "id": "ruins-tide-camp",
+    "name": "潮痕營站",
+    "themeKey": "ruins-camp",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 0,
+    "climbs": 0
+  },
+  {
+    "id": "ruins-root-causeway",
+    "name": "盤根石道",
+    "themeKey": "ruins-root",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 5,
+    "climbs": 5
+  },
+  {
+    "id": "ruins-echo-gallery",
+    "name": "回聲長廊",
+    "themeKey": "ruins-gallery",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 2,
+    "climbs": 2
+  },
+  {
+    "id": "ruins-bell-sanctum",
+    "name": "誓鐘內殿",
+    "themeKey": "ruins-sanctum",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 0,
+    "climbs": 0
+  },
+  {
+    "id": "sand-dune-pass",
+    "name": "砂丘關道",
+    "themeKey": "sand-dune",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 5,
+    "climbs": 5
+  },
+  {
+    "id": "sand-sunwell-basin",
+    "name": "日井盆地",
+    "themeKey": "sunwell",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 5,
+    "climbs": 5
+  },
+  {
+    "id": "sand-sunwell-altar",
+    "name": "日井祭壇",
+    "themeKey": "sunwell",
+    "platformKey": "env:tile-platform",
+    "climbKey": "env:ladder",
+    "segmented": false,
+    "platforms": 0,
+    "climbs": 0
+  }
+]

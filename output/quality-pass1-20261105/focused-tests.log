@@ -1,0 +1,11 @@
+npm notice run brightwood-first-oath@1.0.0-beta.60 test
+npm notice run vitest run --passWithNoTests src/render/animation-contract.test.ts tests/integration/app-hero-anchors.test.ts
+
+ RUN  v5.0.5 C:/Users/Tommy/Desktop/brightwood-first-oath
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  14:27:12
+   Duration  1.15s (import 46%, transform 32%, worker 14%, tests 6%, environment 1%)
+

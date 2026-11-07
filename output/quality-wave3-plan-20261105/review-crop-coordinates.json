@@ -1,0 +1,26 @@
+{
+  "env:forest:mid": [
+    0,
+    0,
+    300,
+    135
+  ],
+  "env:rock:mid": [
+    0,
+    0,
+    300,
+    135
+  ],
+  "env:frost:mid": [
+    0,
+    0,
+    300,
+    135
+  ],
+  "env:ruins-gallery:mid": [
+    0,
+    0,
+    300,
+    135
+  ]
+}

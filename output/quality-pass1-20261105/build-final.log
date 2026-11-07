@@ -1,0 +1,14 @@
+npm notice run brightwood-first-oath@1.0.0-beta.60 build
+npm notice run vite build
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 87 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                               1.35 kB │ gzip:   0.74 kB
+dist/assets/index-D-bqeIw_.css               70.04 kB │ gzip:  15.66 kB
+dist/assets/rolldown-runtime-WkwZ5CU-.js      0.59 kB │ gzip:   0.36 kB
+dist/assets/index-7rPgXIzR.js               411.06 kB │ gzip: 125.81 kB
+dist/assets/phaser-dj674HQk.js            1,196.46 kB │ gzip: 318.59 kB
+
+✓ built in 1.30s

@@ -1,0 +1,4027 @@
+[
+  {
+    "group": "actors",
+    "key": "equip:starter-sword",
+    "url": "assets/actors/equip-starter-sword-v1.png",
+    "source": [
+      256,
+      246
+    ],
+    "frame": [
+      256.0,
+      246.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      3.844
+    ],
+    "KiB": 29.3,
+    "decodedMiB": 0.24
+  },
+  {
+    "group": "actors",
+    "key": "equip:iron-sword",
+    "url": "assets/actors/equip-iron-sword-v1.png",
+    "source": [
+      256,
+      256
+    ],
+    "frame": [
+      256.0,
+      256.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 29.7,
+    "decodedMiB": 0.25
+  },
+  {
+    "group": "actors",
+    "key": "equip:steel-sword",
+    "url": "assets/actors/equip-steel-sword-v1.png",
+    "source": [
+      256,
+      171
+    ],
+    "frame": [
+      256.0,
+      171.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      2.672
+    ],
+    "KiB": 21.1,
+    "decodedMiB": 0.17
+  },
+  {
+    "group": "actors",
+    "key": "equip:guardian-sword",
+    "url": "assets/actors/equip-guardian-sword-v1.png",
+    "source": [
+      256,
+      171
+    ],
+    "frame": [
+      256.0,
+      171.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      2.672
+    ],
+    "KiB": 18.7,
+    "decodedMiB": 0.17
+  },
+  {
+    "group": "actors",
+    "key": "equip:frost-tide-sword",
+    "url": "assets/equipment/frost-tide-sword-v1.png",
+    "source": [
+      64,
+      64
+    ],
+    "frame": [
+      64.0,
+      64.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 2.0,
+    "decodedMiB": 0.02
+  },
+  {
+    "group": "actors",
+    "key": "equip:sunwell-oathblade",
+    "url": "assets/equipment/sunwell-oathblade-v1.png",
+    "source": [
+      64,
+      64
+    ],
+    "frame": [
+      64.0,
+      64.0
+    ],
+    "display": [
+      64,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1.7,
+    "decodedMiB": 0.02
+  },
+  {
+    "group": "actors",
+    "key": "equip:cloth-cap",
+    "url": "assets/actors/equip-cloth-cap-v1.png",
+    "source": [
+      192,
+      128
+    ],
+    "frame": [
+      192.0,
+      128.0
+    ],
+    "display": [
+      48,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 22.3,
+    "decodedMiB": 0.09
+  },
+  {
+    "group": "actors",
+    "key": "equip:leather-cap",
+    "url": "assets/actors/equip-leather-cap-v1.png",
+    "source": [
+      192,
+      128
+    ],
+    "frame": [
+      192.0,
+      128.0
+    ],
+    "display": [
+      48,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 25.4,
+    "decodedMiB": 0.09
+  },
+  {
+    "group": "actors",
+    "key": "equip:iron-helm",
+    "url": "assets/actors/equip-iron-helm-v1.png",
+    "source": [
+      192,
+      128
+    ],
+    "frame": [
+      192.0,
+      128.0
+    ],
+    "display": [
+      48,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 23.9,
+    "decodedMiB": 0.09
+  },
+  {
+    "group": "actors",
+    "key": "actor:slime",
+    "url": "assets/actors/monsters/slime-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 485.1,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:sentinel",
+    "url": "assets/actors/monsters/sentinel-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 1116.5,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:guide",
+    "url": "assets/actors/npcs/guide-idle-v1.png",
+    "source": [
+      768,
+      384
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 185.9,
+    "decodedMiB": 1.12
+  },
+  {
+    "group": "actors",
+    "key": "actor:mentor",
+    "url": "assets/actors/npcs/mentor-idle-v1.png",
+    "source": [
+      768,
+      384
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 201.2,
+    "decodedMiB": 1.12
+  },
+  {
+    "group": "actors",
+    "key": "actor:healer",
+    "url": "assets/actors/npcs/healer-idle-v1.png",
+    "source": [
+      768,
+      384
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 194.7,
+    "decodedMiB": 1.12
+  },
+  {
+    "group": "actors",
+    "key": "actor:keeper",
+    "url": "assets/actors/npcs/keeper-idle-v1.png",
+    "source": [
+      768,
+      384
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 222.1,
+    "decodedMiB": 1.12
+  },
+  {
+    "group": "actors",
+    "key": "actor:frost-guide",
+    "url": "assets/actors/npcs/frost-guide-idle-v1.png",
+    "source": [
+      1774,
+      887
+    ],
+    "frame": [
+      887.0,
+      887.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      9.24,
+      9.24
+    ],
+    "KiB": 827.5,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:hero-cloth",
+    "url": "assets/actors/hero-cloth-v9-clarity-v1.png",
+    "source": [
+      1536,
+      1536
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 643.9,
+    "decodedMiB": 9.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:hero-leather",
+    "url": "assets/actors/hero-leather-v9-clarity-v1.png",
+    "source": [
+      1536,
+      1536
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 764.5,
+    "decodedMiB": 9.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:hero-iron",
+    "url": "assets/actors/hero-iron-v9-clarity-v1.png",
+    "source": [
+      1536,
+      1536
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 778.8,
+    "decodedMiB": 9.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:snail",
+    "url": "assets/actors/monsters/snail-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 332.9,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:mushroom",
+    "url": "assets/actors/monsters/mushroom-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 361.2,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:boar",
+    "url": "assets/actors/monsters/boar-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 376.9,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:golem",
+    "url": "assets/actors/monsters/golem-atlas-v2-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 456.2,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:frost-wolf",
+    "url": "assets/actors/monsters/frost-wolf-atlas-v1.png",
+    "source": [
+      1374,
+      1145
+    ],
+    "frame": [
+      229.0,
+      229.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.385,
+      2.385
+    ],
+    "KiB": 1062.5,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:frost-crab",
+    "url": "assets/actors/monsters/frost-crab-atlas-v1.png",
+    "source": [
+      1374,
+      1145
+    ],
+    "frame": [
+      229.0,
+      229.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.385,
+      2.385
+    ],
+    "KiB": 670.4,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:frost-tide-warden",
+    "url": "assets/actors/monsters/frost-tide-warden-atlas-v1.png",
+    "source": [
+      1632,
+      1360
+    ],
+    "frame": [
+      272.0,
+      272.0
+    ],
+    "display": [
+      192,
+      192
+    ],
+    "sourcePerWorldUnit": [
+      1.417,
+      1.417
+    ],
+    "KiB": 506.7,
+    "decodedMiB": 8.47
+  },
+  {
+    "group": "actors",
+    "key": "actor:guardian",
+    "url": "assets/actors/monsters/guardian-atlas-v2-clarity-v1.png",
+    "source": [
+      2304,
+      1920
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      192,
+      192
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 1499.3,
+    "decodedMiB": 16.88
+  },
+  {
+    "group": "actors",
+    "key": "actor:merchant",
+    "url": "assets/actors/npcs/merchant-idle-v3-clarity-v1.png",
+    "source": [
+      768,
+      384
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 232.6,
+    "decodedMiB": 1.12
+  },
+  {
+    "group": "actors",
+    "key": "actor:sands-guide",
+    "url": "assets/actors/npcs/sands-guide-idle-v1-clarity-v1.png",
+    "source": [
+      384,
+      192
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 55.7,
+    "decodedMiB": 0.28
+  },
+  {
+    "group": "actors",
+    "key": "actor:sand-scorpion",
+    "url": "assets/actors/monsters/sand-scorpion-atlas-v1-clarity-v1.png",
+    "source": [
+      768,
+      768
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 384.1,
+    "decodedMiB": 2.25
+  },
+  {
+    "group": "actors",
+    "key": "actor:sunwell-beetle",
+    "url": "assets/actors/monsters/sunwell-beetle-atlas-v1-clarity-v1.png",
+    "source": [
+      768,
+      768
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 407.3,
+    "decodedMiB": 2.25
+  },
+  {
+    "group": "actors",
+    "key": "actor:sunwell-sentinel",
+    "url": "assets/actors/monsters/sunwell-sentinel-atlas-v1-clarity-v1.png",
+    "source": [
+      1536,
+      1536
+    ],
+    "frame": [
+      384.0,
+      384.0
+    ],
+    "display": [
+      192,
+      192
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 2425.1,
+    "decodedMiB": 9.0
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-archivist",
+    "url": "assets/actors/npc-ruins-archivist-v1-clarity-v1.png",
+    "source": [
+      384,
+      192
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 62.3,
+    "decodedMiB": 0.28
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-medic",
+    "url": "assets/actors/npc-ruins-medic-v1-clarity-v1.png",
+    "source": [
+      384,
+      192
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 59.6,
+    "decodedMiB": 0.28
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-moss-carapace",
+    "url": "assets/actors/monster-ruins-moss-carapace-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 430.2,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-pathfinder",
+    "url": "assets/actors/npcs/ruins-pathfinder-idle-v1-clarity-v1.png",
+    "source": [
+      384,
+      192
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 48.8,
+    "decodedMiB": 0.28
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-stele",
+    "url": "assets/actors/npcs/ruins-stele-v1.png",
+    "source": [
+      192,
+      256
+    ],
+    "frame": [
+      192.0,
+      256.0
+    ],
+    "display": [
+      96,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 43.9,
+    "decodedMiB": 0.19
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-string-puppet",
+    "url": "assets/actors/monster-ruins-string-puppet-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 420.1,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-bell-prowler",
+    "url": "assets/actors/monster-ruins-bell-prowler-clarity-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      96,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 662.5,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "actors",
+    "key": "equip:oathfarer-circlet",
+    "url": "assets/actors/equip-oathfarer-circlet-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      48,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      4.0
+    ],
+    "KiB": 9.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "actors",
+    "key": "actor:ruins-bell-keeper",
+    "url": "assets/actors/monster-ruins-bell-keeper-v1.png",
+    "source": [
+      1152,
+      960
+    ],
+    "frame": [
+      192.0,
+      192.0
+    ],
+    "display": [
+      192,
+      192
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 893.1,
+    "decodedMiB": 4.22
+  },
+  {
+    "group": "environment",
+    "key": "env:camp:sky",
+    "url": "assets/environment/env-camp-sky-v1.png",
+    "source": [
+      1672,
+      941
+    ],
+    "frame": [
+      1672.0,
+      941.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.742,
+      1.743
+    ],
+    "KiB": 1688.6,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "environment",
+    "key": "env:camp:far",
+    "url": "assets/environment/env-camp-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 324.0,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:camp:mid",
+    "url": "assets/environment/env-camp-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 334.6,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:town:sky",
+    "url": "assets/environment/env-town-sky-v1.png",
+    "source": [
+      1672,
+      941
+    ],
+    "frame": [
+      1672.0,
+      941.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.742,
+      1.743
+    ],
+    "KiB": 1507.5,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "environment",
+    "key": "env:town:far",
+    "url": "assets/environment/env-town-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 420.5,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:town:mid",
+    "url": "assets/environment/env-town-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 313.5,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:forest:sky",
+    "url": "assets/environment/env-forest-sky-v1.png",
+    "source": [
+      1672,
+      941
+    ],
+    "frame": [
+      1672.0,
+      941.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.742,
+      1.743
+    ],
+    "KiB": 1630.9,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "environment",
+    "key": "env:forest:far",
+    "url": "assets/environment/env-forest-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 443.0,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:forest:mid",
+    "url": "assets/environment/env-forest-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 316.4,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:rock:sky",
+    "url": "assets/environment/env-rock-sky-v1.png",
+    "source": [
+      1672,
+      941
+    ],
+    "frame": [
+      1672.0,
+      941.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.742,
+      1.743
+    ],
+    "KiB": 1617.3,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "environment",
+    "key": "env:rock:far",
+    "url": "assets/environment/env-rock-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 299.7,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:rock:mid",
+    "url": "assets/environment/env-rock-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 221.5,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:frost:sky",
+    "url": "assets/environment/env-frost-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 942.1,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:frost:far",
+    "url": "assets/environment/env-frost-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 957.5,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:frost:mid",
+    "url": "assets/environment/env-frost-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 164.2,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-pine:sky",
+    "url": "assets/environment/env-frost-pine-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 994.9,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-pine:far",
+    "url": "assets/environment/env-frost-pine-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1215.1,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-pine:mid",
+    "url": "assets/environment/env-frost-pine-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 254.5,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-cave:sky",
+    "url": "assets/environment/env-frost-cave-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1456.2,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-cave:far",
+    "url": "assets/environment/env-frost-cave-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1428.3,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:frost-cave:mid",
+    "url": "assets/environment/env-frost-cave-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 262.5,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:tile-ground",
+    "url": "assets/environment/env-tile-ground-v1.png",
+    "source": [
+      512,
+      512
+    ],
+    "frame": [
+      512.0,
+      512.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 385.0,
+    "decodedMiB": 1.0
+  },
+  {
+    "group": "environment",
+    "key": "env:tile-platform",
+    "url": "assets/environment/env-tile-platform-v1.png",
+    "source": [
+      128,
+      32
+    ],
+    "frame": [
+      128.0,
+      32.0
+    ],
+    "display": [
+      128,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 3.8,
+    "decodedMiB": 0.02
+  },
+  {
+    "group": "environment",
+    "key": "env:tile-slope",
+    "url": "assets/environment/env-tile-slope-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 30.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "environment",
+    "key": "env:ladder",
+    "url": "assets/environment/env-ladder-v1.png",
+    "source": [
+      32,
+      128
+    ],
+    "frame": [
+      32.0,
+      128.0
+    ],
+    "display": [
+      32,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 8.4,
+    "decodedMiB": 0.02
+  },
+  {
+    "group": "environment",
+    "key": "env:portal",
+    "url": "assets/environment/env-portal-v1.png",
+    "source": [
+      64,
+      96
+    ],
+    "frame": [
+      64.0,
+      96.0
+    ],
+    "display": [
+      64,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 16.9,
+    "decodedMiB": 0.02
+  },
+  {
+    "group": "environment",
+    "key": "env:town-sign",
+    "url": "assets/environment/env-town-sign-v1.png",
+    "source": [
+      96,
+      128
+    ],
+    "frame": [
+      96.0,
+      128.0
+    ],
+    "display": [
+      96,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 16.4,
+    "decodedMiB": 0.05
+  },
+  {
+    "group": "environment",
+    "key": "env:mine-door",
+    "url": "assets/environment/env-mine-door-v1.png",
+    "source": [
+      128,
+      160
+    ],
+    "frame": [
+      128.0,
+      160.0
+    ],
+    "display": [
+      128,
+      160
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 42.2,
+    "decodedMiB": 0.08
+  },
+  {
+    "group": "environment",
+    "key": "env:altar",
+    "url": "assets/environment/env-altar-v1.png",
+    "source": [
+      112,
+      96
+    ],
+    "frame": [
+      112.0,
+      96.0
+    ],
+    "display": [
+      112,
+      96
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 18.9,
+    "decodedMiB": 0.04
+  },
+  {
+    "group": "environment",
+    "key": "env:sand:sky",
+    "url": "assets/environment/env-sand-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 635.4,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:sand:far",
+    "url": "assets/environment/env-sand-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 396.3,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:sand:mid",
+    "url": "assets/environment/env-sand-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 149.8,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:sand-dune:sky",
+    "url": "assets/environment/env-sand-dune-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 446.2,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:sand-dune:far",
+    "url": "assets/environment/env-sand-dune-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 492.5,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:sand-dune:mid",
+    "url": "assets/environment/env-sand-dune-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 143.9,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:sunwell:sky",
+    "url": "assets/environment/env-sunwell-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 609.5,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:sunwell:far",
+    "url": "assets/environment/env-sunwell-far-v2.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 263.4,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:sunwell:mid",
+    "url": "assets/environment/env-sunwell-mid-v2.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 36.8,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-camp:sky",
+    "url": "assets/environment/env-ruins-camp-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 753.2,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-camp:far",
+    "url": "assets/environment/env-ruins-camp-far-v1.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 885.4,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-camp:mid",
+    "url": "assets/environment/env-ruins-camp-mid-v1.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 391.9,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-root:sky",
+    "url": "assets/environment/env-ruins-root-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 758.9,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-root:far",
+    "url": "assets/environment/env-ruins-root-far-v1.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1151.3,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-root:mid",
+    "url": "assets/environment/env-ruins-root-mid-v1.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 482.9,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-gallery:sky",
+    "url": "assets/environment/env-ruins-gallery-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 700.3,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-gallery:far",
+    "url": "assets/environment/env-ruins-gallery-far-v1.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 798.7,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-gallery:mid",
+    "url": "assets/environment/env-ruins-gallery-mid-v1.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 443.8,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-sanctum:sky",
+    "url": "assets/environment/env-ruins-sanctum-sky-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 648.0,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-sanctum:far",
+    "url": "assets/environment/env-ruins-sanctum-far-v1.png",
+    "source": [
+      1440,
+      540
+    ],
+    "frame": [
+      1440.0,
+      540.0
+    ],
+    "display": [
+      1440,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 851.6,
+    "decodedMiB": 2.97
+  },
+  {
+    "group": "environment",
+    "key": "env:ruins-sanctum:mid",
+    "url": "assets/environment/env-ruins-sanctum-mid-v1.png",
+    "source": [
+      1920,
+      540
+    ],
+    "frame": [
+      1920.0,
+      540.0
+    ],
+    "display": [
+      1920,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 463.0,
+    "decodedMiB": 3.96
+  },
+  {
+    "group": "interface",
+    "key": "item:starter-sword",
+    "url": "assets/interface/item-starter-sword-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 12.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:iron-sword",
+    "url": "assets/interface/item-iron-sword-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 13.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:steel-sword",
+    "url": "assets/interface/item-steel-sword-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 13.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:guardian-sword",
+    "url": "assets/interface/item-guardian-sword-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 16.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:frost-tide-sword",
+    "url": "assets/interface/item-frost-tide-sword-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 4.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:sunwell-oathblade",
+    "url": "assets/interface/item-sunwell-oathblade-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 4.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:cloth-shirt",
+    "url": "assets/interface/item-cloth-shirt-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 23.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:leather-vest",
+    "url": "assets/interface/item-leather-vest-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 22.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:iron-mail",
+    "url": "assets/interface/item-iron-mail-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 30.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:cloth-cap",
+    "url": "assets/interface/item-cloth-cap-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 17.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:leather-cap",
+    "url": "assets/interface/item-leather-cap-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:iron-helm",
+    "url": "assets/interface/item-iron-helm-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 26.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:small-red",
+    "url": "assets/interface/item-small-red-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 11.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:large-red",
+    "url": "assets/interface/item-large-red-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 17.6,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:small-blue",
+    "url": "assets/interface/item-small-blue-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 11.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:large-blue",
+    "url": "assets/interface/item-large-blue-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:snail-shell",
+    "url": "assets/interface/item-snail-shell-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:slime-gel",
+    "url": "assets/interface/item-slime-gel-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:mushroom-cap",
+    "url": "assets/interface/item-mushroom-cap-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 16.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:boar-tusk",
+    "url": "assets/interface/item-boar-tusk-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 12.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:stone-chip",
+    "url": "assets/interface/item-stone-chip-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 15.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:metal-shard",
+    "url": "assets/interface/item-metal-shard-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:ice-shell",
+    "url": "assets/interface/item-ice-shell-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 12.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:amber-scale",
+    "url": "assets/interface/item-amber-scale-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 8.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:frost-fang",
+    "url": "assets/interface/item-frost-fang-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 11.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:forest-seed",
+    "url": "assets/interface/item-forest-seed-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 17.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:spore-sample",
+    "url": "assets/interface/item-spore-sample-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:ridge-emblem",
+    "url": "assets/interface/item-ridge-emblem-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 23.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:guardian-core",
+    "url": "assets/interface/item-guardian-core-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 23.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "skill:heavy-strike",
+    "url": "assets/interface/skill-heavy-strike-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 29.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "skill:sweep",
+    "url": "assets/interface/skill-sweep-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 34.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "skill:iron-guard",
+    "url": "assets/interface/skill-iron-guard-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 29.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "skill:vitality",
+    "url": "assets/interface/skill-vitality-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 30.5,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "skill:rest-recovery",
+    "url": "assets/interface/skill-rest-recovery-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 32.6,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "marker:quest",
+    "url": "assets/interface/marker-quest-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "marker:portal",
+    "url": "assets/interface/marker-portal-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 19.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "marker:shop",
+    "url": "assets/interface/marker-shop-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 21.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "marker:player",
+    "url": "assets/interface/marker-player-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "panel:frame",
+    "url": "assets/interface/panel-frame-v1.png",
+    "source": [
+      256,
+      256
+    ],
+    "frame": [
+      256.0,
+      256.0
+    ],
+    "display": [
+      224,
+      224
+    ],
+    "sourcePerWorldUnit": [
+      1.143,
+      1.143
+    ],
+    "KiB": 66.5,
+    "decodedMiB": 0.25
+  },
+  {
+    "group": "interface",
+    "key": "button:normal",
+    "url": "assets/interface/button-normal-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 69.5,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "button:hover",
+    "url": "assets/interface/button-hover-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 72.2,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "button:pressed",
+    "url": "assets/interface/button-pressed-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 27.1,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "bar:hp",
+    "url": "assets/interface/bar-hp-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 56.6,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "bar:mp",
+    "url": "assets/interface/bar-mp-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 56.1,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "bar:exp",
+    "url": "assets/interface/bar-exp-v1.png",
+    "source": [
+      512,
+      160
+    ],
+    "frame": [
+      512.0,
+      160.0
+    ],
+    "display": [
+      192,
+      60
+    ],
+    "sourcePerWorldUnit": [
+      2.667,
+      2.667
+    ],
+    "KiB": 57.6,
+    "decodedMiB": 0.31
+  },
+  {
+    "group": "interface",
+    "key": "slot:normal",
+    "url": "assets/interface/slot-normal-v1.png",
+    "source": [
+      160,
+      160
+    ],
+    "frame": [
+      160.0,
+      160.0
+    ],
+    "display": [
+      48,
+      48
+    ],
+    "sourcePerWorldUnit": [
+      3.333,
+      3.333
+    ],
+    "KiB": 41.8,
+    "decodedMiB": 0.1
+  },
+  {
+    "group": "interface",
+    "key": "slot:selected",
+    "url": "assets/interface/slot-selected-v1.png",
+    "source": [
+      160,
+      160
+    ],
+    "frame": [
+      160.0,
+      160.0
+    ],
+    "display": [
+      48,
+      48
+    ],
+    "sourcePerWorldUnit": [
+      3.333,
+      3.333
+    ],
+    "KiB": 47.5,
+    "decodedMiB": 0.1
+  },
+  {
+    "group": "interface",
+    "key": "vfx:sweep",
+    "url": "assets/interface/vfx-sweep-v2.png",
+    "source": [
+      3072,
+      512
+    ],
+    "frame": [
+      512.0,
+      512.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 258.8,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "interface",
+    "key": "vfx:hit",
+    "url": "assets/interface/vfx-hit-v2.png",
+    "source": [
+      3072,
+      512
+    ],
+    "frame": [
+      512.0,
+      512.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 127.0,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "interface",
+    "key": "vfx:levelup",
+    "url": "assets/interface/vfx-levelup-v2.png",
+    "source": [
+      3072,
+      512
+    ],
+    "frame": [
+      512.0,
+      512.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 392.0,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "interface",
+    "key": "vfx:guard",
+    "url": "assets/interface/vfx-guard-v2.png",
+    "source": [
+      3072,
+      512
+    ],
+    "frame": [
+      512.0,
+      512.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 366.7,
+    "decodedMiB": 6.0
+  },
+  {
+    "group": "interface",
+    "key": "vfx:heavy-strike",
+    "url": "assets/interface/vfx-heavy-strike-v9.png",
+    "source": [
+      768,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      128,
+      128
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 4.2,
+    "decodedMiB": 0.38
+  },
+  {
+    "group": "interface",
+    "key": "region:golden-sands-map",
+    "url": "assets/interface/region-golden-sands-map-v1.png",
+    "source": [
+      960,
+      540
+    ],
+    "frame": [
+      960.0,
+      540.0
+    ],
+    "display": [
+      960,
+      540
+    ],
+    "sourcePerWorldUnit": [
+      1.0,
+      1.0
+    ],
+    "KiB": 1017.5,
+    "decodedMiB": 1.98
+  },
+  {
+    "group": "interface",
+    "key": "item:sunwell-shell",
+    "url": "assets/interface/item-sunwell-shell-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 13.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:moss-ceramic",
+    "url": "assets/interface/item-moss-ceramic-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 20.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:broken-copper-thread",
+    "url": "assets/interface/item-broken-copper-thread-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 12.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:muted-bell-fragment",
+    "url": "assets/interface/item-muted-bell-fragment-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "item:oathfarer-circlet",
+    "url": "assets/interface/item-oathfarer-circlet-v1.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 10.5,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:close",
+    "url": "assets/interface/controls/close.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.3,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:settings",
+    "url": "assets/interface/controls/settings.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 19.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:pause",
+    "url": "assets/interface/controls/pause.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 8.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:play",
+    "url": "assets/interface/controls/play.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 13.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:keyboard",
+    "url": "assets/interface/controls/keyboard.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.0,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:back",
+    "url": "assets/interface/controls/back.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.6,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:confirm",
+    "url": "assets/interface/controls/confirm.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.7,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:retry",
+    "url": "assets/interface/controls/retry.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.6,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:cloud",
+    "url": "assets/interface/controls/cloud.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 13.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:warning",
+    "url": "assets/interface/controls/warning.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:pickup",
+    "url": "assets/interface/controls/pickup.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:dialogue",
+    "url": "assets/interface/controls/dialogue.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 15.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:home",
+    "url": "assets/interface/controls/home.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 23.6,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:trade",
+    "url": "assets/interface/controls/trade.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 16.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:equip",
+    "url": "assets/interface/controls/equip.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 18.1,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:unequip",
+    "url": "assets/interface/controls/unequip.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 19.2,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:upgrade",
+    "url": "assets/interface/controls/upgrade.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:reward",
+    "url": "assets/interface/controls/reward.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 22.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:inspect",
+    "url": "assets/interface/controls/inspect.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 14.8,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:volume-on",
+    "url": "assets/interface/controls/volume-on.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 17.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:volume-off",
+    "url": "assets/interface/controls/volume-off.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 15.9,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:music",
+    "url": "assets/interface/controls/music.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 11.5,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:sfx",
+    "url": "assets/interface/controls/sfx.png",
+    "source": [
+      128,
+      128
+    ],
+    "frame": [
+      128.0,
+      128.0
+    ],
+    "display": [
+      32,
+      32
+    ],
+    "sourcePerWorldUnit": [
+      4.0,
+      4.0
+    ],
+    "KiB": 17.4,
+    "decodedMiB": 0.06
+  },
+  {
+    "group": "interface",
+    "key": "control:button-normal",
+    "url": "assets/interface/controls/button-normal.png",
+    "source": [
+      384,
+      128
+    ],
+    "frame": [
+      384.0,
+      128.0
+    ],
+    "display": [
+      192,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 60.3,
+    "decodedMiB": 0.19
+  },
+  {
+    "group": "interface",
+    "key": "control:button-hover",
+    "url": "assets/interface/controls/button-hover.png",
+    "source": [
+      384,
+      128
+    ],
+    "frame": [
+      384.0,
+      128.0
+    ],
+    "display": [
+      192,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 62.4,
+    "decodedMiB": 0.19
+  },
+  {
+    "group": "interface",
+    "key": "control:button-pressed",
+    "url": "assets/interface/controls/button-pressed.png",
+    "source": [
+      384,
+      128
+    ],
+    "frame": [
+      384.0,
+      128.0
+    ],
+    "display": [
+      192,
+      64
+    ],
+    "sourcePerWorldUnit": [
+      2.0,
+      2.0
+    ],
+    "KiB": 58.3,
+    "decodedMiB": 0.19
+  }
+]

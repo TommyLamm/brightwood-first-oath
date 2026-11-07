@@ -1,0 +1,11 @@
+npm notice run brightwood-first-oath@1.0.0-beta.61 test
+npm notice run vitest run --passWithNoTests src/render/terrain-style.test.ts
+
+ RUN  v5.0.5 C:/Users/Tommy/Desktop/brightwood-first-oath
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  16:09:28
+   Duration  853ms (transform 56%, import 25%, tests 12%, worker 7%)
+

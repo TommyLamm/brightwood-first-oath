@@ -1,0 +1,354 @@
+[
+  {
+    "url": "assets/interface/controls/back.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 14974,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/button-hover.png",
+    "width": 384,
+    "height": 128,
+    "bytes": 63902,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/button-normal.png",
+    "width": 384,
+    "height": 128,
+    "bytes": 61699,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/button-pressed.png",
+    "width": 384,
+    "height": 128,
+    "bytes": 59655,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/close.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 14614,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/cloud.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 13497,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/confirm.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 15052,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/dialogue.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 16241,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/equip.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 18506,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/home.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 24117,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/inspect.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 15186,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/keyboard.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 18397,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/music.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 11823,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/pause.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 8645,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/pickup.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 18658,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/play.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 13999,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/retry.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 19025,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/reward.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 23479,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/settings.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 20261,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/sfx.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 17853,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/trade.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 16493,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/unequip.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 19610,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/upgrade.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 15305,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/volume-off.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 16293,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/volume-on.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 17819,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/controls/warning.png",
+    "width": 128,
+    "height": 128,
+    "bytes": 18676,
+    "registered": true,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/illustrated/dexterity-training-v1.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1511741,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/illustrated/quest-journey-v1.png",
+    "width": 2172,
+    "height": 724,
+    "bytes": 3708148,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/illustrated/strength-training-v1.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 2045702,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/hero-portrait-chibi.png",
+    "width": 328,
+    "height": 300,
+    "bytes": 80089,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-backpack.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 75521,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-compass.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 79041,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-map.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 80176,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-scroll.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 49718,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-skillbook.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 60386,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/icon-tunic.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 56140,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/leather-tray.png",
+    "width": 1086,
+    "height": 362,
+    "bytes": 262225,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/parchment-panel.png",
+    "width": 1086,
+    "height": 362,
+    "bytes": 373641,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/quick-slot.png",
+    "width": 256,
+    "height": 256,
+    "bytes": 83287,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/system-button.png",
+    "width": 192,
+    "height": 192,
+    "bytes": 56029,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/journal/wooden-sign.png",
+    "width": 724,
+    "height": 241,
+    "bytes": 209200,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/region-ancient-ruins-map-v1.png",
+    "width": 960,
+    "height": 540,
+    "bytes": 1160017,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/region-frost-isles-map-v1.png",
+    "width": 960,
+    "height": 540,
+    "bytes": 1397346,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  },
+  {
+    "url": "assets/interface/world-map-background-v2.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3881052,
+    "registered": false,
+    "usageEvidence": "control-art.ts; index.ts; illustrated-panels.ts; world-map.ts; CSS (directory-level review)"
+  }
+]

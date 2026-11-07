@@ -1,0 +1,5 @@
+npm notice run brightwood-first-oath@1.0.0-beta.60 check:content
+npm notice run tsx tools/check-content.ts
+✓ rulesCatalog
+✓ worldCatalog + cross-reference validation
+內容檢查完成：rules 與 world 跨表驗證通過。
