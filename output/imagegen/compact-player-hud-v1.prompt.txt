@@ -1,0 +1,11 @@
+Generated using the built-in imagegen tool. Concept preview only.
+
+Use case: precise-object-edit / ui-mockup.
+Asset type: one polished in-game UI concept screenshot, landscape 16:9.
+Input image 1 is the edit target: an actual 1280x720 screenshot of this fantasy side-scrolling game.
+Primary request: redesign ONLY the oversized top-left player status panel into the compact layout described below. Show the full game screen so the reduced footprint is obvious in context.
+At the reference image scale, replace the existing roughly 370x135 panel with a compact approximately 270x88 panel, anchored at the same top-left margin, x18 y22. Its outer footprint should occupy about 21% of the screen width and 12% of the screen height. Restore the sky naturally in the area uncovered by the smaller panel.
+Style: preserve the existing warm parchment, dark carved wood, tiny brass corner details, crisp illustrated pixel-art aesthetic. Reduce the decorative frame to a fine 6-8px edge and reduce padding. Keep readable typography; redesign the layout rather than uniformly shrinking the old panel.
+Compact panel layout: a 44-48px head-and-shoulders crop of the SAME brown-haired hero portrait at the left. To its right: top row "Clarity QA" and "Lv.1", no occupation badge. Next row: "HP", a red full health bar, and "80/80". Next row: "MP", a blue full mana bar, and "40/40". A thin 3px golden EXP progress track spans the bottom inside edge of the panel, initially empty; no EXP caption or EXP numeric values in this compact state. Make the hierarchy clear and the HP/MP numbers easy to scan.
+Invariants: keep the entire rest of the screenshot as close to the reference as possible: identical landscape, trees, clouds, platform, hero mid-swing, three snail monsters, right portal, top-right location and quest panels, bottom skill and inventory/menu buttons. Do not enlarge, restyle, rearrange, or remove any other UI element. Preserve the full image framing. No extra character, no invented interface, no callouts, no arrows, no explanatory labels, no before-and-after split, no watermark. This is a single realistic preview of the proposed smaller player status card in the existing game.
+
