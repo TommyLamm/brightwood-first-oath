@@ -9,6 +9,7 @@ import {
   recordQuestEvent,
 } from '../src/domain/quests/index.js';
 import { validateWorld } from '../src/content/world/validate.js';
+import { classCatalog, questForPlayer } from '../src/content/world/class-quests.js';
 
 function makeSave(overrides: Partial<SaveData> = {}): SaveData {
   return {
@@ -167,5 +168,26 @@ describe('world and quest content', () => {
     const result = validateWorld(deadlocked, rulesCatalog);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.message).toContain('Quest q03 collect target is not obtainable in unlocked maps: forest-seed');
+  });
+});
+
+describe('quest views for each job', () => {
+  const catalog = { rules: rulesCatalog, world: worldCatalog };
+
+  it.each(['swordsman', 'archer', 'mage', 'rogue'] as const)('match the %s quest definitions from either catalog', (job) => {
+    const data = makeSave();
+    data.player = { ...data.player, plannedJob: job };
+    for (const questId of Object.keys(worldCatalog.quests)) {
+      const quest = questForPlayer(worldCatalog.quests[questId]!, data.player, rulesCatalog.items);
+      const view = getQuestView(data, questId, catalog);
+      expect(view).toEqual(getQuestView(data, questId, classCatalog(catalog, data.player)));
+      expect(view).toMatchObject({ title: quest.name, giverNpcId: quest.giverNpcId, turnInNpcId: quest.turnInNpcId, reward: quest.reward });
+      expect(view.objectives.map(({ type, targetId, required }) => ({ type, targetId, count: required }))).toEqual(
+        quest.objectives.map(({ type, targetId, count }) => ({ type, targetId, count })));
+    }
+  });
+
+  it('still rejects an unknown quest', () => {
+    expect(() => getQuestView(makeSave(), 'no-such-quest', catalog)).toThrow(RangeError);
   });
 });

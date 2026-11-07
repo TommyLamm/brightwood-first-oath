@@ -9,7 +9,7 @@ import type {
   Result,
   SaveData,
 } from '../../contracts/index.js';
-import { questForPlayer } from '../../content/world/class-quests.js';
+import { classCatalog, questForPlayer } from '../../content/world/class-quests.js';
 
 export type QuestEvent =
   | { type: 'reached'; mapId: Id }
@@ -77,8 +77,8 @@ function isReady(data: SaveData, questId: Id, quest: QuestDef, catalog: ContentC
 }
 
 export function getQuestView(data: SaveData, questId: Id, catalog: ContentCatalog): QuestView {
-  const base = catalog.world.quests[questId];
-  const quest = base ? questForPlayer(base, data.player, catalog.rules.items) : undefined;
+  // The UI builds this for every quest on every update, so use the job's cached quests.
+  const quest = classCatalog(catalog, data.player).world.quests[questId];
   if (!quest) throw new RangeError(`Unknown quest ID: ${questId}`);
 
   const state = data.quests[questId];
