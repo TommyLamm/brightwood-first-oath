@@ -10,6 +10,7 @@ import { backgroundImageKey } from './background-style.js';
 import { ParallaxMotion } from './parallax-motion.js';
 import {
   claimVisualEventPlayback,
+  prunePlayedVisualEventIds,
   pickAnimationFrame,
   pickSkillEffectFrame,
   selectHeroAnimation,
@@ -1292,6 +1293,7 @@ export function createWorldRenderer(
     }
 
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
+    prunePlayedVisualEventIds(playedVisualEventIds, snapshot.effects);
     pruneEvents(snapshot.nowMs);
     actorsLayer.sort('depth');
     updateCamera(snapshot, playerSprite);

@@ -109,6 +109,22 @@ export function claimVisualEventPlayback(eventId: string, playedEventIds: Set<st
   return true;
 }
 
+/**
+ * Forgets played ids that left the snapshot. Safe because entity ids are never reused
+ * and gameplay never re-adds an effect it already dropped; ids still in the snapshot are kept
+ * so they cannot replay.
+ */
+export function prunePlayedVisualEventIds(
+  playedEventIds: Set<string>,
+  currentEvents: readonly Pick<VisualEvent, 'id'>[],
+): void {
+  // Runs every frame. Current events are normally all played by now, so equal sizes mean nothing left;
+  // an unplayed event only delays pruning, and the set still stays no larger than the snapshot.
+  if (playedEventIds.size <= currentEvents.length) return;
+  const current = new Set(currentEvents.map(({ id }) => id));
+  for (const id of playedEventIds) if (!current.has(id)) playedEventIds.delete(id);
+}
+
 /** Resolves only canonical event effects; callers may supply a content-defined override. */
 export function visualEventEffectKey(
   event: Pick<VisualEvent, 'kind' | 'key'>,

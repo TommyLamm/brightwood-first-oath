@@ -34,6 +34,7 @@ import { AIM_TIME_MS, bowPassiveBonus, canStartRetreat, stepRetreat, type Retrea
 import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '../content/world/class-quests.js';
 import { deriveActiveGuard } from './guard-status.js';
 
+const MAX_ACTIVE_EFFECTS = 80;
 const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
 const INSPECT_TARGETS = {
@@ -413,12 +414,20 @@ export function stepGameplay(
         if (objective) gameplay.saveData.quests = recordQuestEvent(gameplay.saveData.quests,
           { type: 'inspected', targetId: objective }, catalog.world, gameplay.saveData.player);
         const placement = map.npcs.find(({ npcId }) => npcId === targetId);
-        if (placement) gameplay.effects.push({ id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs });
+        if (placement) pushEffect(gameplay, { id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs });
         continue;
       }
       const placement = map.npcs.find(({ npcId }) => npcId === targetId);
-      if (placement) gameplay.effects.push({ id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs, projectile: true });
-      if (placement && effectiveJob(gameplay.saveData.player) === 'mage') gameplay.effects[gameplay.effects.length-1]!.magic = true;
+      if (placement) {
+        pushEffect(gameplay, {
+          id: input.nextEntityId(),
+          kind: 'hit',
+          position: { x: placement.x, y: placement.y - 24 },
+          atMs: input.nowMs,
+          projectile: true,
+          ...(effectiveJob(gameplay.saveData.player) === 'mage' ? { magic: true } : {}),
+        });
+      }
       const before = gameplay.saveData;
       gameplay.saveData = { ...before, quests: recordQuestEvent(before.quests, { type: 'inspected', targetId }, catalog.world, before.player) };
       if (JSON.stringify(before.quests) !== JSON.stringify(gameplay.saveData.quests)) {
@@ -1415,7 +1424,7 @@ function addEffect(
   nextEntityId: () => EntityId,
   critical = false,
 ): void {
-  gameplay.effects.push({
+  pushEffect(gameplay, {
     id: nextEntityId(),
     kind,
     position: gameplay.monsters.find(({ id }) => id === sourceId)?.movement.position
@@ -1424,7 +1433,12 @@ function addEffect(
     ...(critical ? { critical: true } : {}),
     atMs,
   });
-  if (gameplay.effects.length > 80) gameplay.effects.splice(0, gameplay.effects.length - 80);
+}
+
+/** Keeps only the newest MAX_ACTIVE_EFFECTS effects; every effect source must go through here. */
+function pushEffect(gameplay: GameplayState, effect: VisualEvent): void {
+  gameplay.effects.push(effect);
+  if (gameplay.effects.length > MAX_ACTIVE_EFFECTS) gameplay.effects.splice(0, gameplay.effects.length - MAX_ACTIVE_EFFECTS);
 }
 
 /** Claiming used to change EXP, coins and the bag silently; spell out what the hero just received. */

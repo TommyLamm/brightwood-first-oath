@@ -4,6 +4,7 @@ import {
   claimVisualEventPlayback,
   pickAnimationFrame,
   pickSkillEffectFrame,
+  prunePlayedVisualEventIds,
   selectHeroAnimation,
   selectMonsterAnimation,
   skillAnimationDuration,
@@ -91,6 +92,21 @@ describe('visual event playback', () => {
     expect(claimVisualEventPlayback('event-1', playedIds)).toBe(false);
     expect(claimVisualEventPlayback('event-2', playedIds)).toBe(true);
     expect(playedIds.size).toBe(2);
+  });
+
+  it('prunes played ids that left the snapshot but keeps live ones from replaying', () => {
+    const playedIds = new Set<string>();
+    for (const id of ['e1', 'e2', 'e3']) claimVisualEventPlayback(id, playedIds);
+
+    prunePlayedVisualEventIds(playedIds, [{ id: 'e2' }, { id: 'e3' }]);
+
+    expect([...playedIds].sort()).toEqual(['e2', 'e3']);
+    expect(claimVisualEventPlayback('e3', playedIds)).toBe(false);
+    expect(claimVisualEventPlayback('e4', playedIds)).toBe(true);
+    prunePlayedVisualEventIds(playedIds, [{ id: 'e3' }, { id: 'e4' }]);
+    expect([...playedIds].sort()).toEqual(['e3', 'e4']);
+    prunePlayedVisualEventIds(playedIds, []);
+    expect(playedIds.size).toBe(0);
   });
 
   it('uses the event key or the matching delivered VFX for common visual events', () => {
