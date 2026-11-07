@@ -1,0 +1,137 @@
+{
+  "method": "equal AP 80/20, SP primary/area/passive, equal weapon tier; expected critical damage; stationary cooldown limited; excludes flight/position/interruption/potion time",
+  "rows": [
+    {
+      "level": 10,
+      "job": "swordsman",
+      "ap": 45,
+      "sp": 1,
+      "allocation": {
+        "main": 36,
+        "secondary": 9,
+        "primary": 1,
+        "area": 0,
+        "passive": 0
+      },
+      "maxHp": 260,
+      "maxMp": 58,
+      "attack": 120,
+      "defense": 5,
+      "critChance": 0.052000000000000005,
+      "basicDps": 222,
+      "singleSkillDps": 244.7,
+      "threeTargetDps": null,
+      "singleMpPerSecond": 9.2
+    },
+    {
+      "level": 10,
+      "job": "archer",
+      "ap": 45,
+      "sp": 1,
+      "allocation": {
+        "main": 36,
+        "secondary": 9,
+        "primary": 1,
+        "area": 0,
+        "passive": 0
+      },
+      "maxHp": 190,
+      "maxMp": 75,
+      "attack": 120,
+      "defense": 5,
+      "critChance": 0.12200000000000001,
+      "basicDps": 194.3,
+      "singleSkillDps": 222.3,
+      "threeTargetDps": null,
+      "singleMpPerSecond": 7.1
+    },
+    {
+      "level": 20,
+      "job": "swordsman",
+      "ap": 95,
+      "sp": 11,
+      "allocation": {
+        "main": 76,
+        "secondary": 19,
+        "primary": 10,
+        "area": 1,
+        "passive": 0
+      },
+      "maxHp": 480,
+      "maxMp": 78,
+      "attack": 222,
+      "defense": 12,
+      "critChance": 0.092,
+      "basicDps": 413.1,
+      "singleSkillDps": 713.4,
+      "threeTargetDps": 639.2,
+      "singleMpPerSecond": 9.2
+    },
+    {
+      "level": 20,
+      "job": "archer",
+      "ap": 95,
+      "sp": 11,
+      "allocation": {
+        "main": 76,
+        "secondary": 19,
+        "primary": 10,
+        "area": 1,
+        "passive": 0
+      },
+      "maxHp": 350,
+      "maxMp": 105,
+      "attack": 222,
+      "defense": 12,
+      "critChance": 0.182,
+      "basicDps": 364.9,
+      "singleSkillDps": 594.5,
+      "threeTargetDps": 639.6,
+      "singleMpPerSecond": 7.1
+    },
+    {
+      "level": 30,
+      "job": "swordsman",
+      "ap": 145,
+      "sp": 21,
+      "allocation": {
+        "main": 116,
+        "secondary": 29,
+        "primary": 10,
+        "area": 10,
+        "passive": 1
+      },
+      "maxHp": 712,
+      "maxMp": 98,
+      "attack": 338,
+      "defense": 22,
+      "critChance": 0.132,
+      "basicDps": 636.9,
+      "singleSkillDps": 1103.3,
+      "threeTargetDps": 1665.8,
+      "singleMpPerSecond": 9.2
+    },
+    {
+      "level": 30,
+      "job": "archer",
+      "ap": 145,
+      "sp": 21,
+      "allocation": {
+        "main": 116,
+        "secondary": 29,
+        "primary": 10,
+        "area": 10,
+        "passive": 1
+      },
+      "maxHp": 510,
+      "maxMp": 135,
+      "attack": 341.38,
+      "defense": 22,
+      "critChance": 0.242,
+      "basicDps": 572.9,
+      "singleSkillDps": 934.2,
+      "threeTargetDps": 1570.8,
+      "singleMpPerSecond": 7.1
+    }
+  ]
+}

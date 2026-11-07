@@ -1,0 +1,27 @@
+[
+  {
+    "key": "mage-cast",
+    "seconds": 0.22,
+    "peak": 7336
+  },
+  {
+    "key": "mage-bolt",
+    "seconds": 0.28,
+    "peak": 11626
+  },
+  {
+    "key": "mage-frost",
+    "seconds": 0.5,
+    "peak": 10362
+  },
+  {
+    "key": "mage-blink",
+    "seconds": 0.24,
+    "peak": 9234
+  },
+  {
+    "key": "mage-hit",
+    "seconds": 0.18,
+    "peak": 10362
+  }
+]

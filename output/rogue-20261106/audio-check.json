@@ -1,0 +1,26 @@
+[
+  {
+    "key": "rogue-slash",
+    "channels": 1,
+    "sampleRate": 48000,
+    "bits": 16,
+    "frames": 5760,
+    "peak": 9235
+  },
+  {
+    "key": "rogue-lunge",
+    "channels": 1,
+    "sampleRate": 48000,
+    "bits": 16,
+    "frames": 12480,
+    "peak": 9235
+  },
+  {
+    "key": "rogue-smoke",
+    "channels": 1,
+    "sampleRate": 48000,
+    "bits": 16,
+    "frames": 24000,
+    "peak": 7335
+  }
+]
