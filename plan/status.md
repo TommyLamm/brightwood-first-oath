@@ -3,6 +3,24 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
+2026-11-07，多職業補完 **Plan54實作完成／本機候選beta.89／LOCAL_ACCEPTANCE_PARTIAL**。依使用者採用Lv20二轉方案完成八分支／各一分支技、LUK、影刃毒傷／背擊、飛鏢、盜賊三裝束動作／肖像、改名／刪除恢復／六欄及24格共享倉庫。詳[Plan54](54-class-completion.md)與[最終交接](reports/class-completion-beta89-20261107.md)。format9讀1–9／寫9，beta.88及更舊不能讀9，回退需相容修正版。71個不同直接相關案例分批通過，最終型別／build、規則內容與固定tools1.2.0完整ZIP驗證通過；合成角色管理／二轉／LUK／重載／iframe短段已驗，完整主線／八分支平衡／正式雲端未驗。候選157,006,172bytes／461entries，SHA256見交接。自有browser／兩port已清，沒有派工或排程，未發布；本輪完成後停止。
+
+以下盜賊beta.88及更早內容保留為歷史，不取代上方目前狀態。
+
+2026-11-07，盜賊 **53-12實作完成／本機候選beta.88／LOCAL_ACCEPTANCE_PARTIAL**。[小Plan索引](class-expansion/README.md)與[盜賊交接](reports/rogue-beta88-20261107.md)包含DEX／STR短刃、三主動兩被動、夜嵐轉職試煉、六階武器、20張PNG／三音效、格式8及實際檢查。讀1–8／寫8；beta.87及更舊不能讀8，回退需相容修正版。正常q01／q02、學連刺、保存重載、Lv14合成影步／煙幕及iframe短段已驗；focused、型別／內容、build及固定tools1.2.0完整ZIP驗證通過。最終game.zip 156,824,250bytes／457entries，SHA256見交接。完整主線／首領全場、正式雲端、全螢幕及完整平衡未驗。browser／專屬server已清，沒有派工／排程，未發布；本輪完成後停止。
+
+以下法師beta.87及更早內容保留為歷史，不取代上方目前狀態。
+
+2026-11-06，法師 **53-11五個小Plan完成／本機候選beta.87／LOCAL_ACCEPTANCE_PARTIAL，測試後停止**。[小Plan索引](class-expansion/README.md)與[法師交接](reports/mage-beta87-20261106.md)包含INT、格式7、三主動／兩被動、六階法杖、素材與實際檢查。讀1–7／寫7；beta.85／86不能讀7，回退需相容修正版。正常q01／q02、學魔力彈、INT分配、兩角色保存重載／切換及本機iframe短段已驗，霜環／閃現另用明確合成Lv14驗證。相關focused、型別／內容、build及固定tools1.2.0完整ZIP驗證通過；156,518,025bytes／434files，SHA256見交接。完整主線、四首領全場、正式平台雲端及完整平衡未驗；自有browser／server已關閉。未發布，盜賊未啟動，沒有派工或排程。
+
+以下弓箭手beta.86及更早內容保留為歷史，不取代上方目前狀態。
+
+2026-11-06，職業擴充弓箭手一期 **53-01至53-10完成／本機候選beta.86／LOCAL_ACCEPTANCE_PARTIAL**。[小Plan索引](class-expansion/README.md)與[候選交接](reports/class-expansion-beta86-20261106.md)列出程式、四角色format6、素材、檢查及未驗範圍。正常q01／q02轉職、學技、保存重載、劍／弓切換與兩種視窗已驗；四區fixture及本機跨來源iframe短段已記錄。focused／型別／內容、build及固定tools1.2.0完整ZIP驗證通過。game.zip 155,973,875bytes，SHA256見交接。正式雲端、完整q01–q19／四首領全場與全螢幕未驗；已發布beta.85不能讀6。已正常關閉本輪browser／server，沒有派工或排程，未發布；法師／盜賊保留後續。
+
+2026-11-06（歷史），職業擴充曾依使用者「完成測試暫時停下」暫停；當時53-01完成、44個focused案例與型別／內容檢查通過，beta.85／讀1–5寫5。後續「繼續」已恢復本次工作，歷史暫停不再生效。
+
+2026-11-06，依使用者「把你的想法全部寫入Plan，要詳細」完成 [Plan53・職業擴充詳細計畫](53-class-expansion-roadmap.md)，當時為 **PLAN_READY／僅規劃**。弓箭手一期與法師／盜賊後續的技能、四區成長、多角色、遷移、美術、工作包及驗收均已記錄；當時未改遊戲／版本／存檔或發布。
+
 2026-11-06 07:36 HKT，使用者另行要求建立 Release，**beta.85 已發布為 GitHub prerelease**：[v1.0.0-beta.85](https://github.com/TommyLamm/brightwood-first-oath/releases/tag/v1.0.0-beta.85)。唯一 game.zip 155,498,528 bytes；Actions success、完整 ZIP 驗證成功，已下載核對 SHA-256 與 GitHub digest 一致，有限文字掃描 0 findings。只推送新不可變 tag，未推 main／其他分支或平台上架；未重跑全回歸／browser。詳 [發布報告](reports/release-beta85-20261106.md)。下方 05:52「未發布」記錄屬當時夜間收尾狀態。
 
 2026-11-06 05:52 HKT，夜間改善**已收尾停止**，最終本機 **1.0.0-beta.85**／dist 已建置。05:50 觸發後只收完既有操作說明項；版本／manifest 一致性及 build 通過，沿用 beta.84 的 3 focused／typecheck，不重跑未改範圍。兩個一次性排程已刪除，未發布、未最終 ZIP、未全回歸或新 browser，原存檔與 dirty 保留。沒有本次待處理的已知失敗。詳 [最終交接](reports/night-final-20261106.md)及[結果索引](night-improvements-20261106.md)。下方持續至05:50等文字均為歷史狀態。
