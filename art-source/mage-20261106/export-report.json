@@ -1,0 +1,218 @@
+[
+  {
+    "key": "actor:mage-cloth",
+    "url": "assets/actors/mage-cloth-cast-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "95b8d009dbc0c6b923267093fd2bf32fdec97330fcaf970553564b167cc94649"
+  },
+  {
+    "key": "actor:mage-leather",
+    "url": "assets/actors/mage-leather-cast-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "45717a5d31f80a9f8b80c34184af65e27ed7f2ad66ec46adca619e9f66bebe64"
+  },
+  {
+    "key": "actor:mage-iron",
+    "url": "assets/actors/mage-iron-cast-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "6674dfa7c11df66c945a3e3d66de2f78807bb08a838c88658598385224f56967"
+  },
+  {
+    "key": "equip:starter-staff",
+    "url": "assets/actors/equip-starter-staff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "4075183f9d9315c788460f91f19248255f26960c3f688421c80cb034c7677e81"
+  },
+  {
+    "key": "item:starter-staff",
+    "url": "assets/interface/item-starter-staff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "b5bd22ec2010930b7575ff4c4d903dc4fed9d03d3e6cb656b8cd9ec02e5bfcbb"
+  },
+  {
+    "key": "equip:iron-staff",
+    "url": "assets/actors/equip-iron-staff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "d2ed3ac6961071636757981cffd33fea388176c10001f1933660151fa8e1a5b6"
+  },
+  {
+    "key": "item:iron-staff",
+    "url": "assets/interface/item-iron-staff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "6797d0af9e508709ae16a8f518f881bbe2ba4eccad7647677a18f21d827caef2"
+  },
+  {
+    "key": "equip:steel-staff",
+    "url": "assets/actors/equip-steel-staff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "611e51d5e9ae30be25b70fe0b62d8e7c0ba0b611718f4c344ed978eb36584844"
+  },
+  {
+    "key": "item:steel-staff",
+    "url": "assets/interface/item-steel-staff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "116f37a233d384a52d331b45f403d40cb114834601636777896fee62976347ee"
+  },
+  {
+    "key": "equip:guardian-staff",
+    "url": "assets/actors/equip-guardian-staff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "28c1c157ddb791b3fba0a6748d4246ac8d31981ec0020e704624d258be4af82c"
+  },
+  {
+    "key": "item:guardian-staff",
+    "url": "assets/interface/item-guardian-staff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "343ef9bf56e48d9e037ca7006f5db43412f410a59e9fe85e05dd09aeda5e2d47"
+  },
+  {
+    "key": "equip:frost-tide-staff",
+    "url": "assets/actors/equip-frost-tide-staff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "ed6d004021de4a790f8eaf153e191b04cefac161898da06e5c9b6a9f35b4edad"
+  },
+  {
+    "key": "item:frost-tide-staff",
+    "url": "assets/interface/item-frost-tide-staff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "dbd93c8f46b8cbea5dfaf5b84771d9de13c7dd80fb8c408ad7d3d891cfd9f28d"
+  },
+  {
+    "key": "equip:sunwell-oathstaff",
+    "url": "assets/actors/equip-sunwell-oathstaff-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "1603a31a8107816f58c7fdb84b402c37137ca2d350300d45590a4151a15885e6"
+  },
+  {
+    "key": "item:sunwell-oathstaff",
+    "url": "assets/interface/item-sunwell-oathstaff-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "a20cc92ceaf761cc9bde64c9ab1b5f1e9055a16a1a3b536398f4ca5ffd7f3e68"
+  },
+  {
+    "key": "skill:wand-basic",
+    "url": "assets/interface/skill-wand-basic-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "2631d4766e80be7fd88664d22bc1405e2e2586e0346591a98727dd5af226388f"
+  },
+  {
+    "key": "skill:mage-mana-bolt",
+    "url": "assets/interface/skill-mage-mana-bolt-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "6616c52237af91e41b97a0e29be6025c78fd9f3e8da1749caf449d40286dfa2c"
+  },
+  {
+    "key": "skill:mage-frost-ring",
+    "url": "assets/interface/skill-mage-frost-ring-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "b3ee8a452f39a01726f2829cd556252dcaf66c21f6de5120f444a4e87988c2ea"
+  },
+  {
+    "key": "skill:mage-blink",
+    "url": "assets/interface/skill-mage-blink-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "46662cb9515c5360656c13c0cb8c21b82ef4a134676c486a392fefae46851b31"
+  },
+  {
+    "key": "skill:mage-mana-affinity",
+    "url": "assets/interface/skill-mage-mana-affinity-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "c661b0da40fca2ef8e94146e26b1884ca64e20e56e119c72a461a2dc42e85fe4"
+  },
+  {
+    "key": "skill:mage-rune-study",
+    "url": "assets/interface/skill-mage-rune-study-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "cda13338f02de300d691a496a98048764bd02f12056d3844bb4b07f2e69491e2"
+  },
+  {
+    "key": "actor:mage-mentor",
+    "url": "assets/actors/mage-mentor-v1.png",
+    "size": [
+      128,
+      160
+    ],
+    "sha256": "7d67ff896ab1c0e681f14224885f615e3247ccfb1e37111a942614e6ac829b89"
+  },
+  {
+    "key": "portrait:mage-mentor",
+    "url": "assets/interface/portrait-mage-mentor-v1.png",
+    "size": [
+      167,
+      192
+    ],
+    "sha256": "5341c12fb8fe6d577d88ec836a81e30b5ea67747cf9ef176db03e3a813fb92fd"
+  },
+  {
+    "key": "portrait:mage",
+    "url": "assets/interface/portrait-mage-v1.png",
+    "size": [
+      192,
+      192
+    ],
+    "sha256": "568aec9fefbdf7c7afe30717f112d66ae637026a9b50d08ffe8d7885c5579188"
+  }
+]
