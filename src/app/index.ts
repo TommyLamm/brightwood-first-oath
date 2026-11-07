@@ -22,8 +22,8 @@ export { applyPanelCommand, escCommandForPanels, isWorldFrozen } from './panels.
 export type { AppPanelState } from './panels.js';
 export { createAppScenes } from './scenes.js';
 export type { AppStatusReporter } from './scenes.js';
-export { createAppUi, createRootStatusView } from './root-ui.js';
-export type { AppUiController, RootStatusView } from './root-ui.js';
+export { createRootStatusView } from './root-ui.js';
+export type { RootStatusView } from './root-ui.js';
 export { appCommand, createInitialAppState, worldIsFrozen } from './state.js';
 export { createUiSnapshot } from './state.js';
 export type { AppCommandResult, GameAppState, StartupStatus } from './state.js';
