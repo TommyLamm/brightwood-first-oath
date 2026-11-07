@@ -1,6 +1,6 @@
 # 經典劍士冒險：多代理實作交接索引
 
-唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。[Plan54多職業補完](54-class-completion.md)已完成Lv20八分支、LUK、盜賊素材、角色管理／六欄及共享倉庫；目前beta.89／讀1–9寫9，詳[補完交接](reports/class-completion-beta89-20261107.md)。71個不同focused案例分批通過，有限無頭短段與最終ZIP驗證完成；完整主線／八分支平衡及正式雲端未驗，未發布。Plan53及以下較舊記錄為歷史。
+唯一當前入口：[狀態、候選與已驗／未驗界線](status.md#current-state)。最新：[Plan55・beta.89審查修復](55-review-fixes-beta89.md)八項已提交於分支`fix/beta89-review-fixes`，未推送未發布。[Plan54多職業補完](54-class-completion.md)已完成Lv20八分支、LUK、盜賊素材、角色管理／六欄及共享倉庫；目前beta.89／讀1–9寫9，詳[補完交接](reports/class-completion-beta89-20261107.md)。71個不同focused案例分批通過，有限無頭短段與最終ZIP驗證完成；完整主線／八分支平衡及正式雲端未驗，未發布。Plan53及以下較舊記錄為歷史。
 
 ## 階段歷史（以下「最新」均指記錄當時）
 

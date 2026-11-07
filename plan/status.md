@@ -3,6 +3,10 @@
 <a id="current-state"></a>
 ## 當前狀態（唯一全局入口）
 
+2026-11-07，**Plan55・beta.89審查修復完成／分支`fix/beta89-review-fixes`／未推送未發布**。[Plan55](55-review-fixes-beta89.md)八項均已提交：舊分頁不可覆寫新進度（新狀態`localConflict`）、清理壞檔綁定確認內容、SDK失敗可重試、預覽每次保存後重讀revision、訓練靶特效上限、刪除舊UI、背包／金幣上限收斂、每步UI通知由2次減為1次。版本與存檔格式不變（beta.89／讀1–9寫9）。typecheck、93檔648例、內容檢查、build通過，無頭Chrome兩分頁實測與四情境效能前後量測完成；真實平台預覽、Firefox／Safari、真實手機、跨來源iframe及ZIP驗證未做。
+
+以下全量回歸及更早內容保留為歷史，不取代本段。
+
 2026-11-07，全量回歸修復完成：歷史存檔fixture、現行格式／六欄／職業內容與提示斷言已更新，休息回血同時驗證正dt恢復及dt0凍結。原失敗16檔171案例通過後，最終**91檔／616案例全過，0失敗、0跳過**。詳[初次測試](reports/full-test-beta89-20261107.md)與[修復交接](reports/full-test-repair-beta89-20261107.md)。僅測試與文件變更，beta.89來源／候選／format9不變；沿用同日型別／內容／build／ZIP通過結果，未重啟browser，完整主線／八分支平衡／正式雲端仍未驗，未發布。
 
 2026-11-07，多職業補完 **Plan54實作完成／本機候選beta.89／LOCAL_ACCEPTANCE_PARTIAL**。依使用者採用Lv20二轉方案完成八分支／各一分支技、LUK、影刃毒傷／背擊、飛鏢、盜賊三裝束動作／肖像、改名／刪除恢復／六欄及24格共享倉庫。詳[Plan54](54-class-completion.md)與[最終交接](reports/class-completion-beta89-20261107.md)。format9讀1–9／寫9，beta.88及更舊不能讀9，回退需相容修正版。71個不同直接相關案例分批通過，最終型別／build、規則內容與固定tools1.2.0完整ZIP驗證通過；合成角色管理／二轉／LUK／重載／iframe短段已驗，完整主線／八分支平衡／正式雲端未驗。候選157,006,172bytes／461entries，SHA256見交接。自有browser／兩port已清，沒有派工或排程，未發布；本輪完成後停止。
