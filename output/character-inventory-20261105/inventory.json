@@ -1,0 +1,3404 @@
+{
+  "game": {
+    "schemaVersion": 2,
+    "id": "brightwood-first-oath",
+    "name": "Brightwood: First Oath",
+    "version": "1.0.0-beta.58",
+    "description": "踏上劍士之路：探索木葉世界、霜雪航標支線、黃金沙海日井支線，並調查遠古遺跡的潮痕營站、盤根石道、回聲長廊與誓鐘內殿。",
+    "author": "TommyLamm",
+    "entry": "index.html",
+    "cover": "cover.png",
+    "tags": [
+      "冒險",
+      "動作",
+      "角色扮演"
+    ],
+    "instructions": "方向鍵移動與爬梯，左 Alt 跳躍；左 Ctrl 普攻、1–3 技能皆點按施放，長按不連發；Z 撿拾，Space 互動，Q/W 使用藥水；I/E/K/C/J/M 開啟資訊面板，Esc 關閉面板或暫停。",
+    "devices": [
+      "desktop"
+    ],
+    "cloudSave": {
+      "readableFormats": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "writeFormat": 5
+    }
+  },
+  "generated": "2026-11-05",
+  "method": "Current source catalogs and runtime actor manifest; idle frames, no live browser capture.",
+  "actors": [
+    {
+      "id": "cloth-shirt",
+      "name": "旅行布衣",
+      "category": "hero",
+      "locations": [
+        "所有地圖"
+      ],
+      "image": {
+        "key": "actor:hero-cloth",
+        "url": "assets/actors/hero-cloth-v9.png",
+        "columns": 8,
+        "rows": 8,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "hero:cloth:idle",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "frameMs": [
+            180,
+            180,
+            180,
+            180
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:cloth:walk",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:cloth:jump",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            16,
+            17
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:cloth:climb",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:cloth:attack",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ],
+          "frameMs": [
+            60,
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:cloth:hurt",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            40,
+            41
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:cloth:dead",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            48,
+            49,
+            50,
+            51
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:cloth:buff",
+          "imageKey": "actor:hero-cloth",
+          "frames": [
+            56,
+            57,
+            58,
+            59
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1024,
+        1024
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        50,
+        84
+      ],
+      "idleVisibleDisplay": [
+        37.5,
+        63.0
+      ]
+    },
+    {
+      "id": "leather-vest",
+      "name": "輕革甲",
+      "category": "hero",
+      "locations": [
+        "所有地圖"
+      ],
+      "image": {
+        "key": "actor:hero-leather",
+        "url": "assets/actors/hero-leather-v9.png",
+        "columns": 8,
+        "rows": 8,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "hero:leather:idle",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "frameMs": [
+            180,
+            180,
+            180,
+            180
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:leather:walk",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:leather:jump",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            16,
+            17
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:leather:climb",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:leather:attack",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ],
+          "frameMs": [
+            60,
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:leather:hurt",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            40,
+            41
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:leather:dead",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            48,
+            49,
+            50,
+            51
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:leather:buff",
+          "imageKey": "actor:hero-leather",
+          "frames": [
+            56,
+            57,
+            58,
+            59
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1024,
+        1024
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        61,
+        89
+      ],
+      "idleVisibleDisplay": [
+        45.8,
+        66.8
+      ]
+    },
+    {
+      "id": "iron-mail",
+      "name": "鐵環甲",
+      "category": "hero",
+      "locations": [
+        "所有地圖"
+      ],
+      "image": {
+        "key": "actor:hero-iron",
+        "url": "assets/actors/hero-iron-v9.png",
+        "columns": 8,
+        "rows": 8,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "hero:iron:idle",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "frameMs": [
+            180,
+            180,
+            180,
+            180
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:iron:walk",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:iron:jump",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            16,
+            17
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:iron:climb",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "hero:iron:attack",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ],
+          "frameMs": [
+            60,
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:iron:hurt",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            40,
+            41
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:iron:dead",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            48,
+            49,
+            50,
+            51
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": false
+        },
+        {
+          "key": "hero:iron:buff",
+          "imageKey": "actor:hero-iron",
+          "frames": [
+            56,
+            57,
+            58,
+            59
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1024,
+        1024
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        46,
+        87
+      ],
+      "idleVisibleDisplay": [
+        34.5,
+        65.2
+      ]
+    },
+    {
+      "id": "guide",
+      "name": "森芽",
+      "category": "npc",
+      "locations": [
+        "晨光營地"
+      ],
+      "image": {
+        "key": "actor:guide",
+        "url": "assets/actors/npcs/guide-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:guide:idle",
+          "imageKey": "actor:guide",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        768,
+        384
+      ],
+      "sourceFrame": [
+        384,
+        384
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        163,
+        351
+      ],
+      "idleVisibleDisplay": [
+        40.8,
+        87.8
+      ]
+    },
+    {
+      "id": "mentor",
+      "name": "岩嶺教官",
+      "category": "npc",
+      "locations": [
+        "木葉鎮"
+      ],
+      "image": {
+        "key": "actor:mentor",
+        "url": "assets/actors/npcs/mentor-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:mentor:idle",
+          "imageKey": "actor:mentor",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        768,
+        384
+      ],
+      "sourceFrame": [
+        384,
+        384
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        168,
+        365
+      ],
+      "idleVisibleDisplay": [
+        42.0,
+        91.2
+      ]
+    },
+    {
+      "id": "merchant",
+      "name": "木葉商人",
+      "category": "npc",
+      "locations": [
+        "木葉鎮"
+      ],
+      "image": {
+        "key": "actor:merchant",
+        "url": "assets/actors/npcs/merchant-idle-v3.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:merchant:idle",
+          "imageKey": "actor:merchant",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        768,
+        384
+      ],
+      "sourceFrame": [
+        384,
+        384
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        174,
+        366
+      ],
+      "idleVisibleDisplay": [
+        43.5,
+        91.5
+      ]
+    },
+    {
+      "id": "healer",
+      "name": "晨露",
+      "category": "npc",
+      "locations": [
+        "木葉鎮"
+      ],
+      "image": {
+        "key": "actor:healer",
+        "url": "assets/actors/npcs/healer-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:healer:idle",
+          "imageKey": "actor:healer",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        768,
+        384
+      ],
+      "sourceFrame": [
+        384,
+        384
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        152,
+        353
+      ],
+      "idleVisibleDisplay": [
+        38.0,
+        88.2
+      ]
+    },
+    {
+      "id": "keeper",
+      "name": "礦道守望者",
+      "category": "npc",
+      "locations": [
+        "赤岩山徑"
+      ],
+      "image": {
+        "key": "actor:keeper",
+        "url": "assets/actors/npcs/keeper-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:keeper:idle",
+          "imageKey": "actor:keeper",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        768,
+        384
+      ],
+      "sourceFrame": [
+        384,
+        384
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        158,
+        367
+      ],
+      "idleVisibleDisplay": [
+        39.5,
+        91.8
+      ]
+    },
+    {
+      "id": "frost-guide",
+      "name": "雪芽",
+      "category": "npc",
+      "locations": [
+        "雪痕海岸"
+      ],
+      "image": {
+        "key": "actor:frost-guide",
+        "url": "assets/actors/npcs/frost-guide-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:frost-guide:idle",
+          "imageKey": "actor:frost-guide",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        1774,
+        887
+      ],
+      "sourceFrame": [
+        887,
+        887
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        367,
+        757
+      ],
+      "idleVisibleDisplay": [
+        39.7,
+        81.9
+      ]
+    },
+    {
+      "id": "sands-guide",
+      "name": "琉砂",
+      "category": "npc",
+      "locations": [
+        "琥珀砂岸"
+      ],
+      "image": {
+        "key": "actor:sands-guide",
+        "url": "assets/actors/npcs/sands-guide-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:sands-guide:idle",
+          "imageKey": "actor:sands-guide",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        256,
+        128
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        57,
+        103
+      ],
+      "idleVisibleDisplay": [
+        42.8,
+        77.2
+      ]
+    },
+    {
+      "id": "ruins-archivist",
+      "name": "芷衡",
+      "category": "npc",
+      "locations": [
+        "潮痕營站"
+      ],
+      "image": {
+        "key": "actor:ruins-archivist",
+        "url": "assets/actors/npc-ruins-archivist-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-archivist:idle",
+          "imageKey": "actor:ruins-archivist",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        96
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        43,
+        90
+      ],
+      "idleVisibleDisplay": [
+        43.0,
+        90.0
+      ]
+    },
+    {
+      "id": "ruins-medic",
+      "name": "青禾",
+      "category": "npc",
+      "locations": [
+        "潮痕營站"
+      ],
+      "image": {
+        "key": "actor:ruins-medic",
+        "url": "assets/actors/npc-ruins-medic-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-medic:idle",
+          "imageKey": "actor:ruins-medic",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        96
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        36,
+        90
+      ],
+      "idleVisibleDisplay": [
+        36.0,
+        90.0
+      ]
+    },
+    {
+      "id": "ruins-pathfinder",
+      "name": "行舟",
+      "category": "npc",
+      "locations": [
+        "回聲長廊"
+      ],
+      "image": {
+        "key": "actor:ruins-pathfinder",
+        "url": "assets/actors/npcs/ruins-pathfinder-idle-v1.png",
+        "columns": 2,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-pathfinder:idle",
+          "imageKey": "actor:ruins-pathfinder",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        96
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        39,
+        83
+      ],
+      "idleVisibleDisplay": [
+        39.0,
+        83.0
+      ]
+    },
+    {
+      "id": "ruins-stele-west",
+      "name": "西回聲碑",
+      "category": "prop",
+      "locations": [
+        "回聲長廊"
+      ],
+      "image": {
+        "key": "actor:ruins-stele",
+        "url": "assets/actors/npcs/ruins-stele-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 128,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-stele-west:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        },
+        {
+          "key": "npc:ruins-stele-east:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        256
+      ],
+      "sourceFrame": [
+        192,
+        256
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        99,
+        223
+      ],
+      "idleVisibleDisplay": [
+        49.5,
+        111.5
+      ]
+    },
+    {
+      "id": "ruins-stele-east",
+      "name": "東回聲碑",
+      "category": "prop",
+      "locations": [
+        "回聲長廊"
+      ],
+      "image": {
+        "key": "actor:ruins-stele",
+        "url": "assets/actors/npcs/ruins-stele-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 128,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-stele-west:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        },
+        {
+          "key": "npc:ruins-stele-east:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        256
+      ],
+      "sourceFrame": [
+        192,
+        256
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        99,
+        223
+      ],
+      "idleVisibleDisplay": [
+        49.5,
+        111.5
+      ]
+    },
+    {
+      "id": "frost-route-marker",
+      "name": "霜松航標",
+      "category": "prop",
+      "locations": [
+        "霜松隘道"
+      ],
+      "image": {
+        "key": "actor:ruins-stele",
+        "url": "assets/actors/npcs/ruins-stele-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 96,
+        "displayHeight": 128,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "npc:ruins-stele-west:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        },
+        {
+          "key": "npc:ruins-stele-east:idle",
+          "imageKey": "actor:ruins-stele",
+          "frames": [
+            0,
+            0
+          ],
+          "frameMs": [
+            350,
+            350
+          ],
+          "loop": true
+        }
+      ],
+      "sourceSheet": [
+        192,
+        256
+      ],
+      "sourceFrame": [
+        192,
+        256
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        99,
+        223
+      ],
+      "idleVisibleDisplay": [
+        49.5,
+        111.5
+      ]
+    },
+    {
+      "id": "snail",
+      "name": "苔殼蝸牛",
+      "category": "monster",
+      "locations": [
+        "晨光營地",
+        "嫩芽林道"
+      ],
+      "image": {
+        "key": "actor:snail",
+        "url": "assets/actors/monsters/snail-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "snail:idle",
+          "imageKey": "actor:snail",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "snail:walk",
+          "imageKey": "actor:snail",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "snail:attack",
+          "imageKey": "actor:snail",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "snail:hurt",
+          "imageKey": "actor:snail",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "snail:dead",
+          "imageKey": "actor:snail",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        78,
+        56
+      ],
+      "idleVisibleDisplay": [
+        58.5,
+        42.0
+      ]
+    },
+    {
+      "id": "slime",
+      "name": "嫩芽史萊姆",
+      "category": "monster",
+      "locations": [
+        "嫩芽林道",
+        "菌傘深林"
+      ],
+      "image": {
+        "key": "actor:slime",
+        "url": "assets/actors/monsters/slime-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "slime:idle",
+          "imageKey": "actor:slime",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "slime:walk",
+          "imageKey": "actor:slime",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "slime:attack",
+          "imageKey": "actor:slime",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "slime:hurt",
+          "imageKey": "actor:slime",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "slime:dead",
+          "imageKey": "actor:slime",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        91,
+        62
+      ],
+      "idleVisibleDisplay": [
+        68.2,
+        46.5
+      ]
+    },
+    {
+      "id": "mushroom",
+      "name": "菌傘菇",
+      "category": "monster",
+      "locations": [
+        "菌傘深林"
+      ],
+      "image": {
+        "key": "actor:mushroom",
+        "url": "assets/actors/monsters/mushroom-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "mushroom:idle",
+          "imageKey": "actor:mushroom",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "mushroom:walk",
+          "imageKey": "actor:mushroom",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "mushroom:attack",
+          "imageKey": "actor:mushroom",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "mushroom:hurt",
+          "imageKey": "actor:mushroom",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "mushroom:dead",
+          "imageKey": "actor:mushroom",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        80,
+        70
+      ],
+      "idleVisibleDisplay": [
+        60.0,
+        52.5
+      ]
+    },
+    {
+      "id": "boar",
+      "name": "赤背野豬",
+      "category": "monster",
+      "locations": [
+        "赤岩山徑"
+      ],
+      "image": {
+        "key": "actor:boar",
+        "url": "assets/actors/monsters/boar-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "boar:idle",
+          "imageKey": "actor:boar",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "boar:walk",
+          "imageKey": "actor:boar",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "boar:attack",
+          "imageKey": "actor:boar",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "boar:hurt",
+          "imageKey": "actor:boar",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "boar:dead",
+          "imageKey": "actor:boar",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        84,
+        66
+      ],
+      "idleVisibleDisplay": [
+        63.0,
+        49.5
+      ]
+    },
+    {
+      "id": "golem",
+      "name": "礦岩魔像",
+      "category": "monster",
+      "locations": [
+        "赤岩山徑",
+        "古礦入口"
+      ],
+      "image": {
+        "key": "actor:golem",
+        "url": "assets/actors/monsters/golem-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "golem:idle",
+          "imageKey": "actor:golem",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "golem:walk",
+          "imageKey": "actor:golem",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "golem:attack",
+          "imageKey": "actor:golem",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "golem:hurt",
+          "imageKey": "actor:golem",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "golem:dead",
+          "imageKey": "actor:golem",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        80,
+        80
+      ],
+      "idleVisibleDisplay": [
+        60.0,
+        60.0
+      ]
+    },
+    {
+      "id": "sentinel",
+      "name": "鏽甲哨兵",
+      "category": "monster",
+      "locations": [
+        "古礦入口"
+      ],
+      "image": {
+        "key": "actor:sentinel",
+        "url": "assets/actors/monsters/sentinel-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "sentinel:idle",
+          "imageKey": "actor:sentinel",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "sentinel:walk",
+          "imageKey": "actor:sentinel",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "sentinel:attack",
+          "imageKey": "actor:sentinel",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            350,
+            350,
+            350,
+            350
+          ],
+          "loop": false
+        },
+        {
+          "key": "sentinel:hurt",
+          "imageKey": "actor:sentinel",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "sentinel:dead",
+          "imageKey": "actor:sentinel",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        98,
+        119
+      ],
+      "idleVisibleDisplay": [
+        73.5,
+        89.2
+      ]
+    },
+    {
+      "id": "frost-wolf",
+      "name": "霜牙雪狼",
+      "category": "monster",
+      "locations": [
+        "雪痕海岸",
+        "霜松隘道"
+      ],
+      "image": {
+        "key": "actor:frost-wolf",
+        "url": "assets/actors/monsters/frost-wolf-atlas-v1.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "frost-wolf:idle",
+          "imageKey": "actor:frost-wolf",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-wolf:walk",
+          "imageKey": "actor:frost-wolf",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-wolf:attack",
+          "imageKey": "actor:frost-wolf",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            125,
+            125,
+            125,
+            125
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-wolf:hurt",
+          "imageKey": "actor:frost-wolf",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-wolf:dead",
+          "imageKey": "actor:frost-wolf",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1374,
+        1145
+      ],
+      "sourceFrame": [
+        229,
+        229
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        160,
+        114
+      ],
+      "idleVisibleDisplay": [
+        67.1,
+        47.8
+      ]
+    },
+    {
+      "id": "frost-crab",
+      "name": "冰甲蟹",
+      "category": "monster",
+      "locations": [
+        "霜松隘道",
+        "冰潮洞窟"
+      ],
+      "image": {
+        "key": "actor:frost-crab",
+        "url": "assets/actors/monsters/frost-crab-atlas-v1.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "frost-crab:idle",
+          "imageKey": "actor:frost-crab",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-crab:walk",
+          "imageKey": "actor:frost-crab",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-crab:attack",
+          "imageKey": "actor:frost-crab",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            190,
+            190,
+            190,
+            190
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-crab:hurt",
+          "imageKey": "actor:frost-crab",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-crab:dead",
+          "imageKey": "actor:frost-crab",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1374,
+        1145
+      ],
+      "sourceFrame": [
+        229,
+        229
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        116,
+        75
+      ],
+      "idleVisibleDisplay": [
+        48.6,
+        31.4
+      ]
+    },
+    {
+      "id": "sand-scorpion",
+      "name": "琥珀蠍",
+      "category": "monster",
+      "locations": [
+        "琥珀砂岸",
+        "砂丘關道",
+        "日井盆地"
+      ],
+      "image": {
+        "key": "actor:sand-scorpion",
+        "url": "assets/actors/monsters/sand-scorpion-atlas-v1.png",
+        "columns": 4,
+        "rows": 4,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "sand-scorpion:idle",
+          "imageKey": "actor:sand-scorpion",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "sand-scorpion:walk",
+          "imageKey": "actor:sand-scorpion",
+          "frames": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "sand-scorpion:attack",
+          "imageKey": "actor:sand-scorpion",
+          "frames": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "frameMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "loop": false
+        },
+        {
+          "key": "sand-scorpion:hurt",
+          "imageKey": "actor:sand-scorpion",
+          "frames": [
+            10,
+            11
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "sand-scorpion:dead",
+          "imageKey": "actor:sand-scorpion",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        384,
+        384
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        73,
+        57
+      ],
+      "idleVisibleDisplay": [
+        73.0,
+        57.0
+      ]
+    },
+    {
+      "id": "sunwell-beetle",
+      "name": "日井甲蟲",
+      "category": "monster",
+      "locations": [
+        "砂丘關道",
+        "日井盆地"
+      ],
+      "image": {
+        "key": "actor:sunwell-beetle",
+        "url": "assets/actors/monsters/sunwell-beetle-atlas-v1.png",
+        "columns": 4,
+        "rows": 4,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "sunwell-beetle:idle",
+          "imageKey": "actor:sunwell-beetle",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "sunwell-beetle:walk",
+          "imageKey": "actor:sunwell-beetle",
+          "frames": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "sunwell-beetle:attack",
+          "imageKey": "actor:sunwell-beetle",
+          "frames": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "frameMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "loop": false
+        },
+        {
+          "key": "sunwell-beetle:hurt",
+          "imageKey": "actor:sunwell-beetle",
+          "frames": [
+            10,
+            11
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "sunwell-beetle:dead",
+          "imageKey": "actor:sunwell-beetle",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        384,
+        384
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        74,
+        52
+      ],
+      "idleVisibleDisplay": [
+        74.0,
+        52.0
+      ]
+    },
+    {
+      "id": "ruins-moss-carapace",
+      "name": "苔陶蟲",
+      "category": "monster",
+      "locations": [
+        "盤根石道"
+      ],
+      "image": {
+        "key": "actor:ruins-moss-carapace",
+        "url": "assets/actors/monster-ruins-moss-carapace.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "ruins-moss-carapace:idle",
+          "imageKey": "actor:ruins-moss-carapace",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-moss-carapace:walk",
+          "imageKey": "actor:ruins-moss-carapace",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-moss-carapace:attack",
+          "imageKey": "actor:ruins-moss-carapace",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            275,
+            275,
+            80,
+            770
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-moss-carapace:hurt",
+          "imageKey": "actor:ruins-moss-carapace",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-moss-carapace:dead",
+          "imageKey": "actor:ruins-moss-carapace",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        576,
+        480
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        74,
+        40
+      ],
+      "idleVisibleDisplay": [
+        74.0,
+        40.0
+      ]
+    },
+    {
+      "id": "guardian",
+      "name": "古礦守衛",
+      "category": "boss",
+      "locations": [
+        "守衛祭壇"
+      ],
+      "image": {
+        "key": "actor:guardian",
+        "url": "assets/actors/monsters/guardian-atlas-v2.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 192,
+        "displayHeight": 192,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "guardian:idle",
+          "imageKey": "actor:guardian",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "guardian:walk",
+          "imageKey": "actor:guardian",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "guardian:attack",
+          "imageKey": "actor:guardian",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            450,
+            450,
+            450,
+            450
+          ],
+          "loop": false
+        },
+        {
+          "key": "guardian:hurt",
+          "imageKey": "actor:guardian",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "guardian:dead",
+          "imageKey": "actor:guardian",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        768,
+        640
+      ],
+      "sourceFrame": [
+        128,
+        128
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        76,
+        84
+      ],
+      "idleVisibleDisplay": [
+        114.0,
+        126.0
+      ]
+    },
+    {
+      "id": "sunwell-sentinel",
+      "name": "日井守衛",
+      "category": "boss",
+      "locations": [
+        "日井祭壇"
+      ],
+      "image": {
+        "key": "actor:sunwell-sentinel",
+        "url": "assets/actors/monsters/sunwell-sentinel-atlas-v1.png",
+        "columns": 4,
+        "rows": 4,
+        "displayWidth": 192,
+        "displayHeight": 192,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "sunwell-sentinel:idle",
+          "imageKey": "actor:sunwell-sentinel",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "sunwell-sentinel:walk",
+          "imageKey": "actor:sunwell-sentinel",
+          "frames": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "sunwell-sentinel:attack",
+          "imageKey": "actor:sunwell-sentinel",
+          "frames": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "frameMs": [
+            250,
+            250,
+            250,
+            250
+          ],
+          "loop": false
+        },
+        {
+          "key": "sunwell-sentinel:hurt",
+          "imageKey": "actor:sunwell-sentinel",
+          "frames": [
+            10,
+            11
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "sunwell-sentinel:dead",
+          "imageKey": "actor:sunwell-sentinel",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        384,
+        384
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        77,
+        78
+      ],
+      "idleVisibleDisplay": [
+        154.0,
+        156.0
+      ]
+    },
+    {
+      "id": "frost-tide-warden",
+      "name": "冰潮守望獸",
+      "category": "boss",
+      "locations": [
+        "冰潮洞窟"
+      ],
+      "image": {
+        "key": "actor:frost-tide-warden",
+        "url": "assets/actors/monsters/frost-tide-warden-atlas-v1.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 192,
+        "displayHeight": 192,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "frost-tide-warden:idle",
+          "imageKey": "actor:frost-tide-warden",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-tide-warden:walk",
+          "imageKey": "actor:frost-tide-warden",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "frost-tide-warden:attack",
+          "imageKey": "actor:frost-tide-warden",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            250,
+            250,
+            250,
+            250
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-tide-warden:hurt",
+          "imageKey": "actor:frost-tide-warden",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "frost-tide-warden:dead",
+          "imageKey": "actor:frost-tide-warden",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1632,
+        1360
+      ],
+      "sourceFrame": [
+        272,
+        272
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        129,
+        84
+      ],
+      "idleVisibleDisplay": [
+        91.1,
+        59.3
+      ]
+    },
+    {
+      "id": "ruins-string-puppet",
+      "name": "斷弦木偶",
+      "category": "monster",
+      "locations": [
+        "回聲長廊"
+      ],
+      "image": {
+        "key": "actor:ruins-string-puppet",
+        "url": "assets/actors/monster-ruins-string-puppet.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "ruins-string-puppet:idle",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-string-puppet:walk",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-string-puppet:attack",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            500,
+            500,
+            100,
+            900
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-string-puppet:hurt",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-string-puppet:dead",
+          "imageKey": "actor:ruins-string-puppet",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        576,
+        480
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        50,
+        72
+      ],
+      "idleVisibleDisplay": [
+        50.0,
+        72.0
+      ]
+    },
+    {
+      "id": "ruins-bell-prowler",
+      "name": "巡鈴石獸",
+      "category": "monster",
+      "locations": [
+        "回聲長廊"
+      ],
+      "image": {
+        "key": "actor:ruins-bell-prowler",
+        "url": "assets/actors/monster-ruins-bell-prowler.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 96,
+        "displayHeight": 96,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "ruins-bell-prowler:idle",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-prowler:walk",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-prowler:attack",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            550,
+            550,
+            100,
+            900
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-prowler:hurt",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-prowler:dead",
+          "imageKey": "actor:ruins-bell-prowler",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        576,
+        480
+      ],
+      "sourceFrame": [
+        96,
+        96
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        85,
+        60
+      ],
+      "idleVisibleDisplay": [
+        85.0,
+        60.0
+      ]
+    },
+    {
+      "id": "ruins-bell-keeper",
+      "name": "失序司鐘者",
+      "category": "boss",
+      "locations": [
+        "誓鐘內殿"
+      ],
+      "image": {
+        "key": "actor:ruins-bell-keeper",
+        "url": "assets/actors/monster-ruins-bell-keeper-v1.png",
+        "columns": 6,
+        "rows": 5,
+        "displayWidth": 192,
+        "displayHeight": 192,
+        "pivotX": 0.5,
+        "pivotY": 1
+      },
+      "animations": [
+        {
+          "key": "ruins-bell-keeper:idle",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            0,
+            1
+          ],
+          "frameMs": [
+            200,
+            200
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-keeper:attack-sweep",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "frameMs": [
+            600,
+            600,
+            100,
+            1000
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-keeper:walk",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "frameMs": [
+            120,
+            120,
+            120,
+            120,
+            120,
+            120
+          ],
+          "loop": true
+        },
+        {
+          "key": "ruins-bell-keeper:attack",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "frameMs": [
+            450,
+            450,
+            100,
+            1000
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-keeper:hurt",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            18,
+            19
+          ],
+          "frameMs": [
+            100,
+            100
+          ],
+          "loop": false
+        },
+        {
+          "key": "ruins-bell-keeper:dead",
+          "imageKey": "actor:ruins-bell-keeper",
+          "frames": [
+            24,
+            25,
+            26,
+            27
+          ],
+          "frameMs": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "loop": false
+        }
+      ],
+      "sourceSheet": [
+        1152,
+        960
+      ],
+      "sourceFrame": [
+        192,
+        192
+      ],
+      "idleFrame": 0,
+      "idleVisibleSource": [
+        180,
+        132
+      ],
+      "idleVisibleDisplay": [
+        180.0,
+        132.0
+      ]
+    }
+  ],
+  "equipment": [
+    {
+      "id": "starter-sword",
+      "name": "練習短劍",
+      "image": {
+        "key": "equip:starter-sword",
+        "url": "assets/actors/equip-starter-sword-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.25,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "iron-sword",
+      "name": "鐵製長劍",
+      "image": {
+        "key": "equip:iron-sword",
+        "url": "assets/actors/equip-iron-sword-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.25,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "steel-sword",
+      "name": "精鋼長劍",
+      "image": {
+        "key": "equip:steel-sword",
+        "url": "assets/actors/equip-steel-sword-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.25,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "guardian-sword",
+      "name": "守衛之刃",
+      "image": {
+        "key": "equip:guardian-sword",
+        "url": "assets/actors/equip-guardian-sword-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.33,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "frost-tide-sword",
+      "name": "冰潮長鋒",
+      "image": {
+        "key": "equip:frost-tide-sword",
+        "url": "assets/equipment/frost-tide-sword-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.25,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "sunwell-oathblade",
+      "name": "日井誓刃",
+      "image": {
+        "key": "equip:sunwell-oathblade",
+        "url": "assets/equipment/sunwell-oathblade-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 64,
+        "displayHeight": 64,
+        "pivotX": 0.25,
+        "pivotY": 0.8
+      }
+    },
+    {
+      "id": "cloth-cap",
+      "name": "布帽",
+      "image": {
+        "key": "equip:cloth-cap",
+        "url": "assets/actors/equip-cloth-cap-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 48,
+        "displayHeight": 32,
+        "pivotX": 0.5,
+        "pivotY": 0.7
+      }
+    },
+    {
+      "id": "leather-cap",
+      "name": "皮帽",
+      "image": {
+        "key": "equip:leather-cap",
+        "url": "assets/actors/equip-leather-cap-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 48,
+        "displayHeight": 32,
+        "pivotX": 0.5,
+        "pivotY": 0.78
+      }
+    },
+    {
+      "id": "iron-helm",
+      "name": "鐵盔",
+      "image": {
+        "key": "equip:iron-helm",
+        "url": "assets/actors/equip-iron-helm-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 48,
+        "displayHeight": 32,
+        "pivotX": 0.5,
+        "pivotY": 0.66
+      }
+    },
+    {
+      "id": "oathfarer-circlet",
+      "name": "守誓旅冠",
+      "image": {
+        "key": "equip:oathfarer-circlet",
+        "url": "assets/actors/equip-oathfarer-circlet-v1.png",
+        "columns": 1,
+        "rows": 1,
+        "displayWidth": 48,
+        "displayHeight": 32,
+        "pivotX": 0.5,
+        "pivotY": 1
+      }
+    }
+  ]
+}
