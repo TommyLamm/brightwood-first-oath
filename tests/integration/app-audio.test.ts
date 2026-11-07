@@ -308,6 +308,42 @@ describe('archer audio timing', () => {
   });
 });
 
+describe('windup boundary sounds', () => {
+  it('plays a rogue swing once when its windup passes', async () => {
+    const { app, calls } = await startedApp(1488);
+    app.dispatchUi({ type: 'playTemporary', payload: {} }); app.update(0); await flushAudioUnlock();
+    const game = app.state.gameplay!;
+    game.saveData.player.job = 'rogue'; game.saveData.player.plannedJob = 'rogue';
+    game.saveData.player.level = 14; game.saveData.player.mp = 60;
+    game.saveData.player.equipment.weapon = 'starter-dagger';
+    game.monsters = []; game.movement.mode = 'grounded'; game.movement.footholdId = 'camp:ground';
+    app.dispatch({ type: 'attack', payload: { skillId: 'dagger-basic' } });
+    app.update(20);
+    expect(app.state.gameplay?.combat.attacks.length).toBe(1);
+    expect(calls.sfx).not.toContain('rogue-slash');
+    for (let n = 0; n < 24; n += 1) app.update(20);
+    expect(calls.sfx.filter((key) => key === 'rogue-slash')).toHaveLength(1);
+    app.dispose();
+  });
+
+  it('plays a frost ring once when its windup passes', async () => {
+    const { app, calls } = await startedApp(1489);
+    app.dispatchUi({ type: 'playTemporary', payload: {} }); app.update(0); await flushAudioUnlock();
+    const game = app.state.gameplay!;
+    game.saveData.player.job = 'mage'; game.saveData.player.plannedJob = 'mage';
+    game.saveData.player.str = 4; game.saveData.player.dex = 4; game.saveData.player.int = 12;
+    game.saveData.player.level = 14; game.saveData.player.mp = 100;
+    game.saveData.player.equipment.weapon = 'starter-staff'; game.saveData.player.skillRanks = { 'mage-frost-ring': 1 };
+    game.monsters = []; game.movement.mode = 'grounded'; game.movement.footholdId = 'camp:ground';
+    app.dispatch({ type: 'attack', payload: { skillId: 'mage-frost-ring' } });
+    app.update(20);
+    expect(calls.sfx).not.toContain('mage-frost');
+    for (let n = 0; n < 40; n += 1) app.update(20);
+    expect(calls.sfx.filter((key) => key === 'mage-frost')).toHaveLength(1);
+    app.dispose();
+  });
+});
+
 describe('mage audio timing', () => {
   it('plays one cast and one bolt release at the actual windup boundary', async () => {
     const {app,calls}=await startedApp(1487);

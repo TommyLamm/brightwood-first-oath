@@ -291,7 +291,7 @@ export class GameApp {
         break;
       }
       const gameTimeMs = frame.tickTimesMs[index]!;
-      this.setState({ ...this.stateValue, gameTimeMs });
+      this.advanceGameTime(gameTimeMs);
       const commands = index === 0 ? this.pendingGameplayCommands : [];
       const input = this.getInputFrame();
       const result = stepGameplay(this.stateValue.gameplay, {
@@ -982,6 +982,16 @@ export class GameApp {
     } else {
       this.setState({ ...this.stateValue, saveMessage: message });
     }
+  }
+
+  /**
+   * Moves the clock for this step. Audio still sees the time-only change, because windup sounds detect
+   * the crossing between two states; listeners get time and gameplay together from the step's setState.
+   */
+  private advanceGameTime(gameTimeMs: number): void {
+    const previousState = this.stateValue;
+    this.stateValue = { ...previousState, gameTimeMs };
+    this.synchronizeAudio(previousState, this.stateValue);
   }
 
   private setState(state: GameAppState): void {
