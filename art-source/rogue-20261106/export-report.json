@@ -1,0 +1,182 @@
+[
+  {
+    "key": "equip:starter-dagger",
+    "url": "assets/actors/equip-starter-dagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "ee9672e044964b693e2111ebd93799160dc817706066b97ee9b1dd38ffbe58f3"
+  },
+  {
+    "key": "item:starter-dagger",
+    "url": "assets/interface/item-starter-dagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "ffba400ef61cac572da241e691e52f60c39ca939f8793202208d9bc5446c31ab"
+  },
+  {
+    "key": "equip:iron-dagger",
+    "url": "assets/actors/equip-iron-dagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "43d76da0f9dab4c9558891f57efdf79f1e6a5d13306e3a0aaa2f0e8158a0d169"
+  },
+  {
+    "key": "item:iron-dagger",
+    "url": "assets/interface/item-iron-dagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "f83e6e15f6f5eae3cc921e26e87de88ab5a67188e5f7017b8d3eb73af4941502"
+  },
+  {
+    "key": "equip:steel-dagger",
+    "url": "assets/actors/equip-steel-dagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "abd5dc8276e06d98e5a8fe516ecd71d3adf1bc2fbabcaa876190ca6f7f704d3e"
+  },
+  {
+    "key": "item:steel-dagger",
+    "url": "assets/interface/item-steel-dagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "ab6cf8e393823026d665e6e6c5e1bcc25ff1b73a57a6fa8be5b5c6043b5359e7"
+  },
+  {
+    "key": "equip:guardian-dagger",
+    "url": "assets/actors/equip-guardian-dagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "293d9956392f4aef501ee5e8be246aab475ca0e210910a4d15357908e7f583c6"
+  },
+  {
+    "key": "item:guardian-dagger",
+    "url": "assets/interface/item-guardian-dagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "4ce2e42bdc91989dddd3979b614c4cc0c7361ea2cfc47c3e2f0ec3b281d6966c"
+  },
+  {
+    "key": "equip:frost-tide-dagger",
+    "url": "assets/actors/equip-frost-tide-dagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "d43d25d5d68342a6a7daf4b2c71040592d22975c62211a52ac7aa4316a6d46a6"
+  },
+  {
+    "key": "item:frost-tide-dagger",
+    "url": "assets/interface/item-frost-tide-dagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "8631499ce62a301ccb4d177a77c5060f0056df35da75cfe3c15b38598f37c35f"
+  },
+  {
+    "key": "equip:sunwell-oathdagger",
+    "url": "assets/actors/equip-sunwell-oathdagger-v1.png",
+    "size": [
+      80,
+      112
+    ],
+    "sha256": "e4f9ecb766348ee22646d4b60a9393ab4e3e26e8c5eb9367fed761c356f17a1d"
+  },
+  {
+    "key": "item:sunwell-oathdagger",
+    "url": "assets/interface/item-sunwell-oathdagger-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "93142cd3df45a153f4f3380ab6db58764c7a9c87988bffe769f7ec29f551e8ce"
+  },
+  {
+    "key": "skill:dagger-basic",
+    "url": "assets/interface/skill-dagger-basic-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "251f4c29d177e4e95cd0a10510476ce618d8a02dd5ec1088bb8974fa2166052e"
+  },
+  {
+    "key": "skill:rogue-double-stab",
+    "url": "assets/interface/skill-rogue-double-stab-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "ecfc6f70b68d4426290e14015071a9ea078d254393d6b8b66876fa829abfefd4"
+  },
+  {
+    "key": "skill:rogue-shadow-lunge",
+    "url": "assets/interface/skill-rogue-shadow-lunge-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "982356b5ff1324d6ab35a3e479e6c7b24b924eb79231f8662a491184d2c053c5"
+  },
+  {
+    "key": "skill:rogue-smoke",
+    "url": "assets/interface/skill-rogue-smoke-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "3d6d09d9ca34a292e6bde0ba607f4e8c6ee893bcf5351f8492cd3da0a749cdb0"
+  },
+  {
+    "key": "skill:rogue-dagger-mastery",
+    "url": "assets/interface/skill-rogue-dagger-mastery-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "0a033be0cf8c6474f67a79c9501a5d93b0136d2c43400f924af2a075792034d6"
+  },
+  {
+    "key": "skill:rogue-combo-rhythm",
+    "url": "assets/interface/skill-rogue-combo-rhythm-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "75fea5e71d1e41fa9762ed888b287d6a88c92b7063e89a062dada43bc776b8e3"
+  },
+  {
+    "key": "actor:rogue-mentor",
+    "url": "assets/actors/rogue-mentor-v1.png",
+    "size": [
+      128,
+      160
+    ],
+    "sha256": "7f3fb302600e9dc0d6fbdf1908e37029039e09b8a671d1f0ab30dcd1cd9123da"
+  },
+  {
+    "key": "portrait:rogue-mentor",
+    "url": "assets/interface/portrait-rogue-mentor-v1.png",
+    "size": [
+      192,
+      179
+    ],
+    "sha256": "7ef91715c44b410c52652358f7ade29724bb5989fb4d78f7ff5698c2986499c6"
+  }
+]
