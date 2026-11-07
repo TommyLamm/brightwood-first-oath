@@ -81,8 +81,8 @@ type Runtime = {
   saveUpgrade: SaveUpgradeRequired | null;
   upgradeRaw: string | null;
   upgradeConfirmed: boolean;
-  /** The last local read found a save that exists but cannot be parsed or validated. */
-  unreadableLocal: boolean;
+  /** Bytes of the local save the last read could not parse or validate; discarding is bound to them. */
+  unreadableRaw: string | null;
   /** Raw local save this page last read or wrote; another tab changing it blocks further writes. */
   knownRaw: string | null;
 };
@@ -233,7 +233,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     saveUpgrade: null,
     upgradeRaw: null,
     upgradeConfirmed: false,
-    unreadableLocal: false,
+    unreadableRaw: null,
     knownRaw: null,
   };
 
@@ -272,7 +272,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
 
   const localOutcome = (generation: number): LoadOutcome => {
     runtime.mode = 'local';
-    runtime.unreadableLocal = false;
+    runtime.unreadableRaw = null;
     runtime.legacyCandidate = null;
     runtime.saveUpgrade = null;
     runtime.upgradeRaw = null;
@@ -315,7 +315,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
           if (!candidate.ok) {
             runtime.mode = 'memory';
             runtime.initialized = false;
-            runtime.unreadableLocal = false;
+            runtime.unreadableRaw = null;
             const message = `找到這台裝置的舊版進度，但目前版本無法安全讀取：${candidate.message}`;
             setStatus('incompatible', message);
             return { mode: 'memory', status: 'incompatible', data: null, message };
@@ -346,7 +346,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (!validated.ok) {
       runtime.mode = 'memory';
       runtime.initialized = false;
-      runtime.unreadableLocal = validated.unreadable;
+      runtime.unreadableRaw = validated.unreadable ? rawText : null;
       setStatus(validated.status, validated.message);
       return { mode: 'memory', status: validated.status, data: null, message: validated.message };
     }
@@ -480,7 +480,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       runtime.legacyCandidate = null;
       runtime.initialized = false;
       runtime.mode = 'memory';
-      runtime.unreadableLocal = false;
+      runtime.unreadableRaw = null;
       stopWrites();
       setStatus(status, message);
       return { mode: 'memory', status, data: null, message };
@@ -1032,18 +1032,32 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     settleFlush();
   };
 
+  /** The first free backup key, or the one already holding these bytes. Earlier backups are never replaced. */
+  const unreadableBackupKey = (storage: StorageLike, raw: string): string => {
+    const base = `${key}:unreadable-backup`;
+    for (let index = 1; ; index += 1) {
+      const candidate = index === 1 ? base : `${base}:${index}`;
+      const existing = storage.getItem(candidate);
+      if (existing === null || existing === raw) return candidate;
+    }
+  };
+
   const discardUnreadableLocalSave = (): boolean => {
-    if (runtime.disposed || !runtime.unreadableLocal || !options.storage) return false;
+    const storage = options.storage;
+    const confirmedRaw = runtime.unreadableRaw;
+    if (runtime.disposed || confirmedRaw === null || !storage) return false;
     try {
-      const rawText = options.storage.getItem(key);
-      if (rawText !== null) {
-        options.storage.setItem(`${key}:unreadable-backup`, rawText);
-        options.storage.removeItem(key);
-      }
+      // Another tab may have replaced what the player confirmed discarding.
+      if (storage.getItem(key) !== confirmedRaw) return false;
+      const backupKey = unreadableBackupKey(storage, confirmedRaw);
+      storage.setItem(backupKey, confirmedRaw);
+      if (storage.getItem(backupKey) !== confirmedRaw) return false;
+      storage.removeItem(key);
     } catch {
       return false;
     }
-    runtime.unreadableLocal = false;
+    runtime.knownRaw = null;
+    runtime.unreadableRaw = null;
     return true;
   };
 

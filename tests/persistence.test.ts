@@ -604,3 +604,124 @@ describe('local saves shared between tabs', () => {
     tab.dispose();
   });
 });
+
+describe('discarding an unreadable local save', () => {
+  const GAME = 'maplewood-swordsman';
+  const key = localSaveKeyForGame(GAME, import.meta.env.DEV);
+  const backupKey = `${key}:unreadable-backup`;
+  const corrupt = '{not json';
+
+  const openOnCorruptSave = async (storage: MemoryStorage) => {
+    storage.entries.set(key, corrupt);
+    const tab = createPersistence({ gameId: GAME, storage, cloud: null, catalog });
+    expect((await tab.initialize()).status).toBe('loadError');
+    return tab;
+  };
+
+  const namedProfile = (name: string): GameProfile => {
+    const profile = profileFromLegacySave(makeSave());
+    profile.characters[profile.activeCharacterId!]!.player.name = name;
+    return profile;
+  };
+
+  it('keeps what another tab created after both showed the corrupt save', async () => {
+    const storage = new MemoryStorage();
+    const stale = await openOnCorruptSave(storage);
+    const other = await openOnCorruptSave(storage);
+
+    expect(other.discardUnreadableLocalSave?.()).toBe(true);
+    other.invalidate();
+    await other.initialize();
+    other.checkpointProfile!(namedProfile('NewHero'));
+    await expect(other.flush()).resolves.toBe(true);
+    const created = storage.entries.get(key);
+
+    expect(stale.discardUnreadableLocalSave?.()).toBe(false);
+    expect(storage.entries.get(key)).toBe(created);
+    expect(storage.entries.get(backupKey)).toBe(corrupt);
+    stale.dispose();
+    other.dispose();
+  });
+
+  it('does nothing when the save was repaired or already removed', async () => {
+    const storage = new MemoryStorage();
+    const tab = await openOnCorruptSave(storage);
+
+    storage.entries.set(key, 'repaired elsewhere');
+    expect(tab.discardUnreadableLocalSave?.()).toBe(false);
+    expect(storage.entries.get(key)).toBe('repaired elsewhere');
+
+    storage.entries.delete(key);
+    expect(tab.discardUnreadableLocalSave?.()).toBe(false);
+
+    expect(storage.entries.has(backupKey)).toBe(false);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(storage.removeItem).not.toHaveBeenCalled();
+    tab.dispose();
+  });
+
+  it('adds a new backup instead of refusing or replacing a different one', async () => {
+    const storage = new MemoryStorage();
+    storage.entries.set(backupKey, 'older corrupt bytes');
+    storage.entries.set(`${backupKey}:2`, 'another corrupt save');
+    const tab = await openOnCorruptSave(storage);
+
+    expect(tab.discardUnreadableLocalSave?.()).toBe(true);
+
+    expect(storage.entries.has(key)).toBe(false);
+    expect(storage.entries.get(backupKey)).toBe('older corrupt bytes');
+    expect(storage.entries.get(`${backupKey}:2`)).toBe('another corrupt save');
+    expect(storage.entries.get(`${backupKey}:3`)).toBe(corrupt);
+    tab.dispose();
+  });
+
+  it('reuses a backup that already holds the same bytes', async () => {
+    const storage = new MemoryStorage();
+    storage.entries.set(`${backupKey}`, 'older corrupt bytes');
+    storage.entries.set(`${backupKey}:2`, corrupt);
+    const tab = await openOnCorruptSave(storage);
+
+    expect(tab.discardUnreadableLocalSave?.()).toBe(true);
+
+    expect(storage.entries.has(key)).toBe(false);
+    expect(storage.entries.has(`${backupKey}:3`)).toBe(false);
+    expect(storage.entries.get(`${backupKey}:2`)).toBe(corrupt);
+    tab.dispose();
+  });
+
+  it('keeps the save when the backup cannot be written or read back', async () => {
+    const storage = new MemoryStorage();
+    const tab = await openOnCorruptSave(storage);
+
+    storage.setItem.mockImplementationOnce(() => { throw new Error('quota'); });
+    expect(tab.discardUnreadableLocalSave?.()).toBe(false);
+    expect(storage.entries.get(key)).toBe(corrupt);
+
+    storage.setItem.mockImplementationOnce((name: string) => storage.entries.set(name, 'truncated'));
+    expect(tab.discardUnreadableLocalSave?.()).toBe(false);
+    expect(storage.entries.get(key)).toBe(corrupt);
+    expect(storage.removeItem).not.toHaveBeenCalled();
+    tab.dispose();
+  });
+
+  it('can save again after discarding, and can discard a later corrupt save', async () => {
+    const storage = new MemoryStorage();
+    const tab = await openOnCorruptSave(storage);
+    expect(tab.discardUnreadableLocalSave?.()).toBe(true);
+    expect(tab.discardUnreadableLocalSave?.()).toBe(false);
+
+    tab.invalidate();
+    expect((await tab.initialize()).status).toBe('ready');
+    tab.checkpointProfile!(namedProfile('Second life'));
+    await expect(tab.flush()).resolves.toBe(true);
+
+    storage.entries.set(key, '{corrupt again');
+    tab.invalidate();
+    expect((await tab.initialize()).status).toBe('loadError');
+    expect(tab.discardUnreadableLocalSave?.()).toBe(true);
+    expect(storage.entries.has(key)).toBe(false);
+    expect(storage.entries.get(backupKey)).toBe(corrupt);
+    expect(storage.entries.get(`${backupKey}:2`)).toBe('{corrupt again');
+    tab.dispose();
+  });
+});
