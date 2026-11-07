@@ -85,6 +85,8 @@ type Runtime = {
   unreadableRaw: string | null;
   /** Raw local save this page last read or wrote; another tab changing it blocks further writes. */
   knownRaw: string | null;
+  /** A preview save went through but rereading its new revision has not succeeded yet. */
+  previewRevisionStale: boolean;
 };
 
 export function localSaveKeyForGame(gameId: string, development = import.meta.env.DEV): string {
@@ -235,6 +237,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     upgradeConfirmed: false,
     unreadableRaw: null,
     knownRaw: null,
+    previewRevisionStale: false,
   };
 
   const flushWaiters = new Set<(saved: boolean) => void>();
@@ -403,6 +406,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     runtime.upgradeConfirmed = false;
     runtime.retryAttempt = null;
     runtime.retryLocal = null;
+    runtime.previewRevisionStale = false;
     setStatus('loading');
 
     const run = async (): Promise<LoadOutcome> => {
@@ -854,6 +858,25 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     startCloud(attempt, generation, false);
   };
 
+  /** The SDK hides a preview save's new revision, but the preview host still checks it on the next save. */
+  const rereadPreviewRevision = (generation: number): void => {
+    runtime.previewRevisionStale = true;
+    runtime.busy = true;
+    void Promise.resolve().then(() => options.cloud!.loadProgress()).then((record) => {
+      if (generation !== runtime.generation) return;
+      if (record && !isValidRevision(record.revision)) throw new Error('預覽存檔 revision 無效。');
+      runtime.busy = false;
+      runtime.previewRevisionStale = false;
+      if (record) runtime.revision = record.revision;
+      setStatus('previewOnly', '預覽存檔為診斷用途，沒有正式帳號保存證據。');
+      pump();
+    }).catch((error: unknown) => {
+      if (generation !== runtime.generation) return;
+      runtime.busy = false;
+      handleCloudFailure(error, generation);
+    });
+  };
+
   const startCloud = (attempt: CloudAttempt, generation: number, retry: boolean): void => {
     if (!options.cloud || runtime.busy || generation !== runtime.generation) return;
     const now = Date.now();
@@ -876,12 +899,16 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     void Promise.resolve().then(() => options.cloud!.saveProgress(input)).then((saved) => {
       if (generation !== runtime.generation) return;
       runtime.busy = false;
+      if (saved === null && runtime.mode === 'preview') {
+        runtime.retryAttempt = null;
+        rereadPreviewRevision(generation);
+        return;
+      }
       if (saved === null) {
         runtime.retryAttempt = null;
         runtime.pending = null;
-        if (runtime.mode !== 'preview') runtime.initialized = false;
-        setStatus(runtime.mode === 'preview' ? 'previewOnly' : 'unavailable',
-          runtime.mode === 'preview' ? '預覽存檔為診斷用途，沒有正式帳號保存證據。' : '雲端保存不可用，未改存本機。');
+        runtime.initialized = false;
+        setStatus('unavailable', '雲端保存不可用，未改存本機。');
         return;
       }
       if (saved.saved !== true || !isValidRevision(saved.revision)) {
@@ -991,6 +1018,11 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       return;
     }
     if (runtime.status !== 'saveError') return;
+    if (runtime.previewRevisionStale) {
+      setStatus('saving');
+      rereadPreviewRevision(runtime.generation);
+      return;
+    }
     if (runtime.saveUpgrade?.source === 'local' && runtime.upgradeConfirmed) {
       upgradeLocal();
       return;

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { legacySaveData } from './fixtures/legacy-save.js';
-import type { GameProfile, CloudPort, CloudReady, CloudSaveInput, CloudSaved, SaveData, StorageLike } from '../src/contracts/index.js';
+import type { GameProfile, CloudPort, CloudReady, CloudRecord, CloudSaveInput, CloudSaved, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { createPlayer } from '../src/domain/progression/index.js';
@@ -427,6 +427,144 @@ describe('persistence', () => {
     if (!input || !resolveSave) throw new Error('Expected a pending cloud save.');
     resolveSave({ ...input, saved: true, gameVersion: 'test', updatedAt: new Date(0).toISOString() });
     await Promise.resolve();
+    expect(statuses).not.toContain('saved');
+    persistence.dispose();
+  });
+
+  /** Behaves like the platform's preview host: checks revision, bumps it, and the SDK returns null. */
+  function previewHost(overrides: Partial<CloudPort> = {}) {
+    let stored: CloudRecord | null = null;
+    const saved: { name: string; revision: number }[] = [];
+    const cloud = cloudPort({
+      ready: vi.fn(async (): Promise<CloudReady> => ({ mode: 'preview', progressAvailable: false, capabilities: [] })),
+      loadProgress: vi.fn(async () => stored),
+      saveProgress: vi.fn(async (input: CloudSaveInput) => {
+        if (input.revision !== (stored?.revision ?? 0)) {
+          throw Object.assign(new Error('預覽進度版本衝突，請重新讀取'), { machineCode: 'SAVE_REVISION_CONFLICT' });
+        }
+        const profile = input.data as unknown as GameProfile;
+        saved.push({ name: profile.characters[profile.activeCharacterId!]!.player.name, revision: input.revision });
+        stored = { data: input.data, revision: input.revision + 1, formatVersion: input.formatVersion, gameVersion: 'x', updatedAt: new Date(0).toISOString() };
+        return null;
+      }),
+      ...overrides,
+    });
+    return { cloud, saved };
+  }
+
+  const namedSave = (name: string): SaveData => {
+    const save = makeSave();
+    save.player.name = name;
+    return save;
+  };
+
+  const openPreview = async (cloud: CloudPort, statuses: SaveStatus[]) => {
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage: new MemoryStorage(), cloud, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+    await persistence.initialize();
+    return persistence;
+  };
+
+  it('keeps preview saves working across later saves by rereading the revision each time', async () => {
+    const { cloud, saved } = previewHost();
+    const statuses: SaveStatus[] = [];
+    const persistence = await openPreview(cloud, statuses);
+
+    for (const name of ['第一', '第二', '第三']) {
+      persistence.checkpoint(namedSave(name));
+      await expect(persistence.flush()).resolves.toBe(true);
+    }
+
+    expect(saved).toEqual([{ name: '第一', revision: 0 }, { name: '第二', revision: 1 }, { name: '第三', revision: 2 }]);
+    expect(statuses).not.toContain('saved');
+    expect(statuses).not.toContain('conflict');
+    expect(statuses.at(-1)).toBe('previewOnly');
+    persistence.dispose();
+  });
+
+  it('sends the queued preview save with the new revision and flushes only after it', async () => {
+    const { cloud, saved } = previewHost();
+    const statuses: SaveStatus[] = [];
+    const persistence = await openPreview(cloud, statuses);
+
+    persistence.checkpoint(namedSave('第一'));
+    persistence.checkpoint(namedSave('第二'));
+    persistence.checkpoint(namedSave('最新'));
+    await expect(persistence.flush()).resolves.toBe(true);
+
+    expect(saved.at(-1)).toEqual({ name: '最新', revision: saved.length - 1 });
+    expect(statuses).not.toContain('conflict');
+    persistence.dispose();
+  });
+
+  it('reports a failed preview reread, keeps the queued save, and recovers on retry', async () => {
+    const host = previewHost();
+    const load = host.cloud.loadProgress as ReturnType<typeof vi.fn>;
+    const statuses: SaveStatus[] = [];
+    const persistence = await openPreview(host.cloud, statuses);
+    load.mockRejectedValueOnce(new Error('預覽讀取失敗'));
+
+    persistence.checkpoint(namedSave('第一'));
+    await waitForStatus(statuses, 'saveError');
+    persistence.checkpoint(namedSave('第二'));
+    await expect(persistence.flush()).resolves.toBe(false);
+    expect(host.saved).toEqual([{ name: '第一', revision: 0 }]);
+
+    await persistence.retry();
+    await expect(persistence.flush()).resolves.toBe(true);
+    expect(host.saved).toEqual([{ name: '第一', revision: 0 }, { name: '第二', revision: 1 }]);
+    expect(statuses).not.toContain('conflict');
+    expect(statuses).not.toContain('saved');
+    persistence.dispose();
+  });
+
+  it('stops preview writes when the reread reports lost authorization', async () => {
+    const host = previewHost();
+    const load = host.cloud.loadProgress as ReturnType<typeof vi.fn>;
+    const statuses: SaveStatus[] = [];
+    const persistence = await openPreview(host.cloud, statuses);
+    load.mockRejectedValueOnce(Object.assign(new Error('登入失效'), { code: 401 }));
+
+    persistence.checkpoint(namedSave('第一'));
+    await waitForStatus(statuses, 'authLost');
+    persistence.checkpoint(namedSave('第二'));
+    await expect(persistence.flush()).resolves.toBe(false);
+    expect(host.saved).toHaveLength(1);
+    persistence.dispose();
+  });
+
+  it('ignores a preview reread that finishes after the session was invalidated', async () => {
+    const host = previewHost();
+    const load = host.cloud.loadProgress as ReturnType<typeof vi.fn>;
+    const statuses: SaveStatus[] = [];
+    const persistence = await openPreview(host.cloud, statuses);
+    let finishLoad: (record: CloudRecord | null) => void = () => undefined;
+    load.mockImplementationOnce(() => new Promise((resolve) => { finishLoad = resolve; }));
+
+    persistence.checkpoint(namedSave('第一'));
+    await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(2));
+    persistence.invalidate();
+    const statusCount = statuses.length;
+    finishLoad(null);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(statuses.length).toBe(statusCount);
+    persistence.dispose();
+  });
+
+  it('keeps a real null save as unavailable instead of rereading', async () => {
+    const cloud = cloudPort({ saveProgress: vi.fn(async () => null) });
+    const statuses: SaveStatus[] = [];
+    const persistence = createPersistence({
+      gameId: 'maplewood-swordsman', storage: new MemoryStorage(), cloud, catalog,
+      onStatus: (status) => statuses.push(status),
+    });
+    await persistence.initialize();
+    persistence.checkpoint(makeSave());
+    await waitForStatus(statuses, 'unavailable');
+    expect(cloud.loadProgress).toHaveBeenCalledTimes(1);
     expect(statuses).not.toContain('saved');
     persistence.dispose();
   });
