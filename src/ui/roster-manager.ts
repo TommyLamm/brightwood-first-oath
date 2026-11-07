@@ -1,4 +1,5 @@
 import type { CommandDraft, UiSnapshot } from '../contracts/index.js';
+import { BAG_CAPACITY } from '../contracts/limits.js';
 import { MAX_CHARACTER_SLOTS, WAREHOUSE_CAPACITY } from '../persistence/profile.js';
 import type { ProfileAction } from '../persistence/profile-actions.js';
 const expanded = new Set<string>();
@@ -32,7 +33,7 @@ export function buildRosterManager(document: Document, view: UiSnapshot, dispatc
     button('刪除角色並保留恢復備份', () => ({ type: 'delete', characterId: character.characterId, confirmation: confirm.value }), group, !!profile.deletedCharacter);
     const list = (from: 'bag' | 'warehouse'): void => {
       const stacks = from === 'bag' ? character.player.bag : profile.warehouse ?? [];
-      const title = document.createElement('h4'); title.textContent = from === 'bag' ? `${character.player.name}的背包（${stacks.length}/32）` : `共享倉庫（${stacks.length}/${WAREHOUSE_CAPACITY}）`; group.append(title);
+      const title = document.createElement('h4'); title.textContent = from === 'bag' ? `${character.player.name}的背包（${stacks.length}/${BAG_CAPACITY}）` : `共享倉庫（${stacks.length}/${WAREHOUSE_CAPACITY}）`; group.append(title);
       if (!stacks.length) { const empty = document.createElement('p'); empty.textContent = '目前沒有物品'; group.append(empty); }
       stacks.forEach((stack, index) => {
         const item = view.catalog.rules.items[stack.itemId]!;

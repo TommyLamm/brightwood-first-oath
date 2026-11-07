@@ -58,10 +58,10 @@ export const validateRules = (catalog: RulesCatalog): Result<RulesCatalog> => {
 
   if (itemIds.length !== approvedItemIds.length) return invalid('items 數量錯誤：預期 ' + approvedItemIds.length + '，實際 ' + itemIds.length);
   if (skillIds.length !== approvedSkillIds.length) return invalid('skills 數量錯誤：預期 ' + approvedSkillIds.length + '，實際 ' + skillIds.length);
-  if (monsterIds.length !== 17) return invalid('monsters 數量錯誤：預期 17，實際 ' + monsterIds.length);
-  if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid('items ID 清單不符核准的 34 件物品');
-  if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid('skills ID 清單不符核准的 20 個技能');
-  if (!hasApprovedIds(catalog.monsters, approvedMonsterIds)) return invalid('monsters ID 清單不符核准的 17 隻怪物');
+  if (monsterIds.length !== approvedMonsterIds.length) return invalid('monsters 數量錯誤：預期 ' + approvedMonsterIds.length + '，實際 ' + monsterIds.length);
+  if (!hasApprovedIds(catalog.items, approvedItemIds)) return invalid(`items ID 清單不符核准的 ${approvedItemIds.length} 件物品`);
+  if (!hasApprovedIds(catalog.skills, approvedSkillIds)) return invalid(`skills ID 清單不符核准的 ${approvedSkillIds.length} 個技能`);
+  if (!hasApprovedIds(catalog.monsters, approvedMonsterIds)) return invalid(`monsters ID 清單不符核准的 ${approvedMonsterIds.length} 隻怪物`);
   if (!hasMatchingIds(catalog.items)) return invalid('items 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.skills)) return invalid('skills 定義 id 必須與 Record key 完全相同');
   if (!hasMatchingIds(catalog.monsters)) return invalid('monsters 定義 id 必須與 Record key 完全相同');

@@ -1,5 +1,6 @@
 import type { ContentCatalog, GameProfile, Id, Result, SaveData, Settings } from '../contracts/index.js';
 import { failure, success } from '../contracts/helpers.js';
+import { BAG_CAPACITY, COIN_CAP } from '../contracts/limits.js';
 import { playerLearnableIds } from '../content/rules/index.js';
 import { canEquipForJob, isPlayerJob } from '../content/rules/jobs.js';
 import { deriveStats } from '../domain/progression/index.js';
@@ -15,8 +16,6 @@ const SAVE_FORMAT = 9;
 export const READABLE_SAVE_FORMATS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 const MAX_BYTES = 64 * 1024;
 const WARNING_BYTES = 48 * 1024;
-const BAG_CAPACITY = 32;
-const COIN_CAP = 9_999_999;
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -211,7 +210,7 @@ function normalizeSave(raw: unknown, catalog: ContentCatalog, legacy = false): R
   }
   if (spentSp + player.sp > earnedSp) return fail('技能 rank 與剩餘 SP 超出已取得總量。');
 
-  if (!isUnknownArray(player.bag) || player.bag.length > BAG_CAPACITY) return fail('背包格數超出 32 格。');
+  if (!isUnknownArray(player.bag) || player.bag.length > BAG_CAPACITY) return fail('背包格數超出 ' + BAG_CAPACITY + ' 格。');
   const bag: SaveData['player']['bag'] = [];
   for (const stack of player.bag) {
     if (!isRecord(stack) || !hasExactKeys(stack, ['itemId', 'quantity']) || typeof stack.itemId !== 'string') {

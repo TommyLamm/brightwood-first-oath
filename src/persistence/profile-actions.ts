@@ -1,5 +1,6 @@
 import type { ContentCatalog, GameProfile, Result } from '../contracts/index.js';
 import { failure, success } from '../contracts/helpers.js';
+import { BAG_CAPACITY } from '../contracts/limits.js';
 import { validatePlayerName } from '../domain/progression/index.js';
 import { MAX_CHARACTER_SLOTS, WAREHOUSE_CAPACITY } from './profile.js';
 import { prepareProfile } from './validate.js';
@@ -64,7 +65,7 @@ export function applyProfileAction(profile: GameProfile, action: ProfileAction, 
       entry.quantity += amount;
       remaining -= amount;
     }
-    const capacity = action.from === 'bag' ? WAREHOUSE_CAPACITY : 32;
+    const capacity = action.from === 'bag' ? WAREHOUSE_CAPACITY : BAG_CAPACITY;
     while (remaining > 0) {
       if (target.length >= capacity) return failure('BAG_FULL', action.from === 'bag' ? '共享倉庫已滿（24格）。' : '角色背包已滿（32格）。');
       const amount = Math.min(remaining, item.stackLimit);

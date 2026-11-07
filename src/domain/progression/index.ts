@@ -10,12 +10,11 @@ import type {
   Reward,
   RulesCatalog,
 } from '../../contracts/index.js';
+import { BAG_CAPACITY, COIN_CAP } from '../../contracts/limits.js';
 import { playerLearnableIds } from '../../content/rules/index.js';
 import { isSpecialization, specializations } from '../../content/rules/specializations.js';
 import { bowPassiveBonus, canEquipForJob, effectiveJob, isPlayerJob, jobs, magePassiveRank, roguePassiveRank } from '../../content/rules/jobs.js';
 
-const BAG_CAPACITY = 32;
-const COIN_CAP = 9_999_999;
 
 export type ProgressAction =
   | { type: 'gainReward'; reward: Reward }
@@ -167,7 +166,7 @@ export function countItem(player: PlayerProgress, itemId: Id): number {
 
 function validateBag(player: PlayerProgress, rules: RulesCatalog): Result<void> {
   if (player.bag.length > BAG_CAPACITY) {
-    return failure('INVALID', '背包資料超過 32 格。');
+    return failure('INVALID', `背包資料超過 ${BAG_CAPACITY} 格。`);
   }
   for (const stack of player.bag) {
     const item = rules.items[stack.itemId];
@@ -267,7 +266,7 @@ function addStacksToDraft(
       if (remaining === 0) break;
     }
     while (remaining > 0) {
-      if (player.bag.length >= BAG_CAPACITY) return failure('BAG_FULL', '背包已滿（32 格）；請先出售或使用物品騰出空位。');
+      if (player.bag.length >= BAG_CAPACITY) return failure('BAG_FULL', `背包已滿（${BAG_CAPACITY} 格）；請先出售或使用物品騰出空位。`);
       const amount = Math.min(remaining, entry.value.item.stackLimit);
       player.bag.push({ itemId: entry.value.item.id, quantity: amount });
       remaining -= amount;

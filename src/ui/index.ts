@@ -25,6 +25,7 @@ import {
   type GameAction,
 } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
+import { BAG_CAPACITY } from '../contracts/limits.js';
 import type { StorageLike, UiController, UiSnapshot } from '../contracts/ports.js';
 import type { PlayerJob, Settings } from '../contracts/types.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
@@ -2223,8 +2224,8 @@ export function createUi(
         if (player) {
           const used = player.bag.length;
           const label = PANEL_LABELS[panel];
-          button.setAttribute('aria-label', '開啟' + label + '（已用 ' + used + '／32 格）');
-          button.title = label + '：已用 ' + used + '／32 格'
+          button.setAttribute('aria-label', '開啟' + label + '（已用 ' + used + '／' + BAG_CAPACITY + ' 格）');
+          button.title = label + '：已用 ' + used + '／' + BAG_CAPACITY + ' 格'
             + (used >= 28 ? '；可出售或使用物品整理空位' : '');
           if (used >= 28) button.dataset.badge = String(used);
           else delete button.dataset.badge;
@@ -2804,7 +2805,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   // Say how full the bag is, so a "bag full" refusal never comes as a surprise.
   const used = player.bag.length;
   const note = makeElement(document, 'p', 'ms-panel-note', '');
-  const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／32 格');
+  const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格');
   note.append(usage, document.createTextNode('。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
   parent.append(note);
   if (state.bagStateMessage) {
@@ -2838,9 +2839,9 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   const layout = makeElement(document, 'div', 'ms-inventory-layout');
   const grid = makeElement(document, 'div', 'ms-bag-grid');
   grid.setAttribute('aria-label', state.inventoryFilter === 'all'
-    ? '全部背包，顯示 ' + filtered.length + ' 組物品，共 32 格'
-    : '背包分類「' + categoryLabel + '」，顯示 ' + filtered.length + ' 組物品，共 32 格');
-  for (let index = 0; index < 32; index += 1) {
+    ? '全部背包，顯示 ' + filtered.length + ' 組物品，共 ' + BAG_CAPACITY + ' 格'
+    : '背包分類「' + categoryLabel + '」，顯示 ' + filtered.length + ' 組物品，共 ' + BAG_CAPACITY + ' 格');
+  for (let index = 0; index < BAG_CAPACITY; index += 1) {
     const entry = filtered[index];
     if (!entry) {
       const empty = makeElement(document, 'div', 'ms-bag-slot ms-bag-slot--empty');
@@ -3156,7 +3157,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   const capacityNote = makeElement(document, 'p', 'ms-panel-note');
   capacityNote.append(
     document.createTextNode('背包：'),
-    makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／32 格'),
+    makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格'),
     document.createTextNode('。可堆疊物品可補入同類未滿堆疊；能否購買依各貨品提示。'),
   );
   parent.append(capacityNote);
@@ -3294,8 +3295,8 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
         document,
         'p',
         'ms-panel-note',
-        '出售後預覽：背包已用 ' + formatNumber(player.bag.length) + '／32 → ' +
-          formatNumber(player.bag.length - materialSalePreview.expectedSoldStacks) + '／32 格；騰出 ' +
+        '出售後預覽：背包已用 ' + formatNumber(player.bag.length) + '／' + BAG_CAPACITY + ' → ' +
+          formatNumber(player.bag.length - materialSalePreview.expectedSoldStacks) + '／' + BAG_CAPACITY + ' 格；騰出 ' +
           formatNumber(materialSalePreview.expectedSoldStacks) + ' 格。 金幣預覽：' +
           formatNumber(player.coins) + ' → ' + formatNumber(player.coins + materialSalePreview.expectedProceeds) + '。',
       );
