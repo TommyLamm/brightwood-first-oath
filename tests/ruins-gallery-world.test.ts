@@ -16,7 +16,11 @@ describe('Echo Gallery world content', () => {
   it('requires claimed q16 for entry, keeps the west return free, and connects both stele platforms', () => {
     expect(validateWorld(worldCatalog, rulesCatalog).ok).toBe(true);
     expect(Object.keys(worldCatalog.maps)).toHaveLength(18);
-    expect(Object.keys(worldCatalog.npcs)).toHaveLength(13);
+    expect(Object.keys(worldCatalog.npcs)).toHaveLength(22);
+    expect(Object.keys(worldCatalog.npcs)).toEqual(expect.arrayContaining([
+      'archer-mentor', 'archery-target-low', 'archery-target-high', 'archery-target-far',
+      'mage-mentor', 'rogue-mentor', 'rogue-target-close', 'rogue-target-double', 'rogue-target-evade',
+    ]));
     expect(worldCatalog.npcs['frost-route-marker']).toBeDefined();
     expect(Object.keys(worldCatalog.quests)).toHaveLength(22);
     expect(worldCatalog.quests.q21).toBeDefined();

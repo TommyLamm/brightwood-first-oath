@@ -6,7 +6,7 @@ import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { createPlayer } from '../src/domain/progression/index.js';
 import { activeSaveData, createEmptyProfile, createPersistence, measureProfile, prepareProfile,
-  profileFromLegacySave, updateActiveCharacter } from '../src/persistence/index.js';
+  profileFromLegacySave, SAVE_FORMAT_VERSION, updateActiveCharacter } from '../src/persistence/index.js';
 import { characterFromSave } from '../src/persistence/profile.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -25,7 +25,7 @@ function twoCharacters(): GameProfile {
   return profile;
 }
 
-describe('format-7 character profiles', () => {
+describe('character profiles and legacy migration', () => {
   it('migrates old data deterministically without mutation or duplicating characters on reload', () => {
     const original = legacySaveData(save());
     original.quests = { q01: { status: 'active', counters: { snail: 2 } } };
@@ -34,9 +34,9 @@ describe('format-7 character profiles', () => {
     expect(migrated.ok).toBe(true);
     if (!migrated.ok) return;
     expect(JSON.stringify(original)).toBe(bytes);
-    expect(activeSaveData(migrated.value.data)).toEqual({ ...original, player: { ...original.player, int: 4 } });
+    expect(activeSaveData(migrated.value.data)).toEqual({ ...original, player: { ...original.player, int: 4, luk: 0 } });
     expect(Object.keys(migrated.value.data.characters)).toEqual(['legacy-1']);
-    expect(prepareProfile(migrated.value.data, catalog, 7)).toEqual(migrated);
+    expect(prepareProfile(migrated.value.data, catalog, SAVE_FORMAT_VERSION)).toEqual(migrated);
     expect(prepareProfile(original, catalog, 6).ok).toBe(false);
     expect(prepareProfile(save(true), catalog, 5).ok).toBe(false);
   });
@@ -57,7 +57,9 @@ describe('format-7 character profiles', () => {
     let profile = twoCharacters(); profile.slots[1]!.characterId = 'legacy-1'; invalid.push(profile);
     profile = twoCharacters(); profile.activeCharacterId = 'missing'; invalid.push(profile);
     profile = twoCharacters(); profile.characters['archer-1']!.characterId = 'wrong'; invalid.push(profile);
-    profile = twoCharacters(); profile.slots.push({ slotId: 'slot-5', characterId: null }); invalid.push(profile);
+    profile = twoCharacters();
+    for (const slotId of ['slot-5', 'slot-6', 'slot-7']) profile.slots.push({ slotId, characterId: null });
+    invalid.push(profile);
     profile = twoCharacters(); profile.characters['archer-1']!.player.equipment.weapon = 'starter-sword'; invalid.push(profile);
     profile = twoCharacters(); profile.characters['archer-1']!.player.skillRanks['heavy-strike'] = 1; invalid.push(profile);
     for (const candidate of invalid) expect(prepareProfile(candidate, catalog).ok).toBe(false);
@@ -115,7 +117,7 @@ describe('format-7 character profiles', () => {
     await persistence.retry();
     await vi.waitFor(() => expect(calls).toHaveLength(3));
     expect(calls[1]).toEqual(calls[0]);
-    expect(calls[2]).toMatchObject({ revision: 1, formatVersion: 8, data: { activeCharacterId: 'archer-1' } });
+    expect(calls[2]).toMatchObject({ revision: 1, formatVersion: SAVE_FORMAT_VERSION, data: { activeCharacterId: 'archer-1' } });
     expect(Object.keys(calls[2]!.data.characters)).toHaveLength(2);
     expect(persistence.getProfile!()?.activeCharacterId).toBe('archer-1');
     persistence.dispose();

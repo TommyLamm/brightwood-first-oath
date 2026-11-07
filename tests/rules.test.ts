@@ -3,7 +3,7 @@ import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, val
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
-    expect(Object.keys(rulesCatalog.items)).toHaveLength(40);
+    expect(Object.keys(rulesCatalog.items)).toHaveLength(52);
     expect(Object.keys(rulesCatalog.items)).toEqual(expect.arrayContaining([
       'starter-sword', 'iron-sword', 'steel-sword', 'guardian-sword',
       'cloth-shirt', 'leather-vest', 'iron-mail', 'cloth-cap', 'leather-cap', 'iron-helm',
@@ -11,20 +11,29 @@ describe('rules catalog', () => {
       'mushroom-cap', 'boar-tusk', 'stone-chip', 'metal-shard', 'forest-seed', 'spore-sample',
       'ridge-emblem', 'guardian-core', 'frost-fang', 'ice-shell', 'frost-tide-sword', 'amber-scale', 'sunwell-shell', 'sunwell-oathblade', 'moss-ceramic',
       'broken-copper-thread', 'muted-bell-fragment', 'oathfarer-circlet',
+      'starter-bow', 'iron-bow', 'steel-bow', 'guardian-bow', 'frost-tide-bow', 'sunwell-oathbow',
+      'starter-staff', 'iron-staff', 'steel-staff', 'guardian-staff', 'frost-tide-staff', 'sunwell-oathstaff',
+      'starter-dagger', 'iron-dagger', 'steel-dagger', 'guardian-dagger', 'frost-tide-dagger', 'sunwell-oathdagger',
     ]));
-    expect(Object.keys(rulesCatalog.skills)).toHaveLength(26);
+    expect(Object.keys(rulesCatalog.skills)).toHaveLength(46);
     expect(Object.keys(rulesCatalog.skills).sort()).toEqual([
       'archer-bow-mastery', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-steady-aim',
       'basic', 'bow-basic', 'enemy-melee', 'frost-crab-charge', 'frost-tusk-slam', 'guardian-slam', 'guardian-wave',
       'heavy-strike', 'iron-guard', 'low-tide-wave', 'rest-recovery', 'ruins-bell-slam', 'ruins-bell-sweep', 'ruins-carapace-bite',
       'ruins-prowler-sweep', 'ruins-puppet-slap', 'sand-stinger', 'sunwell-beetle-charge', 'sunwell-sentinel-slam', 'sweep', 'vitality',
-    ]);
-    expect(playerSkillIds).toHaveLength(12);
-    expect(playerLearnableIds).toHaveLength(10);
+      'wand-basic', 'mage-mana-bolt', 'mage-frost-ring', 'mage-blink', 'mage-mana-affinity', 'mage-rune-study',
+      'dagger-basic', 'rogue-double-stab', 'rogue-shadow-lunge', 'rogue-smoke', 'rogue-dagger-mastery', 'rogue-combo-rhythm',
+      'guardian-rally', 'berserker-flurry', 'marksman-snipe', 'ranger-volley', 'elementalist-nova',
+      'arcanist-siphon', 'shadowblade-venom', 'thrower-shuriken',
+    ].sort());
+    expect(playerSkillIds).toHaveLength(24);
+    expect(playerLearnableIds).toHaveLength(20);
     expect([...playerLearnableIds].sort()).toEqual([
       'archer-bow-mastery', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-steady-aim',
       'heavy-strike', 'iron-guard', 'rest-recovery', 'sweep', 'vitality',
-    ]);
+      'mage-mana-bolt', 'mage-frost-ring', 'mage-blink', 'mage-mana-affinity', 'mage-rune-study',
+      'rogue-double-stab', 'rogue-shadow-lunge', 'rogue-smoke', 'rogue-dagger-mastery', 'rogue-combo-rhythm',
+    ].sort());
     expect(rulesCatalog.skills.basic.requiredJob).toBe('any');
     expect(rulesCatalog.skills['heavy-strike'].requiredLevel).toBe(10);
     expect(rulesCatalog.skills.sweep.requiredLevel).toBe(12);

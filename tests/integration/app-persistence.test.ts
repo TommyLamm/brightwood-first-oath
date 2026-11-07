@@ -97,7 +97,7 @@ describe('T14-c persistence wiring', () => {
     expect(app.state.saveUpgrade).toBeNull();
     expect(storage.values.get(`${key}:format4-backup`)).toBe(raw);
     const upgraded = JSON.parse(storage.values.get(key)!) as { formatVersion: number; data: GameProfile };
-    expect(upgraded.formatVersion).toBe(8);
+    expect(upgraded.formatVersion).toBe(SAVE_FORMAT_VERSION);
     expect(upgraded.data).toEqual(profileFromLegacySave(oldData));
     app.dispose();
   });

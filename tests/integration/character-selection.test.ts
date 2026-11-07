@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { GameApp } from '../../src/app/app.js';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
 import type { CloudPort, GameProfile, StorageLike } from '../../src/contracts/index.js';
-import { localSaveKeyForGame } from '../../src/persistence/index.js';
+import { localSaveKeyForGame, SAVE_FORMAT_VERSION } from '../../src/persistence/index.js';
 import { createHeroAnchorFixture, createManifestFixture } from './asset-fixtures.js';
 
 const fetcher = async (url: string) => ({ ok: true, status: 200, json: async () => url.endsWith('/anchors.json')
@@ -98,7 +98,7 @@ describe('profile character selection', () => {
     let writes = 0;
     const cloud: CloudPort = {
       ready: async () => ({ mode: 'authenticated', progressAvailable: true, capabilities: ['progress'] }),
-      loadProgress: async () => ({ data: profile, revision: 1, formatVersion: 8, gameVersion: 'test', updatedAt: 'test' }),
+      loadProgress: async () => ({ data: profile, revision: 1, formatVersion: SAVE_FORMAT_VERSION, gameVersion: 'test', updatedAt: 'test' }),
       saveProgress: vi.fn(async (input) => {
         writes += 1;
         if (writes === 2) throw new Error('connection lost');

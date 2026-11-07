@@ -11,6 +11,7 @@ import {
   LEGACY_GAME_ID,
   localSaveKeyForGame,
   profileFromLegacySave,
+  SAVE_FORMAT_VERSION,
 } from '../src/persistence/index.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -214,7 +215,7 @@ describe('production save namespace and explicit legacy import', () => {
     persistence.confirmSaveUpgrade();
     expect(status).toBe('localSaved');
     expect(storage.values.get(`${key}:format${formatVersion}-backup`)).toBe(raw);
-    expect(JSON.parse(storage.values.get(key)!).formatVersion).toBe(8);
+    expect(JSON.parse(storage.values.get(key)!).formatVersion).toBe(SAVE_FORMAT_VERSION);
     expect(JSON.parse(storage.values.get(key)!).data).toEqual(profileFromLegacySave(imported!.data!));
     expect(storage.values.get(legacyKey)).toBe(raw);
     expect(storage.values.get(oldBackupKey)).toBe(oldBackup);

@@ -94,18 +94,18 @@ describe('ruins save compatibility', () => {
     persistence.dispose();
   });
 
-  it('writes and reloads format 5 with the new quest and monster IDs', async () => {
+  it('writes and reloads the current format with the new quest and monster IDs', async () => {
     const storage = new MemoryStorage();
     const data = ruinsProgress();
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     await persistence.initialize();
     persistence.checkpoint(data);
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV))!).formatVersion).toBe(8));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV))!).formatVersion).toBe(SAVE_FORMAT_VERSION));
     persistence.dispose();
 
     const restored = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
     const outcome = await restored.initialize();
-    expect(SAVE_FORMAT_VERSION).toBe(8);
+    expect(SAVE_FORMAT_VERSION).toBe(9);
     expect(outcome).toMatchObject({ mode: 'local', status: 'ready', data: {
       quests: {
         q15: { status: 'claimed' },
@@ -116,7 +116,7 @@ describe('ruins save compatibility', () => {
     restored.dispose();
   });
 
-  it('requires confirmation before upgrading a cloud format-1 record and checkpointing as format 6', async () => {
+  it('requires confirmation before upgrading a cloud format-1 record and checkpointing in the current format', async () => {
     const data = beforeRuinsSave();
     const record: CloudRecord = {
       data: legacySaveData(data),
@@ -136,9 +136,9 @@ describe('ruins save compatibility', () => {
     persistence.confirmSaveUpgrade();
     persistence.checkpoint(ruinsProgress());
     await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(2));
-    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 8, revision: 4 });
+    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: SAVE_FORMAT_VERSION, revision: 4 });
     expect(cloud.saveProgress.mock.calls[1]?.[0]).toMatchObject({
-      formatVersion: 8, revision: 4, data: { characters: { 'legacy-1': { quests: { q16: { status: 'active', counters: { 'ruins-moss-carapace': 1 } } } } } },
+      formatVersion: SAVE_FORMAT_VERSION, revision: 4, data: { characters: { 'legacy-1': { quests: { q16: { status: 'active', counters: { 'ruins-moss-carapace': 1 } } } } } },
     });
     persistence.dispose();
   });
@@ -146,7 +146,7 @@ describe('ruins save compatibility', () => {
   it('preserves an unknown local format and stops writes from a new character', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
-    const original = JSON.stringify({ formatVersion: 9, data: makeSave(), savedAt: '2026-10-25T00:00:00.000Z' });
+    const original = JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION + 1, data: makeSave(), savedAt: '2026-10-25T00:00:00.000Z' });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId: 'maplewood-swordsman', storage, cloud: null, catalog });
 
@@ -158,7 +158,7 @@ describe('ruins save compatibility', () => {
     persistence.dispose();
   });
 
-  it('backs up the exact format-1 envelope before the confirmed format-5 write', async () => {
+  it('backs up the exact format-1 envelope before the confirmed current-format write', async () => {
     const storage = new MemoryStorage();
     const key = localSaveKeyForGame('maplewood-swordsman', import.meta.env.DEV);
     const original = JSON.stringify({ formatVersion: 1, data: legacySaveData(beforeRuinsSave()), savedAt: '2026-10-25T00:00:00.000Z' });
@@ -173,7 +173,7 @@ describe('ruins save compatibility', () => {
     persistence.confirmSaveUpgrade();
     expect(storage.entries.get(`${key}:format1-backup`)).toBe(original);
     persistence.checkpoint(ruinsProgress());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(8));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(SAVE_FORMAT_VERSION));
 
     expect(storage.entries.get(`${key}:format1-backup`)).toBe(original);
     expect(JSON.parse(storage.entries.get(key)!).data.characters['legacy-1'].quests.q16.counters['ruins-moss-carapace']).toBe(1);
@@ -252,7 +252,7 @@ describe('ruins save compatibility', () => {
     persistence.checkpoint(makeSave());
 
     expect(cloud.saveProgress).toHaveBeenCalledTimes(1);
-    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: 8, revision: 0 });
+    expect(cloud.saveProgress.mock.calls[0]?.[0]).toMatchObject({ formatVersion: SAVE_FORMAT_VERSION, revision: 0 });
     expect(storage.entries.get(key)).toBe(localOriginal);
     expect(storage.setItem).not.toHaveBeenCalled();
     persistence.dispose();

@@ -77,7 +77,9 @@ describe('four-region journal progress', () => {
   it('uses distinct explicit wording for local backup, cloud upgrade and preview simulation', () => {
     const local = saveUpgradePrompt({ formatVersion: 4, source: 'local' });
     expect(local.confirmLabel).toBe('備份 format4 並升級繼續');
-    expect(local.explanation).toContain('備份原始 format4');
+    expect(local.explanation).toContain('format4 本機存檔');
+    expect(local.explanation).toContain('備份原始存檔');
+    expect(local.explanation).toContain('確認前不會改寫原件');
 
     const cloud = saveUpgradePrompt({ formatVersion: 4, source: 'cloud' });
     expect(cloud.confirmLabel).toContain('確認升級雲端 format4');

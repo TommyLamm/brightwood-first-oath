@@ -54,14 +54,14 @@ describe('ruins B save compatibility', () => {
     persistence.dispose();
   });
 
-  it('writes and reloads format 5 with inspect progress', async () => {
+  it('writes and reloads the current format with inspect progress', async () => {
     const storage = new MemoryStorage();
     const persistence = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
-    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
-    expect(SAVE_FORMAT_VERSION).toBe(8);
+    expect(READABLE_SAVE_FORMATS).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(SAVE_FORMAT_VERSION).toBe(9);
     await persistence.initialize();
     persistence.checkpoint(activeBSave());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(8));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(SAVE_FORMAT_VERSION));
     persistence.dispose();
 
     const restored = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
@@ -78,7 +78,7 @@ describe('ruins B save compatibility', () => {
     restored.dispose();
   });
 
-  it.each([1, 2])('backs up the exact format-%i local envelope before confirmed format-5 writing', async (formatVersion) => {
+  it.each([1, 2])('backs up the exact format-%i local envelope before confirmed current-format writing', async (formatVersion) => {
     const storage = new MemoryStorage();
     const original = JSON.stringify({ formatVersion, data: legacySaveData(beforeBSave()), savedAt });
     storage.entries.set(key, original);
@@ -94,7 +94,7 @@ describe('ruins B save compatibility', () => {
     persistence.confirmSaveUpgrade();
     expect(storage.entries.get(`${key}:format${formatVersion}-backup`)).toBe(original);
     persistence.checkpoint(activeBSave());
-    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(8));
+    await vi.waitFor(() => expect(JSON.parse(storage.entries.get(key)!).formatVersion).toBe(SAVE_FORMAT_VERSION));
 
     expect(storage.entries.get(`${key}:format${formatVersion}-backup`)).toBe(original);
     persistence.dispose();
@@ -159,7 +159,7 @@ describe('ruins B save compatibility', () => {
     persistence.dispose();
   });
 
-  it.each([1, 2])('requires confirmation before upgrading cloud format %i and checkpointing as format 6', async (formatVersion) => {
+  it.each([1, 2])('requires confirmation before upgrading cloud format %i and checkpointing in the current format', async (formatVersion) => {
     const record: CloudRecord = {
       data: legacySaveData(beforeBSave()),
       revision: 4,
@@ -181,7 +181,7 @@ describe('ruins B save compatibility', () => {
     persistence.checkpoint(activeBSave());
     await vi.waitFor(() => expect(cloud.saveProgress).toHaveBeenCalledTimes(2));
     for (const [input] of cloud.saveProgress.mock.calls) {
-      expect(input).toMatchObject({ formatVersion: 8, revision: 4 });
+      expect(input).toMatchObject({ formatVersion: SAVE_FORMAT_VERSION, revision: 4 });
     }
     expect(cloud.saveProgress.mock.calls[1]?.[0].data.characters['legacy-1'].quests.q17).toMatchObject({ status: 'active' });
     persistence.dispose();
@@ -189,7 +189,7 @@ describe('ruins B save compatibility', () => {
 
   it('preserves unsupported local formats and stops writes', async () => {
     const storage = new MemoryStorage();
-    const original = JSON.stringify({ formatVersion: 9, data: beforeBSave(), savedAt });
+    const original = JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION + 1, data: beforeBSave(), savedAt });
     storage.entries.set(key, original);
     const persistence = createPersistence({ gameId, storage, cloud: null, catalog: ruinsBCatalog });
 
@@ -244,7 +244,7 @@ describe('ruins B save compatibility', () => {
     persistence.checkpoint(beforeBSave());
 
     expect(cloud.saveProgress).toHaveBeenCalledTimes(1);
-    expect(cloud.saveProgress).toHaveBeenCalledWith(expect.objectContaining({ formatVersion: 8, revision: 0 }));
+    expect(cloud.saveProgress).toHaveBeenCalledWith(expect.objectContaining({ formatVersion: SAVE_FORMAT_VERSION, revision: 0 }));
     expect(storage.setItem).not.toHaveBeenCalled();
     persistence.dispose();
   });

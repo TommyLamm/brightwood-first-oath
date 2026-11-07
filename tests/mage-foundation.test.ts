@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { legacyProfileData, legacySaveData } from './fixtures/legacy-save.js';
 import { createPlayer, applyProgressAction, deriveStats } from '../src/domain/progression/index.js';
 import { rulesCatalog as rules } from '../src/content/rules/index.js';
 import { worldCatalog as world } from '../src/content/world/index.js';
 import { startNewGame } from '../src/app/gameplay.js';
-import { activeSaveData, createPersistence, prepareProfile, profileFromLegacySave, updateActiveCharacter } from '../src/persistence/index.js';
+import { activeSaveData, createPersistence, prepareProfile, profileFromLegacySave, SAVE_FORMAT_VERSION, updateActiveCharacter } from '../src/persistence/index.js';
 import { characterFromSave } from '../src/persistence/profile.js';
 import { classCatalog, classItemId, questForPlayer } from '../src/content/world/class-quests.js';
 import type { PlayerProgress } from '../src/contracts/index.js';
@@ -42,31 +43,31 @@ describe('mage attributes and format 7', () => {
     expect(applyProgressAction(sword,{type:'equip',bagIndex:sword.bag.length-1},rules).ok).toBe(false);
   });
   it('migrates formats 1–5 without spending AP or changing old stats', () => {
-    const old = save(); delete old.player.int;
+    const old = legacySaveData(save());
     for (let format = 1; format <= 5; format++) {
       const result = prepareProfile(old,catalog,format); expect(result.ok).toBe(true);
-      if (result.ok) expect(activeSaveData(result.value.data)?.player).toEqual({...old.player,int:4});
+      if (result.ok) expect(activeSaveData(result.value.data)?.player).toEqual({...old.player,int:4,luk:0});
     }
     expect(old.player).not.toHaveProperty('int');
   });
   it('migrates a format-6 roster with stable IDs, independent bags and shared settings', () => {
-    const old = profileFromLegacySave(save()); old.slots[1]!.characterId='archer-1';
-    old.characters['archer-1']=characterFromSave(save('archer'),'archer-1');
-    Object.values(old.characters).forEach(({player})=>delete player.int);
+    const current = profileFromLegacySave(save()); current.slots[1]!.characterId='archer-1';
+    current.characters['archer-1']=characterFromSave(save('archer'),'archer-1');
+    const old = legacyProfileData(current, 6);
     const bytes=JSON.stringify(old); const result=prepareProfile(old,catalog,6); expect(result.ok).toBe(true);
     if(!result.ok)return;
     expect(result.value.data.slots).toEqual(old.slots); expect(JSON.stringify(old)).toBe(bytes);
     for(const character of Object.values(result.value.data.characters)) expect(character.player.int).toBe(4);
-    expect(prepareProfile(result.value.data,catalog,7).ok).toBe(true);
+    expect(prepareProfile(result.value.data,catalog,SAVE_FORMAT_VERSION).ok).toBe(true);
     expect(prepareProfile(result.value.data,catalog,6).ok).toBe(false);
     const changed=activeSaveData(result.value.data)!; changed.player.coins++;
     expect(updateActiveCharacter(result.value.data,changed).characters['archer-1']).toEqual(result.value.data.characters['archer-1']);
   });
   it('rejects missing/invalid INT, excess AP, mislabeled mage data and unknown formats', () => {
-    const profile=profileFromLegacySave(save('mage'));
+    const profile=legacyProfileData(profileFromLegacySave(save('mage')), 7);
     expect(prepareProfile(profile,catalog,7).ok).toBe(true);
     expect(prepareProfile(profile,catalog,6).ok).toBe(false);
-    expect(prepareProfile(profile,catalog,9).ok).toBe(false);
+    expect(prepareProfile(profile,catalog,SAVE_FORMAT_VERSION + 1).ok).toBe(false);
     for(const value of [undefined,-1,NaN,12.5,13]) {
       const copy=structuredClone(profile); copy.characters['legacy-1']!.player.int=value;
       if(value===undefined)delete copy.characters['legacy-1']!.player.int;
@@ -74,7 +75,7 @@ describe('mage attributes and format 7', () => {
     }
   });
   it('preserves exact format-6 bytes until explicit backup/upgrade, then writes the current format', async () => {
-    const profile=profileFromLegacySave(save()); delete profile.characters['legacy-1']!.player.int;
+    const profile=legacyProfileData(profileFromLegacySave(save()), 6);
     const key='mage-test:save:v1'; const raw=JSON.stringify({formatVersion:6,data:profile,savedAt:'old'});
     const entries=new Map([[key,raw]]);
     const persistence=createPersistence({gameId:'mage-test',development:false,cloud:null,catalog,
@@ -83,7 +84,7 @@ describe('mage attributes and format 7', () => {
     expect(entries.get(key)).toBe(raw);
     await persistence.confirmSaveUpgrade(); await persistence.flush();
     expect(entries.get(key+':format6-backup')).toBe(raw);
-    expect(JSON.parse(entries.get(key)!)).toMatchObject({formatVersion:8,data:{characters:{'legacy-1':{player:{int:4}}}}});
+    expect(JSON.parse(entries.get(key)!)).toMatchObject({formatVersion:SAVE_FORMAT_VERSION,data:{characters:{'legacy-1':{player:{int:4,luk:0}}}}});
     persistence.dispose();
   });
   it('resolves all six weapon stages and caches each route independently', () => {

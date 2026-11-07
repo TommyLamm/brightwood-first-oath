@@ -4,6 +4,7 @@ import { createNextEntityId, createSeededRandom } from '../../src/contracts/help
 import { rulesCatalog } from '../../src/content/rules/index.js';
 import { worldCatalog } from '../../src/content/world/index.js';
 import { acceptQuest, getQuestView } from '../../src/domain/quests/index.js';
+import { applyProgressAction } from '../../src/domain/progression/index.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
@@ -545,11 +546,11 @@ describe('app gameplay vertical slice', () => {
     initial.saveData.player.hp -= 10;
     initial.saveData.player.mp -= 10;
 
-    const run = (state: typeof initial, nowMs: number) => stepGameplay(state, {
+    const run = (state: typeof initial, nowMs: number, dtSeconds = 1 / 60) => stepGameplay(state, {
       catalog,
       commands: [],
       input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
-      dtSeconds: 0,
+      dtSeconds,
       nowMs,
       random: createSeededRandom(5),
       nextEntityId,
@@ -560,16 +561,22 @@ describe('app gameplay vertical slice', () => {
     expect(withoutRank.saveData.player.mp).toBe(initial.saveData.player.mp);
 
     const trained = structuredClone(initial);
-    trained.saveData.player = {
-      ...trained.saveData.player,
-      job: 'swordsman',
-      level: 10,
-      skillRanks: { ...trained.saveData.player.skillRanks, 'rest-recovery': 1 },
-    };
+    for (const action of [
+      { type: 'setLevelFloor', level: 10 }, { type: 'changeJob' }, { type: 'learnSkill', skillId: 'rest-recovery' },
+    ] as const) {
+      const result = applyProgressAction(trained.saveData.player, action, catalog.rules);
+      if (!result.ok) throw new Error(result.message);
+      trained.saveData.player = result.value;
+    }
+    trained.saveData.player.hp = initial.saveData.player.hp;
+    trained.saveData.player.mp = initial.saveData.player.mp;
     trained.movement.velocity.x = 100;
     trained.attackOrDamageAtMs = 1000;
     const beforeRest = run(trained, 3999);
     expect(beforeRest.saveData.player.hp).toBe(trained.saveData.player.hp);
+    const frozen = run(beforeRest, 4000, 0);
+    expect(frozen.saveData.player.hp).toBe(beforeRest.saveData.player.hp);
+    expect(frozen.nextRegenAtMs).toBe(beforeRest.nextRegenAtMs);
     const firstRecovery = run(beforeRest, 4000);
     expect(firstRecovery.saveData.player.hp).toBe(trained.saveData.player.hp + 2);
     expect(firstRecovery.saveData.player.mp).toBe(trained.saveData.player.mp);
