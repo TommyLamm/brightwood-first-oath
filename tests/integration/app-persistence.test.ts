@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
 import type { CloudPort, StorageLike } from '../../src/contracts/ports.js';
 import { GameApp } from '../../src/app/app.js';
+import { worldIsFrozen } from '../../src/app/state.js';
 import { composeContentCatalog } from '../../src/app/catalog.js';
 import { startNewGame } from '../../src/app/gameplay.js';
 import { createNextEntityId } from '../../src/contracts/helpers.js';
@@ -206,6 +207,102 @@ describe('T14-c persistence wiring', () => {
     expect(app.state.gameplay?.saveData.settings.muted).toBe(true);
     expect(app.state.worldRevision).toBeGreaterThan(revision);
     app.dispose();
+  });
+
+  it('stops a stale tab and recovers by reloading the newer local progress', async () => {
+    const storage = new MemoryStorage();
+    const key = localSaveKeyForGame(BRIGHTWOOD_GAME_ID);
+    const creator = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 31 });
+    await creator.initialize();
+    creator.dispatch({ type: 'newGame', payload: { name: '共用角色' } });
+    creator.update(0);
+    await flushMicrotasks();
+    creator.dispose();
+
+    const stale = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 32 });
+    const newer = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 33 });
+    await stale.initialize();
+    await newer.initialize();
+    const changeSettings = async (app: GameApp, change: Partial<SaveData['settings']>): Promise<void> => {
+      app.dispatch({ type: 'setSettings', payload: { settings: { ...app.state.gameplay!.saveData.settings, ...change } } });
+      app.update(0);
+      await flushMicrotasks();
+    };
+
+    await changeSettings(newer, { muted: true });
+    expect(newer.state.saveStatus).toBe('localSaved');
+    const newerRaw = storage.values.get(key);
+
+    await changeSettings(stale, { masterVolume: 0.25 });
+    expect(stale.state.saveStatus).toBe('localConflict');
+    expect(stale.state.saveMessage).toContain('另一個分頁');
+    expect(storage.values.get(key)).toBe(newerRaw);
+    expect(worldIsFrozen(stale.state)).toBe(true);
+
+    const screen = stale.state.screen;
+    stale.dispatch({ type: 'togglePause', payload: {} });
+    stale.update(0);
+    expect(stale.state.screen).toBe(screen);
+
+    stale.dispatch({ type: 'returnTitle', payload: {} });
+    stale.update(0);
+    await flushMicrotasks();
+    expect(stale.state.screen).toBe('title');
+    expect(stale.state.saveStatus).toBe('localConflict');
+    expect(stale.state.saveMessage).toContain('重新載入');
+
+    stale.dispatch({ type: 'retrySave', payload: {} });
+    stale.update(0);
+    await flushMicrotasks();
+    expect(stale.state.saveStatus).toBe('ready');
+    expect(stale.state.gameplay?.saveData.settings).toMatchObject({ muted: true, masterVolume: 0.8 });
+    expect(worldIsFrozen(stale.state)).toBe(true);
+
+    // An ordinary change waits for the write interval, so returning to the list forces the write.
+    await changeSettings(stale, { masterVolume: 0.5 });
+    stale.dispatch({ type: 'returnTitle', payload: {} });
+    stale.update(0);
+    await flushMicrotasks();
+    expect(stale.state.saveStatus).toBe('localSaved');
+    expect(JSON.parse(storage.values.get(key)!).data.settings).toMatchObject({ muted: true, masterVolume: 0.5 });
+    stale.dispose();
+    newer.dispose();
+  });
+
+  it('does not stay busy when a stale tab returns to the character list with unsaved changes', async () => {
+    const storage = new MemoryStorage();
+    const creator = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 34 });
+    await creator.initialize();
+    creator.dispatch({ type: 'newGame', payload: { name: '共用角色' } });
+    creator.update(0);
+    await flushMicrotasks();
+    creator.dispose();
+
+    const stale = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 35 });
+    await stale.initialize();
+    const changeSettings = async (app: GameApp, change: Partial<SaveData['settings']>): Promise<void> => {
+      app.dispatch({ type: 'setSettings', payload: { settings: { ...app.state.gameplay!.saveData.settings, ...change } } });
+      app.update(0);
+      await flushMicrotasks();
+    };
+
+    await changeSettings(stale, { masterVolume: 0.6 });
+    expect(stale.state.saveStatus).toBe('localSaved');
+    const newer = new GameApp({ baseUrl: './', fetcher: fetchManifests, storage, seed: 36 });
+    await newer.initialize();
+    await changeSettings(newer, { muted: true });
+    expect(newer.state.saveStatus).toBe('localSaved');
+    // The stale tab's next ordinary save waits for the write interval, so nothing has failed yet.
+    await changeSettings(stale, { masterVolume: 0.3 });
+    expect(stale.state.saveStatus).toBe('localSaved');
+
+    stale.dispatch({ type: 'returnTitle', payload: {} });
+    stale.update(0);
+    await flushMicrotasks();
+    expect(stale.state.saveStatus).toBe('localConflict');
+    expect(stale.state.characterBusy).toBe(false);
+    stale.dispose();
+    newer.dispose();
   });
 
   it('returns to town from an outdoor field while keeping an active arena fight locked', async () => {

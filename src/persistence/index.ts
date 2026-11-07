@@ -83,6 +83,8 @@ type Runtime = {
   upgradeConfirmed: boolean;
   /** The last local read found a save that exists but cannot be parsed or validated. */
   unreadableLocal: boolean;
+  /** Raw local save this page last read or wrote; another tab changing it blocks further writes. */
+  knownRaw: string | null;
 };
 
 export function localSaveKeyForGame(gameId: string, development = import.meta.env.DEV): string {
@@ -232,12 +234,13 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     upgradeRaw: null,
     upgradeConfirmed: false,
     unreadableLocal: false,
+    knownRaw: null,
   };
 
   const flushWaiters = new Set<(saved: boolean) => void>();
   const settleFlush = (): void => {
     const failed = runtime.disposed || !runtime.initialized || runtime.mode === 'memory'
-      || ['saveError', 'loadError', 'incompatible', 'conflict', 'authLost', 'unavailable', 'upgradeRequired'].includes(runtime.status);
+      || ['saveError', 'loadError', 'incompatible', 'conflict', 'localConflict', 'authLost', 'unavailable', 'upgradeRequired'].includes(runtime.status);
     if (!failed && (runtime.busy || runtime.pending || runtime.retryAttempt || runtime.retryLocal)) return;
     for (const resolve of flushWaiters) resolve(!failed);
     flushWaiters.clear();
@@ -291,6 +294,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       return { mode: 'memory', status: 'loadError', data: null, message };
     }
     if (generation !== runtime.generation) return { mode: 'memory', status: runtime.status, data: null };
+    runtime.knownRaw = rawText;
     if (rawText === null) {
       runtime.lastCheckpoint = null;
       runtime.profile = null;
@@ -578,6 +582,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     }
 
     runtime.legacyCandidate = null;
+    runtime.knownRaw = candidate.raw;
     runtime.lastCheckpoint = cloneProfile(validated.data);
     runtime.profile = cloneProfile(validated.data);
     runtime.initialized = true;
@@ -647,6 +652,14 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         return;
       }
     }
+    // localStorage has no cross-tab compare-and-swap: this narrows the stale-tab window, not closes it.
+    if (previousRaw !== runtime.knownRaw) {
+      runtime.mode = 'memory';
+      runtime.initialized = false;
+      stopWrites();
+      setStatus('localConflict', '另一個分頁已更新本機進度；這裡未保存的變更不會寫入，請重新載入。');
+      return;
+    }
     const envelope = {
       formatVersion: SAVE_FORMAT_VERSION,
       data: cloneProfile(snapshot),
@@ -656,6 +669,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       const serialized = JSON.stringify(envelope);
       if (serialized === undefined) throw new Error('本機存檔無法序列化。');
       options.storage.setItem(key, serialized);
+      runtime.knownRaw = serialized;
       if (generation !== runtime.generation) return;
       runtime.lastCheckpoint = cloneProfile(snapshot);
       runtime.legacyCandidate = null;
@@ -730,6 +744,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       }
       storage.setItem(key, serialized);
       if (storage.getItem(key) !== serialized) throw new Error('新存檔未能讀回核對。');
+      runtime.knownRaw = serialized;
       runtime.lastCheckpoint = cloneProfile(snapshot);
       runtime.saveUpgrade = null;
       runtime.upgradeRaw = null;
@@ -770,8 +785,8 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (runtime.disposed || !runtime.initialized || runtime.busy || !runtime.mode) return;
     if (runtime.saveUpgrade && !runtime.upgradeConfirmed) return;
     if (runtime.mode === 'memory') return;
-    if (runtime.status === 'conflict' || runtime.status === 'incompatible' || runtime.status === 'authLost'
-      || runtime.status === 'unavailable' || runtime.status === 'loadError') return;
+    if (runtime.status === 'conflict' || runtime.status === 'localConflict' || runtime.status === 'incompatible'
+      || runtime.status === 'authLost' || runtime.status === 'unavailable' || runtime.status === 'loadError') return;
     if (runtime.status === 'saveError' && !runtime.retryRequested) return;
     const generation = runtime.generation;
 
@@ -915,6 +930,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
   };
 
   const checkpoint = (data: SaveData): void => {
+    if (runtime.status === 'localConflict') return;
     const prepared = prepareSave(data, options.catalog);
     if (!prepared.ok) {
       setStatus('saveError', prepared.message);
@@ -938,6 +954,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
   });
 
   const confirmSaveUpgrade = (): void => {
+    if (runtime.status === 'localConflict') return;
     if (runtime.disposed || !runtime.initialized || !runtime.saveUpgrade) {
       setStatus('incompatible', '目前沒有可確認升級的舊格式存檔。');
       return;

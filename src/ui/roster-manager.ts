@@ -8,7 +8,7 @@ export function buildRosterManager(document: Document, view: UiSnapshot, dispatc
   root.open = expanded.has('root'); root.addEventListener('toggle', () => root.open ? expanded.add('root') : expanded.delete('root'));
   const summary = document.createElement('summary'); summary.textContent = '管理角色與共享倉庫'; root.append(summary);
   const profile = view.profile!;
-  const blocked = view.characterBusy === true || ['saving', 'saveError', 'conflict'].includes(view.saveStatus);
+  const blocked = view.characterBusy === true || ['saving', 'saveError', 'conflict', 'localConflict'].includes(view.saveStatus);
   const button = (label: string, action: () => ProfileAction, parent: HTMLElement, disabled = false): void => {
     const node = document.createElement('button'); node.type = 'button'; node.className = 'ms-button ms-button--secondary';
     node.textContent = label; node.disabled = blocked || disabled;

@@ -90,6 +90,7 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
     if (!state.windowFocused || state.mapVisualLoad
       || (state.screen !== 'playing' && state.screen !== 'paused')
       || state.saveStatus === 'conflict'
+      || state.saveStatus === 'localConflict'
       || (state.saveUpgrade !== null && state.saveUpgrade !== undefined)) {
       return { state, handled: true };
     }
@@ -110,7 +111,8 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
 }
 
 export function worldIsFrozen(state: GameAppState): boolean {
-  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad) || state.characterBusy;
+  return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad) || state.characterBusy
+    || state.saveStatus === 'localConflict';
 }
 
 /** Builds the single UI view model from app-owned state. */

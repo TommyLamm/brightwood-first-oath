@@ -254,6 +254,7 @@ function saveStatusLabel(status: UiSnapshot['saveStatus']): string {
     loadError: '讀取失敗',
     saveError: '保存失敗',
     conflict: '其他裝置已有更新',
+    localConflict: '其他分頁已更新',
     authLost: '登入狀態失效',
     incompatible: '存檔格式不相容',
   }[status];

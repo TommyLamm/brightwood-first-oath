@@ -357,6 +357,7 @@ function statusLabel(status: UiSnapshot['saveStatus']): string {
     saveError: '保存失敗',
     upgradeRequired: '等待升級確認',
     conflict: '其他裝置已有更新',
+    localConflict: '其他分頁已更新',
     authLost: '登入狀態失效',
     incompatible: '存檔格式不相容',
   }[status];
@@ -1177,6 +1178,15 @@ export function createUi(
         screenLayer.append(card);
         return;
       }
+      if (view.saveStatus === 'localConflict') {
+        const card = makeScreenCard(document, '本機進度已在其他分頁更新', '這個分頁的進度已經過期，尚未保存的變更會放棄。請重新載入本機進度後再繼續。');
+        card.append(makeButton(document, '重新載入本機進度', 'retry-save', {
+          className: 'ms-button ms-button--primary',
+        }));
+        screenLayer.hidden = false;
+        screenLayer.append(card);
+        return;
+      }
       if (view.screen === 'loading' && !view.mapVisualLoad) {
         screenLayer.hidden = false;
         screenLayer.append(makeScreenCard(document, '正在準備冒險', '載入世界資料與存檔狀態。'));
@@ -1460,7 +1470,7 @@ export function createUi(
     focusBanner.hidden = !(view.windowFocused === false && view.screen === 'playing');
     errorText.textContent = view.error ?? '';
     // Keep recovery actions available without a permanent save badge occupying the HUD.
-    footer.hidden = !view.error && !['loadError', 'saveError', 'conflict'].includes(view.saveStatus);
+    footer.hidden = !view.error && !['loadError', 'saveError', 'conflict', 'localConflict'].includes(view.saveStatus);
     toast.textContent = view.toast ?? '';
     toast.hidden = !view.toast;
     // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
@@ -1477,6 +1487,8 @@ export function createUi(
       footerActions.append(makeButton(document, '重試保存', 'retry-save', { className: 'ms-button ms-button--small' }));
     } else if (view.saveStatus === 'conflict') {
       footerActions.append(makeButton(document, '載入雲端版本', 'use-cloud-version', { className: 'ms-button ms-button--small' }));
+    } else if (view.saveStatus === 'localConflict') {
+      footerActions.append(makeButton(document, '重新載入本機進度', 'retry-save', { className: 'ms-button ms-button--small' }));
     }
   };
 
@@ -2250,7 +2262,7 @@ export function createUi(
       }
     }
     if (restoreFocusAfterResume && view.screen === 'playing' && !nextResumeGate
-      && screenLayer.hidden && view.saveStatus !== 'conflict' && !view.saveUpgrade) {
+      && screenLayer.hidden && view.saveStatus !== 'conflict' && view.saveStatus !== 'localConflict' && !view.saveUpgrade) {
       restoreCommittedFocus(view);
       restoreFocusAfterResume = false;
       panelFocusBeforeResume = null;
@@ -2419,7 +2431,7 @@ export function createUi(
       && element.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]') !== null);
     const gameRoot = document.getElementById('game-root');
     const belongsToGame = target !== null && (shell.contains(target) || root.contains(target) || gameRoot?.contains(target) === true);
-    if (belongsToGame && !textEntry && (currentView?.saveStatus === 'conflict' || currentView?.saveUpgrade)) {
+    if (belongsToGame && !textEntry && (currentView?.saveStatus === 'conflict' || currentView?.saveStatus === 'localConflict' || currentView?.saveUpgrade)) {
       event.preventDefault();
       event.stopPropagation();
       return;

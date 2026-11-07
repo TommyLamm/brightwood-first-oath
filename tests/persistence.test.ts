@@ -5,7 +5,7 @@ import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { createPlayer } from '../src/domain/progression/index.js';
 import { getQuestView } from '../src/domain/quests/index.js';
-import { createPersistence, localSaveKeyForGame, SAVE_FORMAT_VERSION, profileFromLegacySave, validateSave } from '../src/persistence/index.js';
+import { BRIGHTWOOD_GAME_ID, createPersistence, LEGACY_GAME_ID, localSaveKeyForGame, SAVE_FORMAT_VERSION, profileFromLegacySave, validateSave } from '../src/persistence/index.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -447,5 +447,160 @@ describe('persistence', () => {
     expect(statuses).not.toContain('saved');
     expect(cloud.saveProgress).toHaveBeenCalledTimes(1);
     persistence.dispose();
+  });
+});
+
+describe('local saves shared between tabs', () => {
+  const GAME = 'maplewood-swordsman';
+  const key = localSaveKeyForGame(GAME, import.meta.env.DEV);
+
+  const openTab = (storage: StorageLike, statuses: SaveStatus[] = []) => createPersistence({
+    gameId: GAME, storage, cloud: null, catalog, onStatus: (status) => statuses.push(status),
+  });
+
+  const seedStorage = (storage: MemoryStorage): GameProfile => {
+    const profile = profileFromLegacySave(makeSave());
+    storage.entries.set(key, JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION, data: profile, savedAt: '2026-11-01T00:00:00.000Z' }));
+    return profile;
+  };
+
+  const changed = (profile: GameProfile, name: string, warehouse: GameProfile['warehouse'] = []): GameProfile => {
+    const next = structuredClone(profile);
+    next.characters[next.activeCharacterId!]!.player.name = name;
+    next.warehouse = warehouse;
+    return next;
+  };
+
+  const storedProfile = (storage: MemoryStorage): GameProfile =>
+    (JSON.parse(storage.entries.get(key)!) as { data: GameProfile }).data;
+
+  it('rejects the stale tab, keeps the newer character and warehouse, and resumes after reloading', async () => {
+    const storage = new MemoryStorage();
+    const profile = seedStorage(storage);
+    const statuses: SaveStatus[] = [];
+    const stale = openTab(storage, statuses);
+    const newer = openTab(storage);
+    await stale.initialize();
+    await newer.initialize();
+
+    newer.checkpointProfile!(changed(profile, 'Newer', [{ itemId: 'small-red', quantity: 1 }]));
+    await expect(newer.flush()).resolves.toBe(true);
+    const newerRaw = storage.entries.get(key);
+
+    stale.checkpointProfile!(changed(profile, 'Stale'));
+    await expect(stale.flush()).resolves.toBe(false);
+    expect(statuses).toContain('localConflict');
+    expect(storage.entries.get(key)).toBe(newerRaw);
+    expect(storedProfile(storage).warehouse).toEqual([{ itemId: 'small-red', quantity: 1 }]);
+
+    // Nothing but a reload clears it: later saves, retries and upgrades stay out of storage.
+    const writes = storage.setItem.mock.calls.length;
+    const statusCount = statuses.length;
+    stale.checkpoint(makeSave());
+    stale.checkpointProfile!(changed(profile, 'Stale again'));
+    await stale.retry();
+    stale.confirmSaveUpgrade();
+    await expect(stale.flush()).resolves.toBe(false);
+    expect(storage.setItem.mock.calls.length).toBe(writes);
+    expect(statuses.slice(statusCount)).toEqual([]);
+
+    stale.invalidate();
+    const reloaded = await stale.initialize();
+    expect(reloaded.profile?.characters[profile.activeCharacterId!]?.player.name).toBe('Newer');
+    expect(reloaded.profile?.warehouse).toEqual([{ itemId: 'small-red', quantity: 1 }]);
+    stale.checkpointProfile!(changed(reloaded.profile!, 'Resumed', reloaded.profile!.warehouse));
+    await expect(stale.flush()).resolves.toBe(true);
+    expect(storedProfile(storage).characters[profile.activeCharacterId!]?.player.name).toBe('Resumed');
+    stale.dispose();
+    newer.dispose();
+  });
+
+  it('rejects the later writer when both tabs started without a save', async () => {
+    const storage = new MemoryStorage();
+    const first = openTab(storage);
+    const second = openTab(storage);
+    await first.initialize();
+    await second.initialize();
+    const profile = profileFromLegacySave(makeSave());
+
+    first.checkpointProfile!(changed(profile, 'First'));
+    await expect(first.flush()).resolves.toBe(true);
+    second.checkpointProfile!(changed(profile, 'Second'));
+    await expect(second.flush()).resolves.toBe(false);
+
+    expect(storedProfile(storage).characters[profile.activeCharacterId!]?.player.name).toBe('First');
+    first.dispose();
+    second.dispose();
+  });
+
+  it('does not recreate a save that was removed elsewhere', async () => {
+    const storage = new MemoryStorage();
+    const profile = seedStorage(storage);
+    const statuses: SaveStatus[] = [];
+    const tab = openTab(storage, statuses);
+    await tab.initialize();
+    storage.entries.delete(key);
+
+    tab.checkpointProfile!(changed(profile, 'Gone'));
+    await expect(tab.flush()).resolves.toBe(false);
+
+    expect(statuses).toContain('localConflict');
+    expect(storage.entries.has(key)).toBe(false);
+    tab.dispose();
+  });
+
+  it('keeps saving across consecutive writes, a first save and a retried failed write', async () => {
+    const storage = new MemoryStorage();
+    const tab = openTab(storage);
+    await tab.initialize();
+    const profile = profileFromLegacySave(makeSave());
+
+    tab.checkpointProfile!(changed(profile, 'One'));
+    await expect(tab.flush()).resolves.toBe(true);
+    tab.checkpointProfile!(changed(profile, 'Two'));
+    await expect(tab.flush()).resolves.toBe(true);
+
+    storage.setItem.mockImplementationOnce(() => { throw new Error('quota'); });
+    tab.checkpointProfile!(changed(profile, 'Three'));
+    await expect(tab.flush()).resolves.toBe(false);
+    expect(storedProfile(storage).characters[profile.activeCharacterId!]?.player.name).toBe('Two');
+    await tab.retry();
+    await expect(tab.flush()).resolves.toBe(true);
+    expect(storedProfile(storage).characters[profile.activeCharacterId!]?.player.name).toBe('Three');
+    tab.dispose();
+  });
+
+  it('keeps saving after a format upgrade', async () => {
+    const storage = new MemoryStorage();
+    const oldData = makeSave();
+    storage.entries.set(key, JSON.stringify({ formatVersion: 4, data: legacySaveData(oldData), savedAt: '2025-01-01T00:00:00.000Z' }));
+    const statuses: SaveStatus[] = [];
+    const tab = openTab(storage, statuses);
+    const outcome = await tab.initialize();
+    expect(outcome.status).toBe('upgradeRequired');
+    tab.confirmSaveUpgrade();
+    expect(statuses).toContain('localSaved');
+
+    tab.checkpointProfile!(changed(outcome.profile!, 'Upgraded'));
+    await expect(tab.flush()).resolves.toBe(true);
+    expect(storedProfile(storage).characters[outcome.profile!.activeCharacterId!]?.player.name).toBe('Upgraded');
+    tab.dispose();
+  });
+
+  it('keeps saving after a legacy import', async () => {
+    const storage = new MemoryStorage();
+    const target = localSaveKeyForGame(BRIGHTWOOD_GAME_ID, import.meta.env.DEV);
+    const profile = profileFromLegacySave(makeSave());
+    storage.entries.set(localSaveKeyForGame(LEGACY_GAME_ID, import.meta.env.DEV),
+      JSON.stringify({ formatVersion: SAVE_FORMAT_VERSION, data: profile, savedAt: '2026-01-01T00:00:00.000Z' }));
+    const tab = createPersistence({ gameId: BRIGHTWOOD_GAME_ID, storage, cloud: null, catalog });
+    expect((await tab.initialize()).legacyImportAvailable).toBe(true);
+    expect((await tab.importLegacySave!()).status).toBe('ready');
+
+    tab.checkpointProfile!(changed(profile, 'Imported'));
+    await expect(tab.flush()).resolves.toBe(true);
+    const saved = JSON.parse(storage.entries.get(target)!) as { data: GameProfile };
+    expect(saved.data.characters[profile.activeCharacterId!]?.player.name).toBe('Imported');
+    tab.dispose();
   });
 });

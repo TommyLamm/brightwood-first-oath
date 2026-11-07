@@ -82,6 +82,7 @@ export type SaveStatus =
   | 'saveError'
   | 'upgradeRequired'
   | 'conflict'
+  | 'localConflict'
   | 'authLost'
   | 'incompatible';
 

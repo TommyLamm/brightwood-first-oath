@@ -616,6 +616,8 @@ export class GameApp {
       case 'returnTitle':
         if (this.stateValue.saveStatus === 'conflict') {
           this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: '存檔衝突尚未解決；請選擇載入雲端版本。' });
+        } else if (this.stateValue.saveStatus === 'localConflict') {
+          this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: '本機進度已在其他分頁更新；請先重新載入。' });
         } else if (!this.temporaryPlay && ['saving', 'saveError'].includes(this.stateValue.saveStatus)) {
           this.setToast('請先完成或重試存檔，再返回標題。');
         } else if (this.temporaryPlay) {
@@ -876,6 +878,10 @@ export class GameApp {
     }
     if (status === 'loadError' || status === 'unavailable' || status === 'incompatible') {
       void this.reloadPersistence('存檔已重新載入。');
+      return;
+    }
+    if (status === 'localConflict') {
+      void this.reloadPersistence('已重新載入本機進度。');
       return;
     }
     this.setToast('目前沒有需要重試的存檔作業。');
