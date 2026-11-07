@@ -1,0 +1,236 @@
+[
+  {
+    "key": "actor:archer-cloth",
+    "url": "assets/actors/archer-cloth-shoot-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "49c385fe8b9bd3f3e13f0e5ba48dca531ac072a5ada2ad4a23bd1b0747139264"
+  },
+  {
+    "key": "actor:archer-leather",
+    "url": "assets/actors/archer-leather-shoot-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "f9678de7776240713af49179564358c82deb8ad28ac44142930eff8c4d18f5e0"
+  },
+  {
+    "key": "actor:archer-iron",
+    "url": "assets/actors/archer-iron-shoot-v1.png",
+    "size": [
+      512,
+      128
+    ],
+    "sha256": "9bfc3757e7fc1fd9d7f7e1d5fc8544afa17b7eec3fa2cb9cd0d6e910d1130d76"
+  },
+  {
+    "key": "equip:starter-bow",
+    "url": "assets/actors/equip-starter-bow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "b3b5e72adb99ae95b19b83dbb3abdef9ca4081baa7ad7cad231a6347706daa66"
+  },
+  {
+    "key": "item:starter-bow",
+    "url": "assets/interface/item-starter-bow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "1a783691fb3c1880436c39f1a78d3c0205541a80d21aeae24d3bee8d6bc310e7"
+  },
+  {
+    "key": "equip:iron-bow",
+    "url": "assets/actors/equip-iron-bow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "477bc161ea983fdf1af6ec7ae3b72820589e0d09dde22d6445eb77ef0d5ab653"
+  },
+  {
+    "key": "item:iron-bow",
+    "url": "assets/interface/item-iron-bow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "fd92df5a026a855e9d88fa06932800f995d6b766102314089593c21fa0f84d38"
+  },
+  {
+    "key": "equip:steel-bow",
+    "url": "assets/actors/equip-steel-bow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "25694f13bc63da393aeca2d19d542466caa8ede172ba6fa2f0c244ec791e7a87"
+  },
+  {
+    "key": "item:steel-bow",
+    "url": "assets/interface/item-steel-bow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "00f6a60348fd901208258e0e4f318d39feecd826f11dd41d9ede42f2b73954b1"
+  },
+  {
+    "key": "equip:guardian-bow",
+    "url": "assets/actors/equip-guardian-bow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "045a631ddd94eac60c94a6a553d9f86f74dacbcac010bd1f9f517fa83003e6c2"
+  },
+  {
+    "key": "item:guardian-bow",
+    "url": "assets/interface/item-guardian-bow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "674edaf2183a20c22704563cda8041772b77e122d2c86fb0fb70e496b7f25fce"
+  },
+  {
+    "key": "equip:frost-tide-bow",
+    "url": "assets/actors/equip-frost-tide-bow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "6aad212a0979e99457cc04b2cc0e66f3d14a0a2db88c9fd8fcbd6794fe679b45"
+  },
+  {
+    "key": "item:frost-tide-bow",
+    "url": "assets/interface/item-frost-tide-bow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "cccb2e2f55d2fc0e6dee61123ee66a97b74180dd71ae1b2aa23c47bbe84ce814"
+  },
+  {
+    "key": "equip:sunwell-oathbow",
+    "url": "assets/actors/equip-sunwell-oathbow-v1.png",
+    "size": [
+      64,
+      128
+    ],
+    "sha256": "7745d9795b79b39370770fa6dc433ffc51113e2d1abb3403a35960029fb4ed36"
+  },
+  {
+    "key": "item:sunwell-oathbow",
+    "url": "assets/interface/item-sunwell-oathbow-v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "sha256": "97cb3c55e95d4dffb147ef0b71d84801f59c8ee39800d1ac78597034f0ea20b7"
+  },
+  {
+    "key": "skill:bow-basic",
+    "url": "assets/interface/skill-bow-basic-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "2b1748c1385beb26178bbaefc7b30a21eb0ee190805d57f6beb5256fc2455d94"
+  },
+  {
+    "key": "skill:archer-double-shot",
+    "url": "assets/interface/skill-archer-double-shot-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "083583722aa6e0081eb0a2415df0058f51bee280282d27a34f06e2f0363b82f5"
+  },
+  {
+    "key": "skill:archer-piercing-shot",
+    "url": "assets/interface/skill-archer-piercing-shot-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "aaf63b252478b6bc0352bbdf9136cfc0d0f4340670151ab342097fc69e461847"
+  },
+  {
+    "key": "skill:archer-retreat-shot",
+    "url": "assets/interface/skill-archer-retreat-shot-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "da4211f6e453c9c062a70c36265d0d3f59f27f79b021fe64594a10b1d90a9769"
+  },
+  {
+    "key": "skill:archer-bow-mastery",
+    "url": "assets/interface/skill-archer-bow-mastery-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "ab064c4da875d687827c255ba7ee7bdf37f69e11067c3e433af22441b398998b"
+  },
+  {
+    "key": "skill:archer-steady-aim",
+    "url": "assets/interface/skill-archer-steady-aim-v1.png",
+    "size": [
+      96,
+      96
+    ],
+    "sha256": "c31d62887f1b0e51f48d9daca2b421a0a8e3c8e40aff8d26e2baf841e4ed7cea"
+  },
+  {
+    "key": "actor:archer-mentor",
+    "url": "assets/actors/archer-mentor-v1.png",
+    "size": [
+      128,
+      160
+    ],
+    "sha256": "23768ca581b8aa58e6f317411b74d79464e40693ac88aa3b444ec555f3bbb686"
+  },
+  {
+    "key": "portrait:archer-mentor",
+    "url": "assets/interface/portrait-archer-mentor-v1.png",
+    "size": [
+      192,
+      119
+    ],
+    "sha256": "f702c3786cd5e399f35878296b31f050e8c7c3e4164f358b77d49ee01f2dda71"
+  },
+  {
+    "key": "portrait:archer",
+    "url": "assets/interface/portrait-archer-v1.png",
+    "size": [
+      192,
+      192
+    ],
+    "sha256": "1aaf6acddbcd28e16069cebb40b99504cded3d6112a2147097ea0b3d767aefcc"
+  },
+  {
+    "key": "actor:archery-target",
+    "url": "assets/actors/archery-target-v1.png",
+    "size": [
+      96,
+      128
+    ],
+    "sha256": "ea758217ca1475b39e831b8fc0f99c4bac77d9c2fabb6ca0fca0bb98806e22e0"
+  },
+  {
+    "key": "vfx:arrow",
+    "url": "assets/actors/arrow-v1.png",
+    "size": [
+      64,
+      16
+    ],
+    "sha256": "aead3b1f0bb59a502a2a4e8494c3e4e860dcfa5121d3e3812108c1f7b8673d28"
+  }
+]
