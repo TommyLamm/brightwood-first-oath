@@ -18,7 +18,7 @@ import { stepPlayerMovement, type PlayerJumpMemory } from '../domain/movement/pl
 import { applyMonsterHit, createMonster, stepActors } from '../domain/actors/index.js';
 import { createCombatState, stepCombat, tryAttack } from '../domain/combat/index.js';
 import { applyProgressAction, createPlayer, deriveStats, validatePlayerName } from '../domain/progression/index.js';
-import { acceptQuest, getQuestView, recordQuestEvent } from '../domain/quests/index.js';
+import { acceptQuest, getQuestView, getQuestViews, recordQuestEvent } from '../domain/quests/index.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
@@ -411,8 +411,8 @@ export function stepGameplay(
             gameplay.toast = '紅框將在900ms後判定，請走出框線！';
           }
         }
-        if (objective) gameplay.saveData.quests = recordQuestEvent(gameplay.saveData.quests,
-          { type: 'inspected', targetId: objective }, catalog.world, gameplay.saveData.player);
+        if (objective) gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
+          { type: 'inspected', targetId: objective }, catalog.world, gameplay.saveData.player) };
         const placement = map.npcs.find(({ npcId }) => npcId === targetId);
         if (placement) pushEffect(gameplay, { id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs });
         continue;
@@ -468,7 +468,7 @@ export function stepGameplay(
       }
       if (resolvedSkill === 'arcanist-siphon' && hit.sourceId === gameplay.playerEntityId) {
         const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: 0, mp: 6 }, catalog.rules);
-        if (restored.ok) gameplay.saveData.player = restored.value;
+        if (restored.ok) gameplay.saveData = { ...gameplay.saveData, player: restored.value };
       }
       if (resolvedSkill === 'mage-frost-ring' || resolvedSkill === 'elementalist-nova') gameplay.monsters = gameplay.monsters.map((monster) =>
         monster.id === hit.targetId && !BOSS_MONSTER_IDS.has(monster.monsterId) && monster.hp > 0
@@ -486,8 +486,8 @@ export function stepGameplay(
       const escaped = Math.abs(gameplay.movement.position.x - trial.position.x) > 90 + catalog.rules.movement.width / 2
         || Math.abs(gameplay.movement.position.y - trial.position.y) > 80;
       if (escaped) {
-        gameplay.saveData.quests = recordQuestEvent(gameplay.saveData.quests,
-          { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, gameplay.saveData.player);
+        gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
+          { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, gameplay.saveData.player) };
         gameplay.toast = '撤離成功！完成三項訓練後回木葉鎮找夜嵐領獎。';
       } else gameplay.toast = '仍在紅框內。再對連刺靶完成兩段連刺，即可重試撤離。';
       delete gameplay.rogueTrial;
@@ -588,8 +588,7 @@ export function makeWorldSnapshot(
         ? 'walk'
         // The hero's buff pose was loaded but never requested, so casting 堅韌守護 showed no motion.
         : gameplay.buffCastAtMs !== undefined && nowMs >= gameplay.buffCastAtMs && nowMs - gameplay.buffCastAtMs < BUFF_POSE_MS ? 'buff' : 'idle';
-  const questViews = Object.keys(catalog.world.quests)
-    .map((questId) => getQuestView(gameplay.saveData, questId, catalog));
+  const questViews = getQuestViews(gameplay.saveData, catalog);
   return {
     mapId: map.id,
     nowMs,
@@ -706,7 +705,7 @@ function processCommand(
         if (skill.id === 'guardian-rally') {
           gameplay.rallyUntilMs = context.nowMs + skill.durationMs;
           const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: Math.floor(deriveStats(player, catalog.rules).maxHp * .08), mp: 0 }, catalog.rules);
-          if (restored.ok) gameplay.saveData.player = restored.value;
+          if (restored.ok) gameplay.saveData = { ...gameplay.saveData, player: restored.value };
         } else gameplay.guardUntilMs = context.nowMs + skill.durationMs;
         gameplay.attackOrDamageAtMs = context.nowMs;
         gameplay.buffCastAtMs = context.nowMs;
@@ -745,7 +744,7 @@ function processCommand(
       if (!mp.ok) return withToast(gameplay, mpShortMessage(skill, player.mp, mp.message));
       gameplay.combat = proposal.value.state;
       if (proposal.value.attack.damageBonus) delete gameplay.rogueRhythm;
-      gameplay.saveData = { ...gameplay.saveData, player: mp.value };
+      if (mp.value !== player) gameplay.saveData = { ...gameplay.saveData, player: mp.value };
       if (skill.projectile) {
         delete gameplay.aimStillMs; delete gameplay.aimReady;
         if (skill.id === 'archer-retreat-shot' || skill.id === 'ranger-volley') gameplay.retreat = {
@@ -1511,46 +1510,13 @@ function cloneGameplay(gameplay: GameplayState): GameplayState {
   return {
     ...gameplay,
     ...(gameplay.poisons ? { poisons: gameplay.poisons.map((poison) => ({ ...poison })) } : {}),
-    saveData: {
-      ...gameplay.saveData,
-      player: {
-        ...gameplay.saveData.player,
-        bag: gameplay.saveData.player.bag.map((stack) => ({ ...stack })),
-        equipment: { ...gameplay.saveData.player.equipment },
-        skillRanks: { ...gameplay.saveData.player.skillRanks },
-      },
-      quests: Object.fromEntries(Object.entries(gameplay.saveData.quests).map(([id, state]) => [id, {
-        ...state,
-        counters: { ...state.counters },
-      }])),
-      visitedMaps: [...gameplay.saveData.visitedMaps],
-      flags: { ...gameplay.saveData.flags },
-      settings: { ...gameplay.saveData.settings, bindings: { ...gameplay.saveData.settings.bindings } },
-      location: { ...gameplay.saveData.location },
-    },
-    movement: {
-      ...gameplay.movement,
-      position: { ...gameplay.movement.position },
-      velocity: { ...gameplay.movement.velocity },
-    },
-    monsters: gameplay.monsters.map((monster) => ({
-      ...monster,
-      movement: {
-        ...monster.movement,
-        position: { ...monster.movement.position },
-        velocity: { ...monster.movement.velocity },
-      },
-      attackOrigin: monster.attackOrigin ? { ...monster.attackOrigin } : null,
-      ...(monster.bellCycle ? { bellCycle: { ...monster.bellCycle } } : {}),
-    })),
+    // Movement and actor steps return new states. Save changes replace saveData at the mutation site.
     combat: {
-      ...(gameplay.combat.projectiles ? { projectiles: gameplay.combat.projectiles.map(cloneProjectile) } : {}),
+      ...gameplay.combat,
       attacks: gameplay.combat.attacks.map((attack) => ({ ...attack, origin: { ...attack.origin }, hitIds: [...attack.hitIds],
         ...(attack.meleeHitIds ? { meleeHitIds: Object.fromEntries(Object.entries(attack.meleeHitIds).map(([key, ids]) => [key, [...ids]])) } : {}) })),
-      cooldowns: Object.fromEntries(Object.entries(gameplay.combat.cooldowns).map(([id, cooldowns]) => [id, { ...cooldowns }])),
     },
-    drops: gameplay.drops.map((drop) => ({ ...drop, position: { ...drop.position } })),
-    telegraphs: gameplay.telegraphs.map((telegraph) => ({ ...telegraph, rect: { ...telegraph.rect } })),
-    effects: gameplay.effects.map((effect) => ({ ...effect, position: { ...effect.position } })),
+    drops: [...gameplay.drops],
+    effects: [...gameplay.effects],
   };
 }

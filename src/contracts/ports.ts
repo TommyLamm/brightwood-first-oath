@@ -16,6 +16,7 @@ import type {
   Id,
   MovementState,
   MonsterState,
+  PlayerJob,
   ProjectileState,
   SaveData,
   Settings,
@@ -171,7 +172,7 @@ export type WorldSnapshot = {
 };
 
 export type WorldRenderer = {
-  loadMap(map: MapDef, onProgress?: (progress: { completed: number; total: number }) => void): Promise<void>;
+  loadMap(map: MapDef, onProgress?: (progress: { completed: number; total: number }) => void, job?: PlayerJob): Promise<void>;
   render(snapshot: WorldSnapshot): void;
   resize(width: number, height: number): void;
   setBackgroundMotion?(enabled: boolean): void;

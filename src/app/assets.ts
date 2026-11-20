@@ -189,7 +189,15 @@ function parseImage(value: unknown, index: number): AssetImage {
   if (!isFiniteNumber(pivotX) || pivotX < 0 || pivotX > 1 || !isFiniteNumber(pivotY) || pivotY < 0 || pivotY > 1) {
     throw new Error(`${label} pivot must be within 0..1`);
   }
-  return { key, url, columns, rows, displayWidth, displayHeight, pivotX, pivotY };
+  const image: AssetImage = { key, url, columns, rows, displayWidth, displayHeight, pivotX, pivotY };
+  if (value.metrics !== undefined) {
+    const metrics = value.metrics;
+    if (!isRecord(metrics) || !Array.isArray(metrics.footOffsets) || metrics.footOffsets.length !== columns * rows
+      || !metrics.footOffsets.every(isFiniteNumber) || !isFiniteNumber(metrics.width) || metrics.width < 0
+      || !isFiniteNumber(metrics.height) || metrics.height < 0) throw new Error(`${label} invalid actor metrics`);
+    image.metrics = { footOffsets: metrics.footOffsets, width: metrics.width, height: metrics.height };
+  }
+  return image;
 }
 
 function parseAnimation(value: unknown, index: number): AssetAnimation {

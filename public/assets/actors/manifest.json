@@ -100,7 +100,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "width": 96.0,
+        "height": 59.0
+      }
     },
     {
       "key": "actor:sentinel",
@@ -110,7 +146,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          3.0
+        ],
+        "width": 92.5,
+        "height": 93.0
+      }
     },
     {
       "key": "actor:guide",
@@ -120,7 +192,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          2.0,
+          2.5
+        ],
+        "width": 89.5,
+        "height": 90.5
+      }
     },
     {
       "key": "actor:mentor",
@@ -130,7 +210,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          1.0,
+          1.0
+        ],
+        "width": 79.5,
+        "height": 92.25
+      }
     },
     {
       "key": "actor:healer",
@@ -140,7 +228,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          2.5,
+          2.5
+        ],
+        "width": 81.25,
+        "height": 91.25
+      }
     },
     {
       "key": "actor:keeper",
@@ -150,7 +246,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          0.0,
+          0.75
+        ],
+        "width": 68.75,
+        "height": 93.5
+      }
     },
     {
       "key": "actor:frost-guide",
@@ -160,7 +264,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          3.1386696730552472,
+          3.246899661781285
+        ],
+        "width": 83.01240135287486,
+        "height": 87.6662908680947
+      }
     },
     {
       "key": "actor:hero-cloth",
@@ -170,7 +282,77 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 62.0,
+        "height": 70.5
+      }
     },
     {
       "key": "actor:hero-leather",
@@ -180,7 +362,77 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          13.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 68.5,
+        "height": 70.5
+      }
     },
     {
       "key": "actor:hero-iron",
@@ -190,7 +442,77 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 67.0,
+        "height": 70.5
+      }
     },
     {
       "key": "actor:snail",
@@ -200,7 +522,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 72.0,
+        "height": 43.5
+      }
     },
     {
       "key": "actor:mushroom",
@@ -210,7 +568,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 72.0,
+        "height": 55.5
+      }
     },
     {
       "key": "actor:boar",
@@ -220,7 +614,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 72.0,
+        "height": 60.0
+      }
     },
     {
       "key": "actor:golem",
@@ -230,7 +660,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 69.0,
+        "height": 72.0
+      }
     },
     {
       "key": "actor:frost-wolf",
@@ -240,7 +706,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          7.545851528384276,
+          10.899563318777297,
+          11.737991266375545,
+          12.157205240174676,
+          12.157205240174676
+        ],
+        "width": 95.58078602620087,
+        "height": 96.0
+      }
     },
     {
       "key": "actor:frost-crab",
@@ -250,7 +752,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          0.0,
+          0.41921397379913117,
+          4.611353711790386,
+          1.2576419213973793,
+          0.0,
+          3.772925764192138,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.9344978165938898,
+          7.545851528384276,
+          0.0,
+          6.707423580786028,
+          8.803493449781655,
+          7.545851528384276,
+          7.965065502183407
+        ],
+        "width": 96.0,
+        "height": 96.0
+      }
     },
     {
       "key": "actor:frost-tide-warden",
@@ -260,7 +798,43 @@
       "displayWidth": 192,
       "displayHeight": 192,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          15.529411764705884,
+          15.529411764705884,
+          15.529411764705884,
+          15.529411764705884,
+          15.529411764705884,
+          15.529411764705884,
+          16.941176470588232,
+          17.64705882352942,
+          16.941176470588232,
+          17.64705882352942,
+          16.941176470588232,
+          17.64705882352942,
+          16.941176470588232,
+          15.529411764705884,
+          14.823529411764696,
+          14.823529411764696,
+          14.823529411764696,
+          14.823529411764696,
+          16.235294117647072,
+          16.235294117647072,
+          16.235294117647072,
+          16.235294117647072,
+          16.235294117647072,
+          16.235294117647072,
+          21.882352941176464,
+          44.470588235294116,
+          21.882352941176464,
+          46.58823529411765,
+          46.58823529411765,
+          46.58823529411765
+        ],
+        "width": 117.17647058823529,
+        "height": 86.11764705882354
+      }
     },
     {
       "key": "actor:guardian",
@@ -270,7 +844,43 @@
       "displayWidth": 192,
       "displayHeight": 192,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0,
+          24.0
+        ],
+        "width": 141.0,
+        "height": 144.0
+      }
     },
     {
       "key": "actor:merchant",
@@ -280,7 +890,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          1.75,
+          1.75
+        ],
+        "width": 50.5,
+        "height": 91.5
+      }
     },
     {
       "key": "actor:sands-guide",
@@ -290,7 +908,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          9.0,
+          9.0
+        ],
+        "width": 43.0,
+        "height": 78.0
+      }
     },
     {
       "key": "actor:sand-scorpion",
@@ -300,7 +926,29 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          4.0,
+          4.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          5.0,
+          5.0,
+          6.0,
+          6.0,
+          6.0,
+          6.0
+        ],
+        "width": 78.0,
+        "height": 62.0
+      }
     },
     {
       "key": "actor:sunwell-beetle",
@@ -310,7 +958,29 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "width": 85.0,
+        "height": 53.0
+      }
     },
     {
       "key": "actor:sunwell-sentinel",
@@ -320,7 +990,29 @@
       "displayWidth": 192,
       "displayHeight": 192,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          2.0,
+          2.0,
+          4.0,
+          4.0
+        ],
+        "width": 178.0,
+        "height": 172.0
+      }
     },
     {
       "key": "actor:ruins-archivist",
@@ -330,7 +1022,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          0.0,
+          0.0
+        ],
+        "width": 44.0,
+        "height": 90.0
+      }
     },
     {
       "key": "actor:ruins-medic",
@@ -340,7 +1040,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          0.0,
+          0.0
+        ],
+        "width": 37.0,
+        "height": 90.0
+      }
     },
     {
       "key": "actor:ruins-moss-carapace",
@@ -350,7 +1058,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "width": 74.0,
+        "height": 43.0
+      }
     },
     {
       "key": "actor:ruins-pathfinder",
@@ -360,7 +1104,15 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          3.0,
+          3.0
+        ],
+        "width": 41.0,
+        "height": 84.0
+      }
     },
     {
       "key": "actor:ruins-stele",
@@ -370,7 +1122,14 @@
       "displayWidth": 96,
       "displayHeight": 128,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          2.0
+        ],
+        "width": 52.0,
+        "height": 113.5
+      }
     },
     {
       "key": "actor:ruins-string-puppet",
@@ -380,7 +1139,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "width": 86.0,
+        "height": 81.0
+      }
     },
     {
       "key": "actor:ruins-bell-prowler",
@@ -390,7 +1185,43 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          5.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          5.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "width": 89.0,
+        "height": 65.0
+      }
     },
     {
       "key": "equip:oathfarer-circlet",
@@ -410,7 +1241,43 @@
       "displayWidth": 192,
       "displayHeight": 192,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "width": 186.0,
+        "height": 143.0
+      }
     },
     {
       "key": "actor:archer-cloth",
@@ -420,7 +1287,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 42.0,
+        "height": 63.0
+      }
     },
     {
       "key": "actor:archer-leather",
@@ -430,7 +1307,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 50.25,
+        "height": 66.75
+      }
     },
     {
       "key": "actor:archer-iron",
@@ -440,7 +1327,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 45.0,
+        "height": 65.25
+      }
     },
     {
       "key": "equip:starter-bow",
@@ -510,7 +1407,14 @@
       "displayWidth": 76.8,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          9.0
+        ],
+        "width": 31.799999999999997,
+        "height": 51.0
+      }
     },
     {
       "key": "actor:archery-target",
@@ -520,7 +1424,14 @@
       "displayWidth": 48,
       "displayHeight": 64,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          5.5
+        ],
+        "width": 40.5,
+        "height": 54.5
+      }
     },
     {
       "key": "vfx:arrow",
@@ -540,7 +1451,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 42.0,
+        "height": 63.0
+      }
     },
     {
       "key": "actor:mage-leather",
@@ -550,7 +1471,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 53.25,
+        "height": 66.75
+      }
     },
     {
       "key": "actor:mage-iron",
@@ -560,7 +1491,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 43.5,
+        "height": 65.25
+      }
     },
     {
       "key": "equip:starter-staff",
@@ -630,7 +1571,14 @@
       "displayWidth": 76.8,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          6.0
+        ],
+        "width": 39.6,
+        "height": 82.8
+      }
     },
     {
       "key": "equip:starter-dagger",
@@ -700,7 +1648,14 @@
       "displayWidth": 76.8,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          6.0
+        ],
+        "width": 43.8,
+        "height": 82.8
+      }
     },
     {
       "key": "actor:rogue-cloth",
@@ -710,7 +1665,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 48.0,
+        "height": 63.0
+      }
     },
     {
       "key": "actor:rogue-leather",
@@ -720,7 +1685,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 48.0,
+        "height": 63.0
+      }
     },
     {
       "key": "actor:rogue-iron",
@@ -730,7 +1705,17 @@
       "displayWidth": 96,
       "displayHeight": 96,
       "pivotX": 0.5,
-      "pivotY": 1
+      "pivotY": 1,
+      "metrics": {
+        "footOffsets": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 48.0,
+        "height": 63.0
+      }
     }
   ],
   "animations": [

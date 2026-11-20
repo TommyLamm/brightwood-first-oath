@@ -9,6 +9,7 @@ export type AssetImage = {
   displayHeight: number;
   pivotX: number;
   pivotY: number;
+  metrics?: { footOffsets: number[]; width: number; height: number };
 };
 
 export type AssetAnimation = {

@@ -5,7 +5,7 @@ import type { HeroAnchorManifest } from '../contracts/hero-anchors.js';
 import type { GameProfile, RandomSource, SaveStatus, SaveUpgradeRequired, UiSnapshot } from '../contracts/index.js';
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
-import { getQuestView } from '../domain/quests/index.js';
+import { getQuestViews } from '../domain/quests/index.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
@@ -122,7 +122,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   if (!catalog) return null;
   const saveData = gameplay?.saveData ?? null;
   const questViews = saveData
-    ? Object.keys(catalog.world.quests).map((questId) => getQuestView(saveData, questId, catalog))
+    ? getQuestViews(saveData, catalog)
     : [];
   const stats = saveData ? deriveStats(saveData.player, catalog.rules) : null;
   const playerId = gameplay?.playerEntityId;

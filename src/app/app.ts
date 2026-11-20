@@ -95,6 +95,7 @@ export class GameApp {
   private legacyImportDismissedForSession = false;
   private temporaryPlay = false;
   private lastUiClickAt = -Infinity;
+  private lastCheckedSave: SaveData | null = null;
   private saveFingerprint: string | null = null;
   private operationGeneration = 0;
   private audioController: AudioController | null = null;
@@ -449,7 +450,7 @@ export class GameApp {
 
     this.persistence?.dispose();
     this.temporaryPlay = false;
-    this.saveFingerprint = null;
+    this.rememberSave(null);
     const persistence = createPersistence({
       gameId: this.options.gameId ?? BRIGHTWOOD_GAME_ID,
       storage: this.options.storage ?? null,
@@ -697,7 +698,7 @@ export class GameApp {
     const checkedProfile = prepareProfile(nextProfile, state.catalog);
     if (!checkedProfile.ok) { this.setToast(checkedProfile.message); return; }
     this.clearCharacterRuntime();
-    this.saveFingerprint = null;
+    this.rememberSave(null);
     this.setState({
       ...state,
       gameplay: started.gameplay,
@@ -712,7 +713,7 @@ export class GameApp {
       legacyImportMessage: null,
       worldRevision: state.worldRevision + 1,
     });
-    this.saveFingerprint = saveFingerprint(started.gameplay.saveData);
+    this.rememberSave(started.gameplay.saveData);
     if (!this.temporaryPlay) this.persistence?.checkpointProfile?.(nextProfile);
   }
 
@@ -749,7 +750,7 @@ export class GameApp {
     const data = activeSaveData(result.value);
     const gameplay = data ? restoreGame(data, state.catalog, state.nextEntityId).gameplay : null;
     this.clearCharacterRuntime();
-    this.saveFingerprint = data ? saveFingerprint(data) : null;
+    this.rememberSave(data);
     this.setState({ ...this.stateValue, profile: result.value, gameplay, characterBusy: false, screen: 'title',
       panels: [], worldRevision: this.stateValue.worldRevision + 1,
       saveMessage: this.temporaryPlay ? '變更只保留在本頁暫時進度。' : null });
@@ -789,7 +790,7 @@ export class GameApp {
     const data = activeSaveData(profile)!;
     const restored = restoreGame(data, state.catalog, state.nextEntityId);
     this.clearCharacterRuntime();
-    this.saveFingerprint = saveFingerprint(restored.gameplay.saveData);
+    this.rememberSave(restored.gameplay.saveData);
     this.setState({ ...this.stateValue, profile, gameplay: restored.gameplay, characterBusy: false, panels: [],
       mapVisualLoad: null, focusResumeRequired: false, screen: data.player.hp <= 0 ? 'dead' : 'playing',
       worldRevision: this.stateValue.worldRevision + 1 });
@@ -817,7 +818,7 @@ export class GameApp {
       this.setToast('暫時角色建立失敗。');
       return;
     }
-    this.saveFingerprint = null;
+    this.rememberSave(null);
     this.setState({
       ...state,
       gameplay,
@@ -843,7 +844,7 @@ export class GameApp {
       return;
     }
     const generation = ++this.operationGeneration;
-    this.saveFingerprint = null;
+    this.rememberSave(null);
     this.setState({
       ...this.stateValue,
       screen: 'loading',
@@ -896,7 +897,7 @@ export class GameApp {
     }
     const generation = ++this.operationGeneration;
     this.temporaryPlay = false;
-    this.saveFingerprint = null;
+    this.rememberSave(null);
     persistence.invalidate();
     this.setState({
       ...this.stateValue,
@@ -936,7 +937,7 @@ export class GameApp {
       gameplay = restored.gameplay;
       repairedArenaLocation = restored.repairedArenaLocation;
     }
-    this.saveFingerprint = outcome.data ? saveFingerprint(outcome.data) : null;
+    this.rememberSave(outcome.data ?? null);
     this.setState({
       ...state,
       gameplay,
@@ -956,11 +957,16 @@ export class GameApp {
     if (repairedArenaLocation && gameplay) this.checkpointIfChanged(gameplay.saveData);
   }
 
+  private rememberSave(data: SaveData | null): void {
+    this.lastCheckedSave = data;
+    this.saveFingerprint = data ? JSON.stringify(data) : null;
+  }
+
   private checkpointIfChanged(data: SaveData | null): void {
-    if (!data) return;
-    const fingerprint = saveFingerprint(data);
-    if (fingerprint === this.saveFingerprint) return;
-    this.saveFingerprint = fingerprint;
+    if (!data || data === this.lastCheckedSave) return;
+    const previousFingerprint = this.saveFingerprint;
+    this.rememberSave(data);
+    if (this.saveFingerprint === previousFingerprint) return;
     if (this.stateValue.profile?.activeCharacterId) {
       this.setState({ ...this.stateValue, profile: updateActiveCharacter(this.stateValue.profile, data) });
     }
@@ -1336,10 +1342,6 @@ function getSavedKeyBindings(bindings: Record<string, string> | undefined): KeyB
     if (typeof code === 'string') result[action] = code;
   }
   return result;
-}
-
-function saveFingerprint(data: SaveData): string {
-  return JSON.stringify(data);
 }
 
 function errorMessage(error: unknown, fallback: string): string {

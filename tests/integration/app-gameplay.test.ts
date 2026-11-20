@@ -6,10 +6,34 @@ import { worldCatalog } from '../../src/content/world/index.js';
 import { acceptQuest, getQuestView } from '../../src/domain/quests/index.js';
 import { applyProgressAction } from '../../src/domain/progression/index.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
+import { createInitialAppState, createUiSnapshot } from '../../src/app/state.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
 describe('app gameplay vertical slice', () => {
+  it('shares idle progress and quest views, then refreshes both displays after accepting a quest', () => {
+    const state = createInitialAppState(9, 'idle-progress');
+    const started = startNewGame('旅人', catalog, state.nextEntityId, 'mage');
+    if ('error' in started) throw new Error(started.error);
+    const initial = started.gameplay;
+    const previousViews = makeWorldSnapshot(initial, catalog, 0).questViews;
+    const step = stepGameplay(initial, {
+      catalog, commands: [], input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 1 / 60, nowMs: 1000 / 60, random: state.random, nextEntityId: state.nextEntityId,
+    });
+    const idle = step.gameplay!;
+    expect(idle.saveData).toBe(initial.saveData);
+    expect(createUiSnapshot({ ...state, catalog, gameplay: idle })?.questViews).toBe(previousViews);
+
+    const accepted = acceptQuest(idle.saveData, 'q01', catalog);
+    if (!accepted.ok) throw new Error(accepted.message);
+    const gameplay = { ...idle, saveData: accepted.value };
+    const updated = createUiSnapshot({ ...state, catalog, gameplay })!.questViews;
+    expect(makeWorldSnapshot(gameplay, catalog, 20).questViews).toBe(updated);
+    expect(updated.find(({ questId }) => questId === 'q01')?.status).toBe('active');
+    expect(previousViews.find(({ questId }) => questId === 'q01')?.status).toBe('available');
+  });
+
   it('uses the audio defaults for new characters and preserves loaded settings', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('audio-settings'));
     if ('error' in started) throw new Error(started.error);

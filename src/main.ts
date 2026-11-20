@@ -17,6 +17,7 @@ if (!gameRoot || !uiRoot) {
 
 const statusView = createRootStatusView(uiRoot);
 let app: GameApp;
+let hudUpdatePending = false;
 const appStorage = browserStorage();
 const ui = createUi(uiRoot, (command) => app.dispatchUi(command), {
   gameId: BRIGHTWOOD_GAME_ID,
@@ -30,10 +31,16 @@ app = new GameApp({
   cloud: playroomCloudPort,
   backgroundMotionDefault: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   audioFactory: createAudio,
-  onStateChange: (state) => {
-    statusView.update(state);
-    const snapshot = app.uiSnapshot;
-    if (snapshot) ui.render(snapshot);
+  onStateChange: () => {
+    if (hudUpdatePending) return;
+    hudUpdatePending = true;
+    queueMicrotask(() => {
+      if (!hudUpdatePending) return;
+      hudUpdatePending = false;
+      statusView.update(app.state);
+      const snapshot = app.uiSnapshot;
+      if (snapshot) ui.render(snapshot);
+    });
   },
 });
 statusView.update(app.state);
@@ -69,6 +76,7 @@ function browserStorage(): StorageLike | null {
 
 if (import.meta.hot) {
   import.meta.hot.dispose(() => {
+    hudUpdatePending = false;
     app.dispose();
     ui.dispose();
     statusView.dispose();

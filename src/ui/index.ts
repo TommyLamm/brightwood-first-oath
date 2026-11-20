@@ -598,7 +598,10 @@ export function createUi(
     { id: 'small-red', label: 'HP 藥水', kind: 'item' },
     { id: 'small-blue', label: 'MP 藥水', kind: 'item' },
   ] as const;
-  const quickButtons = new Map<string, HTMLButtonElement>();
+  const quickButtons: {
+    slot: typeof quickDefinitions[number]; button: HTMLButtonElement; key: HTMLElement;
+    iconHost: HTMLElement; label: HTMLElement; state: HTMLElement; previousInputs: unknown[];
+  }[] = [];
   for (const slot of quickDefinitions) {
     const button = makeButton(document, '', slot.kind === 'item' ? 'use-item' : 'attack', {
       className: 'ms-quick-slot',
@@ -612,7 +615,7 @@ export function createUi(
     if (slot.kind === 'item') button.classList.add('ms-quick-slot--item');
     button.append(keyHint, icon, label, state);
     quickSlots.append(button);
-    quickButtons.set(slot.id, button);
+    quickButtons.push({ slot, button, key: keyHint, iconHost: icon, label, state, previousInputs: [] as unknown[] });
   }
   quickbar.setAttribute('aria-label', '戰鬥與藥水快捷列');
   quickbar.append(quickSlots);
@@ -645,6 +648,7 @@ export function createUi(
   let lastScreenSignature = '';
   let lastProfileSignature = '';
   let lastMapSignature = '';
+  let lastQuestViews: UiSnapshot['questViews'] | undefined;
   let lastQuestSignature = '';
   let lastPanelSignature = '';
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
@@ -924,13 +928,14 @@ export function createUi(
   const renderQuestTracker = (view: UiSnapshot): void => {
     if (view.saveData) questTrackerState.reconcile(view.questViews);
     const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
-    const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     const signature = JSON.stringify({
-      quests: view.questViews, map: view.saveData?.location.mapId, chapterComplete, worldComplete,
+      map: view.saveData?.location.mapId, chapterComplete,
       collapsed: questTrackerState.collapsed,
       trackedQuestId: questTrackerState.trackedQuestId,
     });
-    if (signature === lastQuestSignature) return;
+    if (view.questViews === lastQuestViews && signature === lastQuestSignature) return;
+    lastQuestViews = view.questViews;
+    const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     lastQuestSignature = signature;
     const quest = selectTrackerQuest(view.questViews, questTrackerState.trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
@@ -1009,22 +1014,25 @@ export function createUi(
       'small-red': 'potionHp',
       'small-blue': 'potionMp',
     };
-    for (const [definitionId, button] of quickButtons) {
-      const slotIndex = quickDefinitions.findIndex((definition) => definition.id === definitionId);
-      const slotId = player && slotIndex < 4 ? resolveSkillSlot(player,slotIndex as 0|1|2|3) : definitionId;
+    for (const [slotIndex, entry] of quickButtons.entries()) {
+      const { slot, button, key, iconHost, label, state } = entry;
+      const definitionId = slot.id;
+      const slotId = player && slotIndex < 4 ? resolveSkillSlot(player, slotIndex as 0|1|2|3) : definitionId;
+      const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
+      // Timers invalidate at the same precision shown on the button.
+      const inputs = [
+        view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
+        Math.ceil(Math.max(0, readyAt - view.nowMs) / 100),
+        Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
+        Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
+        view.combatUi?.bufferedSkillId, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
+      ];
+      if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
+      entry.previousInputs = inputs;
       button.classList.toggle('has-action-feedback', false);
-      const slot = quickDefinitions.find((definition) => definition.id === definitionId);
-      const key = button.querySelector<HTMLElement>('.ms-quick-slot__key');
-      if (key) {
-        const action = keyForSkill[definitionId]!;
-        const binding = effectiveKeyText(view.saveData?.settings.bindings ?? {}, action);
-        key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
-        key.title = binding;
-      }
-      const iconHost = button.querySelector<HTMLElement>('.ms-quick-slot__icon');
-      const state = button.querySelector<HTMLElement>('.ms-quick-slot__state');
-      const label = button.querySelector<HTMLElement>('.ms-quick-slot__label');
-      if (!slot || !iconHost || !state || !label) continue;
+      const binding = effectiveKeyText(view.saveData?.settings.bindings ?? {}, keyForSkill[definitionId]!);
+      key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
+      key.title = binding;
 
       if (slot.kind === 'item') {
         const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';

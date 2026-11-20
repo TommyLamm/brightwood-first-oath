@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
+import { effectiveJob } from '../content/rules/jobs.js';
 import { createWorldRenderer } from '../render/index.js';
 import { GameApp } from './app.js';
-import { makeWorldSnapshot } from './gameplay.js';
+import { makeWorldSnapshot, type GameplayState } from './gameplay.js';
 import { shouldAttemptMapVisualLoad } from './map-load-retry.js';
 import type { MapDef } from '../contracts/definitions.js';
 import type { WorldRenderer, WorldRendererFactory } from '../contracts/ports.js';
@@ -42,6 +43,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
   class WorldScene extends Phaser.Scene {
     private worldRenderer: WorldRenderer | null = null;
     private rendererReady = false;
+    private awaitingFirstRender = true;
+    private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number };
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
@@ -74,6 +77,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
 
       const rendererFactory: WorldRendererFactory = createWorldRenderer;
       this.worldRenderer = rendererFactory(this, manifests, catalog, heroAnchors);
+      this.resizeWorld();
+      this.scale.on(Phaser.Scale.Events.RESIZE, this.resizeWorld, this);
       this.worldRenderer.setBackgroundMotion?.(app.state.backgroundMotion);
       const initialMap = app.state.gameplay && app.state.screen !== 'title' && app.state.screen !== 'create'
         ? catalog.world.maps[app.state.gameplay.saveData.location.mapId]
@@ -117,7 +122,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
         } else {
           const requestId = app.beginMapVisualLoad(map);
           this.visualRequestId = requestId;
-          void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
+          void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress), effectiveJob(gameplay.saveData.player)).then(() => {
             if (!this.loadIsCurrent(app, key, revision)) return;
             app.endMapVisualLoad(requestId);
             app.completeMapTransition(revision);
@@ -125,6 +130,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
             this.failedMapIds.delete(map.id);
             this.transitionKey = null;
             this.rendererReady = true;
+            this.awaitingFirstRender = true;
           }).catch((error: unknown) => {
             if (!this.loadIsCurrent(app, key, revision)) return;
             const message = error instanceof Error ? error.message : String(error);
@@ -149,12 +155,24 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       if (gameplay?.pendingTransition) return;
       if (!this.rendererReady || !this.worldRenderer || !catalog || !gameplay
         || this.activeMapId !== gameplay.saveData.location.mapId) return;
-      this.worldRenderer.resize(this.scale.gameSize.width, this.scale.gameSize.height);
+      const { scrollX, scrollY } = this.cameras.main;
+      const last = this.lastWorldFrame;
+      if (!this.awaitingFirstRender && last?.gameplay === gameplay && last.time === state.gameTimeMs
+        && last.scrollX === scrollX && last.scrollY === scrollY) return;
+      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY };
       this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs));
+      this.awaitingFirstRender = false;
+    }
+
+    private resizeWorld(): void {
+      this.lastWorldFrame = undefined;
+      this.worldRenderer?.resize(this.scale.gameSize.width, this.scale.gameSize.height);
     }
 
     private shutdown(): void {
+      this.lastWorldFrame = undefined;
       this.events.off(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
+      this.scale.off(Phaser.Scale.Events.RESIZE, this.resizeWorld, this);
       this.worldRenderer?.dispose();
       if (this.visualRequestId !== null) app.endMapVisualLoad(this.visualRequestId);
       this.worldRenderer = null;
@@ -176,12 +194,15 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       this.failedMapIds.delete(map.id);
       const requestId = app.beginMapVisualLoad(map);
       this.visualRequestId = requestId;
-      void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress)).then(() => {
+      const player = app.state.gameplay?.saveData.player;
+      void this.worldRenderer.loadMap(map, (progress) => app.updateMapVisualProgress(requestId, progress),
+        player && effectiveJob(player)).then(() => {
         if (!this.loadIsCurrent(app, key, revision)) return;
         app.endMapVisualLoad(requestId);
         this.activeMapId = map.id;
         this.failedMapIds.delete(map.id);
         this.rendererReady = true;
+        this.awaitingFirstRender = true;
         this.transitionKey = null;
         // Success needs no banner; the old report flashed a developer note
         // ('目前地圖資產已接入 renderer。') in the status panel.

@@ -104,6 +104,23 @@ export function getQuestView(data: SaveData, questId: Id, catalog: ContentCatalo
   };
 }
 
+// UI and world snapshots read the same immutable progress branches between changes.
+const questViewsByCatalog = new WeakMap<ContentCatalog, { data: SaveData; views: QuestView[] }>();
+
+export function getQuestViews(data: SaveData, baseCatalog: ContentCatalog): QuestView[] {
+  const catalog = classCatalog(baseCatalog, data.player);
+  const cached = questViewsByCatalog.get(catalog);
+  if (cached) {
+    const previous = cached.data;
+    if (previous.quests === data.quests && previous.visitedMaps === data.visitedMaps
+      && previous.player.level === data.player.level && previous.player.bag === data.player.bag
+      && previous.player.equipment === data.player.equipment) return cached.views;
+  }
+  const views = Object.keys(catalog.world.quests).map((id) => getQuestView(data, id, catalog));
+  questViewsByCatalog.set(catalog, { data, views });
+  return views;
+}
+
 function error<T>(code: 'INVALID' | 'LOCKED' | 'NOT_FOUND' | 'REQUIREMENT' | 'NOT_READY', message: string): Result<T> {
   return { ok: false, code, message };
 }

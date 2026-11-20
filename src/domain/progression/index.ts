@@ -389,7 +389,8 @@ export function applyProgressAction(
 ): Result<PlayerProgress> {
   const valid = validatePlayer(player, rules);
   if (!valid.ok) return valid;
-  const draft = clonePlayer(player);
+  const changesVitals = action.type === 'damage' || action.type === 'spendMp' || action.type === 'restore';
+  const draft = changesVitals ? { ...player } : clonePlayer(player);
   switch (action.type) {
     case 'addItem':
       return resultWithPlayer(draft, addStacksToDraft(draft, [action.stack], rules));

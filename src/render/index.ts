@@ -4,7 +4,7 @@ import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/ass
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
 import type { HeroAnchorManifest, HeroAnchorOutfit, HeroAnchorPose } from '../contracts/hero-anchors.js';
 import type { VisualEvent, WorldRenderer, WorldSnapshot } from '../contracts/ports.js';
-import type { AttackInstance, Id, Vec2 } from '../contracts/types.js';
+import type { AttackInstance, Id, PlayerJob, Vec2 } from '../contracts/types.js';
 import { animationConformsToUse } from './animation-contract.js';
 import { backgroundImageKey } from './background-style.js';
 import { ParallaxMotion } from './parallax-motion.js';
@@ -282,15 +282,17 @@ function frameKey(imageKey: string, frame: number): string {
   return `__render_${encodeURIComponent(imageKey)}_${frame}`;
 }
 
-function requiredImageKeys(map: MapDef, catalog: ContentCatalog): Set<string> {
+function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob): Set<string> {
   const keys = new Set<string>([
     ...BACKGROUND_LAYERS.map(({ name }) => backgroundImageKey(map, name)),
     ...HERO_IMAGE_KEYS,
-    'actor:archer-cloth', 'actor:archer-leather', 'actor:archer-iron', 'vfx:arrow',
-    'actor:mage-cloth', 'actor:mage-leather', 'actor:mage-iron',
-    'actor:rogue-cloth', 'actor:rogue-leather', 'actor:rogue-iron',
+    'vfx:arrow',
     ...requiredTerrainImageKeys(map),
   ]);
+  for (const pose of ['archer', 'mage', 'rogue']) {
+    if (job && job !== pose) continue;
+    for (const outfit of ['cloth', 'leather', 'iron']) keys.add(`actor:${pose}-${outfit}`);
+  }
   if (map.portals.length > 0) keys.add('env:portal');
   for (const key of VFX_IMAGE_KEYS) keys.add(key);
   for (const skill of Object.values(catalog.rules.skills)) {
@@ -461,6 +463,12 @@ export function createWorldRenderer(
 
   const measureActorFootOffsets = (asset: AssetImage): void => {
     if (!asset.key.startsWith('actor:') || actorFootOffsets.has(asset.key)) return;
+    if (asset.metrics) {
+      const { footOffsets, width, height } = asset.metrics;
+      actorFootOffsets.set(asset.key, footOffsets);
+      if (height > 0) actorContentSizes.set(asset.key, { width, height });
+      return;
+    }
     if (typeof document === 'undefined') {
       actorFootOffsets.set(asset.key, Array.from({ length: asset.columns * asset.rows }, () => 0));
       return;
@@ -1141,11 +1149,11 @@ export function createWorldRenderer(
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
       const questState = questStates.get(placement.npcId);
       const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
-      npcVisual.nameText.setText(npc.name + questLabel)
-        .setColor(questState === 'ready' ? '#c7f8c5' : '#fff4d4')
-        .setVisible(npcInViewport);
-      const nameGeometry = npcNameGeometry(placement, image.displayHeight);
-      npcVisual.nameText.setPosition(nameGeometry.x, nameGeometry.y);
+      const label = npc.name + questLabel;
+      const color = questState === 'ready' ? '#c7f8c5' : '#fff4d4';
+      if (npcVisual.nameText.text !== label) npcVisual.nameText.setText(label);
+      if (npcVisual.nameText.style.color !== color) npcVisual.nameText.setColor(color);
+      npcVisual.nameText.setVisible(npcInViewport);
       const markerImage = assets.images.get('marker:quest')!;
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
@@ -1506,14 +1514,14 @@ export function createWorldRenderer(
   };
 
   const renderer: WorldRenderer = {
-    async loadMap(map, onProgress): Promise<void> {
+    async loadMap(map, onProgress, job): Promise<void> {
       if (disposed) throw new RendererAssetError('Renderer 已 dispose，不能載入地圖');
       const missingCatalogRefs = [
         ...map.npcs.filter((placement) => !catalog.world.npcs[placement.npcId]).map((placement) => `npc:${placement.npcId}`),
         ...map.monsters.filter((spawn) => !catalog.rules.monsters[spawn.monsterId]).map((spawn) => `monster:${spawn.monsterId}`),
       ];
       if (missingCatalogRefs.length > 0) throw new RendererAssetError(`地圖引用未知內容：${missingCatalogRefs.join(', ')}`, missingCatalogRefs);
-      const requestedKeys = requiredImageKeys(map, catalog);
+      const requestedKeys = requiredImageKeys(map, catalog, job);
       const requestedImages = requireImages(requestedKeys);
       const missingAnimations = missingRequiredAnimations(map, catalog, assets);
       if (missingAnimations.length > 0) {
