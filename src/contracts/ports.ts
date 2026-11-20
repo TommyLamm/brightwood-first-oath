@@ -248,6 +248,7 @@ export type UiController = {
 export type MusicIntensity = 'explore' | 'combat' | 'phase2';
 
 export type AudioController = {
+  readonly readyForInput?: boolean;
   unlock(): Promise<void>;
   /**
    * Selects a music set (a map's `musicKey`); its layers start together and crossfade in.

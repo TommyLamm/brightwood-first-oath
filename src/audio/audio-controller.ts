@@ -115,6 +115,7 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
   let intensity: MusicIntensity = 'explore';
   let currentSet: MusicSet | null = null;
   let unlocked = false;
+  let oneShotsReady = false;
   let paused = false;
   let ducked = false;
   let disposed = false;
@@ -208,7 +209,9 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
   }
 
   async function loadOneShots(targetContext: AudioContext): Promise<void> {
-    await Promise.all(oneShots.map((entry) => loadBuffer(entry, targetContext)));
+    if (oneShotsReady) return;
+    const buffers = await Promise.all(oneShots.map((entry) => loadBuffer(entry, targetContext)));
+    oneShotsReady = buffers.every(Boolean);
   }
 
   /** Frees decoded music that no playing or wanted set needs. */
@@ -330,7 +333,13 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
     }
   }
 
+  function readyForInput(): boolean {
+    return !disposed && unlocked && context?.state === 'running' && oneShotsReady
+      && (!musicKey || currentSet?.key === musicKey);
+  }
+
   async function unlock(): Promise<void> {
+    if (readyForInput()) return;
     if (disposed || !ensureGraph() || !context) return;
     const targetContext = context;
     try {
@@ -352,6 +361,7 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
   }
 
   return {
+    get readyForInput() { return readyForInput(); },
     unlock,
 
     async setMusic(key: string | null): Promise<void> {

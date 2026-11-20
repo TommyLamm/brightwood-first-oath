@@ -4,6 +4,7 @@ import type {
   EquipmentSlot,
   ErrorCode,
   Id,
+  ItemDef,
   PlayerProgress,
   PlayerJob,
   Result,
@@ -239,38 +240,53 @@ function validatePlayer(player: PlayerProgress, rules: RulesCatalog): Result<voi
   return validateBag(player, rules);
 }
 
+function incomingItem(stack: BagStack, rules: RulesCatalog): Result<ItemDef> {
+  const item = rules.items[stack.itemId];
+  if (!item) return failure('NOT_FOUND', `找不到物品：${stack.itemId}。`);
+  if (!isPositiveInteger(stack.quantity)) return failure('INVALID', '新增物品數量必須是正整數。');
+  return success(item);
+}
+
+function fitStack(bag: BagStack[], item: ItemDef, quantity: number, apply: boolean): Result<void> {
+  const emptySlotCapacity = (BAG_CAPACITY - bag.length) * item.stackLimit;
+  if (!apply && quantity <= emptySlotCapacity) return success(undefined);
+  let remaining = quantity;
+  for (const stack of bag) {
+    if (stack.itemId !== item.id || stack.quantity >= item.stackLimit) continue;
+    const amount = Math.min(remaining, item.stackLimit - stack.quantity);
+    if (apply) stack.quantity += amount;
+    remaining -= amount;
+    if (remaining === 0) return success(undefined);
+  }
+  if (remaining > emptySlotCapacity) return failure('BAG_FULL', `背包已滿（${BAG_CAPACITY} 格）；請先出售或使用物品騰出空位。`);
+  if (apply) {
+    while (remaining > 0) {
+      const amount = Math.min(remaining, item.stackLimit);
+      bag.push({ itemId: item.id, quantity: amount });
+      remaining -= amount;
+    }
+  }
+  return success(undefined);
+}
+
+export function checkItemCapacity(player: PlayerProgress, stack: BagStack, rules: RulesCatalog): Result<void> {
+  const item = incomingItem(stack, rules);
+  return item.ok ? fitStack(player.bag, item.value, stack.quantity, false) : item;
+}
+
 function addStacksToDraft(
   player: PlayerProgress,
   stacks: BagStack[],
   rules: RulesCatalog,
 ): Result<void> {
-  const validated = stacks.map((stack) => {
-    const item = rules.items[stack.itemId];
-    if (item === undefined) return failure<never>('NOT_FOUND', `找不到物品：${stack.itemId}。`);
-    if (!isPositiveInteger(stack.quantity)) {
-      return failure<never>('INVALID', '新增物品數量必須是正整數。');
-    }
-    return success({ item, quantity: stack.quantity });
-  });
+  const validated = stacks.map((stack) => incomingItem(stack, rules));
   const invalid = validated.find((entry) => !entry.ok);
   if (invalid !== undefined && !invalid.ok) return invalid;
 
-  for (const entry of validated) {
+  for (const [index, entry] of validated.entries()) {
     if (!entry.ok) continue;
-    let remaining = entry.value.quantity;
-    for (const stack of player.bag) {
-      if (stack.itemId !== entry.value.item.id || stack.quantity >= entry.value.item.stackLimit) continue;
-      const amount = Math.min(remaining, entry.value.item.stackLimit - stack.quantity);
-      stack.quantity += amount;
-      remaining -= amount;
-      if (remaining === 0) break;
-    }
-    while (remaining > 0) {
-      if (player.bag.length >= BAG_CAPACITY) return failure('BAG_FULL', `背包已滿（${BAG_CAPACITY} 格）；請先出售或使用物品騰出空位。`);
-      const amount = Math.min(remaining, entry.value.item.stackLimit);
-      player.bag.push({ itemId: entry.value.item.id, quantity: amount });
-      remaining -= amount;
-    }
+    const fit = fitStack(player.bag, entry.value, stacks[index]!.quantity, true);
+    if (!fit.ok) return fit;
   }
   return success(undefined);
 }
@@ -359,20 +375,24 @@ function gainExperience(player: PlayerProgress, exp: number, rules: RulesCatalog
   return success(leveledUp);
 }
 
-function applyReward(player: PlayerProgress, reward: Reward, rules: RulesCatalog): Result<void> {
-  if (
-    !Number.isSafeInteger(reward.coins) || reward.coins < 0 ||
-    !Number.isSafeInteger(reward.exp) || reward.exp < 0
-  ) {
+export function checkCoinCapacity(player: PlayerProgress, coins: number): Result<void> {
+  if (!Number.isSafeInteger(coins) || coins < 0) {
     return failure('INVALID', '獎勵金幣與經驗必須是非負整數。');
   }
-  const nextCoins = player.coins + reward.coins;
+  const nextCoins = player.coins + coins;
   if (!Number.isSafeInteger(nextCoins) || nextCoins > COIN_CAP) {
     return failure('INVALID', '獎勵會使金幣超過上限。');
   }
+  return success(undefined);
+}
+
+function applyReward(player: PlayerProgress, reward: Reward, rules: RulesCatalog): Result<void> {
+  if (!Number.isSafeInteger(reward.exp) || reward.exp < 0) return failure('INVALID', '獎勵金幣與經驗必須是非負整數。');
+  const coins = checkCoinCapacity(player, reward.coins);
+  if (!coins.ok) return coins;
   const addResult = addStacksToDraft(player, reward.items, rules);
   if (!addResult.ok) return addResult;
-  player.coins = nextCoins;
+  player.coins += reward.coins;
   const expResult = gainExperience(player, reward.exp, rules);
   if (!expResult.ok) return expResult;
   return success(undefined);

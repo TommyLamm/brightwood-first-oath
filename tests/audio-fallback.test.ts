@@ -77,6 +77,24 @@ describe('music fallback encoding', () => {
 });
 
 describe('music loading', () => {
+  it('skips a warm unlock and resumes again after the context is suspended', async () => {
+    const fetched = installFakeAudio([]);
+    const resume = vi.spyOn(AudioContext.prototype, 'resume');
+    const audio = createAudio(manifest, settings);
+    await audio.unlock();
+    expect(audio.readyForInput).toBe(true);
+    await audio.unlock();
+    expect(resume).toHaveBeenCalledTimes(1);
+
+    Object.defineProperty(resume.mock.instances[0], 'state', { value: 'suspended', writable: true });
+    expect(audio.readyForInput).toBe(false);
+    await audio.unlock();
+    expect(resume).toHaveBeenCalledTimes(2);
+    expect(audio.readyForInput).toBe(true);
+    expect(fetched).toEqual(['assets/audio/ui-click.wav']);
+    audio.dispose();
+  });
+
   it('downloads a track once when setMusic and the unlock preload overlap', async () => {
     const started: unknown[] = [];
     const fetched = installFakeAudio(started);

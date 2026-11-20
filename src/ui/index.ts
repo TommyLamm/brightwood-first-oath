@@ -664,7 +664,8 @@ export function createUi(
   let nameDraft = '旅人';
   let shopQuantities = new Map<string, number>();
   let sellQuantities = new Map<number, number>();
-  let lastReconciledBag: NonNullable<UiSnapshot['saveData']>['player']['bag'] = [];
+  const emptyBag: NonNullable<UiSnapshot['saveData']>['player']['bag'] = [];
+  let lastReconciledBag = emptyBag;
   let bagStateMessage = '';
   let bagHeadingRestorePending = false;
   let pendingBinding: Exclude<GameAction, 'escape'> | null = null;
@@ -1509,10 +1510,10 @@ export function createUi(
     canvas?.focus();
   };
 
-  const renderPanel = (view: UiSnapshot, force = false): void => {
-    const panel = view.panels.at(-1) ?? null;
+  const reconcilePanelBag = (view: UiSnapshot, panel: PanelId | null, force: boolean): boolean => {
     const previousBag = lastReconciledBag;
-    const nextBag = view.saveData?.player.bag ?? [];
+    const nextBag = view.saveData?.player.bag ?? emptyBag;
+    if (previousBag === nextBag && !force) return false;
     const activeBeforeReconciliation = document.activeElement;
     const activeBagControl = activeBeforeReconciliation instanceof HTMLElement
       && panelHost.contains(activeBeforeReconciliation)
@@ -1523,7 +1524,7 @@ export function createUi(
     const reconciliation = reconcileBagViewState(previousBag, nextBag, selectedBagIndex, sellQuantities);
     selectedBagIndex = reconciliation.selectedBagIndex;
     sellQuantities = reconciliation.sellQuantities;
-    lastReconciledBag = nextBag.map((stack) => ({ ...stack }));
+    lastReconciledBag = nextBag;
     const bagPanel = panel === 'inventory' || panel === 'shop';
     const bagStructureChanged = reconciliation.structureChanged;
     if (bagStructureChanged) {
@@ -1555,7 +1556,12 @@ export function createUi(
         }
       }
     }
-    const skipBagFocusPreservation = bagStructureChanged && bagPanel && activeBagControl;
+    return bagStructureChanged && bagPanel && activeBagControl;
+  };
+
+  const renderPanel = (view: UiSnapshot, force = false): void => {
+    const panel = view.panels.at(-1) ?? null;
+    const skipBagFocusPreservation = reconcilePanelBag(view, panel, force);
     const focusStableBagHeading = skipBagFocusPreservation
       && view.focusResumeRequired !== true && !restoreFocusAfterResume;
     if (focusStableBagHeading) bagHeadingRestorePending = false;
@@ -2165,7 +2171,7 @@ export function createUi(
       selectedQuestId = null;
       selectedMapId = null;
       questTrackerState.trackQuest(null);
-      lastReconciledBag = [];
+      lastReconciledBag = emptyBag;
       lastPanelFocus = null;
       panelFocusBeforeResume = null;
     }

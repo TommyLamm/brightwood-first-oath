@@ -67,6 +67,7 @@ import {
 type RendererAssets = {
   images: Map<string, AssetImage>;
   animations: Map<string, AssetAnimation>;
+  animationStates: Map<string, Map<string, AssetAnimation>>;
 };
 
 type MapVisual = {
@@ -233,6 +234,7 @@ function validateManifests(manifests: AssetManifest[]): RendererAssets {
     }
   }
 
+  const animationStates = new Map<string, Map<string, AssetAnimation>>();
   for (const animation of animations.values()) {
     const image = images.get(animation.imageKey);
     if (!image) throw new RendererAssetError(`Animation 引用不存在的 image：${animation.key} → ${animation.imageKey}`, [animation.imageKey]);
@@ -240,8 +242,15 @@ function validateManifests(manifests: AssetManifest[]): RendererAssets {
     if (animation.frames.some((frame) => !Number.isInteger(frame) || frame < 0 || frame >= frameCount)) {
       throw new RendererAssetError(`Animation frame 超出 sprite sheet：${animation.key}`, [animation.key]);
     }
+    const state = animation.key.slice(animation.key.lastIndexOf(':') + 1);
+    let states = animationStates.get(animation.imageKey);
+    if (!states) {
+      states = new Map();
+      animationStates.set(animation.imageKey, states);
+    }
+    if (!states.has(state)) states.set(state, animation);
   }
-  return { images, animations };
+  return { images, animations, animationStates };
 }
 
 function validateRelativeUrl(url: string, key: string): void {
@@ -356,10 +365,8 @@ function animationFor(
 ): AssetAnimation | undefined {
   const direct = assets.animations.get(requestedKey);
   if (direct?.imageKey === imageKey) return direct;
-  const state = requestedKey.split(':').at(-1) ?? requestedKey;
-  return [...assets.animations.values()].find((candidate) =>
-    candidate.imageKey === imageKey && (candidate.key === state || candidate.key.endsWith(`:${state}`)),
-  );
+  const state = requestedKey.slice(requestedKey.lastIndexOf(':') + 1);
+  return assets.animationStates.get(imageKey)?.get(state);
 }
 
 function actorImageKey(bodyVisual: Id | null, catalog: ContentCatalog): string {
@@ -939,11 +946,17 @@ export function createWorldRenderer(
       actorsLayer.add(sprite);
       actorSprites.set(key, sprite);
     }
-    const animation = animationFor(assets, imageKey, animationKey);
-    const previousClock = actorAnimationClocks.get(key);
-    const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
-    actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
-    const frame = frameOverride ?? pickAnimationFrame(animation, nowMs, animationStartedAtMs, totalDurationMs);
+    let frame = frameOverride ?? 0;
+    if (animationKey) {
+      const previousClock = actorAnimationClocks.get(key);
+      const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
+      if (previousClock?.animationKey !== animationKey || previousClock.startedAtMs !== animationStartedAtMs) {
+        actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
+      }
+      if (frameOverride === undefined) {
+        frame = pickAnimationFrame(animationFor(assets, imageKey, animationKey), nowMs, animationStartedAtMs, totalDurationMs);
+      }
+    }
     const footOffsetY = imageKey.startsWith('actor:') ? actorFootOffsets.get(imageKey)?.[frame] ?? 0 : 0;
     setImageFrame(sprite, image, frame);
     sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);

@@ -1043,7 +1043,7 @@ export class GameApp {
 
   private unlockAudioFromGesture(): Promise<void> | null {
     const controller = this.audioController;
-    if (!controller) return null;
+    if (!controller || controller.readyForInput) return null;
     if (this.audioUnlockInFlight) return this.audioUnlockInFlight;
     try {
       const unlock = controller.unlock();

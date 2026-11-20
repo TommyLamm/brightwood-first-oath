@@ -1048,10 +1048,14 @@ function pickupNearest(gameplay: GameplayState, context: GameplayStepInput): { g
   // Resolve again against the command's current player; never apply a result stored by the UI.
   const target = findPickupTarget(gameplay.drops, gameplay.movement.position, context.nowMs, gameplay.saveData.player, context.catalog.rules);
   if (!target) return withToast(gameplay, '附近沒有可以拾取的物品。');
-  const { drop, result } = target;
+  const { drop } = target;
   gameplay.nextPickupAtMs = context.nowMs + 150;
-  if (!result.ok) return withToast(gameplay, result.message);
+  if (!target.result.ok) return withToast(gameplay, target.result.message);
   const beforePickup = gameplay.saveData;
+  const result = drop.itemId === null
+    ? applyProgressAction(beforePickup.player, { type: 'gainReward', reward: { exp: 0, coins: drop.coins, items: [] } }, context.catalog.rules)
+    : applyProgressAction(beforePickup.player, { type: 'addItem', stack: { itemId: drop.itemId, quantity: drop.quantity } }, context.catalog.rules);
+  if (!result.ok) return withToast(gameplay, result.message);
   gameplay.saveData = { ...gameplay.saveData, player: result.value };
   gameplay.drops = gameplay.drops.filter(({ id }) => id !== drop.id);
   // Don't let the loot line bury a "quest ready" notice that is still on screen.
