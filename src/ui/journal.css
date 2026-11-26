@@ -488,6 +488,7 @@
 .ms-compare__label { color: #735d3c; }
 .ms-compare__arrow { font-size: 1.25em; font-weight: 700; }
 .ms-compare__differences { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; }
+.maple-ui .ms-bag-upgrades { margin-inline-start: 6px; color: #354525; background: #e3ead0; border-color: #87956a; }
 .ms-compare__up { color: #3f6b3a; font-weight: 700; }
 .ms-compare__down { color: #9a3f2a; font-weight: 700; }
 .ms-bag-slot__upgrade { position: absolute; top: 2px; left: 3px; color: #3f7a36; font-size: 12px; line-height: 1; text-shadow: 0 1px 0 #fff6dc; }

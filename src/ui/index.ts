@@ -93,7 +93,7 @@ type UiAction =
   | 'advance-specialization' | 'toggle-advanced-skill'
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel' | 'choose-route' | 'select-character'
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
-  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
+  | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag' | 'select-bag-upgrade'
   | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'review-quest-map' | 'select-quest' | 'track-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
@@ -445,6 +445,12 @@ function isWearableUpgrade(
   const current = currentId ? view.catalog.rules.items[currentId] : undefined;
   const deltas = (['attack', 'defense', 'hpBonus'] as const).map((key) => (item[key] ?? 0) - (current?.[key] ?? 0));
   return deltas.some((delta) => delta > 0) && deltas.every((delta) => delta >= 0);
+}
+
+function wearableUpgradeIndices(view: UiSnapshot, player: NonNullable<UiSnapshot['saveData']>['player']): number[] {
+  return selectInventoryEntries(player.bag, view.catalog.rules.items, 'equipment')
+    .filter(({ item }) => item && isWearableUpgrade(view, player, item))
+    .map(({ bagIndex }) => bagIndex);
 }
 
 function targetName(view: UiSnapshot, id: string, type: string): string {
@@ -2064,6 +2070,20 @@ export function createUi(
           renderPanel(view, true);
         }
         return;
+      case 'select-bag-upgrade': {
+        const player = view.saveData?.player;
+        if (!player) return;
+        const upgrades = wearableUpgradeIndices(view, player);
+        const current = selectedBagIndex ?? -1;
+        const next = upgrades.find((index) => index > current) ?? upgrades[0];
+        if (next === undefined) return;
+        inventoryFilter = 'equipment';
+        selectedBagIndex = next;
+        bagStateMessage = '';
+        renderPanel(view, true);
+        panelHost.querySelector<HTMLButtonElement>('[data-focus="bag-slot-' + next + '"]')?.focus();
+        return;
+      }
       case 'inventory-filter':
         {
           const filter = INVENTORY_FILTERS.find(({ id }) => id === button.dataset.kind);
@@ -2979,6 +2999,14 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   const note = makeElement(document, 'p', 'ms-panel-note', '');
   const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格');
   note.append(usage, document.createTextNode('。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
+  const upgrades = new Set(wearableUpgradeIndices(view, player));
+  if (upgrades.size > 0) {
+    const shortcut = makeButton(document, '▲ 可升級裝備（' + upgrades.size + '）', 'select-bag-upgrade', {
+      className: 'ms-chip ms-bag-upgrades', title: '查看下一件可升級裝備',
+    });
+    shortcut.setAttribute('aria-label', '查看下一件可升級裝備，共 ' + upgrades.size + ' 件');
+    note.append(shortcut);
+  }
   parent.append(note);
   if (state.bagStateMessage) {
     const resetNote = makeElement(document, 'p', 'ms-panel-note ms-bag-state-note', state.bagStateMessage);
@@ -3037,7 +3065,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     );
     // A lone item (gear, quest pieces) needs no count; only stacks get the corner badge.
     if (stack.quantity > 1) slot.append(makeElement(document, 'span', 'ms-bag-slot__quantity', '×' + stack.quantity));
-    if (item && isWearableUpgrade(view, player, item)) {
+    if (upgrades.has(bagIndex)) {
       const upgrade = makeElement(document, 'span', 'ms-bag-slot__upgrade', '▲');
       upgrade.title = '比目前裝備更好';
       slot.append(upgrade);
