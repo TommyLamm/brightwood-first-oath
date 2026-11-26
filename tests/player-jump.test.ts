@@ -98,6 +98,22 @@ describe('player jump timing', () => {
     expect(result.memory.bufferedUntilMs).toBe(0);
   });
 
+  it('lets a held climb key leave the ladder and a fresh press catch it again', () => {
+    const up = { ...idle, climbY: -1 as const };
+    const climbing = stepPlayerMovement(createMovement({ x: 100, y: 550 }), up, map, config, dt, 100);
+    const right = { ...up, moveX: 1 as const };
+    const jump = stepPlayerMovement(climbing.movement, { ...right, jumpPressed: true }, map, config, dt, 117);
+    let away = jump;
+    for (let tick = 1; tick <= 10; tick++) {
+      away = stepPlayerMovement(away.movement, right, map, config, dt, 117 + tick * 1000 / 60, away.memory);
+      expect(away.movement.mode).toBe('airborne');
+    }
+    expect(away.movement.position.x).toBeGreaterThan(116);
+    const released = stepPlayerMovement(jump.movement, idle, map, config, dt, 134, jump.memory);
+    const caught = stepPlayerMovement(released.movement, up, map, config, dt, 150, released.memory);
+    expect(caught.movement.ladderId).toBe('ladder');
+  });
+
   it('clears queued input on ladder attachment and preserves a direct ladder jump', () => {
     const climbing = stepPlayerMovement(createMovement({ x: 100, y: 550 }), { ...idle, climbY: -1 }, map, config, dt, 100,
       { graceUntilMs: 0, bufferedUntilMs: 150 });

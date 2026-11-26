@@ -1,13 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { classActionLabel, classPortrait, classSkillNames, equipmentJobLabel, playerClassLabel } from '../src/ui/class-presentation.js';
 import { createPlayer, deriveStats } from '../src/domain/progression/index.js';
-import { rulesCatalog as rules } from '../src/content/rules/index.js';
+import { jobs, rulesCatalog as rules } from '../src/content/rules/index.js';
 import { previewApAllocation } from '../src/ui/ap-allocation-preview.js';
 import { previewSkillLearning } from '../src/ui/skill-learning-preview.js';
 import { previewEquipmentStats } from '../src/ui/equipment-stats-preview.js';
 import { selectShopOffers } from '../src/ui/shop-offers.js';
 
 describe('class interface rules', () => {
+  it('allows each job to learn its five panel skills at the required level', () => {
+    for (const job of Object.values(jobs)) {
+      const player = { ...createPlayer('測試角色', rules, job.id), job: job.id, level: 30, sp: 1 };
+      for (const skillId of job.learnableSkills) {
+        expect(previewSkillLearning({ player, rules, skillId }).ok, skillId).toBe(true);
+      }
+    }
+  });
+
   it('resolves every combat slot for the selected route, including before graduation', () => {
     const bow=createPlayer('弓',rules,'archer'); const sword=createPlayer('劍',rules);
     expect(['attack','skill1','skill2','skill3'].map((action)=>classActionLabel(bow,rules,action)))

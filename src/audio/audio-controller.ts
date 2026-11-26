@@ -271,7 +271,12 @@ export function createAudio(manifest: AssetManifest, initialSettings: Settings):
     const entries = layersBySet.get(wanted);
     if (!entries?.length) return;
     const buffers = await Promise.all(entries.map((entry) => loadBuffer(entry, targetContext)));
-    if (disposed || context !== targetContext || paused || musicKey !== wanted || currentSet?.key === wanted || !graph) return;
+    if (disposed || context !== targetContext) return;
+    if (musicKey !== wanted) {
+      evictMusic();
+      return;
+    }
+    if (paused || currentSet?.key === wanted || !graph) return;
     const playable = entries.flatMap((entry, index) => (buffers[index] ? [{ entry, buffer: buffers[index]! }] : []));
     if (!playable.some(({ entry }) => (entry.layer ?? 'base') === 'base')) return;
 

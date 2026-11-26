@@ -1,5 +1,6 @@
 import type { Id, SkillDef } from '../../contracts/index.js';
 import { advancedSkills } from './advanced-skills.js';
+import { jobs } from './jobs.js';
 
 const bowSkill = (id: Id, name: string, changes: Partial<SkillDef>): SkillDef => ({
   id, name, kind: 'attack', maxRank: 10, requiredLevel: 10, requiredJob: 'archer',
@@ -207,15 +208,6 @@ export const skills: Record<Id, SkillDef> = {
   },
 };
 
-export const playerLearnableIds = [
-  'rogue-double-stab', 'rogue-shadow-lunge', 'rogue-smoke', 'rogue-dagger-mastery', 'rogue-combo-rhythm',
-  'mage-mana-bolt', 'mage-frost-ring', 'mage-blink', 'mage-mana-affinity', 'mage-rune-study',
-  'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-bow-mastery', 'archer-steady-aim',
-  'heavy-strike',
-  'sweep',
-  'iron-guard',
-  'vitality',
-  'rest-recovery',
-] as const;
+export const playerLearnableIds: readonly Id[] = Object.values(jobs).flatMap((job) => job.learnableSkills);
 
 export const playerSkillIds = ['basic', 'bow-basic', 'wand-basic', 'dagger-basic', ...playerLearnableIds] as const;

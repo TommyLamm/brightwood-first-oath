@@ -3,9 +3,14 @@ import { stepMovement } from './index.js';
 
 export const PLAYER_JUMP_GRACE_MS = 80;
 export const PLAYER_JUMP_BUFFER_MS = 100;
+const LADDER_REGRAB_DELAY_MS = 150;
 
 /** Runtime input memory only; it is never part of a save or a monster's movement. */
-export type PlayerJumpMemory = { graceUntilMs: number; bufferedUntilMs: number };
+export type PlayerJumpMemory = {
+  graceUntilMs: number;
+  bufferedUntilMs: number;
+  ladderExit?: { id: string; direction: -1 | 1; untilMs: number };
+};
 
 export function stepPlayerMovement(
   state: MovementState,
@@ -36,7 +41,9 @@ export function stepPlayerMovement(
   // A queued normal jump must not become a down-jump after the player changes direction.
   const movementInput = graceJump ? { ...input, jumpPressed: false }
     : buffered && state.mode === 'grounded' ? { ...input, jumpPressed: true, downHeld: false } : input;
-  let movement = stepMovement(from, movementInput, map, config, dtSeconds, nowMs);
+  let ladderExit = memory?.ladderExit;
+  if (ladderExit && (nowMs >= ladderExit.untilMs || input.climbY !== ladderExit.direction)) ladderExit = undefined;
+  let movement = stepMovement(from, movementInput, map, config, dtSeconds, nowMs, ladderExit?.id);
   const climbing = state.mode === 'climbing' && map.ladders.some((l) => l.id === state.ladderId);
   let jumped = movement.mode === 'airborne' && movement.velocity.y < 0
     && (graceJump || (requestJump && (supported || climbing)));
@@ -59,5 +66,9 @@ export function stepPlayerMovement(
   } else if (movement.mode === 'grounded' && assistAllowed) {
     graceUntilMs = nowMs + PLAYER_JUMP_GRACE_MS;
   }
-  return { movement, memory: { graceUntilMs, bufferedUntilMs }, jumped };
+  if (movement.mode !== 'airborne' || resetAfterFall) ladderExit = undefined;
+  else if (jumped && climbing && state.ladderId !== null && input.climbY !== 0) {
+    ladderExit = { id: state.ladderId, direction: input.climbY, untilMs: nowMs + LADDER_REGRAB_DELAY_MS };
+  }
+  return { movement, memory: { graceUntilMs, bufferedUntilMs, ...(ladderExit && { ladderExit }) }, jumped };
 }

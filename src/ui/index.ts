@@ -1146,6 +1146,8 @@ export function createUi(
   };
 
   const renderScreen = (view: UiSnapshot): void => {
+    const showCreate = createRequested || view.screen === 'create';
+    const showTitle = view.screen === 'title' && !view.error && !showCreate;
     const signature = JSON.stringify({
       screen: view.screen,
       error: view.error,
@@ -1155,7 +1157,7 @@ export function createUi(
       mapVisualLoad: view.mapVisualLoad ? { mapId: view.mapVisualLoad.mapId, name: view.mapVisualLoad.name,
         status: view.mapVisualLoad.status, message: view.mapVisualLoad.message } : null,
       hasSave: view.saveData !== null,
-      profile: view.profile,
+      profile: showTitle ? view.profile : undefined,
       characterBusy: view.characterBusy,
       canReturnTown: view.canReturnTown,
       createRequested,
@@ -1173,7 +1175,6 @@ export function createUi(
       screenLayer.hidden = true;
       screenLayer.replaceChildren();
 
-      const showCreate = createRequested || view.screen === 'create';
       if (view.characterBusy) {
         screenLayer.hidden = false;
         screenLayer.append(makeScreenCard(document, '正在保存角色進度', '保存完成後繼續，請稍候。'));
@@ -1252,7 +1253,7 @@ export function createUi(
         screenLayer.append(card);
         return;
       }
-      if ((view.screen === 'title' && !view.error) || showCreate) {
+      if (showTitle || showCreate) {
       if (showCreate) {
         const card = makeScreenCard(document, '建立角色', '在空欄位開始新的冒險。既有角色進度會保留；先選訓練路線，Lv.10 完成試煉後正式轉職。');
         const checkedName = validatePlayerName(nameDraft);
@@ -3078,8 +3079,9 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   parent.append(note);
   parent.append(specializationPanel(document, player, view));
   const grid = makeElement(document, 'div', 'ms-skill-list');
+  const learnableSkills = jobs[effectiveJob(player)].learnableSkills;
   const skills = Object.values(view.catalog.rules.skills)
-    .filter((skill) => skill.requiredJob === effectiveJob(player) && !skill.requiredSpecialization)
+    .filter((skill) => learnableSkills.includes(skill.id))
     // Castable skills first, in quickbar order (1 重斬, 2 橫掃, 3 堅韌守護), then passives.
     .sort((a, b) => Number(a.kind === 'passive') - Number(b.kind === 'passive')
       || a.requiredLevel - b.requiredLevel || a.id.localeCompare(b.id));

@@ -32,9 +32,11 @@ jobs:
         with:
           node-version: '24'
           check-latest: true
-      - name: Install dependencies and build game
+      - name: Install dependencies, check, and build game
         run: |
           npm ci
+          npm run typecheck
+          npm run check:content
           npm run build
       - name: Check release version and resolve artifact directory
         env:

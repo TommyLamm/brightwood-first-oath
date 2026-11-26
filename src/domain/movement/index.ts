@@ -36,6 +36,7 @@ export function stepMovement(
   config: MovementConfig,
   dtSeconds: number,
   nowMs: number,
+  ignoredLadderId?: string,
 ): MovementState {
   if (state.mode === 'dead') return cloneState(state);
 
@@ -46,7 +47,7 @@ export function stepMovement(
 
   const nearbyLadder = input.climbY === 0 || input.jumpPressed
     ? null
-    : findNearbyLadder(state.position, map, config);
+    : findNearbyLadder(state.position, map, config, ignoredLadderId);
 
   if (nearbyLadder) {
     const attached: MovementState = {
@@ -333,10 +334,10 @@ function horizontalVelocity(
 }
 
 /** Shared by movement attachment and its read-only contextual control hint. */
-export function findNearbyLadder(position: Vec2, map: MapDef, config: MovementConfig): Ladder | null {
+export function findNearbyLadder(position: Vec2, map: MapDef, config: MovementConfig, ignoredLadderId?: string): Ladder | null {
   const headY = position.y - config.height;
   return map.ladders
-    .filter((ladder) => Math.abs(position.x - ladder.x) <= LADDER_X_TOLERANCE
+    .filter((ladder) => ladder.id !== ignoredLadderId && Math.abs(position.x - ladder.x) <= LADDER_X_TOLERANCE
       && ladder.bottomY >= headY - EPSILON
       && ladder.topY <= position.y + EPSILON)
     .sort((a, b) => Math.abs(position.x - a.x) - Math.abs(position.x - b.x)

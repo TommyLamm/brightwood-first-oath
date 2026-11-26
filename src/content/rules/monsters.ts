@@ -1,5 +1,11 @@
 import type { Id, MonsterDef } from '../../contracts/index.js';
 
+const bossMonsterIds = new Set<Id>(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
+
+export function isBossMonster(monsterId: Id): boolean {
+  return bossMonsterIds.has(monsterId);
+}
+
 export const monsters: Record<Id, MonsterDef> = {
   snail: {
     projectileHeight: 42,

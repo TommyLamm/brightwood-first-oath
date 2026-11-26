@@ -40,7 +40,6 @@ export type GameAppState = {
   saveUpgrade: SaveUpgradeRequired | null;
   legacyImportAvailable: boolean;
   legacyImportMessage: string | null;
-  lastUnavailableCommand: string | null;
   random: RandomSource;
   nextEntityId: () => string;
 };
@@ -74,7 +73,6 @@ export function createInitialAppState(seed = 0, sessionPrefix = 'game'): GameApp
     saveUpgrade: null,
     legacyImportAvailable: false,
     legacyImportMessage: null,
-    lastUnavailableCommand: null,
     random: createSeededRandom(seed),
     nextEntityId: createNextEntityId(sessionPrefix),
   };
@@ -112,7 +110,7 @@ export function appCommand(state: GameAppState, command: CommandDraft | GameComm
 
 export function worldIsFrozen(state: GameAppState): boolean {
   return isWorldFrozen(state, state.windowFocused) || state.focusResumeRequired || Boolean(state.mapVisualLoad) || state.characterBusy
-    || state.saveStatus === 'localConflict';
+    || state.saveStatus === 'conflict' || state.saveStatus === 'localConflict';
 }
 
 /** Builds the single UI view model from app-owned state. */

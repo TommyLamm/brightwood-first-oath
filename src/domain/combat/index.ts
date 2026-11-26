@@ -24,6 +24,18 @@ export function createCombatState(): CombatState {
   return { attacks: [], cooldowns: {} };
 }
 
+export function attackLockUntil(state: CombatState, sourceId: EntityId, rules: RulesCatalog, nowMs: number): number {
+  let deadline = 0;
+  for (const attack of state.attacks) {
+    if (attack.sourceId !== sourceId) continue;
+    const skill = rules.skills[attack.skillId];
+    if (!skill || (skill.kind !== 'attack' && skill.kind !== 'movement' && skill.kind !== 'zone')) continue;
+    const end = attack.startedAtMs + attackDuration(skill);
+    if (end > nowMs) deadline = Math.max(deadline, end);
+  }
+  return deadline;
+}
+
 /**
  * Validates and prepares an attack without spending MP or changing its source.
  * The returned state is a proposal; callers should commit it only alongside
@@ -63,13 +75,7 @@ export function tryAttack(
   const cooldownReadyAtMs = state.cooldowns[source.id]?.[skill.id] ?? 0;
   if (nowMs < cooldownReadyAtMs) return failure('COOLDOWN', 'Attack skill is on cooldown.');
 
-  const sourceIsLocked = state.attacks.some((attack) => {
-    if (attack.sourceId !== source.id) return false;
-    const activeSkill = rules.skills[attack.skillId];
-    if (!activeSkill || (activeSkill.kind !== 'attack' && activeSkill.kind !== 'movement' && activeSkill.kind !== 'zone')) return false;
-    return nowMs < attack.startedAtMs + attackDuration(activeSkill);
-  });
-  if (sourceIsLocked) return failure('NOT_READY', 'Actor is still completing an attack.');
+  if (attackLockUntil(state, source.id, rules, nowMs) > nowMs) return failure('NOT_READY', 'Actor is still completing an attack.');
 
   const attack: AttackInstance = {
     id: nextId(),

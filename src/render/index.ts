@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
 import type { ContentCatalog, MapDef } from '../contracts/definitions.js';
@@ -141,7 +142,6 @@ const HERO_ANCHOR_FRAME_COUNTS: Record<HeroAnchorPose, number> = {
   buff: 4,
 };
 const MONSTER_ANIMATION_STATES = ['idle', 'walk', 'attack', 'hurt', 'dead'] as const;
-const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const AUTHORED_ATTACK_FRAME_MONSTER_IDS = new Set(['ruins-moss-carapace', 'ruins-string-puppet', 'ruins-bell-prowler', 'ruins-bell-keeper']);
 const STELE_NPC_IDS = new Set(['ruins-stele-west', 'ruins-stele-east']);
 const VFX_IMAGE_KEYS = ['vfx:heavy-strike', 'vfx:sweep', 'vfx:hit', 'vfx:levelup', 'vfx:guard'] as const;
@@ -443,6 +443,7 @@ export function createWorldRenderer(
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
   const attackGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.attack);
   let activeVisual: MapVisual | null = null;
+  let followedPlayerId: WorldSnapshot['player']['id'] | null = null;
   let disposed = false;
   let activeLoadCancel: (() => void) | null = null;
 
@@ -1000,7 +1001,6 @@ export function createWorldRenderer(
   const drawSnapshot = (snapshot: WorldSnapshot): void => {
     if (!activeVisual) throw new RendererAssetError('請先成功呼叫 loadMap(map)');
     if (snapshot.mapId !== activeVisual.map.id) throw new RendererAssetError(`Snapshot mapId ${snapshot.mapId} 與已載入地圖 ${activeVisual.map.id} 不一致`);
-    updateBackgroundPositions();
 
     for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
@@ -1070,6 +1070,10 @@ export function createWorldRenderer(
       shootFrame ?? jumpFrame,
     );
     const playerSprite = drawnPlayer.sprite;
+    if (followedPlayerId !== snapshot.player.id) {
+      camera.startFollow(playerSprite, true, 0.12, 0.12);
+      followedPlayerId = snapshot.player.id;
+    }
     if (heroAnchors) {
       const heroImage = assets.images.get(playerKey)!;
       const heroAnimation = animationFor(assets, playerKey, playerAnimation);
@@ -1173,11 +1177,10 @@ export function createWorldRenderer(
         .setVisible(npcInViewport && questState !== undefined)
         .setActive(npcInViewport && questState !== undefined);
     }
-    scene.cameras.main.startFollow(playerSprite, true);
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
-      const isNamedBoss = BOSS_MONSTER_IDS.has(monster.monsterId);
+      const isNamedBoss = isBossMonster(monster.monsterId);
       const attack = attackStartedAt(snapshot, monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
@@ -1298,7 +1301,7 @@ export function createWorldRenderer(
     }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
-      const bossTelegraph = source ? BOSS_MONSTER_IDS.has(source.monsterId) : false;
+      const bossTelegraph = source ? isBossMonster(source.monsterId) : false;
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
       const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;
@@ -1317,7 +1320,6 @@ export function createWorldRenderer(
     prunePlayedVisualEventIds(playedVisualEventIds, snapshot.effects);
     pruneEvents(snapshot.nowMs);
     actorsLayer.sort('depth');
-    updateCamera(snapshot, playerSprite);
   };
 
   const skillDuration = (attack: AttackInstance, sourceCatalog: ContentCatalog): number => {
@@ -1517,15 +1519,6 @@ export function createWorldRenderer(
     }
   };
 
-  const updateCamera = (snapshot: WorldSnapshot, playerSprite: Phaser.GameObjects.Sprite): void => {
-    const camera = scene.cameras.main;
-    camera.setBounds(0, 0, activeVisual!.map.width, activeVisual!.map.height, true);
-    camera.setDeadzone(200, 120);
-    camera.startFollow(playerSprite, true, 0.12, 0.12);
-    updateBackgroundPositions();
-    void snapshot;
-  };
-
   const renderer: WorldRenderer = {
     async loadMap(map, onProgress, job): Promise<void> {
       if (disposed) throw new RendererAssetError('Renderer 已 dispose，不能載入地圖');
@@ -1572,8 +1565,9 @@ export function createWorldRenderer(
         steleGlowGraphics.clear();
         telegraphGraphics.clear();
         attackGraphics.clear();
-        scene.cameras.main.stopFollow();
-        scene.cameras.main.setBounds(0, 0, map.width, map.height, true).setDeadzone(200, 120);
+        followedPlayerId = null;
+        camera.stopFollow();
+        camera.setBounds(0, 0, map.width, map.height, true).setDeadzone(200, 120);
         updateBackgroundPositions();
         updateBackgroundParallax(scene.cameras.main, 0);
         if (old) {
@@ -1594,10 +1588,11 @@ export function createWorldRenderer(
     },
     resize(width, height): void {
       const viewport = rendererViewportGeometry(width, height, BASE_WIDTH, BASE_HEIGHT);
-      if (disposed || !viewport) return;
-      const camera = scene.cameras.main;
+      if (disposed || !viewport || (camera.width === width && camera.height === height && camera.zoom === viewport.zoom)) return;
+      const { x, y } = camera.midPoint;
       camera.setViewport(0, 0, width, height);
       camera.setZoom(viewport.zoom);
+      camera.centerOn(x, y);
       updateBackgroundPositions();
       updateBackgroundParallax(camera);
     },

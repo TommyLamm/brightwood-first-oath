@@ -1,5 +1,6 @@
 import type { Id, QuestDef, Result, RulesCatalog, WorldCatalog } from '../../contracts/index.js';
 import { questDropByQuest } from '../rules/index.js';
+import { isBossMonster } from '../rules/monsters.js';
 import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, questForPlayer } from './class-quests.js';
 
 const expectedMapIds = ['camp', 'town', 'forest-edge', 'mushroom-wood', 'red-ridge', 'mine-gate', 'guardian-arena', 'frost-shore', 'frost-pine-pass', 'frost-tide-cavern', 'sand-glass-shore', 'ruins-tide-camp', 'ruins-root-causeway', 'sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar', 'ruins-echo-gallery', 'ruins-bell-sanctum'];
@@ -270,8 +271,7 @@ export function validateWorld(world: WorldCatalog, rules: RulesCatalog): Result<
 
   const normalMonsterIds = new Set<Id>();
   for (const map of Object.values(world.maps)) for (const monster of map.monsters) {
-    if (monster.monsterId !== 'guardian' && monster.monsterId !== 'frost-tide-warden' && monster.monsterId !== 'sunwell-sentinel'
-      && monster.monsterId !== 'ruins-bell-keeper') normalMonsterIds.add(monster.monsterId);
+    if (!isBossMonster(monster.monsterId)) normalMonsterIds.add(monster.monsterId);
   }
   if (requiredOrdinaryMonsterIds.some((monsterId) => !normalMonsterIds.has(monsterId)) || !world.maps['guardian-arena']?.boss
     || world.maps['guardian-arena'].monsters.length !== 1 || world.maps['guardian-arena'].monsters[0]?.monsterId !== 'guardian'

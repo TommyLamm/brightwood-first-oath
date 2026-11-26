@@ -25,17 +25,17 @@ export const jobs: Record<PlayerJob, JobDefinition> = {
     skillSlots: ['mage-mana-bolt', 'mage-frost-ring', 'mage-blink'],
     learnableSkills: ['mage-mana-bolt', 'mage-frost-ring', 'mage-blink', 'mage-mana-affinity', 'mage-rune-study'],
   },
-  swordsman: {
-    id: 'swordsman', name: '劍士', mainStat: 'str', secondaryStat: 'dex',
-    starterWeapon: 'starter-sword', basicSkill: 'basic',
-    skillSlots: ['heavy-strike', 'sweep', 'iron-guard'],
-    learnableSkills: ['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'],
-  },
   archer: {
     id: 'archer', name: '弓箭手', mainStat: 'dex', secondaryStat: 'str',
     starterWeapon: 'starter-bow', basicSkill: 'bow-basic',
     skillSlots: ['archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot'],
     learnableSkills: ['archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-bow-mastery', 'archer-steady-aim'],
+  },
+  swordsman: {
+    id: 'swordsman', name: '劍士', mainStat: 'str', secondaryStat: 'dex',
+    starterWeapon: 'starter-sword', basicSkill: 'basic',
+    skillSlots: ['heavy-strike', 'sweep', 'iron-guard'],
+    learnableSkills: ['heavy-strike', 'sweep', 'iron-guard', 'vitality', 'rest-recovery'],
   },
 };
 

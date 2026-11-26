@@ -1,5 +1,6 @@
 import type { ContentCatalog, Id } from '../contracts/index.js';
 import type { GameplayState } from './gameplay.js';
+import { attackLockUntil } from '../domain/combat/index.js';
 
 export type CombatUiState = {
   actionLockUntilMs: number;
@@ -14,22 +15,7 @@ export function deriveCombatUiState(
 ): CombatUiState {
   if (!gameplay) return { actionLockUntilMs: 0, bufferedSkillId: null };
 
-  let actionLockUntilMs = 0;
-  let hasActivePlayerAttack = false;
-  for (const attack of gameplay.combat.attacks) {
-    if (attack.sourceId !== gameplay.playerEntityId) continue;
-
-    const skill = catalog.rules.skills[attack.skillId];
-    if (!skill || (skill.kind !== 'attack' && skill.kind !== 'movement' && skill.kind !== 'zone')) continue;
-
-    const attackEndsAtMs = attack.startedAtMs + skill.windupMs + skill.activeMs + skill.recoveryMs;
-    if (nowMs >= attackEndsAtMs) continue;
-
-    actionLockUntilMs = hasActivePlayerAttack
-      ? Math.max(actionLockUntilMs, attackEndsAtMs)
-      : attackEndsAtMs;
-    hasActivePlayerAttack = true;
-  }
+  const actionLockUntilMs = attackLockUntil(gameplay.combat, gameplay.playerEntityId, catalog.rules, nowMs);
 
   const bufferedAttack = gameplay.bufferedAttack;
   const bufferedSkillId = gameplay.saveData.player.hp > 0

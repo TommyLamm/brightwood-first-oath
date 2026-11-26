@@ -11,6 +11,19 @@ import {
 const focused = { focused: true, textInput: false, panels: [] as const };
 
 describe('keyboard binding helpers', () => {
+  it.each([['ArrowRight', 'ArrowLeft', 1], ['KeyA', 'KeyD', -1]] as const)(
+    'turns immediately when %s overlaps %s and restores the held direction', (first, second, direction) => {
+      const input = new KeyboardInputState(first === 'KeyA' ? { moveLeft: first, moveRight: second } : {});
+      input.keyDown(first, focused);
+      expect(input.consumeMovementFrame().moveX).toBe(direction);
+      input.keyDown(second, focused);
+      input.keyDown(first, { ...focused, repeat: true });
+      expect(input.consumeMovementFrame().moveX).toBe(-direction);
+      input.keyUp(second);
+      expect(input.consumeMovementFrame().moveX).toBe(direction);
+      input.keyUp(first);
+      expect(input.consumeMovementFrame().moveX).toBe(0);
+    });
   it('requires a fresh press after held input is cleared, including aliases and rebinding', () => {
     const input = new KeyboardInputState();
     for (const [action, code] of [['moveRight', 'ArrowRight'], ['attack', 'ControlRight'], ['pickup', 'KeyZ'], ['jump', 'AltRight']] as const) {

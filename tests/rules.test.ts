@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, validateRules } from '../src/content/rules/index.js';
+import { jobs, rulesCatalog, playerLearnableIds, playerSkillIds, questDropByQuest, validateRules } from '../src/content/rules/index.js';
+import { isBossMonster } from '../src/content/rules/monsters.js';
 
 describe('rules catalog', () => {
   it('contains the fixed item, skill, and monster sets', () => {
@@ -28,6 +29,10 @@ describe('rules catalog', () => {
     ].sort());
     expect(playerSkillIds).toHaveLength(24);
     expect(playerLearnableIds).toHaveLength(20);
+    for (const job of Object.values(jobs)) {
+      expect(job.learnableSkills).toHaveLength(5);
+      expect(playerLearnableIds.filter((id) => rulesCatalog.skills[id]?.requiredJob === job.id)).toEqual(job.learnableSkills);
+    }
     expect([...playerLearnableIds].sort()).toEqual([
       'archer-bow-mastery', 'archer-double-shot', 'archer-piercing-shot', 'archer-retreat-shot', 'archer-steady-aim',
       'heavy-strike', 'iron-guard', 'rest-recovery', 'sweep', 'vitality',
@@ -52,6 +57,10 @@ describe('rules catalog', () => {
       'boar', 'frost-crab', 'frost-tide-warden', 'frost-wolf', 'golem', 'guardian', 'mushroom', 'ruins-bell-keeper', 'ruins-bell-prowler',
       'ruins-moss-carapace', 'ruins-string-puppet', 'sand-scorpion', 'sentinel', 'slime', 'snail', 'sunwell-beetle', 'sunwell-sentinel',
     ]);
+    expect(Object.keys(rulesCatalog.monsters).filter(isBossMonster).sort()).toEqual([
+      'frost-tide-warden', 'guardian', 'ruins-bell-keeper', 'sunwell-sentinel',
+    ]);
+    expect(isBossMonster('snail')).toBe(false);
   });
 
   it('defines the Ruins moss carapace with its guaranteed ceramic drop and bite timings', () => {

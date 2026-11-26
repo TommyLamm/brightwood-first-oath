@@ -16,6 +16,7 @@ import { characterFromSave } from '../persistence/profile.js';
 import { applyProfileAction, type ProfileAction } from '../persistence/profile-actions.js';
 import { prepareProfile } from '../persistence/validate.js';
 import { isPlayerJob, resolveSkillSlot } from '../content/rules/jobs.js';
+import { isBossMonster } from '../content/rules/monsters.js';
 import { createCombatState } from '../domain/combat/index.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
@@ -68,7 +69,6 @@ const ENGAGED_MONSTER_MODES = new Set(['chase', 'windup', 'dash', 'recovery']);
 const COMBAT_MUSIC_RANGE_PX = 720;
 /** Combat music lingers this long after the last threat so it doesn't flap at the edge of aggro. */
 const COMBAT_MUSIC_HOLD_MS = 4500;
-const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
 const ATTACK_SOUND_BY_SKILL: Record<string, string> = { 'heavy-strike': 'attack-heavy', sweep: 'attack-sweep' };
 const TUNABLE_STELE_IDS = ['ruins-stele-west', 'ruins-stele-east'] as const;
 const FOCUS_DISCARDED_COMMAND_TYPES: ReadonlySet<CommandDraft['type']> = new Set([
@@ -236,7 +236,9 @@ export class GameApp {
       || (command.type === 'retryBoss' && this.stateValue.screen === 'result')
       || (command.type === 'returnTown'
         && (this.stateValue.screen === 'playing' || this.stateValue.screen === 'result')));
-    if (this.stateValue.gameplay && this.stateValue.catalog && lifecycleCommands.length > 0) {
+    const saveStatus = this.stateValue.saveStatus;
+    if (this.stateValue.gameplay && this.stateValue.catalog && lifecycleCommands.length > 0
+      && saveStatus !== 'conflict' && saveStatus !== 'localConflict') {
       const lifecycle = stepGameplay(this.stateValue.gameplay, {
         catalog: this.stateValue.catalog,
         commands: lifecycleCommands,
@@ -257,9 +259,10 @@ export class GameApp {
 
     if (wasFrozen) this.clock.clearAccumulator();
     if (worldIsFrozen(this.stateValue)) {
-      if (this.stateValue.gameplay?.jumpAssist) {
+      if (this.stateValue.gameplay?.jumpAssist || this.stateValue.gameplay?.bufferedAttack?.readyAtMs !== undefined) {
         const gameplay = { ...this.stateValue.gameplay };
         delete gameplay.jumpAssist;
+        if (gameplay.bufferedAttack?.readyAtMs !== undefined) delete gameplay.bufferedAttack;
         this.setState({ ...this.stateValue, gameplay });
       }
       this.clock.advance(deltaMs, true);
@@ -456,20 +459,20 @@ export class GameApp {
       storage: this.options.storage ?? null,
       cloud: this.options.cloud ?? null,
       catalog,
-      onStatus: (saveStatus, message) => {
+      onStatus: (saveStatus, message, upgradeCompleted) => {
         if (this.persistence !== persistence) return;
         const upgrade = this.stateValue.saveUpgrade;
-        const upgraded = upgrade?.source === 'local' && saveStatus === 'localSaved'
-          || upgrade?.source === 'cloud' && saveStatus === 'saved';
+        let saveMessage = message ?? null;
+        if (upgradeCompleted && upgrade?.source === 'local') {
+          saveMessage = `已備份 format ${upgrade.formatVersion} 原始存檔並升級至 format ${SAVE_FORMAT_VERSION}。`;
+        } else if (upgradeCompleted && upgrade?.source === 'cloud') {
+          saveMessage = `format ${SAVE_FORMAT_VERSION} 已由平台確認保存。`;
+        }
         this.setState({
           ...this.stateValue,
           saveStatus,
-          saveMessage: upgraded
-            ? upgrade?.source === 'local'
-              ? `已備份 format ${upgrade.formatVersion} 原始存檔並升級至 format ${SAVE_FORMAT_VERSION}。`
-              : `format ${SAVE_FORMAT_VERSION} 已由平台確認保存。`
-            : message ?? null,
-          saveUpgrade: upgraded ? null : this.stateValue.saveUpgrade,
+          saveMessage,
+          saveUpgrade: upgradeCompleted ? null : upgrade,
         });
       },
     });
@@ -572,7 +575,7 @@ export class GameApp {
       }
       case 'confirmSaveUpgrade':
         if (this.stateValue.screen !== 'title' || !this.stateValue.saveUpgrade
-          || !['upgradeRequired', 'saveError'].includes(this.stateValue.saveStatus) || !this.persistence) {
+          || !['upgradeRequired', 'saving', 'saveError'].includes(this.stateValue.saveStatus) || !this.persistence) {
           this.setToast('目前沒有可確認的存檔升級。');
         } else {
           this.persistence.confirmSaveUpgrade();
@@ -1328,7 +1331,7 @@ function selectedAmbienceKey(state: GameAppState): string | null | undefined {
 }
 
 function bossEnraged(monster: MonsterState, catalog: ContentCatalog): boolean {
-  if (!BOSS_MONSTER_IDS.has(monster.monsterId) || monster.mode === 'dead' || monster.hp <= 0) return false;
+  if (!isBossMonster(monster.monsterId) || monster.mode === 'dead' || monster.hp <= 0) return false;
   if (monster.monsterId === 'ruins-bell-keeper') return monster.phase === 2;
   const maxHp = catalog.rules.monsters[monster.monsterId]?.maxHp ?? Infinity;
   return monster.phase === 2 || monster.hp <= maxHp / 2;

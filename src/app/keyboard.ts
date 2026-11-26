@@ -130,6 +130,7 @@ function panelForAction(action: GameAction): PanelId | null {
 export class KeyboardInputState {
   private bindings: EffectiveKeyBindings = resolveEffectiveBindings();
   private heldCodes = new Set<string>();
+  private lastHorizontal: -1 | 1 = 1;
   private jumpPressed = false;
   private attackSkills: readonly [string, string, string, string] = ['basic', 'heavy-strike', 'sweep', 'iron-guard'];
 
@@ -165,6 +166,8 @@ export class KeyboardInputState {
     // Held game keys must not start scrolling the host page after the first keydown.
     // Repeats must not re-arm keys cleared by blur, a modal, rebinding or map loading.
     if (context.repeat) return { command: null, preventDefault: action !== null };
+    if (code === this.bindings.moveLeft) this.lastHorizontal = -1;
+    if (code === this.bindings.moveRight) this.lastHorizontal = 1;
     this.heldCodes.add(code);
 
     if (!action) return { command: null, preventDefault: false };
@@ -214,7 +217,7 @@ export class KeyboardInputState {
     const up = this.isHeld('climbUp');
     const down = this.isHeld('climbDown');
     const frame: InputFrame = {
-      moveX: left === right ? 0 : left ? -1 : 1,
+      moveX: left && right ? this.lastHorizontal : left ? -1 : right ? 1 : 0,
       climbY: up === down ? 0 : up ? -1 : 1,
       jumpPressed: this.jumpPressed,
       downHeld: down,

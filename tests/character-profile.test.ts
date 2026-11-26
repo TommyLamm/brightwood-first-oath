@@ -8,6 +8,7 @@ import { createPlayer } from '../src/domain/progression/index.js';
 import { activeSaveData, createEmptyProfile, createPersistence, measureProfile, prepareProfile,
   profileFromLegacySave, SAVE_FORMAT_VERSION, updateActiveCharacter } from '../src/persistence/index.js';
 import { characterFromSave } from '../src/persistence/profile.js';
+import { applyProfileAction } from '../src/persistence/profile-actions.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 function save(archer = false): SaveData {
@@ -92,6 +93,21 @@ describe('character profiles and legacy migration', () => {
     profile.characters['character-1']!.player.name = '測'.repeat(64 * 1024);
     expect(prepareProfile(profile, catalog).ok).toBe(false);
     expect(profile.characters['character-1']!.player.name).toHaveLength(64 * 1024);
+  });
+
+  it('requires the full legacy name for both deleting and purging a character', () => {
+    const profile = fullCharacterProfile();
+    const characterId = profile.activeCharacterId!;
+    const name = profile.characters[characterId]!.player.name;
+    expect(name).toHaveLength(24);
+    expect(applyProfileAction(profile, { type: 'rename', characterId, name }, catalog).ok).toBe(false);
+    expect(applyProfileAction(profile, { type: 'delete', characterId, confirmation: name.slice(1) }, catalog).ok).toBe(false);
+    const deleted = applyProfileAction(profile, { type: 'delete', characterId, confirmation: name }, catalog);
+    if (!deleted.ok) throw Error(deleted.message);
+    expect(applyProfileAction(deleted.value, { type: 'purge', confirmation: name.slice(1) }, catalog).ok).toBe(false);
+    const purged = applyProfileAction(deleted.value, { type: 'purge', confirmation: name }, catalog);
+    if (!purged.ok) throw Error(purged.message);
+    expect(purged.value.deletedCharacter).toBeNull();
   });
 
   it('retries the same entire profile before sending a pending character switch with the new revision', async () => {

@@ -90,7 +90,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
 
     update(_time: number, delta: number): void {
       const before = app.state;
-      const simulationReady = before.screen === 'playing' && this.rendererReady && !this.transitionKey
+      const simulationReady = before.screen === 'playing' && this.rendererReady && !this.awaitingFirstRender && !this.transitionKey
         && this.activeMapId === before.gameplay?.saveData.location.mapId
         && this.loadedWorldRevision === before.worldRevision;
       app.update(simulationReady ? delta : 0);

@@ -380,6 +380,23 @@ describe('app gameplay vertical slice', () => {
     expect(makeWorldSnapshot(cast, catalog, 5500).player.animationKey).toBe('idle');
   });
 
+  it('starts an attack in the requested direction and keeps its facing until recovery', () => {
+    const nextEntityId = createNextEntityId('turn-attack');
+    const started = startNewGame('旅人', catalog, nextEntityId);
+    if ('error' in started) throw new Error(started.error);
+    const gameplay = started.gameplay;
+    gameplay.movement.facing = 1;
+    const step = { catalog, nextEntityId, random: createSeededRandom(1), dtSeconds: 1 / 60 };
+    const input = { moveX: -1 as const, climbY: 0 as const, jumpPressed: false, downHeld: false };
+    const commands: GameCommand[] = [{ seq: 1, type: 'attack', payload: { skillId: 'basic' } }];
+    const swung = stepGameplay(gameplay, { ...step, commands, input, nowMs: 1000 }).gameplay!;
+    expect(swung.combat.attacks[0]?.facing).toBe(-1);
+    expect(swung.movement.facing).toBe(-1);
+    const locked = stepGameplay(swung, { ...step, commands, input: { ...input, moveX: 1 }, nowMs: 1017 }).gameplay!;
+    expect(locked.movement.facing).toBe(-1);
+    expect(locked.combat.attacks).toHaveLength(1);
+  });
+
   it('buffers a skill pressed mid-swing without a toast', () => {
     const started = startNewGame('旅人', catalog, createNextEntityId('mid-swing'));
     if ('error' in started) throw new Error(started.error);
@@ -400,6 +417,16 @@ describe('app gameplay vertical slice', () => {
     }).gameplay!;
     expect(pressed.toast).toBeNull();
     expect(pressed.saveData.player.mp).toBe(50);
+    const basicTap = (state: typeof pressed, nowMs: number) => stepGameplay(state, {
+      catalog, commands: [{ seq: 3, type: 'attack', payload: { skillId: 'basic' } }], input,
+      dtSeconds: 1 / 60, nowMs, random: createSeededRandom(4), nextEntityId: createNextEntityId('queue-' + nowMs),
+    }).gameplay!;
+    const tapped = basicTap(pressed, 1034);
+    expect(tapped.bufferedAttack).toEqual({ skillId: 'heavy-strike', expiresAtMs: 1616 });
+    const ready = basicTap(tapped, 1551);
+    expect(ready.combat.attacks.filter((attack) => attack.skillId === 'heavy-strike')).toHaveLength(1);
+    expect(ready.bufferedAttack).toBeUndefined();
+    expect(ready.saveData.player.mp).toBe(44);
     // The buffered skill fires on its own once the basic swing has finished...
     const chained = stepGameplay(pressed, {
       catalog, commands: [], input,

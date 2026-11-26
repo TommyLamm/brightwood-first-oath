@@ -9,7 +9,14 @@ const param = () => ({ value: 1, setValueAtTime: vi.fn(), setTargetAtTime: vi.fn
 const node = () => ({ connect: vi.fn(), disconnect: vi.fn() });
 
 /** Minimal Web Audio stand-in whose decoder rejects Ogg, like Safari before 18.4. */
-function installFakeAudio(started: unknown[], starts: (number | undefined)[] = []) {
+function installFakeAudio(
+  started: unknown[],
+  starts: (number | undefined)[] = [],
+  decode = async (kind: string) => {
+    if (kind === 'ogg') throw new DOMException('Unable to decode audio data', 'EncodingError');
+    return { kind };
+  },
+) {
   class FakeContext {
     state = 'suspended';
     currentTime = 0;
@@ -24,8 +31,7 @@ function installFakeAudio(started: unknown[], starts: (number | undefined)[] = [
     }
     async decodeAudioData(data: ArrayBuffer) {
       const kind = new TextDecoder().decode(data);
-      if (kind === 'ogg') throw new DOMException('Unable to decode audio data', 'EncodingError');
-      return { kind } as unknown as AudioBuffer;
+      return await decode(kind) as unknown as AudioBuffer;
     }
   }
   vi.stubGlobal('AudioContext', FakeContext);
@@ -102,6 +108,42 @@ describe('music loading', () => {
     await audio.unlock();
     await Promise.all([audio.setMusic('theme-town'), audio.unlock()]);
     expect(fetched.filter((url) => url.endsWith('theme-town.ogg'))).toHaveLength(1);
+    audio.dispose();
+  });
+
+  it.each([false, true])('handles switching back to a delayed set (before decode finishes: %s)', async (switchBackEarly) => {
+    const started: unknown[] = [];
+    const woodDecode = Promise.withResolvers<{ kind: string }>();
+    const woodStarted = Promise.withResolvers<void>();
+    const fetched = installFakeAudio(started, [], async (kind) => {
+      if (kind !== 'wav') return { kind };
+      woodStarted.resolve();
+      return woodDecode.promise;
+    });
+    const audio = createAudio({ ...manifest, audio: [
+      { ...manifest.audio[0]!, url: 'assets/audio/theme-town.m4a' },
+      { ...manifest.audio[2]!, url: 'assets/audio/theme-wood.wav' },
+      { ...manifest.audio[3]!, url: 'assets/audio/theme-wood-combat.wav' },
+    ] }, settings);
+    await audio.unlock();
+    const firstWood = audio.setMusic('theme-wood');
+    await woodStarted.promise;
+    await audio.setMusic('theme-town');
+    expect(started).toEqual([{ kind: 'm4a' }]);
+
+    const earlyWood = switchBackEarly ? audio.setMusic('theme-wood') : null;
+    woodDecode.resolve({ kind: 'wav' });
+    await firstWood;
+    if (earlyWood) {
+      await earlyWood;
+    } else {
+      expect(started).toEqual([{ kind: 'm4a' }]);
+      await audio.setMusic('theme-wood');
+    }
+    const expectedDownloads = switchBackEarly ? 1 : 2;
+    expect(fetched.filter((url) => url.endsWith('theme-wood.wav'))).toHaveLength(expectedDownloads);
+    expect(fetched.filter((url) => url.endsWith('theme-wood-combat.wav'))).toHaveLength(expectedDownloads);
+    expect(started).toEqual([{ kind: 'm4a' }, { kind: 'wav' }, { kind: 'wav' }]);
     audio.dispose();
   });
 });

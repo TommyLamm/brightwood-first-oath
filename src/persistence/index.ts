@@ -37,7 +37,7 @@ export type PersistenceOptions = {
   storage: StorageLike | null;
   cloud: CloudPort | null;
   catalog: ContentCatalog;
-  onStatus?: (status: SaveStatus, message?: string) => void;
+  onStatus?: (status: SaveStatus, message?: string, upgradeCompleted?: boolean) => void;
 };
 
 type Mode = 'local' | 'cloud' | 'preview' | 'memory';
@@ -249,11 +249,11 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     flushWaiters.clear();
   };
 
-  const setStatus = (status: SaveStatus, message?: string): void => {
+  const setStatus = (status: SaveStatus, message?: string, upgradeCompleted = false): void => {
     if (runtime.disposed) return;
     runtime.status = status;
     try {
-      options.onStatus?.(status, message);
+      options.onStatus?.(status, message, upgradeCompleted);
     } catch {
       // A presentation callback must not interrupt persistence.
     }
@@ -370,7 +370,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     return { mode: 'local', status, data: activeSaveData(validated.data), profile: cloneProfile(validated.data), saveUpgrade };
   };
 
-  const validateCloudRecord = (record: unknown): { data: GameProfile; revision: number; formatVersion: number; repaired: boolean; repairMessage?: string } | null => {
+  const validateCloudRecord = (record: unknown): { data: GameProfile; revision: number; formatVersion: number; repaired: boolean; repairMessage?: string } => {
     if (!isRecord(record) || !isValidRevision(record.revision)) throw new Error('雲端存檔 revision 無效。');
     if (!isSupportedSaveFormat(record.formatVersion)) {
       const error = new Error('雲端存檔格式版本不相容。') as CloudError;
@@ -443,7 +443,6 @@ export function createPersistence(options: PersistenceOptions): Persistence {
           return { mode: preview ? 'preview' : 'cloud', status, data: null };
         }
         const loaded = validateCloudRecord(record);
-        if (!loaded) throw new Error('雲端存檔結構無效。');
         runtime.revision = loaded.revision;
         runtime.lastCheckpoint = cloneProfile(loaded.data);
         runtime.profile = cloneProfile(loaded.data);
@@ -755,7 +754,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       runtime.upgradeConfirmed = false;
       runtime.pending = null;
       runtime.retryLocal = null;
-      setStatus('localSaved', `format ${SAVE_FORMAT_VERSION} 已保存；format ${upgrade.formatVersion} 原始內容仍保存在備份。`);
+      setStatus('localSaved', `format ${SAVE_FORMAT_VERSION} 已保存；format ${upgrade.formatVersion} 原始內容仍保存在備份。`, true);
     } catch (error) {
       setStatus('saveError', `升級寫入未能確認；format ${upgrade.formatVersion} 原始備份已保留，停止後續寫入。${errorMessage(error, '')}`);
     }
@@ -862,13 +861,26 @@ export function createPersistence(options: PersistenceOptions): Persistence {
   const rereadPreviewRevision = (generation: number): void => {
     runtime.previewRevisionStale = true;
     runtime.busy = true;
+    if (runtime.status !== 'saving') setStatus('saving');
     void Promise.resolve().then(() => options.cloud!.loadProgress()).then((record) => {
       if (generation !== runtime.generation) return;
       if (record && !isValidRevision(record.revision)) throw new Error('預覽存檔 revision 無效。');
+      const upgradeCompleted = runtime.saveUpgrade?.source === 'preview' && runtime.upgradeConfirmed;
+      if (upgradeCompleted) {
+        if (!record || record.revision <= runtime.revision || record.formatVersion !== SAVE_FORMAT_VERSION) {
+          throw new Error('尚未讀到升級後的預覽暫存；請重試讀取。');
+        }
+        const loaded = validateCloudRecord(record);
+        runtime.lastCheckpoint = cloneProfile(loaded.data);
+        runtime.saveUpgrade = null;
+        runtime.upgradeConfirmed = false;
+      }
       runtime.busy = false;
       runtime.previewRevisionStale = false;
       if (record) runtime.revision = record.revision;
-      setStatus('previewOnly', '預覽存檔為診斷用途，沒有正式帳號保存證據。');
+      setStatus('previewOnly', upgradeCompleted
+        ? `預覽暫存已升級至 format ${SAVE_FORMAT_VERSION}。`
+        : '預覽存檔為診斷用途，沒有正式帳號保存證據。', upgradeCompleted);
       pump();
     }).catch((error: unknown) => {
       if (generation !== runtime.generation) return;
@@ -920,12 +932,13 @@ export function createPersistence(options: PersistenceOptions): Persistence {
       runtime.retryAttempt = null;
       runtime.retryRequested = false;
       runtime.lastCheckpoint = cloneProfile(attempt.data);
-      if (runtime.saveUpgrade && runtime.upgradeConfirmed && runtime.mode === 'cloud') {
+      const upgradeCompleted = runtime.saveUpgrade?.source === 'cloud' && runtime.upgradeConfirmed;
+      if (upgradeCompleted) {
         runtime.saveUpgrade = null;
         runtime.upgradeConfirmed = false;
       }
       setStatus(runtime.mode === 'preview' ? 'previewOnly' : 'saved',
-        runtime.mode === 'preview' ? '預覽存檔完成，並非正式帳號保存。' : undefined);
+        runtime.mode === 'preview' ? '預覽存檔完成，並非正式帳號保存。' : undefined, upgradeCompleted);
       pump();
     }).catch((error: unknown) => {
       if (generation !== runtime.generation) return;
@@ -992,6 +1005,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
         : '存檔狀態尚未解除；未執行升級。');
       return;
     }
+    if (runtime.upgradeConfirmed) {
+      if (runtime.status === 'saveError') void retry();
+      return;
+    }
     runtime.upgradeConfirmed = true;
     if (runtime.mode === 'local' && runtime.saveUpgrade.source === 'local') {
       upgradeLocal();
@@ -1019,7 +1036,6 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     }
     if (runtime.status !== 'saveError') return;
     if (runtime.previewRevisionStale) {
-      setStatus('saving');
       rereadPreviewRevision(runtime.generation);
       return;
     }

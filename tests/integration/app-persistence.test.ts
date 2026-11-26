@@ -1,7 +1,7 @@
 import { legacySaveData } from '../fixtures/legacy-save.js';
 import { describe, expect, it } from 'vitest';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
-import type { CloudPort, StorageLike } from '../../src/contracts/ports.js';
+import type { CloudPort, CloudRecord, CloudSaveInput, CloudSaved, StorageLike } from '../../src/contracts/ports.js';
 import { GameApp } from '../../src/app/app.js';
 import { worldIsFrozen } from '../../src/app/state.js';
 import { composeContentCatalog } from '../../src/app/catalog.js';
@@ -103,6 +103,114 @@ describe('T14-c persistence wiring', () => {
     app.dispose();
   });
 
+  it('retries cloud upgrade confirmation with the same request when the first response is lost', async () => {
+    const oldSave = createSave('雲端升級旅人');
+    const original = {
+      data: legacySaveData(oldSave), revision: 7, formatVersion: 4,
+      gameVersion: 'test', updatedAt: '2026-11-20T00:00:00.000Z',
+    };
+    const writes: CloudSaveInput[] = [];
+    let current: CloudSaved | undefined;
+    const cloud: CloudPort = {
+      ready: async () => ({ mode: 'authenticated', progressAvailable: true, capabilities: ['load', 'save'] }),
+      loadProgress: async () => current ?? original,
+      saveProgress: async (input) => {
+        writes.push(input);
+        if (current && input.requestId === writes[0]?.requestId) return current;
+        const revision = current?.revision ?? original.revision;
+        if (input.revision !== revision) throw new Error('Unexpected revision');
+        current = { ...original, data: input.data, formatVersion: input.formatVersion, revision: revision + 1, saved: true };
+        if (writes.length === 1) throw Object.assign(new Error('Response lost'), { machineCode: 'REQUEST_TIMEOUT' });
+        return current;
+      },
+    };
+    const app = new GameApp({ baseUrl: './', fetcher: fetchManifests, cloud, seed: 19 });
+    await app.initialize();
+    app.dispatch({ type: 'confirmSaveUpgrade', payload: {} });
+    app.dispatch({ type: 'confirmSaveUpgrade', payload: {} });
+    app.update(0);
+    await flushMicrotasks();
+    expect(app.state.saveStatus).toBe('saveError');
+    expect(writes).toHaveLength(1);
+
+    app.dispatch({ type: 'confirmSaveUpgrade', payload: {} });
+    app.update(0);
+    await flushMicrotasks();
+    expect(app.state.saveStatus).toBe('saved');
+    expect(app.uiSnapshot?.saveUpgrade).toBeNull();
+    expect(writes).toEqual([writes[0], writes[0]]);
+    expect(writes[0]).toMatchObject({ data: profileFromLegacySave(oldSave), revision: 7, formatVersion: SAVE_FORMAT_VERSION });
+    expect(current?.revision).toBe(8);
+
+    // Continuing flushes persistence before selecting the existing active character.
+    app.dispatch({ type: 'continue', payload: {} });
+    app.update(0);
+    await flushMicrotasks();
+    expect(app.state.screen).toBe('playing');
+    app.dispatch({ type: 'retrySave', payload: {} });
+    app.update(0);
+    await flushMicrotasks();
+    expect(writes).toHaveLength(2);
+    app.dispose();
+  });
+
+  it.each([false, true])('unlocks a format-8 preview after validated readback (readback fails first: %s)', async (failReadback) => {
+    const save = createSave('預覽升級旅人');
+    const { warehouse: _warehouse, deletedCharacter: _deleted, ...legacyProfile } = profileFromLegacySave(save);
+    const { luk: _luk, specialization: _specialization, advancedSkillEquipped: _advanced, ...legacyPlayer } = save.player;
+    legacyProfile.characters['legacy-1']!.player = legacyPlayer;
+    const original: CloudRecord = { data: legacyProfile, revision: 7, formatVersion: 8, gameVersion: 'test', updatedAt: 'test' };
+    let current = original;
+    let reads = 0;
+    const writes: CloudSaveInput[] = [];
+    const cloud: CloudPort = {
+      ready: async () => ({ mode: 'preview', progressAvailable: false, capabilities: ['diagnostics'] }),
+      loadProgress: async () => {
+        reads += 1;
+        if (failReadback) {
+          if (reads === 2) throw Object.assign(new Error('Readback timed out'), { machineCode: 'REQUEST_TIMEOUT' });
+          if (reads === 3) return null;
+          if (reads === 4) return { ...original, revision: current.revision };
+          if (reads === 5) return { ...current, revision: original.revision };
+          if (reads === 6) return { ...current, data: {} };
+        }
+        return current;
+      },
+      saveProgress: async (input) => {
+        writes.push(input);
+        current = { ...original, data: input.data, revision: input.revision + 1, formatVersion: input.formatVersion };
+        return null;
+      },
+    };
+    const app = new GameApp({ baseUrl: './', fetcher: fetchManifests, cloud, seed: 21 });
+    const upgrade = { formatVersion: 8, source: 'preview' };
+    const confirm = async () => {
+      app.dispatch({ type: 'confirmSaveUpgrade', payload: {} });
+      app.update(0);
+      await flushMicrotasks();
+    };
+    await app.initialize();
+    expect(app.uiSnapshot).toMatchObject({ saveStatus: 'upgradeRequired', saveUpgrade: upgrade });
+    if (failReadback) {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        await confirm();
+        expect(app.uiSnapshot).toMatchObject({ saveStatus: 'saveError', saveUpgrade: upgrade });
+        expect(writes).toHaveLength(1);
+      }
+    }
+    await confirm();
+    expect(app.uiSnapshot).toMatchObject({ saveStatus: 'previewOnly', saveUpgrade: null });
+    expect(app.uiSnapshot?.saveMessage).toContain('預覽暫存');
+    expect(writes).toHaveLength(1);
+    app.dispatch({ type: 'selectCharacter', payload: { characterId: 'legacy-1' } });
+    app.update(0);
+    await flushMicrotasks();
+    expect(app.state.screen).toBe('playing');
+    expect(app.state.gameplay?.saveData.player.name).toBe(save.player.name);
+    expect(writes).toHaveLength(1);
+    app.dispose();
+  });
+
   it('blocks confirmed replacement after cloud load failure and keeps temporary play memory-only', async () => {
     const storage = new MemoryStorage();
     const localKey = 'maplewood-swordsman:save:v1:dev';
@@ -171,6 +279,15 @@ describe('T14-c persistence wiring', () => {
     expect(cloudSaveCount).toBe(1);
     expect(app.state.saveStatus).toBe('conflict');
 
+    const { gameTimeMs, gameplay } = app.state;
+    const hp = gameplay!.saveData.player.hp;
+    const position = { ...gameplay!.movement.position };
+    app.update(100);
+    expect(app.state.gameTimeMs).toBe(gameTimeMs);
+    expect(app.state.gameplay?.saveData.player.hp).toBe(hp);
+    expect(app.state.gameplay?.movement.position).toEqual(position);
+    expect(cloudSaveCount).toBe(1);
+
     app.dispatch({ type: 'useCloudVersion', payload: {} });
     app.update(0);
     await flushMicrotasks();
@@ -178,6 +295,14 @@ describe('T14-c persistence wiring', () => {
     expect(app.state.screen).toBe('title');
     expect(app.state.gameplay?.saveData.player.name).toBe('雲端角色');
     expect(app.state.saveStatus).toBe('ready');
+    app.dispatch({ type: 'continue', payload: {} });
+    app.update(0);
+    await flushMicrotasks();
+    expect(app.state.screen).toBe('playing');
+    const resumedTime = app.state.gameTimeMs;
+    app.update(0);
+    expect(app.state.gameTimeMs).toBe(resumedTime);
+    expect(cloudSaveCount).toBe(1);
     app.dispose();
   });
 

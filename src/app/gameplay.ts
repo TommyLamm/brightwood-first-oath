@@ -16,11 +16,13 @@ import type {
 import { createMovement } from '../domain/movement/index.js';
 import { stepPlayerMovement, type PlayerJumpMemory } from '../domain/movement/player-jump.js';
 import { applyMonsterHit, createMonster, stepActors } from '../domain/actors/index.js';
-import { createCombatState, stepCombat, tryAttack } from '../domain/combat/index.js';
+import { attackLockUntil, createCombatState, stepCombat, tryAttack } from '../domain/combat/index.js';
+import { FIXED_STEP_MS } from './fixed-step.js';
 import { applyProgressAction, createPlayer, deriveStats, validatePlayerName } from '../domain/progression/index.js';
 import { acceptQuest, getQuestView, getQuestViews, recordQuestEvent } from '../domain/quests/index.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
+import { isBossMonster } from '../content/rules/monsters.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
@@ -35,7 +37,8 @@ import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '
 import { deriveActiveGuard } from './guard-status.js';
 
 const MAX_ACTIVE_EFFECTS = 80;
-const BOSS_MONSTER_IDS = new Set(['guardian', 'frost-tide-warden', 'sunwell-sentinel', 'ruins-bell-keeper']);
+const BASIC_ATTACK_IDS = new Set(['basic', 'bow-basic', 'wand-basic', 'dagger-basic']);
+const ACTION_INPUT_WINDOW_MS = 100;
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
 const INSPECT_TARGETS = {
   'ruins-stele-west': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
@@ -47,7 +50,7 @@ export type GameplayState = {
   saveData: SaveData;
   playerEntityId: EntityId;
   movement: MovementState;
-  jumpAssist?: PlayerJumpMemory;
+  jumpAssist?: PlayerJumpMemory & { combatUnlockMs?: number };
   monsters: MonsterState[];
   combat: CombatState;
   drops: DropState[];
@@ -67,7 +70,7 @@ export type GameplayState = {
   /** When the current toast text first appeared; used to auto-dismiss it. */
   toastShown?: { text: string; atMs: number };
   /** A skill pressed while the previous swing was still playing; it fires as soon as the swing ends. */
-  bufferedAttack?: { skillId: Id; expiresAtMs: number };
+  bufferedAttack?: { skillId: Id; expiresAtMs: number; readyAtMs?: number };
   /** When 堅韌守護 was last cast, so the hero plays the buff pose for a moment (runtime only). */
   buffCastAtMs?: number;
   interaction: { npcId: Id; dialogue: string[] } | null;
@@ -243,14 +246,25 @@ export function stepGameplay(
   input = { ...input, catalog: classCatalog(input.catalog, gameplay.saveData.player) };
   if (gameplay.movement.mode === 'climbing' || input.nowMs < gameplay.movement.knockbackUntilMs) interruptArcherCast(gameplay, input.catalog);
   if (gameplay.saveData.player.hp <= 0) {
+    delete gameplay.jumpAssist;
+    delete gameplay.bufferedAttack;
     const actorsToClear = new Set<EntityId>([gameplay.playerEntityId]);
     for (const actorId of clearBellKeeperCombatOnPlayerDeath(gameplay)) actorsToClear.add(actorId);
     clearCombatForActors(gameplay, actorsToClear);
   }
   if (gameplay.pendingTransition) return { gameplay, screen: 'loading' };
+  const direction = input.input.moveX;
+  if (direction !== 0 && direction !== gameplay.movement.facing && gameplay.saveData.player.hp > 0
+    && (gameplay.bufferedAttack || commands.some((command) => command.type === 'attack'))
+    && !gameplay.retreat && input.nowMs >= gameplay.movement.knockbackUntilMs
+    && attackLockUntil(gameplay.combat, gameplay.playerEntityId, input.catalog.rules, input.nowMs) <= input.nowMs) {
+    gameplay.movement = { ...gameplay.movement, facing: direction };
+  }
   let openPanel: PanelId | undefined;
   for (const command of commands) {
     if (gameplay.saveData.player.hp <= 0 && command.type !== 'respawn') continue;
+    if (gameplay.bufferedAttack?.readyAtMs !== undefined && command.type === 'attack' && BASIC_ATTACK_IDS.has(command.payload.skillId)
+      && commands.some((next) => next.type === 'attack' && !BASIC_ATTACK_IDS.has(next.payload.skillId))) continue;
     const processed = processCommand(gameplay, command, input);
     gameplay = processed.gameplay;
     if (processed.screen) screen = processed.screen;
@@ -260,7 +274,8 @@ export function stepGameplay(
   if (buffered) {
     if (input.nowMs > buffered.expiresAtMs || gameplay.saveData.player.hp <= 0) {
       delete gameplay.bufferedAttack;
-    } else if (!commands.some((command) => command.type === 'attack')) {
+    } else if (input.nowMs >= (buffered.readyAtMs ?? 0) && !commands.some((command) => command.type === 'attack')) {
+      if (buffered.readyAtMs !== undefined) delete gameplay.bufferedAttack;
       gameplay = processCommand(gameplay, { seq: -1, type: 'attack', payload: { skillId: buffered.skillId } }, input).gameplay;
     }
   }
@@ -286,7 +301,7 @@ export function stepGameplay(
     smokeSlowedUntilMs: gameplay.smoke && input.nowMs < gameplay.smoke.expiresAtMs
       && Math.abs(monster.movement.position.x - gameplay.smoke.position.x) <= 105
       && Math.abs(monster.movement.position.y - gameplay.smoke.position.y) <= 40
-      && !BOSS_MONSTER_IDS.has(monster.monsterId) ? input.nowMs + 1 : 0 }));
+      && !isBossMonster(monster.monsterId) ? input.nowMs + 1 : 0 }));
   // stepActors omits monsters whose respawn is due, so keep the pre-step list
   // to resolve each respawn request back to its spawn placement.
   const monstersBeforeStep = gameplay.monsters;
@@ -301,16 +316,19 @@ export function stepGameplay(
   gameplay.monsters = actorStep.monsters;
   gameplay.telegraphs = actorStep.telegraphs;
 
-  const attackLocked = gameplay.combat.attacks.some((attack) => {
-    if (attack.sourceId !== gameplay!.playerEntityId) return false;
-    const skill = catalog.rules.skills[attack.skillId];
-    return skill !== undefined
-      && input.nowMs < attack.startedAtMs + skill.windupMs + skill.activeMs + skill.recoveryMs;
-  });
-  const mageWindup = effectiveJob(gameplay.saveData.player) === 'mage' && gameplay.combat.attacks.some((attack) =>
-    attack.sourceId === gameplay!.playerEntityId && input.nowMs - Math.max(0, input.dtSeconds) * 1000 < attack.startedAtMs + (catalog.rules.skills[attack.skillId]?.windupMs ?? 0));
-  const rogueLocked = effectiveJob(gameplay.saveData.player) === 'rogue' && attackLocked;
-  const movementConfig = mageWindup || rogueLocked ? { ...catalog.rules.movement, speed: 0 } : attackLocked
+  const actionEnd = attackLockUntil(gameplay.combat, gameplay.playerEntityId, catalog.rules, input.nowMs);
+  const attackLocked = actionEnd > input.nowMs;
+  const job = effectiveJob(gameplay.saveData.player);
+  const stepStart = input.nowMs - Math.max(0, input.dtSeconds) * 1000;
+  let movementUnlockMs = job === 'rogue' && attackLocked ? actionEnd : undefined;
+  if (job === 'mage') {
+    for (const attack of gameplay.combat.attacks) {
+      if (attack.sourceId !== gameplay.playerEntityId) continue;
+      const end = attack.startedAtMs + (catalog.rules.skills[attack.skillId]?.windupMs ?? 0);
+      if (stepStart < end) movementUnlockMs = Math.max(movementUnlockMs ?? end, end);
+    }
+  }
+  const movementConfig = movementUnlockMs !== undefined ? { ...catalog.rules.movement, speed: 0 } : attackLocked
     ? { ...catalog.rules.movement, speed: catalog.rules.movement.speed * 0.25 }
     : catalog.rules.movement;
   const originalFacing = gameplay.movement.facing;
@@ -321,9 +339,22 @@ export function stepGameplay(
     else delete gameplay.retreat;
     delete gameplay.jumpAssist;
   }
+  let movementInput = input.input;
+  let queuedJump = gameplay.jumpAssist?.combatUnlockMs;
+  if (movementInput.downHeld || gameplay.movement.mode !== 'grounded' || input.nowMs < gameplay.movement.knockbackUntilMs) queuedJump = undefined;
+  if (movementUnlockMs !== undefined) {
+    if (queuedJump !== movementUnlockMs) queuedJump = undefined;
+    if (movementInput.jumpPressed && !movementInput.downHeld && gameplay.movement.mode === 'grounded'
+      && input.nowMs >= gameplay.movement.knockbackUntilMs && movementUnlockMs - input.nowMs <= ACTION_INPUT_WINDOW_MS) {
+      queuedJump = movementUnlockMs;
+    }
+    movementInput = { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false };
+  } else if (queuedJump !== undefined && input.nowMs >= queuedJump) {
+    movementInput = { ...movementInput, jumpPressed: true };
+  }
   const playerMovement = retreatStep ? { movement: retreatStep.movement, memory: undefined, jumped: false } : stepPlayerMovement(
     gameplay.movement,
-    mageWindup || rogueLocked ? { ...input.input, moveX: 0, climbY: 0, jumpPressed: false, downHeld: false } : input.input,
+    movementInput,
     map,
     movementConfig,
     input.dtSeconds,
@@ -354,6 +385,12 @@ export function stepGameplay(
     const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
     const destination = blinkDestination({ ...gameplay.movement, facing: attack.facing }, map, catalog.rules.movement, input.nowMs, claimed);
     if (destination) { gameplay.movement = destination; delete gameplay.jumpAssist; }
+  }
+
+  // A blink clears timing tied to the old foothold. Keep a queued cast-to-jump at its landing point.
+  if (movementUnlockMs !== undefined && queuedJump !== undefined && gameplay.movement.mode === 'grounded') {
+    gameplay.jumpAssist ??= { graceUntilMs: 0, bufferedUntilMs: 0 };
+    gameplay.jumpAssist.combatUnlockMs = queuedJump;
   }
 
   const combatActors = buildCombatActors(gameplay, catalog, input.nowMs);
@@ -443,6 +480,7 @@ export function stepGameplay(
       gameplay.saveData = { ...gameplay.saveData, player: damaged.value };
       gameplay.invulnerableUntilMs = input.nowMs + 800;
       gameplay.attackOrDamageAtMs = input.nowMs;
+      delete gameplay.jumpAssist;
       interruptArcherCast(gameplay, catalog);
       gameplay.movement = {
         ...gameplay.movement,
@@ -471,7 +509,7 @@ export function stepGameplay(
         if (restored.ok) gameplay.saveData = { ...gameplay.saveData, player: restored.value };
       }
       if (resolvedSkill === 'mage-frost-ring' || resolvedSkill === 'elementalist-nova') gameplay.monsters = gameplay.monsters.map((monster) =>
-        monster.id === hit.targetId && !BOSS_MONSTER_IDS.has(monster.monsterId) && monster.hp > 0
+        monster.id === hit.targetId && !isBossMonster(monster.monsterId) && monster.hp > 0
           ? { ...monster, slowedUntilMs: input.nowMs + 1500, provokedUntilMs: input.nowMs + 4000 } : monster);
       gameplay.attackOrDamageAtMs = input.nowMs;
       addEffect(gameplay, hit.targetId, 'hit', hit.damage, input.nowMs, input.nextEntityId, hit.critical);
@@ -549,6 +587,7 @@ function clearCombatForActors(gameplay: GameplayState, actorIds: ReadonlySet<Ent
 }
 
 function interruptArcherCast(gameplay: GameplayState, _catalog: ContentCatalog): void {
+  if (gameplay.bufferedAttack?.readyAtMs !== undefined) delete gameplay.bufferedAttack;
   if (effectiveJob(gameplay.saveData.player) === 'swordsman' && gameplay.saveData.player.specialization !== 'berserker') return;
   gameplay.combat.attacks = gameplay.combat.attacks.filter((attack) =>
     attack.sourceId !== gameplay.playerEntityId);
@@ -637,8 +676,12 @@ function processCommand(
       return result.ok ? { gameplay: withPlayer(gameplay, result.value, null) } : withToast(gameplay, result.message);
     }
     case 'attack': {
-      const isBasic = ['basic', 'bow-basic', 'wand-basic', 'dagger-basic'].includes(command.payload.skillId);
-      const skillId = isBasic ? resolveSkillSlot(player, 0) : command.payload.skillId;
+      // A basic tap during a queued skill's window attempts that skill, including on the first free tick.
+      const queued = gameplay.bufferedAttack;
+      const requestedId = BASIC_ATTACK_IDS.has(command.payload.skillId) && queued && context.nowMs <= queued.expiresAtMs
+        ? queued.skillId : command.payload.skillId;
+      const isBasic = BASIC_ATTACK_IDS.has(requestedId);
+      const skillId = isBasic ? resolveSkillSlot(player, 0) : requestedId;
       const skill = catalog.rules.skills[skillId];
       if (!skill || (skill.kind !== 'attack' && skill.kind !== 'buff' && skill.kind !== 'movement' && skill.kind !== 'zone')) return withToast(gameplay, '找不到可施放的技能。');
       const trialStab = isRogueTrial(gameplay) && skill.id === 'rogue-double-stab';
@@ -709,6 +752,7 @@ function processCommand(
         } else gameplay.guardUntilMs = context.nowMs + skill.durationMs;
         gameplay.attackOrDamageAtMs = context.nowMs;
         gameplay.buffCastAtMs = context.nowMs;
+        if (gameplay.bufferedAttack?.readyAtMs !== undefined) delete gameplay.bufferedAttack;
         if (gameplay.toast !== gameplay.stickyToast) gameplay.toast = null;
         addEffect(gameplay, gameplay.playerEntityId, 'buff', rank, context.nowMs, context.nextEntityId);
         return { gameplay };
@@ -723,6 +767,15 @@ function processCommand(
           ? { damageBonus: 0.015 * roguePassiveRank(player, catalog.rules, 'rogue-combo-rhythm') } : {}),
       }, actors, catalog.rules, context.nowMs, context.nextEntityId);
       if (!proposal.ok) {
+        if (isBasic && command.seq >= 0 && (proposal.code === 'COOLDOWN' || proposal.code === 'NOT_READY')
+          && context.nowMs >= gameplay.movement.knockbackUntilMs && gameplay.movement.mode !== 'climbing') {
+          const readyAtMs = Math.max(gameplay.combat.cooldowns[gameplay.playerEntityId]?.[skill.id] ?? 0,
+            attackLockUntil(gameplay.combat, gameplay.playerEntityId, catalog.rules, context.nowMs));
+          if (readyAtMs > context.nowMs && readyAtMs - context.nowMs <= ACTION_INPUT_WINDOW_MS) {
+            gameplay.bufferedAttack = { skillId: skill.id, readyAtMs, expiresAtMs: readyAtMs + Math.ceil(FIXED_STEP_MS) };
+            return { gameplay };
+          }
+        }
         // A skill pressed mid-swing is buffered briefly so it chains off the swing instead of being lost.
         if (proposal.code === 'NOT_READY' && !isBasic) {
           if (gameplay.bufferedAttack?.skillId !== skill.id) {
@@ -1077,6 +1130,7 @@ function requestTransition(
     return { gameplay: { ...gameplay, toast: '目的地地圖或出生點資料不存在。' }, screen: 'playing' };
   }
   gameplay.pendingTransition = { mapId, spawnId, after };
+  delete gameplay.jumpAssist;
   gameplay.combat = createCombatState();
   delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; delete gameplay.poisons; delete gameplay.rallyUntilMs;
   delete gameplay.bufferedAttack;
@@ -1102,7 +1156,6 @@ export function completeMapTransition(
     ? [...current.saveData.visitedMaps]
     : [...current.saveData.visitedMaps, map.id];
   let saveData = { ...current.saveData, location: { mapId: map.id, spawnId: spawn.id }, visitedMaps };
-  let screen: GameplayStepResult['screen'] = 'playing';
   if (pending.after === 'respawn') {
     const stats = deriveStats(saveData.player, catalog.rules);
     saveData = { ...saveData, player: { ...saveData.player, hp: stats.maxHp, mp: stats.maxMp } };
@@ -1138,9 +1191,7 @@ export function completeMapTransition(
     toast: null,
   };
   delete gameplay.jumpAssist;
-  if (pending.after === 'retryBoss') gameplay.bossResult = false;
-  if (pending.after === 'respawn') screen = 'playing';
-  return { gameplay, screen };
+  return { gameplay, screen: 'playing' };
 }
 
 /** Load failures leave saved location, progress and checkpoint eligibility untouched. */
@@ -1240,7 +1291,7 @@ function applyDeathEvent(
     }
   }
 
-  if (BOSS_MONSTER_IDS.has(monster.monsterId)) {
+  if (isBossMonster(monster.monsterId)) {
     const orderedDrops = [...drops].sort((a, b) => {
       const priority = (entry: typeof drops[number]) =>
         entry.itemId === null ? 0 : catalog.rules.items[entry.itemId]?.kind === 'quest' ? 1 : 2;
@@ -1363,7 +1414,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
         faction: 'enemy',
         body: { width: monster.width, height: monster.height },
         ...(definition.projectileHeight ? { projectileHeight: definition.projectileHeight } : {}),
-        knockbackImmune: BOSS_MONSTER_IDS.has(monster.monsterId),
+        knockbackImmune: isBossMonster(monster.monsterId),
         projectileImmune: monster.mode === 'phase-transition',
         skillRanks: monster.pendingSkillId ? { [monster.pendingSkillId]: 1 } : {},
       };

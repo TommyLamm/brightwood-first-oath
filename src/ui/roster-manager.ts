@@ -15,9 +15,9 @@ export function buildRosterManager(document: Document, view: UiSnapshot, dispatc
     node.textContent = label; node.disabled = blocked || disabled;
     node.addEventListener('click', () => dispatch({ type: 'manageProfile', payload: action() })); parent.append(node);
   };
-  const input = (label: string, parent: HTMLElement, initial = ''): HTMLInputElement => {
+  const input = (label: string, parent: HTMLElement, maxLength: number, initial = ''): HTMLInputElement => {
     const wrap = document.createElement('label'); wrap.textContent = label;
-    const field = document.createElement('input'); field.type = 'text'; field.maxLength = 16; field.value = initial;
+    const field = document.createElement('input'); field.type = 'text'; field.maxLength = maxLength; field.value = initial;
     wrap.append(field); parent.append(wrap); return field;
   };
   const description = document.createElement('p'); description.textContent = '四欄可擴至六欄。刪除會保留一名角色供恢復；共享倉庫只收背包物品，任務專用物品除外。'; root.append(description);
@@ -27,9 +27,9 @@ export function buildRosterManager(document: Document, view: UiSnapshot, dispatc
     const group = document.createElement('details');
     group.open = expanded.has(character.characterId); group.addEventListener('toggle', () => group.open ? expanded.add(character.characterId) : expanded.delete(character.characterId));
     const heading = document.createElement('summary'); heading.textContent = character.player.name + '・角色管理／物品轉移'; group.append(heading);
-    const name = input('新名稱 ', group, character.player.name);
+    const name = input('新名稱 ', group, 16, character.player.name);
     button('儲存新名稱', () => ({ type: 'rename', characterId: character.characterId, name: name.value }), group);
-    const confirm = input('刪除前輸入目前完整名稱 ', group);
+    const confirm = input('刪除前輸入目前完整名稱 ', group, character.player.name.length);
     button('刪除角色並保留恢復備份', () => ({ type: 'delete', characterId: character.characterId, confirmation: confirm.value }), group, !!profile.deletedCharacter);
     const list = (from: 'bag' | 'warehouse'): void => {
       const stacks = from === 'bag' ? character.player.bag : profile.warehouse ?? [];
@@ -52,7 +52,7 @@ export function buildRosterManager(document: Document, view: UiSnapshot, dispatc
     const heading = document.createElement('summary'); heading.textContent = '已刪角色：' + profile.deletedCharacter.player.name; group.append(heading);
     button('恢復到空欄位', () => ({ type: 'restore' }), group, profile.slots.every((slot) => slot.characterId !== null));
     const warning = document.createElement('p'); warning.textContent = '永久清除會移除這名角色的恢復備份，之後無法在遊戲內恢復。'; group.append(warning);
-    const confirm = input('永久清除前輸入完整角色名稱 ', group);
+    const confirm = input('永久清除前輸入完整角色名稱 ', group, profile.deletedCharacter.player.name.length);
     button('永久清除恢復備份', () => ({ type: 'purge', confirmation: confirm.value }), group); root.append(group);
   }
   return root;
