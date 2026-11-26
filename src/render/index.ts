@@ -420,7 +420,11 @@ export function createWorldRenderer(
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   const guidanceGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
-  let questGuide: { views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets } | undefined;
+  const attacksBySource = new Map<string, AttackInstance>();
+  let questGuide: {
+    views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets;
+    markers: ReturnType<typeof questMarkerStates>; tunedSteles: ReadonlySet<string>;
+  } | undefined;
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
     resolution: WORLD_TEXT_RESOLUTION,
@@ -751,15 +755,6 @@ export function createWorldRenderer(
   const camera = scene.cameras.main;
   camera.on(Phaser.Cameras.Scene2D.Events.FOLLOW_UPDATE, handleCameraFollowUpdate);
 
-  const isInViewport = (position: Vec2, margin = 180): boolean => {
-    const viewport = cameraWorldViewport(scene.cameras.main);
-    const left = viewport.x - margin;
-    const top = viewport.y - margin;
-    const right = viewport.x + viewport.width + margin;
-    const bottom = viewport.y + viewport.height + margin;
-    return position.x >= left && position.x <= right && position.y >= top && position.y <= bottom;
-  };
-
   const buildMapVisual = (map: MapDef): MapVisual => {
     const terrain = terrainStyle(map);
     const backgrounds: Phaser.GameObjects.TileSprite[] = [];
@@ -1000,9 +995,6 @@ export function createWorldRenderer(
       .setActive(true);
   };
 
-  const attackStartedAt = (snapshot: WorldSnapshot, actorId: string): AttackInstance | undefined =>
-    [...snapshot.attacks].reverse().find((attack) => attack.sourceId === actorId);
-
   const drawSnapshot = (snapshot: WorldSnapshot): void => {
     if (!activeVisual) throw new RendererAssetError('請先成功呼叫 loadMap(map)');
     if (snapshot.mapId !== activeVisual.map.id) throw new RendererAssetError(`Snapshot mapId ${snapshot.mapId} 與已載入地圖 ${activeVisual.map.id} 不一致`);
@@ -1017,9 +1009,16 @@ export function createWorldRenderer(
     const trackedId = snapshot.trackedQuestId ?? null;
     if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId) {
       const quest = selectTrackerQuest(snapshot.questViews, trackedId);
-      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest) };
+      const steleQuest = snapshot.questViews.find(({ questId }) => questId === 'q17');
+      const tunedSteles = steleQuest?.status === 'claimed' ? STELE_NPC_IDS : new Set(steleQuest?.objectives
+        .filter(({ type, current, required }) => type === 'inspect' && current >= required)
+        .map(({ targetId }) => targetId));
+      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest),
+        markers: questMarkerStates(snapshot.questViews, catalog.world.quests), tunedSteles };
     }
-    const targets = questGuide.targets;
+    const { targets, markers, tunedSteles } = questGuide;
+    attacksBySource.clear();
+    for (const attack of snapshot.attacks) attacksBySource.set(attack.sourceId, attack);
     bossNameText.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
@@ -1042,7 +1041,7 @@ export function createWorldRenderer(
     for (const label of dropLabels.values()) label.setVisible(false);
 
     const basePlayerKey = actorImageKey(snapshot.player.visual.body, catalog);
-    const playerAttack = attackStartedAt(snapshot, snapshot.player.id);
+    const playerAttack = attacksBySource.get(snapshot.player.id);
     const bowSkill = playerAttack ? catalog.rules.skills[playerAttack.skillId] : undefined;
     const casting = Boolean(playerAttack && (bowSkill?.requiredJob === 'mage' || bowSkill?.id === 'wand-basic')
       && snapshot.player.hp > 0 && snapshot.player.movement.knockbackUntilMs <= snapshot.nowMs);
@@ -1156,27 +1155,27 @@ export function createWorldRenderer(
     const heroAlpha = snapshot.player.hp > 0 && graceLeftMs > 0 && Math.floor(graceLeftMs / 100) % 2 === 0 ? 0.35 : 1;
     playerSprite.setAlpha(heroAlpha);
     for (const sprite of gearSprites.values()) sprite.setAlpha(heroAlpha);
-    const questStates = questMarkerStates(snapshot.questViews, catalog.world.quests);
-    const q17View = snapshot.questViews.find(({ questId }) => questId === 'q17');
-    const tunedSteleIds = new Set(q17View?.status === 'claimed'
-      ? [...STELE_NPC_IDS]
-      : q17View?.objectives
-        .filter((objective) => objective.type === 'inspect' && objective.current >= objective.required)
-        .map(({ targetId }) => targetId) ?? []);
+    const viewport = cameraWorldViewport(camera);
+    const margin = 180;
+    const left = viewport.x - margin;
+    const top = viewport.y - margin;
+    const right = viewport.x + viewport.width + margin;
+    const bottom = viewport.y + viewport.height + margin;
+    const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
       if (!npc || !npcVisual) continue;
       const image = assets.images.get(npcVisual.imageKey)!;
       const npcSprite = drawActor(`npc:${placement.npcId}`, npcVisual.imageKey, `npc:${npc.id}:idle`, { x: placement.x, y: placement.y }, 1, snapshot.nowMs).sprite;
-      if (STELE_NPC_IDS.has(placement.npcId) && tunedSteleIds.has(placement.npcId)) {
+      if (STELE_NPC_IDS.has(placement.npcId) && tunedSteles.has(placement.npcId)) {
         const glowY = placement.y - image.displayHeight * 0.58;
         steleGlowGraphics.fillStyle(0xffd979, 0.2).fillCircle(placement.x, glowY, 16);
         steleGlowGraphics.lineStyle(2, 0xffe9a8, 0.72).strokeCircle(placement.x, glowY, 16);
       }
       const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
-      const questState = questStates.get(placement.npcId);
+      const questState = markers.get(placement.npcId);
       const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
       const label = npc.name + questLabel;
       const color = questState === 'ready' ? '#c7f8c5' : '#fff4d4';
@@ -1195,7 +1194,7 @@ export function createWorldRenderer(
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
       const isNamedBoss = isBossMonster(monster.monsterId);
-      const attack = attackStartedAt(snapshot, monster.id);
+      const attack = attacksBySource.get(monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
       const monsterIsAttacking = animationKey.endsWith(':attack') || animationKey.endsWith(':attack-sweep');
@@ -1212,13 +1211,14 @@ export function createWorldRenderer(
           ? skillDuration(attack, catalog)
           : undefined,
       ).sprite;
-      if (!isInViewport(monster.movement.position)) monsterSprite.setVisible(false).setActive(false);
-      if (monster.monsterId === 'ruins-bell-keeper' && monster.mode === 'phase-transition' && isInViewport(monster.movement.position)) {
+      const inViewport = isInViewport(monster.movement.position);
+      if (!inViewport) monsterSprite.setVisible(false).setActive(false);
+      if (monster.monsterId === 'ruins-bell-keeper' && monster.mode === 'phase-transition' && inViewport) {
         const glowY = monster.movement.position.y - (actorContentSizes.get(definition.actorKey)?.height ?? definition.height) * 0.55;
         steleGlowGraphics.fillStyle(0x81d8d5, 0.14).fillCircle(monster.movement.position.x, glowY, 34);
         steleGlowGraphics.lineStyle(2, 0xd0f6e7, 0.64).strokeCircle(monster.movement.position.x, glowY, 36);
       }
-      if (!dead && isInViewport(monster.movement.position)) {
+      if (!dead && inViewport) {
         const image = assets.images.get(definition.actorKey);
         const content = actorContentSizes.get(definition.actorKey);
         const bar = monsterHealthBarGeometry(
