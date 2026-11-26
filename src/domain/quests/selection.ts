@@ -1,4 +1,4 @@
-import type { QuestView } from '../../contracts/definitions.js';
+import type { QuestView, WorldCatalog } from '../../contracts/definitions.js';
 import { questDropByQuest } from '../../content/rules/monsters.js';
 
 export type QuestTargets = {
@@ -43,4 +43,14 @@ export function questTargets(quest: QuestView | undefined): QuestTargets {
     if (source && items.has(source.itemId)) monsters.add(source.monsterId);
   }
   return { maps, npcs, monsters, items };
+}
+
+export function questDestinationMapIds(world: WorldCatalog, targets: QuestTargets): ReadonlySet<string> {
+  const maps = new Set(targets.maps);
+  if (targets.npcs.size === 0 && targets.monsters.size === 0) return maps;
+  for (const map of Object.values(world.maps)) {
+    if (map.npcs.some(({ npcId }) => targets.npcs.has(npcId))
+      || map.monsters.some(({ monsterId }) => targets.monsters.has(monsterId))) maps.add(map.id);
+  }
+  return maps;
 }

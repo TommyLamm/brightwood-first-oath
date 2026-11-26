@@ -1,6 +1,7 @@
 import type { MapDef, Vec2 } from '../contracts/index.js';
 import type { UiSnapshot } from '../contracts/ports.js';
-import { localMapPoint } from './local-map-model.js';
+import { questTargets } from '../domain/quests/selection.js';
+import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -13,10 +14,11 @@ function positionMarker(element: HTMLElement, point: Vec2): void {
 }
 
 /** Read-only terrain guide: no map travel, encounter state or save writes. */
-export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef, selectedNpcId?: string | null): HTMLDetailsElement {
+export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef, focus?: LocalMapFocus | null): HTMLDetailsElement {
   const details = document.createElement('details');
   details.className = 'ms-local-map'; details.dataset.detailId = 'local-terrain:' + map.id;
   details.dataset.localMapId = map.id;
+  details.open = focus?.kind === 'quest';
   const summary = text(document, 'summary', '', map.name + ' · 地形導覽');
   summary.dataset.focus = 'local-terrain:' + map.id;
   details.append(summary, text(document, 'p', 'ms-panel-note', '橫向位置與遊戲一致；縱向經縮放。實線是地面，長虛線是可下跳平台，短虛線是攀爬路線。'));
@@ -41,20 +43,33 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
   }
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
-  const marker = (kind: 'npc' | 'portal', index: number, position: Vec2, label: string, highlighted = false) => {
-    const code = (kind === 'npc' ? 'N' : 'P') + (index + 1);
+  const codes = { npc: 'N', portal: 'P', monster: 'M' } as const;
+  const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false) => {
+    const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
     positionMarker(mark, localMapPoint(map, position)!); mark.title = label; chart.append(mark);
     const entry = text(document, 'li', '', code + ' · ' + (highlighted ? '目標：' : '') + label);
     if (highlighted) {
       mark.classList.add('is-target');
-      entry.setAttribute('aria-current', 'true');
+      entry.classList.add('is-target');
+      if (kind === 'npc') entry.setAttribute('aria-current', 'true');
       details.open = true;
     }
     legend.append(entry);
   };
   map.npcs.forEach((npc, index) => marker('npc', index, npc,
-    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId, npc.npcId === selectedNpcId));
+    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId, focus?.kind === 'npc' && npc.npcId === focus.id));
+  let monsterCount = 0;
+  if (focus?.kind === 'quest') {
+    const targets = questTargets(view.questViews.find(({ questId }) => questId === focus.id));
+    for (const spawn of map.monsters) {
+      if (!targets.monsters.has(spawn.monsterId)) continue;
+      line({ x: spawn.roamLeft, y: spawn.y }, { x: spawn.roamRight, y: spawn.y }, 'is-monster-range');
+      const name = view.catalog.rules.monsters[spawn.monsterId]?.name ?? spawn.monsterId;
+      marker('monster', monsterCount, spawn, name + '活動區', true);
+      monsterCount++;
+    }
+  }
   map.portals.forEach((portal, index) => {
     const target = view.catalog.world.maps[portal.targetMapId]?.name ?? portal.targetMapId;
     const requirement = portalRequirements(portal, view.saveData!, view.catalog);
@@ -63,7 +78,8 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
   const player = text(document, 'span', 'ms-local-map__player', '◆');
   player.title = '你在這裡'; player.dataset.localPlayer = ''; chart.append(player);
   details.append(chart, text(document, 'p', 'ms-local-map__key',
-    (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民／調查點　P 出口'), legend);
+    (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民／調查點　P 出口'
+      + (monsterCount > 0 ? '　M 目標怪物活動區' : '')), legend);
   updateLocalMapPlayer(details, view);
   return details;
 }

@@ -1,5 +1,5 @@
 import type { ContentCatalog, QuestView, SaveData } from '../contracts/index.js';
-import { questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
+import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
 import { portalBlockMessage } from './interaction-target.js';
 
 type Route = { mapId: string; exitId: string | null };
@@ -29,14 +29,7 @@ export function findQuestExit(
 }
 
 function nextExit(save: SaveData, catalog: ContentCatalog, quest: QuestView | undefined): string | null {
-  const targets = questTargets(quest);
-  const destinations = new Set(targets.maps);
-  if (targets.npcs.size > 0 || targets.monsters.size > 0) {
-    for (const map of Object.values(catalog.world.maps)) {
-      if (map.npcs.some(({ npcId }) => targets.npcs.has(npcId))
-        || map.monsters.some(({ monsterId }) => targets.monsters.has(monsterId))) destinations.add(map.id);
-    }
-  }
+  const destinations = questDestinationMapIds(catalog.world, questTargets(quest));
   const origin = save.location.mapId;
   if (destinations.size === 0 || destinations.has(origin)) return null;
 

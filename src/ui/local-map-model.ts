@@ -1,4 +1,16 @@
-import type { MapDef, SaveData, Vec2 } from '../contracts/index.js';
+import type { MapDef, QuestView, SaveData, Vec2, WorldCatalog } from '../contracts/index.js';
+import { questDestinationMapIds, questTargets } from '../domain/quests/selection.js';
+
+export type LocalMapFocus = { kind: 'npc' | 'quest'; id: string };
+
+export function resolveQuestMapTarget(world: WorldCatalog, save: SaveData, quest: QuestView | undefined): MapDef | undefined {
+  if (quest?.status !== 'active') return undefined;
+  const candidates = questDestinationMapIds(world, questTargets(quest));
+  const here = save.location.mapId;
+  const target = candidates.has(here) ? here
+    : save.visitedMaps.find((mapId) => candidates.has(mapId)) ?? candidates.values().next().value;
+  return target ? world.maps[target] : undefined;
+}
 
 export function canViewLocalMap(mapId: string, save: SaveData): boolean {
   return save.location.mapId === mapId || save.visitedMaps.includes(mapId);

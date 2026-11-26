@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { canViewLocalMap, localMapPoint } from '../src/ui/local-map-model.js';
+import { canViewLocalMap, localMapPoint, resolveQuestMapTarget } from '../src/ui/local-map-model.js';
 import { createInitialAppState, createUiSnapshot } from '../src/app/state.js';
 import { startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
+import { getQuestView } from '../src/domain/quests/index.js';
 
 describe('local terrain guide', () => {
   it('preserves left/right and height ordering, with room for edge markers', () => {
@@ -27,7 +28,8 @@ describe('local terrain guide', () => {
 
   it('projects every current map terrain, climb route, resident and exit within the guide', () => {
     for (const map of Object.values(worldCatalog.maps)) {
-      const positions = [...map.npcs, ...map.portals, ...map.spawns,
+      const positions = [...map.npcs, ...map.portals, ...map.spawns, ...map.monsters,
+        ...map.monsters.flatMap(spawn => [{ x: spawn.roamLeft, y: spawn.y }, { x: spawn.roamRight, y: spawn.y }]),
         ...map.footholds.flatMap(f => [{ x: f.x1, y: f.y1 }, { x: f.x2, y: f.y2 }]),
         ...map.ladders.flatMap(l => [{ x: l.x, y: l.topY }, { x: l.x, y: l.bottomY }])];
       for (const position of positions) {
@@ -37,6 +39,19 @@ describe('local terrain guide', () => {
         expect(projected.y, map.id).toBeGreaterThan(0); expect(projected.y, map.id).toBeLessThan(100);
       }
     }
+  });
+
+  it('locates an item collection quest through its drop source without exposing unexplored terrain', () => {
+    const catalog = { rules: rulesCatalog, world: worldCatalog };
+    const initial = createInitialAppState(76, 'quest-map');
+    const started = startNewGame('旅人', catalog, initial.nextEntityId);
+    if ('error' in started) throw Error(started.error);
+    const save = started.gameplay.saveData;
+    save.quests.q03 = { status: 'active', counters: {} };
+    const quest = getQuestView(save, 'q03', catalog);
+    const target = resolveQuestMapTarget(worldCatalog, save, quest);
+    expect(target?.id).toBe('forest-edge');
+    expect(canViewLocalMap(target!.id, save)).toBe(false);
   });
 
   it('only exposes the current or already explored terrain and copies the live position outside saves', () => {

@@ -19,7 +19,7 @@ import {
 } from './world-map-model.js';
 import type { AtlasScope, MapLandmark, RegionOverview } from './world-map-model.js';
 import { buildLocalMap } from './local-map.js';
-import { canViewLocalMap } from './local-map-model.js';
+import { canViewLocalMap, type LocalMapFocus } from './local-map-model.js';
 
 function element<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, text = ''): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -39,7 +39,7 @@ function mapButton(document: Document, id: string, label: string, className: str
 }
 
 /** Informational atlas: selecting a landmark changes the chart selection, never the player's location. */
-export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null, selectedNpcId?: string | null): HTMLElement {
+export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null, focus?: LocalMapFocus | null): HTMLElement {
   const root = element(document, 'div', 'ms-world-map');
   const data = view.saveData;
   if (!data) {
@@ -186,7 +186,7 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
   }
   root.append(legend);
   if (selected && canViewLocalMap(selected.id, data)) {
-    root.insertBefore(buildLocalMap(document, view, selected, selectedNpcId), layout);
+    root.insertBefore(buildLocalMap(document, view, selected, focus), layout);
   }
   return root;
 }

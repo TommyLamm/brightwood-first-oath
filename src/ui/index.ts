@@ -43,6 +43,7 @@ import { previewSkillLearning } from './skill-learning-preview.js';
 import { INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
 import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
+import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
 import { contextHint } from './context-hint.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
@@ -93,7 +94,7 @@ type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel' | 'choose-route' | 'select-character'
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
-  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest' | 'track-quest'
+  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'review-quest-map' | 'select-quest' | 'track-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'toggle-quest-tracker' | 'settings-reset-bindings' | 'reload-page';
@@ -656,7 +657,7 @@ export function createUi(
   let inventoryFilter: InventoryFilter = 'all';
   let shopFilter: ShopFilter = 'all';
   let selectedMapId: string | null = null;
-  let selectedMapNpcId: string | null = null;
+  let selectedMapFocus: LocalMapFocus | null = null;
   let selectedQuestId: string | null = null;
   let pendingSkillReview: string | null = null;
   let createRequested = false;
@@ -1627,7 +1628,7 @@ export function createUi(
     if (!view.panels.includes('quests')) selectedQuestId = null;
     if (panel !== 'map') {
       selectedMapId = null;
-      selectedMapNpcId = null;
+      selectedMapFocus = null;
     }
     if (!panel) {
       if (lastPanelSignature !== '') {
@@ -1649,7 +1650,7 @@ export function createUi(
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
-      selectedMapNpcId,
+      selectedMapFocus,
       selectedQuestId,
       trackedQuestId: questTrackerState.trackedQuestId,
       inventoryFilter,
@@ -1705,7 +1706,7 @@ export function createUi(
       body.append(buildPanelContent(document, view, panel, {
         selectedBagIndex,
         selectedMapId,
-        selectedMapNpcId,
+        selectedMapFocus,
         selectedQuestId,
         trackedQuestId: questTrackerState.trackedQuestId,
         inventoryFilter,
@@ -1829,17 +1830,22 @@ export function createUi(
       case 'select-map':
         if (!button.dataset.mapId || (!view.catalog.world.maps[button.dataset.mapId] && !PLANNED_REGIONS.some(({ id }) => id === button.dataset.mapId))) return;
         selectedMapId = button.dataset.mapId;
-        selectedMapNpcId = null;
+        selectedMapFocus = null;
         renderPanel(view, true);
         return;
-      case 'review-npc-map': {
-        const npcId = button.dataset.npcId;
-        if (!npcId) return;
+      case 'review-npc-map':
+      case 'review-quest-map': {
         const latestView = currentView ?? view;
-        const mapTarget = resolveNpcMapTarget(latestView.catalog.world, npcId);
-        if (!mapTarget) return;
-        selectedMapId = mapTarget.mapId;
-        selectedMapNpcId = npcId;
+        const { world } = latestView.catalog;
+        const id = action === 'review-npc-map' ? button.dataset.npcId : button.dataset.questId;
+        if (!id) return;
+        const focus: LocalMapFocus = { kind: action === 'review-npc-map' ? 'npc' : 'quest', id };
+        const mapId = focus.kind === 'npc' ? resolveNpcMapTarget(world, id)?.mapId
+          : latestView.saveData && resolveQuestMapTarget(world, latestView.saveData,
+            latestView.questViews.find(({ questId }) => questId === id))?.id;
+        if (!mapId) return;
+        selectedMapId = mapId;
+        selectedMapFocus = focus;
         if (latestView.panels.at(-1) === 'map') {
           renderPanel(latestView, true);
           return;
@@ -2303,7 +2309,7 @@ export function createUi(
       clearTransientViewState();
       selectedQuestId = null;
       selectedMapId = null;
-      selectedMapNpcId = null;
+      selectedMapFocus = null;
       questTrackerState.trackQuest(null);
       lastReconciledBag = emptyBag;
       lastPanelFocus = null;
@@ -2805,6 +2811,17 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
         button.setAttribute('aria-label', title);
         actions.append(button);
       }
+    } else {
+      const target = resolveQuestMapTarget(view.catalog.world, view.saveData, selectedQuest);
+      if (target) {
+        const title = '查看目標區域：' + target.name;
+        const button = makeButton(document, '查看目標區域', 'review-quest-map', {
+          className: 'ms-button ms-button--secondary', title,
+          data: { questId: selectedQuest.questId, focus: 'quest-location:' + selectedQuest.questId },
+        });
+        button.setAttribute('aria-label', title);
+        actions.append(button);
+      }
     }
     selectedCard.querySelector('.ms-journal-heading')?.after(actions);
   }
@@ -2874,7 +2891,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
 type PanelBuildState = {
   selectedBagIndex: number | null;
   selectedMapId: string | null;
-  selectedMapNpcId: string | null;
+  selectedMapFocus: LocalMapFocus | null;
   selectedQuestId: string | null;
   trackedQuestId: string | null;
   readingSize: ReadingSize;
@@ -2912,7 +2929,7 @@ function buildPanelContent(
       content.append(buildWorldJournal(document, view, state.selectedQuestId, state.trackedQuestId));
       break;
     case 'map':
-      content.append(buildWorldMap(document, view, state.selectedMapId, state.selectedMapNpcId));
+      content.append(buildWorldMap(document, view, state.selectedMapId, state.selectedMapFocus));
       break;
     case 'shop':
       buildShopPanel(document, view, state, content);
