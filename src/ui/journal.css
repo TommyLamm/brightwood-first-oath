@@ -382,6 +382,10 @@
 .ms-screen-card__details { color: #7a5d3f; font-size: 12px; }
 .ms-screen-card__details summary { cursor: pointer; }
 .ms-screen-card__details code { display: block; margin-top: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.ms-screen-card--create { max-height: min(92vh, 650px); }
+.ms-route-specializations ul { margin: 6px 0 0; padding-inline-start: 20px; }
+.ms-create-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-create-actions > button:first-child { flex: 1 0 auto; }
 .ms-screen-card__description { color: #786145; white-space: pre-line; }
 .ms-screen-card__status { color: #776537; }
 .ms-screen-card__save { margin: 0; color: #4f3b29; font-weight: 700; overflow-wrap: anywhere; }

@@ -2,7 +2,7 @@ import './styles.css';
 import { classPortrait, classSkillNames, classActionLabel, playerClassLabel, equipmentJobLabel } from './class-presentation.js';
 import { buildRosterManager } from './roster-manager.js';
 import { specializationPanel } from './specialization-panel.js';
-import { isSpecialization, playerSkillRank } from '../content/rules/specializations.js';
+import { isSpecialization, playerSkillRank, specializations } from '../content/rules/specializations.js';
 import { canEquipForJob, effectiveJob, jobs, resolveSkillSlot } from '../content/rules/jobs.js';
 import './journal.css';
 import './world-map.css';
@@ -1181,6 +1181,8 @@ export function createUi(
     if (signature === lastScreenSignature) return;
     lastScreenSignature = signature;
     preserveFocus(screenLayer, () => {
+      const specializationPreviewOpen = showCreate
+        && screenLayer.querySelector<HTMLDetailsElement>('.ms-route-specializations')?.open === true;
       screenLayer.hidden = true;
       screenLayer.replaceChildren();
 
@@ -1265,6 +1267,7 @@ export function createUi(
       if (showTitle || showCreate) {
       if (showCreate) {
         const card = makeScreenCard(document, '建立角色', '在空欄位開始新的冒險。既有角色進度會保留；先選訓練路線，Lv.10 完成試煉後正式轉職。');
+        card.classList.add('ms-screen-card--create');
         const checkedName = validatePlayerName(nameDraft);
         const nameInput = captureNameInput(checkedName);
         const nameFeedback = makeElement(document, 'p');
@@ -1289,13 +1292,27 @@ export function createUi(
           : plannedJobDraft === 'archer'
           ? '短弓起步，敏捷為主、力量為輔。角色擁有獨立背包、任務與探索進度。'
           : '短劍起步，力量為主、敏捷為輔。角色擁有獨立背包、任務與探索進度。'));
-        card.append(makeButton(document, '確認建立角色', 'create-confirm', {
+        const preview = makeElement(document, 'details', 'ms-screen-card__details ms-route-specializations');
+        preview.open = specializationPreviewOpen;
+        const previewSummary = makeElement(document, 'summary', undefined, 'Lv.20 二轉分支');
+        previewSummary.dataset.focus = 'route-specializations';
+        const branches = makeElement(document, 'ul');
+        for (const branch of Object.values(specializations)) {
+          if (branch.job !== plannedJobDraft) continue;
+          const item = makeElement(document, 'li');
+          item.append(makeElement(document, 'strong', undefined, branch.name), '　' + branch.description);
+          branches.append(item);
+        }
+        preview.append(previewSummary, branches);
+        card.append(preview);
+        const actions = makeElement(document, 'div', 'ms-create-actions');
+        const confirmButton = makeButton(document, '確認建立角色', 'create-confirm', {
           className: 'ms-button ms-button--primary', disabled: !checkedName.ok,
           title: checkedName.ok ? '' : checkedName.message,
-        }));
-        const confirmButton = card.querySelector<HTMLButtonElement>('[data-ui-action="create-confirm"]');
-        if (confirmButton) confirmButton.dataset.focus = 'create-confirm';
-        card.append(makeButton(document, '取消', 'create-cancel', { className: 'ms-button ms-button--secondary' }));
+        });
+        confirmButton.dataset.focus = 'create-confirm';
+        actions.append(confirmButton, makeButton(document, '取消', 'create-cancel', { className: 'ms-button ms-button--secondary' }));
+        card.append(actions);
         screenLayer.hidden = false;
         screenLayer.append(card);
         return;
