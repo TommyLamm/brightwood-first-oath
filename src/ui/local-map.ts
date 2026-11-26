@@ -13,7 +13,7 @@ function positionMarker(element: HTMLElement, point: Vec2): void {
 }
 
 /** Read-only terrain guide: no map travel, encounter state or save writes. */
-export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef): HTMLDetailsElement {
+export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef, selectedNpcId?: string | null): HTMLDetailsElement {
   const details = document.createElement('details');
   details.className = 'ms-local-map'; details.dataset.detailId = 'local-terrain:' + map.id;
   details.dataset.localMapId = map.id;
@@ -41,13 +41,20 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef)
   }
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
-  const marker = (kind: 'npc' | 'portal', index: number, position: Vec2, label: string) => {
+  const marker = (kind: 'npc' | 'portal', index: number, position: Vec2, label: string, highlighted = false) => {
     const code = (kind === 'npc' ? 'N' : 'P') + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
     positionMarker(mark, localMapPoint(map, position)!); mark.title = label; chart.append(mark);
-    legend.append(text(document, 'li', '', code + ' · ' + label));
+    const entry = text(document, 'li', '', code + ' · ' + (highlighted ? '目標：' : '') + label);
+    if (highlighted) {
+      mark.classList.add('is-target');
+      entry.setAttribute('aria-current', 'true');
+      details.open = true;
+    }
+    legend.append(entry);
   };
-  map.npcs.forEach((npc, index) => marker('npc', index, npc, view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId));
+  map.npcs.forEach((npc, index) => marker('npc', index, npc,
+    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId, npc.npcId === selectedNpcId));
   map.portals.forEach((portal, index) => {
     const target = view.catalog.world.maps[portal.targetMapId]?.name ?? portal.targetMapId;
     const requirement = portalRequirements(portal, view.saveData!, view.catalog);

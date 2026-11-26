@@ -10,10 +10,12 @@
 .ms-local-map__chart .is-wall { fill: #687a5366; stroke: #4e6143; }
 .ms-local-map__marker { position: absolute; display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 3px; transform: translate(-50%, -105%); border: 2px solid #fff8df; font-size: 11px; font-weight: 800; line-height: 1; box-shadow: 0 1px 3px #342b2670; }
 .ms-local-map__marker.is-npc { border-radius: 50%; color: white; background: #406750; }
+.ms-local-map__marker.is-target { z-index: 3; background: #794414; outline: 2px solid #794414; outline-offset: 1px; }
 .ms-local-map__marker.is-portal { transform: translate(-50%, 4px); border-radius: 3px; color: white; background: #674e83; }
 .ms-local-map__player { position: absolute; z-index: 2; color: #b6412d; font-size: 23px; line-height: 1; text-shadow: 0 0 2px white, 0 0 2px white; transform: translate(-50%, -190%); }
 .ms-local-map__player[hidden] { display: none; }
 .ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
 .ms-local-map__legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding-left: 18px; line-height: 1.5; }
 .ms-local-map__legend li { overflow-wrap: anywhere; }
+.ms-local-map__legend [aria-current="true"] { color: #794414; font-weight: 800; }
 @container (max-width: 620px) { .ms-local-map { padding: 9px; } .ms-local-map__chart { height: 170px; } }

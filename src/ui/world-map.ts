@@ -39,7 +39,7 @@ function mapButton(document: Document, id: string, label: string, className: str
 }
 
 /** Informational atlas: selecting a landmark changes the chart selection, never the player's location. */
-export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null): HTMLElement {
+export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null, selectedNpcId?: string | null): HTMLElement {
   const root = element(document, 'div', 'ms-world-map');
   const data = view.saveData;
   if (!data) {
@@ -185,7 +185,9 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     legend.append(element(document, 'span', '', '▧ 待開發'));
   }
   root.append(legend);
-  if (selected && canViewLocalMap(selected.id, data)) root.insertBefore(buildLocalMap(document, view, selected), layout);
+  if (selected && canViewLocalMap(selected.id, data)) {
+    root.insertBefore(buildLocalMap(document, view, selected, selectedNpcId), layout);
+  }
   return root;
 }
 

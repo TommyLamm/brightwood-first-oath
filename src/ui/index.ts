@@ -656,6 +656,7 @@ export function createUi(
   let inventoryFilter: InventoryFilter = 'all';
   let shopFilter: ShopFilter = 'all';
   let selectedMapId: string | null = null;
+  let selectedMapNpcId: string | null = null;
   let selectedQuestId: string | null = null;
   let createRequested = false;
   let plannedJobDraft: PlayerJob = 'swordsman';
@@ -1601,7 +1602,10 @@ export function createUi(
     panelHost.classList.toggle('is-world-map', panel === 'map');
     panelHost.classList.toggle('is-illustrated-panel', panel === 'stats' || panel === 'quests');
     if (!view.panels.includes('quests')) selectedQuestId = null;
-    if (panel !== 'map') selectedMapId = null;
+    if (panel !== 'map') {
+      selectedMapId = null;
+      selectedMapNpcId = null;
+    }
     if (!panel) {
       if (lastPanelSignature !== '') {
         lastPanelSignature = '';
@@ -1621,6 +1625,7 @@ export function createUi(
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
+      selectedMapNpcId,
       selectedQuestId,
       trackedQuestId: questTrackerState.trackedQuestId,
       inventoryFilter,
@@ -1676,6 +1681,7 @@ export function createUi(
       body.append(buildPanelContent(document, view, panel, {
         selectedBagIndex,
         selectedMapId,
+        selectedMapNpcId,
         selectedQuestId,
         trackedQuestId: questTrackerState.trackedQuestId,
         inventoryFilter,
@@ -1688,8 +1694,10 @@ export function createUi(
         bindingMessage,
         bindingMessageAction,
       }));
-      for (const detail of body.querySelectorAll<HTMLDetailsElement>('details[data-detail-id]')) {
-        detail.open = openDetails.has(detail.dataset.detailId);
+      if (samePanel) {
+        for (const detail of body.querySelectorAll<HTMLDetailsElement>('details[data-detail-id]')) {
+          detail.open = openDetails.has(detail.dataset.detailId);
+        }
       }
       card.append(heading, body);
       panelHost.replaceChildren(card);
@@ -1791,6 +1799,7 @@ export function createUi(
       case 'select-map':
         if (!button.dataset.mapId || (!view.catalog.world.maps[button.dataset.mapId] && !PLANNED_REGIONS.some(({ id }) => id === button.dataset.mapId))) return;
         selectedMapId = button.dataset.mapId;
+        selectedMapNpcId = null;
         renderPanel(view, true);
         return;
       case 'review-npc-map': {
@@ -1800,6 +1809,7 @@ export function createUi(
         const mapTarget = resolveNpcMapTarget(latestView.catalog.world, npcId);
         if (!mapTarget) return;
         selectedMapId = mapTarget.mapId;
+        selectedMapNpcId = npcId;
         if (latestView.panels.at(-1) === 'map') {
           renderPanel(latestView, true);
           return;
@@ -2256,6 +2266,7 @@ export function createUi(
       clearTransientViewState();
       selectedQuestId = null;
       selectedMapId = null;
+      selectedMapNpcId = null;
       questTrackerState.trackQuest(null);
       lastReconciledBag = emptyBag;
       lastPanelFocus = null;
@@ -2825,6 +2836,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
 type PanelBuildState = {
   selectedBagIndex: number | null;
   selectedMapId: string | null;
+  selectedMapNpcId: string | null;
   selectedQuestId: string | null;
   trackedQuestId: string | null;
   readingSize: ReadingSize;
@@ -2862,7 +2874,7 @@ function buildPanelContent(
       content.append(buildWorldJournal(document, view, state.selectedQuestId, state.trackedQuestId));
       break;
     case 'map':
-      content.append(buildWorldMap(document, view, state.selectedMapId));
+      content.append(buildWorldMap(document, view, state.selectedMapId, state.selectedMapNpcId));
       break;
     case 'shop':
       buildShopPanel(document, view, state, content);
