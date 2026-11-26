@@ -1492,15 +1492,20 @@ export function createUi(
   };
 
   const renderFooter = (view: UiSnapshot): void => {
-    focusBanner.hidden = !(view.windowFocused === false && view.screen === 'playing');
-    errorText.textContent = view.error ?? '';
+    const hideFocusBanner = view.windowFocused !== false || view.screen !== 'playing';
+    if (focusBanner.hidden !== hideFocusBanner) focusBanner.hidden = hideFocusBanner;
+    const error = view.error ?? '';
+    if (errorText.textContent !== error) errorText.textContent = error;
     const retryInDialog = view.saveStatus === 'saveError' && !screenLayer.hidden
       && screenLayer.querySelector('[data-ui-action="retry-save"]') !== null;
     // Keep recovery actions available without a permanent save badge occupying the HUD.
-    footer.hidden = retryInDialog
+    const hideFooter = retryInDialog
       || (!view.error && !['loadError', 'saveError', 'conflict', 'localConflict'].includes(view.saveStatus));
-    toast.textContent = view.toast ?? '';
-    toast.hidden = retryInDialog || !view.toast;
+    if (footer.hidden !== hideFooter) footer.hidden = hideFooter;
+    const toastText = view.toast ?? '';
+    const hideToast = retryInDialog || !toastText;
+    if (toast.textContent !== toastText) toast.textContent = toastText;
+    if (toast.hidden !== hideToast) toast.hidden = hideToast;
     // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
     toast.classList.toggle('ms-toast--top', view.panels.length > 0);
     if (lastFooterActionStatus === view.saveStatus) return;
@@ -2193,6 +2198,57 @@ export function createUi(
     }
   };
 
+  const renderPanelButtons = (view: UiSnapshot, previousView: UiSnapshot | null): void => {
+    const topPanel = view.panels.at(-1);
+    const player = view.saveData?.player;
+    const previousPlayer = previousView?.saveData?.player;
+    if (previousView && topPanel === previousView.panels.at(-1) && view.questViews === previousView.questViews
+      && player?.bag.length === previousPlayer?.bag.length && player?.ap === previousPlayer?.ap && player?.sp === previousPlayer?.sp) return;
+
+    for (const [panel, button] of panelButtons) {
+      const top = topPanel === panel;
+      button.classList.toggle('is-active', top);
+      button.setAttribute('aria-expanded', String(top));
+      if (panel === 'inventory') {
+        if (player) {
+          const used = player.bag.length;
+          const label = PANEL_LABELS[panel];
+          button.setAttribute('aria-label', '開啟' + label + '（已用 ' + used + '／' + BAG_CAPACITY + ' 格）');
+          button.title = label + '：已用 ' + used + '／' + BAG_CAPACITY + ' 格'
+            + (used >= 28 ? '；可出售或使用物品整理空位' : '');
+          if (used >= 28) button.dataset.badge = String(used);
+          else delete button.dataset.badge;
+        } else {
+          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+          button.title = PANEL_LABELS[panel];
+          delete button.dataset.badge;
+        }
+        continue;
+      }
+      if (panel === 'quests') {
+        const readyCount = player ? view.questViews.filter(({ status }) => status === 'ready').length : 0;
+        if (readyCount > 0) {
+          button.dataset.badge = String(readyCount);
+          button.setAttribute('aria-label', '開啟任務（待回報 ' + readyCount + ' 項）');
+          button.title = '任務：' + readyCount + ' 項待回報，請查看手帳中的回報 NPC 與獎勵';
+        } else {
+          delete button.dataset.badge;
+          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+          button.title = PANEL_LABELS[panel];
+        }
+        continue;
+      }
+      const unspent = panel === 'stats' ? player?.ap ?? 0 : panel === 'skills' ? player?.sp ?? 0 : 0;
+      if (unspent > 0) {
+        button.dataset.badge = String(unspent);
+        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel] + '（可分配 ' + unspent + (panel === 'stats' ? ' AP' : ' SP') + '）');
+      } else if (button.dataset.badge !== undefined) {
+        delete button.dataset.badge;
+        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
+      }
+    }
+  };
+
   const render = (view: UiSnapshot): void => {
     if (disposed) return;
     const previousView = currentView;
@@ -2262,53 +2318,7 @@ export function createUi(
     if (view.panels.length === 0) lastPanelFocus = null;
     renderKeyGuide(view);
     renderQuestTracker(view);
-    for (const [panel, button] of panelButtons) {
-      const top = view.panels.at(-1) === panel;
-      button.classList.toggle('is-active', top);
-      button.setAttribute('aria-expanded', String(top));
-      if (panel === 'inventory') {
-        const player = view.saveData?.player;
-        if (player) {
-          const used = player.bag.length;
-          const label = PANEL_LABELS[panel];
-          button.setAttribute('aria-label', '開啟' + label + '（已用 ' + used + '／' + BAG_CAPACITY + ' 格）');
-          button.title = label + '：已用 ' + used + '／' + BAG_CAPACITY + ' 格'
-            + (used >= 28 ? '；可出售或使用物品整理空位' : '');
-          if (used >= 28) button.dataset.badge = String(used);
-          else delete button.dataset.badge;
-        } else {
-          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
-          button.title = PANEL_LABELS[panel];
-          delete button.dataset.badge;
-        }
-        continue;
-      }
-      if (panel === 'quests') {
-        const readyCount = view.saveData
-          ? view.questViews.filter(({ status }) => status === 'ready').length
-          : 0;
-        if (readyCount > 0) {
-          button.dataset.badge = String(readyCount);
-          button.setAttribute('aria-label', '開啟任務（待回報 ' + readyCount + ' 項）');
-          button.title = '任務：' + readyCount + ' 項待回報，請查看手帳中的回報 NPC 與獎勵';
-        } else {
-          delete button.dataset.badge;
-          button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
-          button.title = PANEL_LABELS[panel];
-        }
-        continue;
-      }
-      // Unspent AP/SP badges: new players otherwise rarely discover the stats/skills panels.
-      const unspent = panel === 'stats' ? view.saveData?.player.ap ?? 0
-        : panel === 'skills' ? view.saveData?.player.sp ?? 0 : 0;
-      if (unspent > 0) {
-        button.dataset.badge = String(unspent);
-        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel] + '（可分配 ' + unspent + (panel === 'stats' ? ' AP' : ' SP') + '）');
-      } else if (button.dataset.badge !== undefined) {
-        delete button.dataset.badge;
-        button.setAttribute('aria-label', '開啟' + PANEL_LABELS[panel]);
-      }
-    }
+    renderPanelButtons(view, previousView);
     if (restoreFocusAfterResume && view.screen === 'playing' && !nextResumeGate
       && screenLayer.hidden && view.saveStatus !== 'conflict' && view.saveStatus !== 'localConflict' && !view.saveUpgrade) {
       restoreCommittedFocus(view);
