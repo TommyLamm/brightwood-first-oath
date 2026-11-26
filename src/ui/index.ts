@@ -953,6 +953,7 @@ export function createUi(
       : quest.status === 'available' ? where(definition?.giverNpcId)
       : quest.status === 'ready' ? where(definition?.turnInNpcId)
       : '';
+    const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required);
     const detail = !quest
       ? (worldComplete ? '四區主線已完成；可自由探索並重看冒險手帳。'
         : chapterComplete ? '古礦已重歸寧靜，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
@@ -960,7 +961,8 @@ export function createUi(
         ? '前往霜雪群島的雪痕海岸找' + giver + '，接續主線'
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
-      : quest.objectives.map((objective) => objectiveText(view, objective)).join(' · ');
+      : (remainingObjectives?.length ? remainingObjectives : quest.objectives)
+        .map((objective) => objectiveText(view, objective)).join(' · ');
     questDetail.textContent = detail;
     // Keep the map name in one piece: it used to wrap as 「（赤岩山」/「徑）」.
     if (place) questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));

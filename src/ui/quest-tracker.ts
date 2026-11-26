@@ -70,6 +70,8 @@ export function questTrackerSummary(
       value: Math.min(objective.current, objective.required) + '/' + objective.required,
     };
   }
-  const completed = quest.objectives.filter(({ current, required }) => current >= required).length;
-  return { label: '', value: completed + '/' + quest.objectives.length + ' 項' };
+  const remaining = quest.objectives.filter(({ current, required }) => current < required);
+  const next = remaining[0];
+  const completed = quest.objectives.length - remaining.length;
+  return { label: next ? targetName(next) : '', value: completed + '/' + quest.objectives.length + ' 項' };
 }

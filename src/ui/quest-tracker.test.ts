@@ -72,12 +72,12 @@ describe('collapsed quest progress', () => {
     }, () => '礦石')).toEqual({ label: '礦石', value: '6/6' });
   });
 
-  it('counts completed objectives instead of adding unlike kill, inventory and travel counts', () => {
+  it('shows the next unfinished target alongside the number of completed objectives', () => {
     expect(questTrackerSummary({ ...active, objectives: [
       { type: 'kill', targetId: 'snail', current: 3, required: 3 },
       { type: 'collect', targetId: 'ore', current: 2, required: 6 },
       { type: 'reach', targetId: 'camp', current: 1, required: 1 },
-    ] }, () => '')).toEqual({ label: '', value: '2/3 項' });
+    ] }, ({ targetId }) => targetId)).toEqual({ label: 'ore', value: '2/3 項' });
   });
 
   it('prioritizes the delivery reminder over numeric progress when ready', () => {
