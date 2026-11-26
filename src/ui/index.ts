@@ -397,22 +397,36 @@ function makeEquipmentComparison(
   player: NonNullable<UiSnapshot['saveData']>['player'],
   item: UiSnapshot['catalog']['rules']['items'][string],
 ): HTMLElement | null {
-  if (!item.slot) return null;
+  const slot = item.slot;
+  if (!slot) return null;
   if (!canEquipForJob(player,item)) return makeElement(document,'p','ms-disabled-reason',equipmentJobLabel(item)+'，目前路線無法裝備。');
   // Compare against what is worn now so players can tell an upgrade without opening 裝備.
-  const currentId = player.equipment[item.slot];
+  const currentId = player.equipment[slot];
   const current = currentId ? view.catalog.rules.items[currentId] : undefined;
-  const compare = makeElement(document, 'p', 'ms-compare', '對比' + (current ? '「' + current.name + '」' : '空的' + slotLabel(item.slot) + '欄') + '：');
+  const compare = makeElement(document, 'figure', 'ms-compare');
+  compare.setAttribute('aria-label', '裝備比較');
+  const pair = makeElement(document, 'div', 'ms-compare__pair');
+  const tile = (label: string, piece: typeof item | undefined): HTMLElement => {
+    const node = makeElement(document, 'div', 'ms-compare__piece');
+    const name = piece?.name ?? '空的' + slotLabel(slot) + '欄';
+    const icon = makeInterfaceIcon(document, view, piece?.iconKey ?? 'slot:normal', name, 'ms-compare__icon');
+    icon.setAttribute('aria-hidden', 'true');
+    node.append(icon, makeElement(document, 'span', 'ms-compare__label', label), makeElement(document, 'strong', '', name));
+    return node;
+  };
+  const arrow = makeElement(document, 'span', 'ms-compare__arrow', '→');
+  arrow.setAttribute('aria-hidden', 'true');
+  pair.append(tile('目前裝備', current), arrow, tile('比較裝備', item));
+  const differences = makeElement(document, 'figcaption', 'ms-compare__differences');
   const stats = [['攻擊', 'attack'], ['防禦', 'defense'], ['最大 HP', 'hpBonus']] as const;
-  let changed = false;
   for (const [label, key] of stats) {
     const delta = (item[key] ?? 0) - (current?.[key] ?? 0);
     if (delta === 0) continue;
-    if (changed) compare.append('・');
-    changed = true;
-    compare.append(makeElement(document, 'span', delta > 0 ? 'ms-compare__up' : 'ms-compare__down', label + (delta > 0 ? ' ▲' : ' ▼') + Math.abs(delta)));
+    differences.append(makeElement(document, 'span', delta > 0 ? 'ms-compare__up' : 'ms-compare__down',
+      label + (delta > 0 ? ' +' : ' −') + Math.abs(delta)));
   }
-  if (!changed) compare.append('能力相同');
+  if (!differences.childElementCount) differences.textContent = '能力相同';
+  compare.append(pair, differences);
   return compare;
 }
 
@@ -3043,13 +3057,13 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     }
   } else {
     const { stack, bagIndex, item } = selected;
+    const details = makeElement(document, 'pre', 'ms-detail-copy', item ? itemDetails(item) : '目前無此物品資料。');
     detail.append(
       makeInterfaceIcon(document, view, item?.iconKey ?? '', item?.name ?? stack.itemId, 'ms-item-detail__icon'),
       makeElement(document, 'h3', '', item?.name ?? stack.itemId),
       makeBadge(document, kindLabel(item?.kind ?? '未知'), 'category'),
-      makeElement(document, 'p', 'ms-detail-quantity', '數量 ×' + stack.quantity),
-      makeElement(document, 'pre', 'ms-detail-copy', item ? itemDetails(item) : '目前無此物品資料。'),
     );
+    if (!item?.slot) detail.append(makeElement(document, 'p', 'ms-detail-quantity', '數量 ×' + stack.quantity), details);
     if (item?.kind === 'quest') detail.append(makeElement(document, 'p', 'ms-warning', '任務物品不可出售。'));
     if (item?.kind === 'consumable') {
       const usePreview = resolveItemUse({
@@ -3081,7 +3095,6 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     }
     if (item?.slot) {
       const compare = makeEquipmentComparison(document, view, player, item);
-      if (compare) detail.append(compare);
       const equipmentPreview = previewEquipmentStats({
         player,
         rules: view.catalog.rules,
@@ -3095,14 +3108,16 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
         data: { bagIndex: String(bagIndex) },
       });
       equipButton.setAttribute('aria-label', '裝備：' + item.name);
+      detail.append(equipButton);
+      if (compare) detail.append(compare);
       if (equipmentPreview.ok) {
         const equipmentPreviewNote = makeElement(document, 'p', 'ms-panel-note', '裝備後預覽：' + equipmentSummary);
         equipmentPreviewNote.id = 'brightwood-first-oath-equip-preview-' + bagIndex;
         equipButton.setAttribute('aria-describedby', equipmentPreviewNote.id);
         detail.append(equipmentPreviewNote);
       }
-      detail.append(equipButton);
       if (!equipmentPreview.ok) detail.append(makeElement(document, 'span', 'ms-disabled-reason', equipmentPreview.message));
+      detail.append(details);
     }
     if (item && item.kind !== 'quest' && item.sellPrice > 0) {
       const atMerchant = view.canTrade;

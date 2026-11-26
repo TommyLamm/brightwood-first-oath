@@ -481,7 +481,13 @@
 .ms-binding-note { margin: -2px 0 4px; padding: 4px 10px; border-left: 3px solid #8a6a3c; background: #f3e3c2; color: #5a4128; }
 .ms-shop-card__badges { display: flex; flex-wrap: wrap; gap: 6px; }
 .ms-shop-card .ms-shop-card__icon { width: 44px; height: 44px; }
-.ms-compare { margin: 0; color: #5f4a30; font-size: 12px; }
+.ms-compare { display: grid; gap: 6px; margin: 0; padding: 8px; color: #5f4a30; font-size: .9em; background: #eddebb; border: 1px solid #bda371; border-radius: 5px; }
+.ms-compare__pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px; }
+.ms-compare__piece { display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; column-gap: 5px; min-width: 0; overflow-wrap: anywhere; }
+.ms-compare__icon { grid-row: span 2; width: 26px; height: 26px; object-fit: contain; }
+.ms-compare__label { color: #735d3c; }
+.ms-compare__arrow { font-size: 1.25em; font-weight: 700; }
+.ms-compare__differences { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; }
 .ms-compare__up { color: #3f6b3a; font-weight: 700; }
 .ms-compare__down { color: #9a3f2a; font-weight: 700; }
 .ms-bag-slot__upgrade { position: absolute; top: 2px; left: 3px; color: #3f7a36; font-size: 12px; line-height: 1; text-shadow: 0 1px 0 #fff6dc; }
