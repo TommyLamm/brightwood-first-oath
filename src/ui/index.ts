@@ -1481,16 +1481,26 @@ export function createUi(
         screenLayer.append(card);
       }
     });
+    if (view.saveStatus === 'saveError') {
+      const returnButton = screenLayer.querySelector('[data-ui-action="return-title"]');
+      returnButton?.before(
+        makeElement(document, 'p', 'ms-warning', view.saveMessage || '角色進度尚未保存。'),
+        makeButton(document, '重試保存', 'retry-save', { className: 'ms-button ms-button--primary' }),
+      );
+    }
     modalFocus.sync();
   };
 
   const renderFooter = (view: UiSnapshot): void => {
     focusBanner.hidden = !(view.windowFocused === false && view.screen === 'playing');
     errorText.textContent = view.error ?? '';
+    const retryInDialog = view.saveStatus === 'saveError' && !screenLayer.hidden
+      && screenLayer.querySelector('[data-ui-action="retry-save"]') !== null;
     // Keep recovery actions available without a permanent save badge occupying the HUD.
-    footer.hidden = !view.error && !['loadError', 'saveError', 'conflict', 'localConflict'].includes(view.saveStatus);
+    footer.hidden = retryInDialog
+      || (!view.error && !['loadError', 'saveError', 'conflict', 'localConflict'].includes(view.saveStatus));
     toast.textContent = view.toast ?? '';
-    toast.hidden = !view.toast;
+    toast.hidden = retryInDialog || !view.toast;
     // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
     toast.classList.toggle('ms-toast--top', view.panels.length > 0);
     if (lastFooterActionStatus === view.saveStatus) return;

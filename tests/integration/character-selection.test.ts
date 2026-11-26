@@ -90,6 +90,45 @@ describe('profile character selection', () => {
     app.dispose();
   });
 
+  it('returns to the character list after an in-flight checkpoint finishes', async () => {
+    const seed = new GameApp({ baseUrl: './', fetcher, storage: new Storage() });
+    await seed.initialize();
+    seed.dispatch({ type: 'newGame', payload: { name: '原角色' } });
+    seed.update(0);
+    await flush();
+    const profile = structuredClone(seed.state.profile!);
+    seed.dispose();
+
+    let finishWrite: () => void = () => { throw new Error('Save did not start'); };
+    const saveProgress = vi.fn<CloudPort['saveProgress']>((input) => new Promise((resolve) => {
+      finishWrite = () => resolve({ ...input, saved: true, revision: input.revision + 1, gameVersion: 'test', updatedAt: 'test' });
+    }));
+    const cloud: CloudPort = {
+      ready: async () => ({ mode: 'authenticated', progressAvailable: true, capabilities: ['progress'] }),
+      loadProgress: async () => ({ data: profile, revision: 1, formatVersion: SAVE_FORMAT_VERSION, gameVersion: 'test', updatedAt: 'test' }),
+      saveProgress,
+    };
+    const app = new GameApp({ baseUrl: './', fetcher, cloud });
+    await app.initialize();
+    app.setScreen('paused');
+    app.dispatch({ type: 'setSettings', payload: { settings: { ...profile.settings, muted: !profile.settings.muted } } });
+    app.update(0);
+    expect(app.state.saveStatus).toBe('saving');
+
+    app.dispatch({ type: 'returnTitle', payload: {} });
+    app.update(0);
+    expect(app.state.characterBusy).toBe(true);
+    expect(app.state.screen).toBe('paused');
+    await flush();
+    expect(saveProgress).toHaveBeenCalledTimes(1);
+    finishWrite();
+    await flush();
+    expect(app.state.characterBusy).toBe(false);
+    expect(app.state.screen).toBe('title');
+    expect(saveProgress).toHaveBeenCalledTimes(1);
+    app.dispose();
+  });
+
   it('waits for the final checkpoint and refuses to leave or select another character when saving fails', async () => {
     const seedStorage = new Storage();
     const seed = new GameApp({ baseUrl: './', fetcher, storage: seedStorage });

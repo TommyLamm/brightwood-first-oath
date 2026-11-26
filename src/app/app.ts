@@ -622,8 +622,8 @@ export class GameApp {
           this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: '存檔衝突尚未解決；請選擇載入雲端版本。' });
         } else if (this.stateValue.saveStatus === 'localConflict') {
           this.setState({ ...this.stateValue, screen: 'title', panels: [], focusResumeRequired: false, saveMessage: '本機進度已在其他分頁更新；請先重新載入。' });
-        } else if (!this.temporaryPlay && ['saving', 'saveError'].includes(this.stateValue.saveStatus)) {
-          this.setToast('請先完成或重試存檔，再返回標題。');
+        } else if (!this.temporaryPlay && this.stateValue.saveStatus === 'saveError') {
+          this.setToast('請先重試保存，再返回標題。');
         } else if (this.temporaryPlay) {
           this.checkpointIfChanged(this.stateValue.gameplay?.saveData ?? null);
           this.clearCharacterRuntime();
