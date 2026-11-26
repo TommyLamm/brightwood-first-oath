@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AttackInstance, ContentCatalog } from '../src/contracts/index.js';
+import type { AttackInstance, ContentCatalog, PlayerJob } from '../src/contracts/index.js';
 import { createInitialAppState, createUiSnapshot } from '../src/app/state.js';
 import { startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
@@ -7,9 +7,9 @@ import { worldCatalog } from '../src/content/world/index.js';
 
 const catalog: ContentCatalog = { rules: rulesCatalog, world: worldCatalog };
 
-function newGameplay() {
+function newGameplay(plannedJob: PlayerJob = 'swordsman') {
   const initial = createInitialAppState(2, 'base-experience-ui-snapshot');
-  const started = startNewGame('測試旅人', catalog, initial.nextEntityId);
+  const started = startNewGame('測試旅人', catalog, initial.nextEntityId, plannedJob);
   if ('error' in started) throw new Error(started.error);
   return started.gameplay;
 }
@@ -41,6 +41,21 @@ function snapshotFor(
 }
 
 describe('base experience UI snapshot', () => {
+  it('only enables the advancement choices near the current profession’s mentor', () => {
+    const gameplay = newGameplay('mage');
+    gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
+    gameplay.saveData.player = { ...gameplay.saveData.player, job: 'mage', level: 20 };
+    gameplay.movement.position = { x: 960, y: 600 };
+    expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(false);
+
+    const mentor = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'mage-mentor')!;
+    gameplay.movement.position = { x: mentor.x, y: mentor.y };
+    expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(true);
+
+    gameplay.saveData.player.level = 19;
+    expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(false);
+  });
+
   it('uses the live player position and derives combat hints without changing saved data', () => {
     const gameplay = newGameplay();
     gameplay.movement.position = { x: 250, y: 600 };

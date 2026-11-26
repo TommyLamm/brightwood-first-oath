@@ -25,7 +25,7 @@ import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
-import { canTradeWithMerchant, INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
@@ -674,8 +674,10 @@ function processCommand(
   const player = gameplay.saveData.player;
   switch (command.type) {
     case 'advanceJob': {
-      const mentor = { swordsman: 'mentor', archer: 'archer-mentor', mage: 'mage-mentor', rogue: 'rogue-mentor' }[effectiveJob(player)];
-      if (gameplay.saveData.location.mapId !== 'town' || !nearNpc(gameplay, catalog, mentor, INTERACTION_RANGE_PX)) return withToast(gameplay, '請回木葉鎮，靠近本職業導師後選擇二轉分支。');
+      const map = catalog.world.maps[gameplay.saveData.location.mapId];
+      if (!isNearSpecializationMentor(map, gameplay.movement.position, effectiveJob(player))) {
+        return withToast(gameplay, '請回木葉鎮，靠近本職業導師後選擇二轉分支。');
+      }
       const result = applyProgressAction(player, { type: 'advanceJob', ...command.payload }, catalog.rules);
       return result.ok ? { gameplay: withPlayer(gameplay, result.value, '已完成' + specializations[command.payload.specialization].name + '二轉；原技能和配點保留。') } : withToast(gameplay, result.message);
     }

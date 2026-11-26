@@ -5,6 +5,18 @@
 .ms-visual-icon { display: inline-block; flex: 0 0 32px; width: 32px; height: 32px; object-fit: contain; image-rendering: auto; }
 .ms-visual-icon--fallback { display: grid; place-items: center; border-radius: 50%; background: #d3bb8b; color: #674c31; font-weight: 700; }
 .ms-visual-actor { display: inline-block; flex: 0 0 66px; width: 66px; height: 66px; background-position: 0 0; background-repeat: no-repeat; image-rendering: auto; }
+.ms-specializations { display: grid; gap: 8px; margin-bottom: 12px; }
+.ms-specializations h3, .ms-specializations h4 { margin: 0; }
+.ms-specializations__mentor {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 10px;
+  color: #51412e; background: #eadbbc; border: 1px solid #ac936c; border-radius: 6px;
+}
+.ms-specializations__mentor.is-ready { color: #354b2b; background: #e0e7cd; border-color: #849267; }
+.ms-specializations__mentor .ms-visual-actor { width: 48px; height: 48px; flex-basis: 48px; }
+.ms-specializations__contact { display: grid; justify-items: start; gap: 2px; flex: 1 1 128px; }
+.ms-specializations__status { border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; font-size: .875em; }
+.ms-specializations__branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px; }
+.ms-specializations__branches .ms-skill-card { grid-template-rows: auto 1fr auto; align-content: stretch; }
 .ms-visual-token { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border: 1px solid #bda47a; border-radius: 7px; background: #f7e9cb; }
 .ms-visual-token > span { font-size: 11px; color: #836545; }
 .ms-visual-token strong { font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }

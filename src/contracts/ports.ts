@@ -232,6 +232,7 @@ export type UiSnapshot = {
   panels: PanelId[];
   interaction: { npcId: Id; dialogue: string[] } | null;
   canTrade: boolean;
+  nearSpecializationMentor?: boolean;
   canReturnTown: boolean;
   nowMs: number;
   skillReadyAtMs: Record<Id, number>;

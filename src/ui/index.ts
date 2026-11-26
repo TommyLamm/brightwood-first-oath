@@ -1645,6 +1645,7 @@ export function createUi(
       quests: inventory ? undefined : view.questViews,
       interaction: inventory ? undefined : view.interaction,
       canTrade: (inventory || panel === 'shop') && view.canTrade,
+      nearSpecializationMentor: panel === 'skills' && view.nearSpecializationMentor === true,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
@@ -3192,7 +3193,8 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     document.createTextNode((player.job !== 'beginner' ? '。每次升級獲得 1 SP。' : '。正式轉職後，每次升級獲得 1 SP。') + '快捷鍵 ' + key('skill1') + '／' + key('skill2') + '／' + key('skill3') + ' 對應' + classSkillNames(player,view.catalog.rules) + '。'),
   );
   parent.append(note);
-  parent.append(specializationPanel(document, player, view));
+  const specialization = specializationPanel(document, player, view);
+  if (specialization) parent.append(specialization);
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const learnableSkills = jobs[effectiveJob(player)].learnableSkills;
   const skills = Object.values(view.catalog.rules.skills)

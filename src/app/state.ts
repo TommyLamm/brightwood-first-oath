@@ -10,7 +10,7 @@ import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { deriveMovementHint } from './movement-hint.js';
-import { canTradeWithMerchant, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
 import { classCatalog } from '../content/world/class-quests.js';
@@ -126,6 +126,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   const playerId = gameplay?.playerEntityId;
   const mapId = saveData?.location.mapId;
   const map = mapId ? catalog.world.maps[mapId] : undefined;
+  const player = saveData?.player;
   const canShowInteractionHint = state.screen === 'playing'
     && !state.mapVisualLoad
     && !state.focusResumeRequired
@@ -208,6 +209,9 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
     canTrade: gameplay !== null && canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId),
+    nearSpecializationMentor: state.panels.at(-1) === 'skills' && gameplay !== null && player !== undefined
+      && player.job !== 'beginner' && player.level >= 20 && !player.specialization
+      && isNearSpecializationMentor(map, gameplay.movement.position, player.job),
     canReturnTown,
     nowMs: state.gameTimeMs,
     skillReadyAtMs: playerId && gameplay

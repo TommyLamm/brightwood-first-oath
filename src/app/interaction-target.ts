@@ -1,4 +1,5 @@
-import type { ContentCatalog, MapDef, SaveData, Vec2 } from '../contracts/index.js';
+import type { ContentCatalog, MapDef, PlayerJob, SaveData, Vec2 } from '../contracts/index.js';
+import { specializationMentors } from '../content/rules/specializations.js';
 import { getQuestView } from '../domain/quests/index.js';
 
 type NpcPlacement = MapDef['npcs'][number];
@@ -32,6 +33,11 @@ export function canTradeWithMerchant(
 ): boolean {
   return activeNpcId === 'merchant'
     && nearestNpcPlacement(map, position, INTERACTION_RANGE_PX)?.npcId === activeNpcId;
+}
+
+export function isNearSpecializationMentor(map: MapDef | undefined, position: Readonly<Vec2>, job: PlayerJob): boolean {
+  return map?.id === 'town'
+    && nearestNpcPlacement(map, position, INTERACTION_RANGE_PX)?.npcId === specializationMentors[job];
 }
 
 export function resolveInteractionTarget(
