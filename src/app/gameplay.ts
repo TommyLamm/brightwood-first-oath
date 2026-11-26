@@ -26,6 +26,7 @@ import { questDropByQuest } from '../content/rules/index.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { findQuestExit } from './quest-route.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
@@ -635,6 +636,7 @@ export function makeWorldSnapshot(
     nowMs,
     questViews,
     trackedQuestId,
+    questExitId: findQuestExit(gameplay.saveData, catalog, questViews, trackedQuestId),
     player: {
       id: gameplay.playerEntityId,
       movement,

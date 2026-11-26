@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { QuestView } from '../contracts/definitions.js';
-import { selectTrackerQuest } from '../domain/quests/selection.js';
-import { questCueTargets } from './quest-guidance.js';
+import { questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
 
 function quest(questId: string, status: QuestView['status'], objectives: QuestView['objectives'] = []): QuestView {
   return {
@@ -14,8 +13,8 @@ describe('in-world quest guidance', () => {
   it('uses the same selected quest and updates the NPC when it becomes ready', () => {
     const ready = quest('ready', 'ready');
     const available = quest('available', 'available');
-    expect(questCueTargets(selectTrackerQuest([ready, available], null)).npcs).toEqual(new Set(['recipient']));
-    expect(questCueTargets(selectTrackerQuest([ready, available], 'available')).npcs).toEqual(new Set(['giver']));
+    expect(questTargets(selectTrackerQuest([ready, available], null)).npcs).toEqual(new Set(['recipient']));
+    expect(questTargets(selectTrackerQuest([ready, available], 'available')).npcs).toEqual(new Set(['giver']));
   });
 
   it('marks only unfinished targets and adds the monster that drops the needed quest item', () => {
@@ -24,12 +23,12 @@ describe('in-world quest guidance', () => {
       { type: 'kill', targetId: 'snail', current: 3, required: 3 },
       { type: 'inspect', targetId: 'practice-target', current: 0, required: 1 },
     ]);
-    expect(questCueTargets(active)).toEqual({
-      npcs: new Set(['practice-target']), monsters: new Set(['slime']), items: new Set(['forest-seed']),
+    expect(questTargets(active)).toEqual({
+      maps: new Set(), npcs: new Set(['practice-target']), monsters: new Set(['slime']), items: new Set(['forest-seed']),
     });
     active.objectives[0]!.current = 5;
-    expect(questCueTargets(active)).toEqual({
-      npcs: new Set(['practice-target']), monsters: new Set(), items: new Set(),
+    expect(questTargets(active)).toEqual({
+      maps: new Set(), npcs: new Set(['practice-target']), monsters: new Set(), items: new Set(),
     });
   });
 });

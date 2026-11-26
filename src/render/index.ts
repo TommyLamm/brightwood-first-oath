@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { selectTrackerQuest } from '../domain/quests/selection.js';
-import { drawQuestCue, questCueTargets, type QuestCueTargets } from './quest-guidance.js';
+import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
+import { drawQuestCue } from './quest-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
@@ -419,7 +419,7 @@ export function createWorldRenderer(
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   const questCueGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
-  let questGuide: { views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestCueTargets } | undefined;
+  let questGuide: { views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets } | undefined;
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
     resolution: WORLD_TEXT_RESOLUTION,
@@ -1016,9 +1016,9 @@ export function createWorldRenderer(
     const trackedId = snapshot.trackedQuestId ?? null;
     if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId) {
       const quest = selectTrackerQuest(snapshot.questViews, trackedId);
-      questGuide = { views: snapshot.questViews, trackedId, targets: questCueTargets(quest) };
+      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest) };
     }
-    const questTargets = questGuide.targets;
+    const targets = questGuide.targets;
     bossNameText.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
@@ -1184,7 +1184,7 @@ export function createWorldRenderer(
       npcVisual.nameText.setVisible(npcInViewport);
       const markerImage = assets.images.get('marker:quest')!;
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
-      const questTarget = questTargets.npcs.has(placement.npcId);
+      const questTarget = targets.npcs.has(placement.npcId);
       const showMarker = npcInViewport && !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
@@ -1244,7 +1244,7 @@ export function createWorldRenderer(
           if (nameText.text !== label) nameText.setText(label);
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
-        if (questTargets.monsters.has(monster.monsterId)) {
+        if (targets.monsters.has(monster.monsterId)) {
           drawQuestCue(questCueGraphics, 'monster', bar.x + bar.width / 2, bar.y - 28);
         }
       }
@@ -1275,7 +1275,7 @@ export function createWorldRenderer(
         const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
         const inViewport = isInViewport(drop.position);
         if (!inViewport) sprite.setVisible(false).setActive(false);
-        if (inViewport && drop.itemId && questTargets.items.has(drop.itemId)) {
+        if (inViewport && drop.itemId && targets.items.has(drop.itemId)) {
           drawQuestCue(questCueGraphics, 'item', drop.position.x, drop.position.y - sprite.displayHeight - 12);
         }
         dropSprites.set(drop.id, sprite);
@@ -1283,6 +1283,13 @@ export function createWorldRenderer(
         const label = getDropText(drop.id, `${drop.coins} 金幣`, drop.position, snapshot.nowMs);
         label.setVisible(true).setPosition(drop.position.x, drop.position.y - 8);
       }
+    }
+
+    const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
+    if (questExit && isInViewport(questExit)) {
+      const anchor = portalFootAnchor(questExit);
+      const portalImage = assets.images.get('env:portal')!;
+      drawQuestCue(questCueGraphics, 'portal', anchor.x, anchor.y - portalImage.displayHeight - 38);
     }
 
     const visibleAttackIds = new Set(snapshot.attacks.map((attack) => attack.id));

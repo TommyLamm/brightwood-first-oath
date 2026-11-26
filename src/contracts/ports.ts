@@ -150,6 +150,7 @@ export type WorldSnapshot = {
   nowMs: number;
   questViews: QuestView[];
   trackedQuestId?: Id | null;
+  questExitId?: Id | null;
   player: {
     id: EntityId;
     movement: MovementState;
