@@ -1009,6 +1009,8 @@ export function createUi(
     const playing = view.screen === 'playing';
     const focusBlocked = view.focusResumeRequired === true;
     const canAct = playing && !focusBlocked;
+    const stanceBlock = view.combatUi?.stanceBlock;
+    const stanceReason = stanceBlock ? { airborne: '需站穩', climbing: '攀爬中', knockback: '受擊硬直' }[stanceBlock] : '';
     const keyForSkill: Record<string, GameAction> = {
       basic: 'attack',
       'heavy-strike': 'skill1',
@@ -1028,7 +1030,7 @@ export function createUi(
         Math.ceil(Math.max(0, readyAt - view.nowMs) / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
         Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
-        view.combatUi?.bufferedSkillId, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
+        view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
       ];
       if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1093,11 +1095,9 @@ export function createUi(
       const rank = basic || trial ? 1 : playerSkillRank(player, slotId);
       button.classList.toggle('is-unlearned', !basic && rank === 0);
       const cooldown = Math.max(0, (view.skillReadyAtMs[slotId] ?? 0) - view.nowMs);
-      const reason = basic
-        ? cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : ''
-        : rank === 0 ? '未學習'
-          : !trial && player.mp < skill.mpCost ? 'MP 不足'
-            : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '';
+      const reason = rank === 0 ? '未學習' : stanceReason
+        || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足'
+          : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '');
       // Keep the active buff duration above cast blockers, as the old quickbar did.
       const buffLeftSec = skill.kind === 'buff' && rank > 0
         ? skill.id === 'guardian-rally' ? view.activeGuard?.remainingSeconds ?? 0 : Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
@@ -1110,12 +1110,12 @@ export function createUi(
             : actionLock > 0 ? '動作中 ' + remainingSeconds(actionLock)
               : basic ? 'MP 0' : '等級 ' + rank + '・MP ' + skill.mpCost));
       button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
-      button.classList.toggle('is-buff-active', buffLeftSec > 0);
       button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
-      // Preserve the old rank/MP/cooldown disabled policy; action lock and a live queue are display-only.
-      button.disabled = !canAct || (!basic && Boolean(reason));
-      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : view.aimReady && basic ? '瞄準就緒' : displayState);
-      button.classList.toggle('is-buff-active', view.aimReady === true && basic || buffLeftSec > 0);
+      // A click may still buffer a basic attack during a short cooldown.
+      button.disabled = !canAct || Boolean(basic ? stanceReason : reason);
+      const showAim = view.aimReady === true && basic && !stanceReason;
+      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : displayState);
+      button.classList.toggle('is-buff-active', showAim || buffLeftSec > 0);
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';

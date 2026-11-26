@@ -179,6 +179,8 @@ export type WorldRenderer = {
   dispose(): void;
 };
 
+export type AttackStanceBlock = 'knockback' | 'climbing' | 'airborne';
+
 export type UiSnapshot = {
   screen: 'title' | 'create' | 'loading' | 'playing' | 'paused' | 'dead' | 'result' | 'chapter' | 'error';
   error?: string;
@@ -214,7 +216,7 @@ export type UiSnapshot = {
   /** Runtime-only visual load gate; counts files, not transferred bytes. */
   mapVisualLoad?: { requestId: number; mapId: string; name: string; status: 'loading' | 'failed'; completed: number; total: number; message: string | null } | null;
   /** Read-only combat timing hints for the six quickbar slots. */
-  combatUi?: { actionLockUntilMs: number; bufferedSkillId: Id | null };
+  combatUi?: { actionLockUntilMs: number; bufferedSkillId: Id | null; stanceBlock: AttackStanceBlock | null };
   /** Actor sheets, used for NPC dialogue portraits. */
   actorManifest?: AssetManifest | null;
   saveStatus: SaveStatus;

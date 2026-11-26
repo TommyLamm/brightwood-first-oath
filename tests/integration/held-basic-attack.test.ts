@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AssetPack } from '../../src/contracts/asset-manifest.js';
 import type { StorageLike } from '../../src/contracts/ports.js';
 import { GameApp } from '../../src/app/app.js';
+import { createPlayer } from '../../src/domain/progression/index.js';
 import { createHeroAnchorFixture, createManifestFixture } from './asset-fixtures.js';
 
 const fetcher = async (url: string) => ({ ok: true, status: 200, json: async () => url.endsWith('/anchors.json')
@@ -71,6 +72,21 @@ describe('optional held basic attack', () => {
       expect(q.commands, kind).toHaveLength(0);
       q.app.dispose();
     }
+  });
+
+  it.each(['mage', 'rogue'] as const)('holds %s attacks until the player returns to the ground', async (job) => {
+    const q = await setup();
+    const gameplay = q.app.state.gameplay!;
+    gameplay.saveData.player = createPlayer('測試旅人', q.app.state.catalog!.rules, job);
+    gameplay.movement = { ...gameplay.movement, mode: 'airborne', footholdId: null,
+      position: { ...gameplay.movement.position, y: gameplay.movement.position.y - 80 } };
+
+    q.enable();
+    q.run(5);
+    expect(q.commands).toHaveLength(0);
+    q.run(45);
+    expect(q.attacks).toContain(job === 'mage' ? 'wand-basic' : 'dagger-basic');
+    q.app.dispose();
   });
 
   it('stores an isolated device preference and keeps blocked-storage choices usable for the session', () => {

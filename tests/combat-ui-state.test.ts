@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AttackInstance } from '../src/contracts/index.js';
+import type { AttackInstance, PlayerJob } from '../src/contracts/index.js';
 import { createNextEntityId } from '../src/contracts/helpers.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
@@ -8,8 +8,8 @@ import { startNewGame } from '../src/app/gameplay.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
-function newGameplay() {
-  const started = startNewGame('測試旅人', catalog, createNextEntityId('combat-ui-state'));
+function newGameplay(job: PlayerJob = 'swordsman') {
+  const started = startNewGame('測試旅人', catalog, createNextEntityId('combat-ui-state'), job);
   if ('error' in started) throw new Error(started.error);
   return started.gameplay;
 }
@@ -59,7 +59,7 @@ describe('deriveCombatUiState', () => {
     gameplay.bufferedAttack = { skillId: 'heavy-strike', expiresAtMs: 1_100 };
     const original = structuredClone(gameplay);
 
-    expect(deriveCombatUiState(null, catalog, 1_100)).toEqual({ actionLockUntilMs: 0, bufferedSkillId: null });
+    expect(deriveCombatUiState(null, catalog, 1_100)).toEqual({ actionLockUntilMs: 0, bufferedSkillId: null, stanceBlock: null });
     expect(deriveCombatUiState(gameplay, catalog, 1_100).bufferedSkillId).toBe('heavy-strike');
     expect(deriveCombatUiState(gameplay, catalog, 1_101).bufferedSkillId).toBeNull();
 
@@ -68,5 +68,19 @@ describe('deriveCombatUiState', () => {
     gameplay.saveData.player.hp = original.saveData.player.hp;
 
     expect(gameplay).toEqual(original);
+  });
+
+  it.each([
+    ['mage', 'airborne', 0, 'airborne'],
+    ['rogue', 'airborne', 0, 'airborne'],
+    ['archer', 'airborne', 0, null],
+    ['archer', 'climbing', 0, 'climbing'],
+    ['mage', 'grounded', 1_001, 'knockback'],
+    ['mage', 'grounded', 1_000, null],
+    ['swordsman', 'airborne', 0, null],
+  ] as const)('reflects %s attack restrictions while %s', (job, mode, knockbackUntilMs, expected) => {
+    const gameplay = newGameplay(job);
+    gameplay.movement = { ...gameplay.movement, mode, knockbackUntilMs };
+    expect(deriveCombatUiState(gameplay, catalog, 1_000).stanceBlock).toBe(expected);
   });
 });

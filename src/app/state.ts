@@ -163,9 +163,8 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
       };
     }
   }
-  const combatUi = gameplay && (state.screen === 'playing' || state.screen === 'paused')
-    ? deriveCombatUiState(gameplay, catalog, state.gameTimeMs)
-    : { actionLockUntilMs: 0, bufferedSkillId: null };
+  const combatUi = deriveCombatUiState(state.screen === 'playing' || state.screen === 'paused' ? gameplay : null,
+    catalog, state.gameTimeMs);
   const canReturnTown = gameplay !== null
     && mapId !== 'town'
     && (state.screen === 'playing' || state.screen === 'result')

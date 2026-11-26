@@ -57,7 +57,7 @@ describe('base experience UI snapshot', () => {
       label: '森芽',
       blockedMessage: null,
     });
-    expect(snapshot?.combatUi).toEqual({ actionLockUntilMs: 1_650, bufferedSkillId: 'heavy-strike' });
+    expect(snapshot?.combatUi).toEqual({ actionLockUntilMs: 1_650, bufferedSkillId: 'heavy-strike', stanceBlock: null });
     expect(snapshot?.saveData).toBe(savedData);
     expect(snapshot?.saveData).not.toHaveProperty('focusResumeRequired');
     expect(snapshot?.saveData).not.toHaveProperty('interactionHint');
@@ -85,7 +85,7 @@ describe('base experience UI snapshot', () => {
     });
     expect(empty?.focusResumeRequired).toBe(false);
     expect(empty?.interactionHint).toBeNull();
-    expect(empty?.combatUi).toEqual({ actionLockUntilMs: 0, bufferedSkillId: null });
+    expect(empty?.combatUi).toEqual({ actionLockUntilMs: 0, bufferedSkillId: null, stanceBlock: null });
 
     const gameplay = newGameplay();
     gameplay.movement.position = { x: 250, y: 600 };

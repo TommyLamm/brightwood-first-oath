@@ -10,6 +10,7 @@ import type {
   MonsterState,
   MovementState,
   PanelId,
+  PlayerJob,
   RandomSource,
   SaveData,
 } from '../contracts/index.js';
@@ -23,7 +24,7 @@ import { acceptQuest, getQuestView, getQuestViews, recordQuestEvent } from '../d
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { isBossMonster } from '../content/rules/monsters.js';
-import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
+import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { canTradeWithMerchant, INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
@@ -655,6 +656,13 @@ export function makeWorldSnapshot(
   };
 }
 
+export function attackStanceBlock(job: PlayerJob, movement: MovementState, nowMs: number): AttackStanceBlock | null {
+  if (job === 'swordsman') return null;
+  if (nowMs < movement.knockbackUntilMs) return 'knockback';
+  if (movement.mode === 'climbing') return 'climbing';
+  return job !== 'archer' && movement.mode !== 'grounded' ? 'airborne' : null;
+}
+
 function processCommand(
   gameplay: GameplayState,
   command: GameCommand,
@@ -689,26 +697,28 @@ function processCommand(
       if (!isBasic && !trialStab && (skill.requiredJob !== player.job || player.level < skill.requiredLevel)) {
         return withToast(gameplay, skillLockedMessage(skill, player));
       }
-      if (effectiveJob(player) === 'rogue') {
+      const job = effectiveJob(player);
+      const stanceBlock = attackStanceBlock(job, gameplay.movement, context.nowMs);
+      if (job === 'rogue') {
         if (!catalog.rules.items[player.equipment.weapon ?? '']?.allowedJobs?.includes('rogue')) return withToast(gameplay, '裝備短刃後才能攻擊。');
-        if (gameplay.movement.mode !== 'grounded' || context.nowMs < gameplay.movement.knockbackUntilMs) return withToast(gameplay, '請站穩後使用短刃。');
+        if (stanceBlock) return withToast(gameplay, '請站穩後使用短刃。');
         if (skill.id === 'rogue-shadow-lunge') {
           const map = catalog.world.maps[gameplay.saveData.location.mapId];
           const claimed = new Set(Object.entries(gameplay.saveData.quests).filter(([, state]) => state.status === 'claimed').map(([id]) => id));
           if (!map || !lungeDestination(gameplay.movement, map, catalog.rules.movement, context.nowMs, claimed)) return withToast(gameplay, '前方沒有安全切入空間。');
         }
       }
-      if (effectiveJob(player) === 'archer') {
+      if (job === 'archer') {
         const weapon = player.equipment.weapon ? catalog.rules.items[player.equipment.weapon] : null;
         if (!weapon?.allowedJobs?.includes('archer')) return withToast(gameplay, '裝備弓後才能射箭。');
-        if (gameplay.movement.mode === 'climbing' || context.nowMs < gameplay.movement.knockbackUntilMs) {
+        if (stanceBlock) {
           return withToast(gameplay, '攀爬或受擊硬直時無法射箭。');
         }
       }
-      if (effectiveJob(player) === 'mage') {
+      if (job === 'mage') {
         const weapon = catalog.rules.items[player.equipment.weapon ?? ''];
         if (!weapon?.allowedJobs?.includes('mage')) return withToast(gameplay, '裝備法杖後才能施法。');
-        if (gameplay.movement.mode !== 'grounded' || context.nowMs < gameplay.movement.knockbackUntilMs) {
+        if (stanceBlock) {
           return withToast(gameplay, '請站穩後施法。');
         }
         if (skill.id === 'mage-blink') {

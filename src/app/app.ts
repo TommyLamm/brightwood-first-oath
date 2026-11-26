@@ -357,7 +357,8 @@ export class GameApp {
       || state.gameTimeMs < gameplay.movement.knockbackUntilMs) return;
     const timing = deriveCombatUiState(gameplay, state.catalog, state.gameTimeMs);
     const readyAtMs = gameplay.combat.cooldowns[gameplay.playerEntityId]?.[resolveSkillSlot(gameplay.saveData.player, 0)] ?? 0;
-    if (state.gameTimeMs < readyAtMs || state.gameTimeMs < timing.actionLockUntilMs || timing.bufferedSkillId !== null) return;
+    if (timing.stanceBlock || state.gameTimeMs < readyAtMs || state.gameTimeMs < timing.actionLockUntilMs
+      || timing.bufferedSkillId !== null) return;
     this.commands.enqueue({ type: 'attack', payload: { skillId: 'basic' } });
   }
 

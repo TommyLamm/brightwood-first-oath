@@ -1,11 +1,9 @@
-import type { ContentCatalog, Id } from '../contracts/index.js';
-import type { GameplayState } from './gameplay.js';
+import type { ContentCatalog, UiSnapshot } from '../contracts/index.js';
+import { effectiveJob } from '../content/rules/jobs.js';
 import { attackLockUntil } from '../domain/combat/index.js';
+import { attackStanceBlock, type GameplayState } from './gameplay.js';
 
-export type CombatUiState = {
-  actionLockUntilMs: number;
-  bufferedSkillId: Id | null;
-};
+export type CombatUiState = NonNullable<UiSnapshot['combatUi']>;
 
 /** Derives read-only combat hints from the current runtime gameplay state. */
 export function deriveCombatUiState(
@@ -13,7 +11,7 @@ export function deriveCombatUiState(
   catalog: ContentCatalog,
   nowMs: number,
 ): CombatUiState {
-  if (!gameplay) return { actionLockUntilMs: 0, bufferedSkillId: null };
+  if (!gameplay) return { actionLockUntilMs: 0, bufferedSkillId: null, stanceBlock: null };
 
   const actionLockUntilMs = attackLockUntil(gameplay.combat, gameplay.playerEntityId, catalog.rules, nowMs);
 
@@ -24,5 +22,6 @@ export function deriveCombatUiState(
     ? bufferedAttack.skillId
     : null;
 
-  return { actionLockUntilMs, bufferedSkillId };
+  const stanceBlock = attackStanceBlock(effectiveJob(gameplay.saveData.player), gameplay.movement, nowMs);
+  return { actionLockUntilMs, bufferedSkillId, stanceBlock };
 }
