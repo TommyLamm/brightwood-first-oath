@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawQuestCue } from './quest-guidance.js';
+import { drawQuestCue, questExitCue } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1287,10 +1287,11 @@ export function createWorldRenderer(
     }
 
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
-    if (questExit && isInViewport(questExit)) {
+    if (questExit) {
       const anchor = portalFootAnchor(questExit);
       const portalImage = assets.images.get('env:portal')!;
-      drawQuestCue(guidanceGraphics, 'portal', anchor.x, anchor.y - portalImage.displayHeight - 38);
+      const cue = questExitCue({ x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 }, viewport);
+      drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 

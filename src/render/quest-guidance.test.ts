@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { QuestView } from '../contracts/definitions.js';
 import { questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
+import { questExitCue } from './quest-guidance.js';
 
 function quest(questId: string, status: QuestView['status'], objectives: QuestView['objectives'] = []): QuestView {
   return {
@@ -30,5 +31,13 @@ describe('in-world quest guidance', () => {
     expect(questTargets(active)).toEqual({
       maps: new Set(), npcs: new Set(['practice-target']), monsters: new Set(), items: new Set(),
     });
+  });
+
+  it('points outward when the exit is beyond the visible world and points down at the visible portal', () => {
+    const viewport = { x: 200, y: 100, width: 600, height: 400 };
+    expect(questExitCue({ x: 80, y: 250 }, viewport)).toEqual({ x: 220, y: 320, direction: 'left' });
+    expect(questExitCue({ x: 960, y: 250 }, viewport)).toEqual({ x: 780, y: 320, direction: 'right' });
+    expect(questExitCue({ x: 300, y: 70 }, viewport)).toEqual({ x: 300, y: 120, direction: 'up' });
+    expect(questExitCue({ x: 300, y: 250 }, viewport)).toEqual({ x: 300, y: 250, direction: 'down' });
   });
 });
