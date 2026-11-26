@@ -1138,7 +1138,7 @@ export function createUi(
     }
     const shopButton = panelButtons.get('shop');
     if (shopButton) {
-      shopButton.disabled = view.interaction?.npcId !== 'merchant';
+      shopButton.disabled = !view.canTrade;
       shopButton.hidden = shopButton.disabled;
     }
     actionBar.hidden = ![returnTownButton, dialogueButton, shopButton].some((button) => button && !button.hidden);
@@ -1593,7 +1593,8 @@ export function createUi(
       data: inventory ? view.saveData?.player : view.saveData,
       interfaceReady: Boolean(view.interfaceManifest),
       quests: inventory ? undefined : view.questViews,
-      interaction: inventory ? view.interaction?.npcId === 'merchant' : view.interaction,
+      interaction: inventory ? undefined : view.interaction,
+      canTrade: (inventory || panel === 'shop') && view.canTrade,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
@@ -1997,7 +1998,7 @@ export function createUi(
         const preview = previewMaterialSale({
           player,
           rules: view.catalog.rules,
-          atMerchant: view.interaction?.npcId === 'merchant',
+          atMerchant: view.canTrade,
         });
         if (preview.disabled) return;
         for (const { bagIndex, quantity } of preview.actions) {
@@ -2019,7 +2020,7 @@ export function createUi(
             rules: view.catalog.rules,
             bagIndex,
             quantity,
-            atMerchant: view.interaction?.npcId === 'merchant',
+            atMerchant: view.canTrade,
           });
           if (preview.disabled) return;
           sellQuantities.delete(bagIndex);
@@ -2083,7 +2084,7 @@ export function createUi(
           rules: view.catalog.rules,
           itemId,
           quantity,
-          atMerchant: view.interaction?.npcId === 'merchant',
+          atMerchant: view.canTrade,
         });
         if (!preview.disabled) dispatchDraft({ type: 'buy', payload: { itemId, quantity: preview.quantity } });
         return;
@@ -2098,7 +2099,7 @@ export function createUi(
           player,
           rules: latestView.catalog.rules,
           itemId,
-          atMerchant: latestView.interaction?.npcId === 'merchant',
+          atMerchant: latestView.canTrade,
         });
         if (preview.disabled) return;
         shopQuantities.set(itemId, preview.quantity);
@@ -2978,7 +2979,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
       if (!equipmentPreview.ok) detail.append(makeElement(document, 'span', 'ms-disabled-reason', equipmentPreview.message));
     }
     if (item && item.kind !== 'quest' && item.sellPrice > 0) {
-      const atMerchant = view.interaction?.npcId === 'merchant';
+      const atMerchant = view.canTrade;
       const quantityValue = clampInteger(state.sellQuantities.get(bagIndex) ?? 1, 1, stack.quantity);
       const salePreview = previewSale({
         player,
@@ -3152,7 +3153,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可使用商店。'));
     return;
   }
-  const atMerchant = view.interaction?.npcId === 'merchant';
+  const atMerchant = view.canTrade;
   parent.append(makeElement(document, 'p', 'ms-panel-note', atMerchant
     ? '歡迎光臨！需要藥水或新裝備嗎？'
     : '請先靠近木葉商人並互動，再進行購買。'));

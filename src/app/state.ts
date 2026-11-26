@@ -10,7 +10,7 @@ import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { deriveMovementHint } from './movement-hint.js';
-import { portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
 import { classCatalog } from '../content/world/class-quests.js';
@@ -125,6 +125,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   const stats = saveData ? deriveStats(saveData.player, catalog.rules) : null;
   const playerId = gameplay?.playerEntityId;
   const mapId = saveData?.location.mapId;
+  const map = mapId ? catalog.world.maps[mapId] : undefined;
   const canShowInteractionHint = state.screen === 'playing'
     && !state.mapVisualLoad
     && !state.focusResumeRequired
@@ -142,7 +143,6 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
         blockedMessage: result.ok ? null : result.code === 'BAG_FULL' ? '背包已滿，請先整理空位' : result.message,
       };
     }
-    const map = catalog.world.maps[mapId ?? ''];
     const target = resolveInteractionTarget(map, gameplay.movement.position);
     if (target?.kind === 'npc') {
       const npc = catalog.world.npcs[target.placement.npcId];
@@ -198,7 +198,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     backgroundMotion: state.backgroundMotion,
     mapVisualLoad: state.mapVisualLoad ? { ...state.mapVisualLoad } : null,
     movementHint: gameplay && canShowInteractionHint
-      ? deriveMovementHint(gameplay.movement, catalog.world.maps[mapId ?? ''], catalog.rules.movement) : null,
+      ? deriveMovementHint(gameplay.movement, map, catalog.rules.movement) : null,
     combatUi,
     saveStatus: state.saveStatus,
     saveMessage: state.saveMessage,
@@ -208,6 +208,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     toast: gameplay?.toast ?? state.saveMessage,
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
+    canTrade: gameplay !== null && canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId),
     canReturnTown,
     nowMs: state.gameTimeMs,
     skillReadyAtMs: playerId && gameplay

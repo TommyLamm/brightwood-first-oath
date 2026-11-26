@@ -24,7 +24,7 @@ import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import type { DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
-import { INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, INTERACTION_RANGE_PX, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
@@ -833,8 +833,8 @@ function processCommand(
         : withToast(gameplay, result.message);
     }
     case 'sell': {
-      if (gameplay.interaction?.npcId !== 'merchant'
-        || !nearNpc(gameplay, catalog, 'merchant', INTERACTION_RANGE_PX)) {
+      const map = catalog.world.maps[gameplay.saveData.location.mapId];
+      if (!canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId)) {
         return withToast(gameplay, '請靠近木葉商人並先與他互動再出售物品。');
       }
       const result = applyProgressAction(player, { type: 'sell', bagIndex: command.payload.bagIndex, quantity: command.payload.quantity }, catalog.rules);
@@ -843,8 +843,8 @@ function processCommand(
         : withToast(gameplay, result.message);
     }
     case 'buy': {
-      if (gameplay.interaction?.npcId !== 'merchant'
-        || !nearNpc(gameplay, catalog, 'merchant', INTERACTION_RANGE_PX)) {
+      const map = catalog.world.maps[gameplay.saveData.location.mapId];
+      if (!canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId)) {
         return withToast(gameplay, '請靠近木葉商人並先與他互動再購買物品。');
       }
       const result = applyProgressAction(player, { type: 'buy', ...command.payload }, catalog.rules);

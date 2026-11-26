@@ -571,22 +571,39 @@ describe('app gameplay vertical slice', () => {
       nextEntityId,
     }).gameplay!;
 
+    const canTrade = (state: typeof gameplay) => createUiSnapshot({
+      ...createInitialAppState(), catalog, gameplay: state, screen: 'playing', panels: ['shop'],
+    })?.canTrade;
+
     let result = run(gameplay, [{ seq: 1, type: 'interact', payload: {} }], 0);
     expect(result.interaction).toBeNull();
+    expect(canTrade(result)).toBe(false);
 
     result.movement.position.x = 936;
     result = run(result, [{ seq: 2, type: 'interact', payload: {} }], 1);
     expect(result.interaction?.npcId).toBe('merchant');
+    expect(canTrade(result)).toBe(true);
 
     result.interaction = null;
     const coinsBefore = result.saveData.player.coins;
     result = run(result, [{ seq: 3, type: 'buy', payload: { itemId: 'small-red', quantity: 1 } }], 2);
     expect(result.saveData.player.coins).toBe(coinsBefore);
+    expect(canTrade(result)).toBe(false);
 
     result.interaction = { npcId: 'merchant', dialogue: [] };
     result = run(result, [{ seq: 4, type: 'buy', payload: { itemId: 'small-red', quantity: 1 } }], 3);
     expect(result.saveData.player.coins).toBe(coinsBefore - catalog.rules.items['small-red']!.buyPrice);
     expect(result.saveData.player.bag.find(({ itemId }) => itemId === 'small-red')?.quantity).toBe(11);
+
+    result.movement.position.x = 935;
+    const coinsAfterPurchase = result.saveData.player.coins;
+    result = run(result, [{ seq: 5, type: 'sell', payload: { bagIndex: 0, quantity: 1 } }], 4);
+    expect(result.interaction?.npcId).toBe('merchant');
+    expect(canTrade(result)).toBe(false);
+    expect(result.saveData.player.coins).toBe(coinsAfterPurchase);
+
+    result.movement.position.x = 936;
+    expect(canTrade(result)).toBe(true);
   });
 
   it('requires rest-recovery rank and restores HP only after 3 seconds, then every 2 seconds', () => {

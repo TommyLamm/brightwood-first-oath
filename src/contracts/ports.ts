@@ -228,6 +228,7 @@ export type UiSnapshot = {
   toast: string | null;
   panels: PanelId[];
   interaction: { npcId: Id; dialogue: string[] } | null;
+  canTrade: boolean;
   canReturnTown: boolean;
   nowMs: number;
   skillReadyAtMs: Record<Id, number>;

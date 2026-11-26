@@ -25,6 +25,15 @@ export function nearestNpcPlacement(
   return candidates[0]?.placement ?? null;
 }
 
+export function canTradeWithMerchant(
+  map: MapDef | undefined,
+  position: Readonly<Vec2>,
+  activeNpcId: string | undefined,
+): boolean {
+  return activeNpcId === 'merchant'
+    && nearestNpcPlacement(map, position, INTERACTION_RANGE_PX)?.npcId === activeNpcId;
+}
+
 export function resolveInteractionTarget(
   map: MapDef | undefined,
   position: Readonly<Vec2>,
