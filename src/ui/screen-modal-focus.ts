@@ -6,11 +6,12 @@ export function createScreenModalFocus(layer: HTMLElement, backgrounds: readonly
   const previousInert = new Map<HTMLElement, boolean>();
 
   const focusCard = (): void => {
-    if (layer.contains(document.activeElement)) return;
+    if (!open || !document.hasFocus() || layer.contains(document.activeElement)) return;
     const card = layer.querySelector<HTMLElement>('[role="dialog"]');
-    const input = card?.querySelector<HTMLElement>('input:not(:disabled), textarea:not(:disabled)');
-    (input ?? card)?.focus({ preventScroll: true });
+    const initial = card?.querySelector<HTMLElement>('[data-focus="focus-resume"], input:not(:disabled), textarea:not(:disabled)');
+    (initial ?? card)?.focus({ preventScroll: true });
   };
+  document.defaultView?.addEventListener('focus', focusCard);
 
   const restoreBackground = (): void => {
     for (const [element, inert] of previousInert) element.inert = inert;
@@ -28,11 +29,13 @@ export function createScreenModalFocus(layer: HTMLElement, backgrounds: readonly
         }
       } else if (!nextOpen && open) {
         restoreBackground();
-        if (previousFocus?.isConnected && !previousFocus.closest('[inert]')) previousFocus.focus({ preventScroll: true });
+        if (document.hasFocus() && previousFocus?.isConnected && !previousFocus.closest('[inert]')) {
+          previousFocus.focus({ preventScroll: true });
+        }
         previousFocus = null;
       }
       open = nextOpen;
-      if (open) focusCard();
+      focusCard();
     },
     onKeyDown(event: KeyboardEvent): void {
       if (!open || event.key !== 'Tab' || event.ctrlKey || event.altKey || event.metaKey) return;
@@ -50,6 +53,9 @@ export function createScreenModalFocus(layer: HTMLElement, backgrounds: readonly
         controls[event.shiftKey ? controls.length - 1 : 0]!.focus();
       }
     },
-    dispose(): void { restoreBackground(); },
+    dispose(): void {
+      document.defaultView?.removeEventListener('focus', focusCard);
+      restoreBackground();
+    },
   };
 }

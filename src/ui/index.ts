@@ -473,7 +473,7 @@ function preserveFocus(container: HTMLElement, renderContent: () => void, skipDi
     }
   }
   renderContent();
-  if (!key) return;
+  if (!key || !document.hasFocus()) return;
   const replacement = Array.from(container.querySelectorAll<HTMLElement>('[data-focus]'))
     .find((element) => element.dataset.focus === key && (!skipDisabled || !element.matches(':disabled')));
   if (!replacement) return;
@@ -1268,6 +1268,7 @@ export function createUi(
           const button = makeButton(document, jobs[route].name + '訓練', 'choose-route', {
             data: { job: route }, className: 'ms-button ' + (route === plannedJobDraft ? 'ms-button--primary' : 'ms-button--secondary'),
           });
+          button.dataset.focus = 'choose-route-' + route;
           button.setAttribute('aria-pressed', String(route === plannedJobDraft));
           button.append(makeInterfaceIcon(document,view,route === 'swordsman' ? 'skill:heavy-strike' : 'skill:' + jobs[route].basicSkill,jobs[route].name,'ms-route-icon'));
           routes.append(button);
@@ -1375,7 +1376,6 @@ export function createUi(
         );
         screenLayer.hidden = false;
         screenLayer.append(card);
-        if (focusResume) continueButton.focus();
         return;
       }
       if (view.screen === 'dead') {
@@ -1471,7 +1471,6 @@ export function createUi(
         );
         screenLayer.hidden = false;
         screenLayer.append(card);
-        continueButton.focus();
       }
     });
     modalFocus.sync();
@@ -1504,11 +1503,14 @@ export function createUi(
   };
 
   const focusGameCanvas = (button?: HTMLButtonElement): void => {
+    const document = shell.ownerDocument;
+    const canvas = document.querySelector<HTMLCanvasElement>('#game-root canvas');
+    if (!document.hasFocus() || !canvas || canvas.closest('[inert]')) return;
     button?.blur();
-    const active = shell.ownerDocument.activeElement;
+    const active = document.activeElement;
     if (active instanceof HTMLElement && shell.contains(active)) active.blur();
-    const canvas = shell.ownerDocument.querySelector<HTMLCanvasElement>('#game-root canvas');
-    canvas?.focus();
+    if (canvas.tabIndex < 0) canvas.tabIndex = 0;
+    canvas.focus({ preventScroll: true });
   };
 
   const reconcilePanelBag = (view: UiSnapshot, panel: PanelId | null, force: boolean): boolean => {
@@ -1585,12 +1587,13 @@ export function createUi(
       }
       return;
     }
+    const inventory = panel === 'inventory';
     const signature = JSON.stringify({
       panel,
-      data: view.saveData,
+      data: inventory ? view.saveData?.player : view.saveData,
       interfaceReady: Boolean(view.interfaceManifest),
-      quests: view.questViews,
-      interaction: view.interaction,
+      quests: inventory ? undefined : view.questViews,
+      interaction: inventory ? view.interaction?.npcId === 'merchant' : view.interaction,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
@@ -1602,7 +1605,7 @@ export function createUi(
       backgroundMotion: view.backgroundMotion ?? true,
       activeGuardBonus: panel === 'stats' ? view.activeGuard?.defenseBonus ?? 0 : 0,
       shopFilter,
-      potionCooling: panel === 'inventory' && view.nowMs < view.potionReadyAtMs,
+      potionCooling: inventory && view.nowMs < view.potionReadyAtMs,
       shopQuantities: Array.from(shopQuantities.entries()),
       sellQuantities: Array.from(sellQuantities.entries()),
       bagStateMessage,
@@ -2207,7 +2210,10 @@ export function createUi(
     renderProfile(view);
     renderMapIndicator(view);
     updateQuickButtons(view);
+    const gameWasCovered = !screenLayer.hidden;
     renderScreen(view);
+    if (gameWasCovered && screenLayer.hidden && view.screen === 'playing' && view.panels.length === 0
+      && !nextResumeGate && !restoreFocusAfterResume) focusGameCanvas();
     const loadProgress = screenLayer.querySelector<HTMLProgressElement>('.ms-map-load-progress progress');
     const loadLabel = screenLayer.querySelector<HTMLElement>('.ms-map-load-progress__label');
     if (loadProgress && loadLabel && view.mapVisualLoad) {

@@ -48,6 +48,8 @@ statusView.update(app.state);
 const game = new Phaser.Game({
   type: Phaser.CANVAS,
   parent: gameRoot,
+  // Let the host keep focus until the player enters the game.
+  autoFocus: false,
   // Render at twice the 960x540 world baseline so detailed actor textures
   // survive desktop FIT scaling. The world renderer keeps the same field of view.
   width: 1920,
