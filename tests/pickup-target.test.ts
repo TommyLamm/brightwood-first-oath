@@ -63,6 +63,19 @@ describe('pickup targets and reminders', () => {
     expect(contextHint({ pickupHint, interactionHint: { targetKey: 'npc:guide', kind: 'npc', label: '森芽', blockedMessage: null } }, () => 'E')?.targetKey).toBe('npc:guide');
   });
 
+  it('shows collectable loot before a locked gate, then restores the gate instruction', () => {
+    const interactionHint = { targetKey: 'portal:camp:east', kind: 'portal' as const,
+      label: '木葉鎮', blockedMessage: '完成「第一次出發」後才能前往木葉鎮。' };
+    const pickupHint = { targetKey: 'pickup:coins', label: '7 金幣' };
+    const keyText = (action: string) => action === 'pickup' ? 'Z' : 'Space';
+    expect(contextHint({ interactionHint, pickupHint }, keyText)?.targetKey).toBe('pickup:coins');
+    expect(contextHint({ interactionHint }, keyText)?.text).toContain(interactionHint.blockedMessage);
+    expect(contextHint({ interactionHint, pickupHint: { ...pickupHint, blockedMessage: '背包已滿' } }, keyText)?.targetKey)
+      .toBe('portal:camp:east');
+    expect(contextHint({ interactionHint: { ...interactionHint, blockedMessage: null }, pickupHint }, keyText)?.targetKey)
+      .toBe('portal:camp:east');
+  });
+
   it('the command collects the advertised live target and never rewards an expired one', () => {
     const state = playingState();
     state.gameplay.drops = [coin('expired', 100, 100), coin('live', 105, 1000)];

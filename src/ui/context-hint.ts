@@ -16,12 +16,14 @@ export function contextHint(
   keyText: (action: MovementKey | 'interact' | 'pickup') => string,
 ): { targetKey: string; text: string } | null {
   const interaction = view.interactionHint;
-  if (interaction) return {
+  const pickup = view.pickupHint;
+  const canCollectBeforeTravel = interaction?.kind === 'portal' && interaction.blockedMessage
+    && pickup && !pickup.blockedMessage;
+  if (interaction && !canCollectBeforeTravel) return {
     targetKey: interaction.targetKey,
     text: keyText('interact') + ' ' + (interaction.kind === 'portal' ? '前往' : '互動') + '：' + interaction.label
       + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
   };
-  const pickup = view.pickupHint;
   if (pickup) return {
     targetKey: pickup.targetKey,
     text: keyText('pickup') + ' 拾取：' + pickup.label + '｜' + (pickup.blockedMessage ?? '按住連續拾取'),

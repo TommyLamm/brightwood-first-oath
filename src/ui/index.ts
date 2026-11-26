@@ -1038,7 +1038,8 @@ export function createUi(
       key.title = binding;
 
       if (slot.kind === 'item') {
-        const fallbackId = slotId === 'small-red' ? 'large-red' : 'large-blue';
+        const healthPotion = slotId === 'small-red';
+        const fallbackId = healthPotion ? 'large-red' : 'large-blue';
         const smallCount = player?.bag
           .filter((stack) => stack.itemId === slotId)
           .reduce((sum, stack) => sum + stack.quantity, 0) ?? 0;
@@ -1051,19 +1052,24 @@ export function createUi(
         const itemName = item?.name ?? activeItemId;
         button.dataset.itemId = activeItemId;
         label.textContent = itemName;
-        button.setAttribute('aria-label', itemName);
         renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName, 'ms-quick-slot__icon-image');
 
         const cooldown = Math.max(0, view.potionReadyAtMs - view.nowMs);
-        const reason = count === 0 ? '沒有藥水' : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '';
+        const full = player && view.stats
+          && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp);
+        const showFull = count > 0 && cooldown === 0 && full;
+        const reason = count === 0 ? '沒有藥水'
+          : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown)
+            : showFull ? (healthPotion ? 'HP 已滿' : 'MP 已滿') : '';
         const displayState = !playing ? '不可操作'
           : focusBlocked ? '按「繼續遊戲」恢復'
             : reason || ('×' + count);
         button.classList.toggle('is-unavailable', Boolean(reason));
         button.disabled = !canAct || Boolean(reason);
-        state.textContent = compactQuickSlotState(displayState);
-        button.title = itemName + (reason ? '｜' + reason : '｜數量 ' + count);
-        button.setAttribute('aria-label', itemName + ' ' + displayState);
+        state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(displayState);
+        const quantity = '數量 ' + count;
+        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '');
+        button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : ''));
         continue;
       }
 
