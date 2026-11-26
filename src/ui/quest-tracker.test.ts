@@ -145,11 +145,35 @@ describe('explicit quest tracking', () => {
     expect(state.trackedQuestId).toBeNull();
   });
 
+  it('keeps independent choices through character switches and reloads', () => {
+    const { storage, values } = memoryStorage();
+    const legacy = 'game:ui:tracked-quest:v1';
+    values.set(legacy, 'q01');
+    const state = createQuestTrackerState('game', storage);
+    state.selectCharacter('archer');
+    expect(state.trackedQuestId).toBe('q01');
+    expect(values.has(legacy)).toBe(false);
+    state.selectCharacter('mage');
+    expect(state.trackedQuestId).toBeNull();
+    state.trackQuest('q02');
+    state.selectCharacter('archer');
+    expect(state.trackedQuestId).toBe('q01');
+    const restored = createQuestTrackerState('game', storage);
+    restored.selectCharacter('mage');
+    expect(restored.trackedQuestId).toBe('q02');
+    restored.selectCharacter('archer');
+    expect(restored.trackedQuestId).toBe('q01');
+  });
+
   it('keeps explicit tracking and stopping usable when persistence is blocked', () => {
     const blocked = () => { throw Error('blocked storage'); };
     const state = createQuestTrackerState('game', { getItem: blocked, setItem: blocked, removeItem: blocked });
     state.trackQuest('q01');
     expect(state.trackedQuestId).toBe('q01');
+    state.selectCharacter('first');
+    state.selectCharacter('second');
+    expect(state.trackedQuestId).toBeNull();
+    state.selectCharacter('first');
     state.reconcile([active]);
     expect(state.trackedQuestId).toBe('q01');
     state.trackQuest(null);

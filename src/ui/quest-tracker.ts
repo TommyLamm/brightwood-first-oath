@@ -7,29 +7,53 @@ export { isTrackableQuest, selectTrackerQuest } from '../domain/quests/selection
 /** Device-local presentation preference; it never writes to a character or cloud save. */
 export function createQuestTrackerState(gameId: string, storage: StorageLike | null) {
   const key = gameId + ':ui:quest-tracker-collapsed:v1';
-  const trackedKey = gameId + ':ui:tracked-quest:v1';
+  const legacyKey = gameId + ':ui:tracked-quest:v1';
+  const choices = new Map<string, string | null>();
+  let trackedKey = legacyKey;
+  let selectedCharacter = false;
   let collapsed = false;
-  let trackedQuestId: string | null = null;
   try {
     collapsed = storage?.getItem(key) === '1';
-    const stored = storage?.getItem(trackedKey);
-    trackedQuestId = stored && stored.length <= 128 ? stored : null;
   } catch {
     // Storage may be blocked in an iframe; the control still works for this session.
   }
+  const read = (choiceKey: string): string | null => {
+    if (!choices.has(choiceKey)) {
+      let stored: string | null = null;
+      try {
+        stored = storage?.getItem(choiceKey) ?? null;
+      } catch {
+        // Keep independent choices in memory even when persistence is unavailable.
+      }
+      choices.set(choiceKey, stored && stored.length <= 128 ? stored : null);
+    }
+    return choices.get(choiceKey) ?? null;
+  };
+  const write = (choiceKey: string, questId: string | null): boolean => {
+    choices.set(choiceKey, questId);
+    try {
+      if (questId) storage?.setItem(choiceKey, questId);
+      else storage?.removeItem(choiceKey);
+      return true;
+    } catch {
+      return false;
+    }
+  };
   return {
     get collapsed(): boolean { return collapsed; },
-    get trackedQuestId(): string | null { return trackedQuestId; },
+    get trackedQuestId(): string | null { return read(trackedKey); },
+    selectCharacter(characterId: string | null): void {
+      trackedKey = characterId ? legacyKey + ':character:' + characterId : legacyKey;
+      if (!characterId || selectedCharacter) return;
+      selectedCharacter = true;
+      const previous = read(legacyKey);
+      if (previous && (read(trackedKey) !== null || write(trackedKey, previous))) write(legacyKey, null);
+    },
     trackQuest(questId: string | null): void {
-      trackedQuestId = questId;
-      try {
-        if (questId) storage?.setItem(trackedKey, questId);
-        else storage?.removeItem(trackedKey);
-      } catch {
-        // Keep the current choice usable when device storage is unavailable.
-      }
+      write(trackedKey, questId);
     },
     reconcile(quests: readonly QuestView[]): void {
+      const trackedQuestId = read(trackedKey);
       if (trackedQuestId && !isTrackableQuest(quests.find((quest) => quest.questId === trackedQuestId))) {
         this.trackQuest(null);
       }

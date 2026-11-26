@@ -2329,12 +2329,12 @@ export function createUi(
   const render = (view: UiSnapshot): void => {
     if (disposed) return;
     const previousView = currentView;
+    questTrackerState.selectCharacter(view.profile?.activeCharacterId ?? null);
     if (previousView?.profile?.activeCharacterId && previousView.profile.activeCharacterId !== view.profile?.activeCharacterId) {
       clearTransientViewState();
       selectedQuestId = null;
       selectedMapId = null;
       selectedMapFocus = null;
-      questTrackerState.trackQuest(null);
       lastReconciledBag = emptyBag;
       lastPanelFocus = null;
       panelFocusBeforeResume = null;
