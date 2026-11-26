@@ -539,7 +539,10 @@ export function applyProgressAction(
         return failure('REQUIREMENT', `「${skill.name}」不能由玩家學習。`);
       }
       if (draft.job === 'beginner' || skill.requiredJob !== draft.job) {
-        return failure('REQUIREMENT', '只有' + (skill.requiredJob === 'rogue' ? '盜賊' : skill.requiredJob === 'mage' ? '法師' : skill.requiredJob === 'archer' ? '弓箭手' : '劍士') + '可以學習這項技能。');
+        const jobName = isPlayerJob(skill.requiredJob) ? jobs[skill.requiredJob].name : jobs.swordsman.name;
+        return failure('REQUIREMENT', draft.job === 'beginner' && skill.requiredJob === effectiveJob(draft)
+          ? '請先完成' + jobName + '轉職。'
+          : '只有' + jobName + '可以學習這項技能。');
       }
       if (draft.level < skill.requiredLevel) return failure('REQUIREMENT', `需要等級 ${skill.requiredLevel} 才能學習。`);
       if (draft.sp < 1) return failure('REQUIREMENT', '可用 SP 不足。');

@@ -94,7 +94,7 @@ type UiAction =
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag'
   | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'select-quest' | 'track-quest'
-  | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'accept-quest'
+  | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'toggle-quest-tracker' | 'settings-reset-bindings' | 'reload-page';
 
@@ -658,6 +658,7 @@ export function createUi(
   let selectedMapId: string | null = null;
   let selectedMapNpcId: string | null = null;
   let selectedQuestId: string | null = null;
+  let pendingSkillReview: string | null = null;
   let createRequested = false;
   let plannedJobDraft: PlayerJob = 'swordsman';
   let slotDraft: string | undefined;
@@ -683,6 +684,7 @@ export function createUi(
 
   const clearTransientViewState = (): void => {
     selectedBagIndex = null;
+    pendingSkillReview = null;
     sellQuantities = new Map();
     shopQuantities = new Map();
     bagStateMessage = '';
@@ -1094,7 +1096,9 @@ export function createUi(
       const trial = slotId === 'rogue-double-stab' && effectiveJob(player) === 'rogue' && player.job === 'beginner'
         && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
       const rank = basic || trial ? 1 : playerSkillRank(player, slotId);
-      button.classList.toggle('is-unlearned', !basic && rank === 0);
+      const unlearned = rank === 0;
+      button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
+      button.classList.toggle('is-unlearned', unlearned);
       const cooldown = Math.max(0, (view.skillReadyAtMs[slotId] ?? 0) - view.nowMs);
       const reason = rank === 0 ? '未學習' : stanceReason
         || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足'
@@ -1113,7 +1117,7 @@ export function createUi(
       button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
       button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
       // A click may still buffer a basic attack during a short cooldown.
-      button.disabled = !canAct || Boolean(basic ? stanceReason : reason);
+      button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
       const showAim = view.aimReady === true && basic && !stanceReason;
       state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : displayState);
       button.classList.toggle('is-buff-active', showAim || buffLeftSec > 0);
@@ -1125,7 +1129,9 @@ export function createUi(
       else if (queued && !screenState && buffLeftSec === 0) button.title += '｜已排隊';
       else if (actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
       if (screenState) button.title += '｜' + screenState;
-      button.setAttribute('aria-label', skill.name + ' ' + displayState);
+      const reviewLabel = unlearned && canAct ? '開啟技能詳情' : '';
+      if (reviewLabel) button.title += '｜' + reviewLabel;
+      button.setAttribute('aria-label', skill.name + ' ' + displayState + (reviewLabel ? ' ' + reviewLabel : ''));
     }
 
     pauseButton.hidden = !playing;
@@ -1740,6 +1746,12 @@ export function createUi(
     }
     const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
+    if (panel === 'skills' && pendingSkillReview) {
+      const heading = document.getElementById('brightwood-first-oath-skill-heading-' + pendingSkillReview);
+      pendingSkillReview = null;
+      heading?.focus({ preventScroll: true });
+      heading?.closest('.ms-skill-card')?.scrollIntoView({ block: 'nearest' });
+    }
   };
 
   const restoreCommittedFocus = (view: UiSnapshot): void => {
@@ -2111,6 +2123,13 @@ export function createUi(
       case 'learn-skill': {
         const skillId = button.dataset.skillId;
         if (skillId) dispatchDraft({ type: 'learnSkill', payload: { skillId } });
+        return;
+      }
+      case 'review-skill': {
+        if (view.screen !== 'playing' || view.focusResumeRequired || !button.dataset.skillId) return;
+        pendingSkillReview = button.dataset.skillId;
+        if (view.panels.at(-1) === 'skills') renderPanel(view, true);
+        else dispatchDraft({ type: 'setPanel', payload: { panel: 'skills' } });
         return;
       }
       case 'accept-quest': {
@@ -3188,9 +3207,13 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     const reason = learningPreview.ok ? '' : learningPreview.message;
     const card = makeElement(document, 'article', 'ms-skill-card');
     const head = makeElement(document, 'div', 'ms-skill-card__head');
+    const heading = makeElement(document, 'h3', '', skill.name);
+    heading.id = 'brightwood-first-oath-skill-heading-' + skill.id;
+    heading.dataset.focus = 'skill-heading-' + skill.id;
+    heading.tabIndex = -1;
     head.append(
       makeInterfaceIcon(document, view, 'skill:' + skill.id, skill.name, 'ms-skill-card__icon'),
-      makeElement(document, 'h3', '', skill.name),
+      heading,
       makeBadge(document, '等級 ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
     );
     // The badge above already shows 等級 N/M, so the detail line leaves it out.

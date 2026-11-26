@@ -124,7 +124,9 @@ describe('previewSkillLearning', () => {
 
   it('preserves job, level, SP, and max-rank failures in domain validation order', () => {
     expect(expectFailureMatchesDomain(makePlayer({ job: 'beginner', level: 1, sp: 0 }), 'heavy-strike').message)
-      .toBe('只有劍士可以學習這項技能。');
+      .toBe('請先完成劍士轉職。');
+    expect(expectFailureMatchesDomain(makePlayer({ level: 10, sp: 1 }), 'mage-blink').message)
+      .toBe('只有法師可以學習這項技能。');
     expect(expectFailureMatchesDomain(makePlayer({ job: 'swordsman', level: 9, sp: 0 }), 'heavy-strike').message)
       .toBe('需要等級 10 才能學習。');
     expect(expectFailureMatchesDomain(makePlayer({

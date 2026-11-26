@@ -77,6 +77,7 @@
 .maple-ui .ms-quick-slot.is-buff-active { border-color: #b8dca0; box-shadow: inset 0 0 0 1px #b8dca0, 0 0 8px #6dbe6a88; }
 /* A small CSS padlock replaces repeated unlearned labels; title and aria-label retain the reason. */
 .maple-ui .ms-quick-slot.is-unlearned .ms-quick-slot__state { width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.maple-ui .ms-quick-slot.is-unlearned .ms-quick-slot__icon { opacity: .62; }
 .maple-ui .ms-quick-slot.is-unlearned::before {
   content: "";
   position: absolute;
