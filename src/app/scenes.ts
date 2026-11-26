@@ -4,6 +4,7 @@ import { createWorldRenderer } from '../render/index.js';
 import { GameApp } from './app.js';
 import { makeWorldSnapshot, type GameplayState } from './gameplay.js';
 import { shouldAttemptMapVisualLoad } from './map-load-retry.js';
+import { canShowContextHints } from './movement-hint.js';
 import type { MapDef } from '../contracts/definitions.js';
 import type { WorldRenderer, WorldRendererFactory } from '../contracts/ports.js';
 
@@ -44,7 +45,8 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, t
     private worldRenderer: WorldRenderer | null = null;
     private rendererReady = false;
     private awaitingFirstRender = true;
-    private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number; trackedQuestId: string | null };
+    private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number;
+      trackedQuestId: string | null; showMovementGuide: boolean };
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
@@ -157,11 +159,13 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, t
         || this.activeMapId !== gameplay.saveData.location.mapId) return;
       const { scrollX, scrollY } = this.cameras.main;
       const trackedQuestId = trackedQuest();
+      const showMovementGuide = canShowContextHints(state);
       const last = this.lastWorldFrame;
       if (!this.awaitingFirstRender && last?.gameplay === gameplay && last.time === state.gameTimeMs
-        && last.scrollX === scrollX && last.scrollY === scrollY && last.trackedQuestId === trackedQuestId) return;
-      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId };
-      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, trackedQuestId));
+        && last.scrollX === scrollX && last.scrollY === scrollY && last.trackedQuestId === trackedQuestId
+        && last.showMovementGuide === showMovementGuide) return;
+      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId, showMovementGuide };
+      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, { trackedQuestId, showMovementGuide }));
       this.awaitingFirstRender = false;
     }
 

@@ -27,6 +27,7 @@ import { isBossMonster } from '../content/rules/monsters.js';
 import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
 import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findQuestExit } from './quest-route.js';
+import { deriveMovementHint } from './movement-hint.js';
 import { resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
@@ -616,7 +617,7 @@ export function makeWorldSnapshot(
   gameplay: GameplayState,
   catalog: ContentCatalog,
   nowMs: number,
-  trackedQuestId: string | null = null,
+  { trackedQuestId = null, showMovementGuide = false }: { trackedQuestId?: string | null; showMovementGuide?: boolean } = {},
 ): WorldSnapshot {
   const map = catalog.world.maps[gameplay.saveData.location.mapId];
   if (!map) throw new RangeError(`Unknown map in save location: ${gameplay.saveData.location.mapId}`);
@@ -637,6 +638,7 @@ export function makeWorldSnapshot(
     questViews,
     trackedQuestId,
     questExitId: findQuestExit(gameplay.saveData, catalog, questViews, trackedQuestId),
+    movementGuide: showMovementGuide ? deriveMovementHint(movement, map, catalog.rules.movement) : null,
     player: {
       id: gameplay.playerEntityId,
       movement,

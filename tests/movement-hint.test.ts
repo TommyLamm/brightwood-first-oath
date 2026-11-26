@@ -3,7 +3,7 @@ import { deriveMovementHint } from '../src/app/movement-hint.js';
 import { contextHint } from '../src/ui/context-hint.js';
 import { createMovement, stepMovement } from '../src/domain/movement/index.js';
 import { createInitialAppState, createUiSnapshot } from '../src/app/state.js';
-import { startNewGame } from '../src/app/gameplay.js';
+import { makeWorldSnapshot, startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 
@@ -26,7 +26,7 @@ describe('contextual movement controls', () => {
 
   it('only advertises down-jump while standing on a drop-through platform', () => {
     const standing = { ...createMovement({ x: 250, y: 500 }), mode: 'grounded' as const, footholdId: platform.id };
-    expect(deriveMovementHint(standing, map, config)).toEqual({ targetKey: 'drop:hint-platform', kind: 'drop' });
+    expect(deriveMovementHint(standing, map, config)).toEqual({ targetKey: 'drop:hint-platform', kind: 'drop', position: { x: 250, y: 500 } });
     expect(deriveMovementHint({ ...standing, mode: 'airborne' }, map, config)).toBeNull();
     expect(deriveMovementHint(standing, { ...map, footholds: [{ ...platform, dropThrough: false }] }, config)).toBeNull();
     expect(deriveMovementHint({ ...standing, mode: 'dead' }, map, config)).toBeNull();
@@ -63,7 +63,10 @@ describe('contextual movement controls', () => {
     expect(createUiSnapshot({ ...state, panels: ['inventory'] })?.movementHint).toBeNull();
     expect(createUiSnapshot({ ...state, focusResumeRequired: true })?.movementHint).toBeNull();
     gameplay.movement = { ...gameplay.movement, position: { x: 100, y: 500 }, mode: 'climbing', ladderId: 'hint-ladder', footholdId: null };
-    expect(createUiSnapshot(state)?.movementHint).toEqual({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true });
+    expect(createUiSnapshot(state)?.movementHint).toMatchObject({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true });
+    expect(makeWorldSnapshot(gameplay, catalog, 0, { showMovementGuide: true }).movementGuide)
+      .toEqual({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true, ladder: map.ladders[0] });
+    expect(makeWorldSnapshot(gameplay, catalog, 0).movementGuide).toBeNull();
     expect(JSON.stringify(gameplay.saveData)).toBe(saved);
   });
 });

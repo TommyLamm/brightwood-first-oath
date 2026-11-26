@@ -9,7 +9,7 @@ import { getQuestViews } from '../domain/quests/index.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
-import { deriveMovementHint } from './movement-hint.js';
+import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
@@ -127,10 +127,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   const mapId = saveData?.location.mapId;
   const map = mapId ? catalog.world.maps[mapId] : undefined;
   const player = saveData?.player;
-  const canShowInteractionHint = state.screen === 'playing'
-    && !state.mapVisualLoad
-    && !state.focusResumeRequired
-    && state.panels.length === 0;
+  const canShowInteractionHint = canShowContextHints(state);
   let interactionHint: UiSnapshot['interactionHint'] = null;
   let pickupHint: UiSnapshot['pickupHint'] = null;
   if (gameplay && saveData && canShowInteractionHint) {

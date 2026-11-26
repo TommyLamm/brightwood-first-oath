@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { drawQuestCue } from './quest-guidance.js';
+import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
@@ -418,7 +419,7 @@ export function createWorldRenderer(
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
-  const questCueGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
+  const guidanceGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   let questGuide: { views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets } | undefined;
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
@@ -1012,7 +1013,7 @@ export function createWorldRenderer(
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     steleGlowGraphics.clear();
-    questCueGraphics.clear();
+    guidanceGraphics.clear();
     const trackedId = snapshot.trackedQuestId ?? null;
     if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId) {
       const quest = selectTrackerQuest(snapshot.questViews, trackedId);
@@ -1188,7 +1189,7 @@ export function createWorldRenderer(
       const showMarker = npcInViewport && !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
-      if (npcInViewport && questTarget) drawQuestCue(questCueGraphics, 'npc', markerGeometry.x, markerGeometry.y);
+      if (npcInViewport && questTarget) drawQuestCue(guidanceGraphics, 'npc', markerGeometry.x, markerGeometry.y);
     }
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
@@ -1245,7 +1246,7 @@ export function createWorldRenderer(
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
         if (targets.monsters.has(monster.monsterId)) {
-          drawQuestCue(questCueGraphics, 'monster', bar.x + bar.width / 2, bar.y - 28);
+          drawQuestCue(guidanceGraphics, 'monster', bar.x + bar.width / 2, bar.y - 28);
         }
       }
     }
@@ -1276,7 +1277,7 @@ export function createWorldRenderer(
         const inViewport = isInViewport(drop.position);
         if (!inViewport) sprite.setVisible(false).setActive(false);
         if (inViewport && drop.itemId && targets.items.has(drop.itemId)) {
-          drawQuestCue(questCueGraphics, 'item', drop.position.x, drop.position.y - sprite.displayHeight - 12);
+          drawQuestCue(guidanceGraphics, 'item', drop.position.x, drop.position.y - sprite.displayHeight - 12);
         }
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
@@ -1289,8 +1290,9 @@ export function createWorldRenderer(
     if (questExit && isInViewport(questExit)) {
       const anchor = portalFootAnchor(questExit);
       const portalImage = assets.images.get('env:portal')!;
-      drawQuestCue(questCueGraphics, 'portal', anchor.x, anchor.y - portalImage.displayHeight - 38);
+      drawQuestCue(guidanceGraphics, 'portal', anchor.x, anchor.y - portalImage.displayHeight - 38);
     }
+    if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 
     const visibleAttackIds = new Set(snapshot.attacks.map((attack) => attack.id));
     for (const [attackId, sprite] of attackEffectSprites) {
@@ -1647,7 +1649,7 @@ export function createWorldRenderer(
       eventTexts.clear();
       hpGraphics.destroy();
       steleGlowGraphics.destroy();
-      questCueGraphics.destroy();
+      guidanceGraphics.destroy();
       bossNameText.destroy();
       destroyMonsterNames();
       telegraphGraphics.destroy();

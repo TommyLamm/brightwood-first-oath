@@ -144,6 +144,10 @@ export type DropState = {
   expiresAtMs: number;
 };
 
+export type MovementGuide =
+  | { kind: 'climb'; targetKey: string; attached: boolean; ladder: MapDef['ladders'][number] }
+  | { kind: 'drop'; targetKey: string; position: Vec2 };
+
 export type WorldSnapshot = {
   poisonedIds?: EntityId[];
   mapId: Id;
@@ -151,6 +155,7 @@ export type WorldSnapshot = {
   questViews: QuestView[];
   trackedQuestId?: Id | null;
   questExitId?: Id | null;
+  movementGuide?: MovementGuide | null;
   player: {
     id: EntityId;
     movement: MovementState;
