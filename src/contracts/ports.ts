@@ -149,6 +149,7 @@ export type WorldSnapshot = {
   mapId: Id;
   nowMs: number;
   questViews: QuestView[];
+  trackedQuestId?: Id | null;
   player: {
     id: EntityId;
     movement: MovementState;
@@ -241,6 +242,7 @@ export type UiSnapshot = {
 };
 
 export type UiController = {
+  readonly trackedQuestId: Id | null;
   render(view: UiSnapshot): void;
   setPanel(panel: PanelId | null): void;
   isInputCaptured(): boolean;

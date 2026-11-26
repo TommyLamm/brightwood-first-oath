@@ -2562,6 +2562,7 @@ export function createUi(
   keyWindow?.addEventListener('keydown', onModalTab, true);
 
   return {
+    get trackedQuestId() { return questTrackerState.trackedQuestId; },
     render,
     setPanel(panel): void {
       dispatchDraft({ type: 'setPanel', payload: { panel } });

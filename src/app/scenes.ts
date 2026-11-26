@@ -10,7 +10,7 @@ import type { WorldRenderer, WorldRendererFactory } from '../contracts/ports.js'
 export type AppStatusReporter = (title: string, details: string) => void;
 
 /** All Phaser scenes are created and transitioned by the app entry point. */
-export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
+export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, trackedQuest: () => string | null) {
   class BootScene extends Phaser.Scene {
     private statusText?: Phaser.GameObjects.Text;
 
@@ -44,7 +44,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
     private worldRenderer: WorldRenderer | null = null;
     private rendererReady = false;
     private awaitingFirstRender = true;
-    private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number };
+    private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number; trackedQuestId: string | null };
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
@@ -156,11 +156,12 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter) {
       if (!this.rendererReady || !this.worldRenderer || !catalog || !gameplay
         || this.activeMapId !== gameplay.saveData.location.mapId) return;
       const { scrollX, scrollY } = this.cameras.main;
+      const trackedQuestId = trackedQuest();
       const last = this.lastWorldFrame;
       if (!this.awaitingFirstRender && last?.gameplay === gameplay && last.time === state.gameTimeMs
-        && last.scrollX === scrollX && last.scrollY === scrollY) return;
-      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY };
-      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs));
+        && last.scrollX === scrollX && last.scrollY === scrollY && last.trackedQuestId === trackedQuestId) return;
+      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId };
+      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, trackedQuestId));
       this.awaitingFirstRender = false;
     }
 

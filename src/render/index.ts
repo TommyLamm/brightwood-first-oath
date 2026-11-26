@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { selectTrackerQuest } from '../domain/quests/selection.js';
+import { drawQuestCue, questCueTargets, type QuestCueTargets } from './quest-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
@@ -416,6 +418,8 @@ export function createWorldRenderer(
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
+  const questCueGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
+  let questGuide: { views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestCueTargets } | undefined;
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
     resolution: WORLD_TEXT_RESOLUTION,
@@ -1008,6 +1012,13 @@ export function createWorldRenderer(
     for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     steleGlowGraphics.clear();
+    questCueGraphics.clear();
+    const trackedId = snapshot.trackedQuestId ?? null;
+    if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId) {
+      const quest = selectTrackerQuest(snapshot.questViews, trackedId);
+      questGuide = { views: snapshot.questViews, trackedId, targets: questCueTargets(quest) };
+    }
+    const questTargets = questGuide.targets;
     bossNameText.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
@@ -1173,9 +1184,11 @@ export function createWorldRenderer(
       npcVisual.nameText.setVisible(npcInViewport);
       const markerImage = assets.images.get('marker:quest')!;
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
+      const questTarget = questTargets.npcs.has(placement.npcId);
+      const showMarker = npcInViewport && !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
-        .setVisible(npcInViewport && questState !== undefined)
-        .setActive(npcInViewport && questState !== undefined);
+        .setVisible(showMarker).setActive(showMarker);
+      if (npcInViewport && questTarget) drawQuestCue(questCueGraphics, 'npc', markerGeometry.x, markerGeometry.y);
     }
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
@@ -1231,6 +1244,9 @@ export function createWorldRenderer(
           if (nameText.text !== label) nameText.setText(label);
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
+        if (questTargets.monsters.has(monster.monsterId)) {
+          drawQuestCue(questCueGraphics, 'monster', bar.x + bar.width / 2, bar.y - 28);
+        }
       }
     }
 
@@ -1257,7 +1273,11 @@ export function createWorldRenderer(
       const imageKey = drop.itemId ? catalog.rules.items[drop.itemId]?.iconKey : undefined;
       if (imageKey && assets.images.has(imageKey)) {
         const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
-        if (!isInViewport(drop.position)) sprite.setVisible(false).setActive(false);
+        const inViewport = isInViewport(drop.position);
+        if (!inViewport) sprite.setVisible(false).setActive(false);
+        if (inViewport && drop.itemId && questTargets.items.has(drop.itemId)) {
+          drawQuestCue(questCueGraphics, 'item', drop.position.x, drop.position.y - sprite.displayHeight - 12);
+        }
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
         const label = getDropText(drop.id, `${drop.coins} 金幣`, drop.position, snapshot.nowMs);
@@ -1620,6 +1640,7 @@ export function createWorldRenderer(
       eventTexts.clear();
       hpGraphics.destroy();
       steleGlowGraphics.destroy();
+      questCueGraphics.destroy();
       bossNameText.destroy();
       destroyMonsterNames();
       telegraphGraphics.destroy();

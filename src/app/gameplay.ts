@@ -615,6 +615,7 @@ export function makeWorldSnapshot(
   gameplay: GameplayState,
   catalog: ContentCatalog,
   nowMs: number,
+  trackedQuestId: string | null = null,
 ): WorldSnapshot {
   const map = catalog.world.maps[gameplay.saveData.location.mapId];
   if (!map) throw new RangeError(`Unknown map in save location: ${gameplay.saveData.location.mapId}`);
@@ -633,6 +634,7 @@ export function makeWorldSnapshot(
     mapId: map.id,
     nowMs,
     questViews,
+    trackedQuestId,
     player: {
       id: gameplay.playerEntityId,
       movement,

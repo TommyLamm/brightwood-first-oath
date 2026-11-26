@@ -1,5 +1,8 @@
 import type { QuestView } from '../contracts/definitions.js';
 import type { StorageLike } from '../contracts/ports.js';
+import { isTrackableQuest } from '../domain/quests/selection.js';
+
+export { isTrackableQuest, selectTrackerQuest } from '../domain/quests/selection.js';
 
 /** Device-local presentation preference; it never writes to a character or cloud save. */
 export function createQuestTrackerState(gameId: string, storage: StorageLike | null) {
@@ -40,19 +43,6 @@ export function createQuestTrackerState(gameId: string, storage: StorageLike | n
       }
     },
   };
-}
-
-export function isTrackableQuest(quest: QuestView | undefined): quest is QuestView {
-  return quest !== undefined && ['available', 'active', 'ready'].includes(quest.status);
-}
-
-/** Honor an explicit choice, otherwise retain the existing ready/active/available order. */
-export function selectTrackerQuest(quests: readonly QuestView[], trackedQuestId: string | null): QuestView | undefined {
-  const tracked = quests.find((quest) => quest.questId === trackedQuestId);
-  if (isTrackableQuest(tracked)) return tracked;
-  return quests.find((quest) => quest.status === 'ready')
-    ?? quests.find((quest) => quest.status === 'active')
-    ?? quests.find((quest) => quest.status === 'available');
 }
 
 /** Keep the counter visible even if a long target name must be truncated. */
