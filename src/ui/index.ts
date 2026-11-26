@@ -346,6 +346,10 @@ function compactQuickSlotState(text: string): string {
   return text.replace(/(\d+(?:\.\d+)?) 秒/g, '$1秒');
 }
 
+function isLowHealth(hp: number, maxHp: number): boolean {
+  return hp > 0 && hp <= maxHp * 0.3;
+}
+
 function statusLabel(status: UiSnapshot['saveStatus']): string {
   return {
     unavailable: '未連線',
@@ -911,9 +915,9 @@ export function createUi(
     const maxHp = view.stats?.maxHp ?? player.hp;
     const hp = makeMeter(document, 'HP', player.hp, maxHp, 'hp', formatNumber(player.hp) + '/' + formatNumber(maxHp));
     // Static (not pulsing): the profile is rebuilt on every HP change, which would restart an animation.
-    if (player.hp > 0 && player.hp <= maxHp * 0.3) {
+    if (isLowHealth(player.hp, maxHp)) {
       hp.classList.add('is-low');
-      hp.title = 'HP 偏低，記得按 ' + effectiveKeyText(view.saveData?.settings.bindings ?? {}, 'potionHp') + ' 喝紅色藥水';
+      hp.title = 'HP 偏低';
     }
     const maxMp = view.stats?.maxMp ?? player.mp;
     const mp = makeMeter(document, 'MP', player.mp, maxMp, 'mp', formatNumber(player.mp) + '/' + formatNumber(maxMp));
@@ -1027,6 +1031,8 @@ export function createUi(
     const playing = view.screen === 'playing';
     const focusBlocked = view.focusResumeRequired === true;
     const canAct = playing && !focusBlocked;
+    const showRecoveryCue = canAct && view.panels.length === 0 && player && view.stats
+      && isLowHealth(player.hp, view.stats.maxHp);
     const stanceBlock = view.combatUi?.stanceBlock;
     const stanceReason = stanceBlock ? { airborne: '需站穩', climbing: '攀爬中', knockback: '受擊硬直' }[stanceBlock] : '';
     const keyForSkill: Record<string, GameAction> = {
@@ -1049,6 +1055,7 @@ export function createUi(
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
         Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
         view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
+        slotId === 'small-red' && showRecoveryCue === true,
       ];
       if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1084,12 +1091,15 @@ export function createUi(
         const displayState = !playing ? '不可操作'
           : focusBlocked ? '按「繼續遊戲」恢復'
             : reason || ('×' + count);
+        const recommend = healthPotion && showRecoveryCue === true && !reason;
         button.classList.toggle('is-unavailable', Boolean(reason));
+        button.classList.toggle('is-health-recommended', recommend);
         button.disabled = !canAct || Boolean(reason);
         state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(displayState);
         const quantity = '數量 ' + count;
-        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '');
-        button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : ''));
+        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '') + (recommend ? '｜HP 偏低，可補血' : '');
+        button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : '')
+          + (recommend ? '，HP 偏低，可補血' : ''));
         continue;
       }
 
