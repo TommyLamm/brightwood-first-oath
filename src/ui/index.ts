@@ -1595,7 +1595,7 @@ export function createUi(
     panelHost.hidden = panel === null;
     panelHost.classList.toggle('is-world-map', panel === 'map');
     panelHost.classList.toggle('is-illustrated-panel', panel === 'stats' || panel === 'quests');
-    if (panel !== 'quests') selectedQuestId = null;
+    if (!view.panels.includes('quests')) selectedQuestId = null;
     if (panel !== 'map') selectedMapId = null;
     if (!panel) {
       if (lastPanelSignature !== '') {
@@ -1771,11 +1771,18 @@ export function createUi(
         panelHost.querySelector<HTMLButtonElement>('[data-ui-action="track-quest"]')?.focus();
         return;
       }
-      case 'select-quest':
+      case 'select-quest': {
         if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
         selectedQuestId = button.dataset.questId!;
         renderPanel(view, true);
+        const heading = panelHost.querySelector<HTMLElement>('.ms-journal-sheet .ms-journal-heading h3');
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+          heading.scrollIntoView({ block: 'start' });
+        }
         return;
+      }
       case 'select-map':
         if (!button.dataset.mapId || (!view.catalog.world.maps[button.dataset.mapId] && !PLANNED_REGIONS.some(({ id }) => id === button.dataset.mapId))) return;
         selectedMapId = button.dataset.mapId;
@@ -2709,6 +2716,9 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
   const selectedCard = journal.querySelector<HTMLElement>('.ms-journal-sheet');
   if (!view.saveData || !selectedCard) return journal;
   if (selectedQuest && isTrackableQuest(selectedQuest)) {
+    const actions = makeElement(document, 'div', 'ms-category-bar');
+    actions.setAttribute('role', 'group');
+    actions.setAttribute('aria-label', '任務操作');
     const tracked = trackedQuestId === selectedQuest.questId;
     const track = makeButton(document, tracked ? '停止指定追蹤' : '追蹤這項任務', 'track-quest', {
       title: tracked ? '恢復自動選擇追蹤任務' : '將此任務固定顯示在遊玩畫面的任務追蹤',
@@ -2716,12 +2726,33 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
     track.dataset.questId = selectedQuest.questId;
     track.dataset.focus = 'track-quest:' + selectedQuest.questId;
     track.setAttribute('aria-pressed', String(tracked));
-    selectedCard.querySelector('.ms-journal-heading')?.after(track);
+    actions.append(track);
+
+    const definition = view.catalog.world.quests[selectedQuest.questId];
+    const next = selectedQuest.objectives.find(({ current, required }) => current < required);
+    const destination = selectedQuest.status === 'available' ? { npcId: definition?.giverNpcId, text: '接取' }
+      : selectedQuest.status === 'ready' ? { npcId: definition?.turnInNpcId, text: '回報' }
+        : next?.type === 'inspect' ? { npcId: next.targetId, text: '目標' } : null;
+    if (destination?.npcId) {
+      const npcId = destination.npcId;
+      const target = resolveNpcMapTarget(view.catalog.world, npcId);
+      if (target) {
+        const title = '查看' + destination.text + '地點：' + target.npcName + '位於「' + target.mapName + '」';
+        const button = makeButton(document, '查看' + destination.text + '地點', 'review-npc-map', {
+          className: 'ms-button ms-button--secondary',
+          title,
+          data: { npcId, focus: 'quest-location:' + selectedQuest.questId },
+        });
+        button.setAttribute('aria-label', title);
+        actions.append(button);
+      }
+    }
+    selectedCard.querySelector('.ms-journal-heading')?.after(actions);
   }
 
   const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));
   const ending = buildWorldEndingFeedback(document, view, true);
-  if (ending) journal.insertBefore(ending, selectedCard);
+  if (ending) journal.append(ending);
 
   for (const group of groupWorldQuests(view.questViews)) {
     const section = makeElement(document, 'section', 'ms-quest-group');
@@ -2764,7 +2795,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
       route.append(stop);
     });
     section.append(route);
-    journal.insertBefore(section, selectedCard);
+    journal.append(section);
   }
 
   if (selectedQuest?.questId === 'q21') {
