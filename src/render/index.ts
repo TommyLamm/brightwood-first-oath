@@ -134,7 +134,7 @@ const DAMAGE_STACK_RADIUS = 48;
 const DAMAGE_STACK_STEP = 18;
 const DAMAGE_STACK_DEPTH = 4;
 const DROP_DRAW_LIMIT = 60;
-/** Ordinary monsters show a name plate only within this horizontal distance of the hero, to avoid clutter. */
+/** Monsters without a visible quest cue show their name within this horizontal distance. */
 const MONSTER_NAME_RANGE_PX = 360;
 const PARTICLE_LIMIT = 100;
 const EVENT_LIFETIME_MS = DAMAGE_NUMBER_LIFETIME_MS;
@@ -1186,18 +1186,19 @@ export function createWorldRenderer(
     const visibleQuestTargets = new Set<string>();
     const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
     let visibleQuestDrop = false;
-    const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): void => {
+    const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): boolean => {
       const targetKey = kind + ':' + id;
       const edge = questEdgeCue(point, viewport);
       if (!edge) {
         visibleQuestTargets.add(targetKey);
         visibleQuestDrop ||= kind === 'item';
         drawQuestCue(guidanceGraphics, kind, marker.x, marker.y);
-        return;
+        return true;
       }
       const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
       const nearest = nearestQuestTargets.get(targetKey);
       if (!nearest || distance < nearest.distance) nearestQuestTargets.set(targetKey, { kind, targetKey, label, cue: edge, distance });
+      return false;
     };
     const contextKey = snapshot.contextTargetKey;
     const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
@@ -1295,20 +1296,21 @@ export function createWorldRenderer(
           .fillRect(bar.fillX, bar.fillY, bar.fillWidth, bar.fillHeight);
         hpGraphics.lineStyle(activeVisual.map.boss && isNamedBoss ? 2 : 1, activeVisual.map.boss && isNamedBoss ? 0xffd884 : 0x17151b, 0.95)
           .strokeRect(bar.x, bar.y, bar.width, bar.height);
+        let questMarkerVisible = false;
+        if (targets.monsters.has(monster.monsterId)) {
+          const y = bar.y + bar.height / 2;
+          const beside = bar.x - 15 < viewport.x + 12 ? bar.x + bar.width + 15 : bar.x - 15;
+          questMarkerVisible = guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y }, { x: beside, y });
+        }
         if (activeVisual.map.boss && isNamedBoss) {
           bossNameText.setText(`${definition.name}  Lv.${definition.level}`)
             .setPosition(bar.x + bar.width / 2, bar.y - 3)
             .setVisible(true);
-        } else if (Math.abs(monster.movement.position.x - snapshot.player.movement.position.x) <= MONSTER_NAME_RANGE_PX) {
+        } else if (questMarkerVisible || Math.abs(position.x - snapshot.player.movement.position.x) <= MONSTER_NAME_RANGE_PX) {
           const label = `${definition.name} Lv.${definition.level}`;
           const nameText = monsterNameText(monster.spawnId);
           if (nameText.text !== label) nameText.setText(label);
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
-        }
-        if (targets.monsters.has(monster.monsterId)) {
-          const y = bar.y + bar.height / 2;
-          const beside = bar.x - 15 < viewport.x + 12 ? bar.x + bar.width + 15 : bar.x - 15;
-          guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y }, { x: beside, y });
         }
       }
     }

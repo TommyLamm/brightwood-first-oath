@@ -1125,6 +1125,7 @@ export function createUi(
 
   const updateQuickButtons = (view: UiSnapshot): void => {
     const player = view.saveData?.player;
+    const bindings = view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS;
     const playing = view.screen === 'playing';
     const focusBlocked = view.focusResumeRequired === true;
     const canAct = playing && !focusBlocked;
@@ -1146,26 +1147,30 @@ export function createUi(
       const slotId = player && slotIndex < 4 ? resolveSkillSlot(player, slotIndex as 0|1|2|3) : definitionId;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
       const cooldown = Math.max(0, readyAt - view.nowMs);
+      const healthPotion = slotId === 'small-red';
+      const full = slot.kind === 'item' && Boolean(player && view.stats
+        && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp));
       // Timers invalidate at the same precision shown on the button.
-      const inputs = [
+      const inputs = slot.kind === 'item' ? [
+        view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, player?.bag,
+        full, healthPotion && showRecoveryCue === true, Math.ceil(cooldown / 100),
+      ] : [
         view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
         Math.ceil(cooldown / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
         Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
         view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
-        slotId === 'small-red' && showRecoveryCue === true,
       ];
       if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
       button.classList.toggle('has-action-feedback', false);
-      const binding = effectiveKeyText(view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS, keyForSkill[definitionId]!);
+      const binding = effectiveKeyText(bindings, keyForSkill[definitionId]!);
       if (key.title !== binding) {
         key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
         key.title = binding;
       }
 
       if (slot.kind === 'item') {
-        const healthPotion = slotId === 'small-red';
         const fallbackId = healthPotion ? 'large-red' : 'large-blue';
         const smallCount = player?.bag
           .filter((stack) => stack.itemId === slotId)
@@ -1182,8 +1187,6 @@ export function createUi(
         renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName, 'ms-quick-slot__icon-image');
 
         renderCooldownProgress(cooldownTrack, cooldown, POTION_COOLDOWN_MS);
-        const full = player && view.stats
-          && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp);
         const showFull = count > 0 && cooldown === 0 && full;
         const reason = count === 0 ? '沒有藥水'
           : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown)
