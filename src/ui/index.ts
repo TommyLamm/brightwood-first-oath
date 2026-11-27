@@ -1054,14 +1054,14 @@ export function createUi(
   };
 
   const updateInteractionHint = (view: UiSnapshot): void => {
-    const hint = contextHint(view, (action) => effectiveKeyText(view.saveData?.settings.bindings ?? {}, action));
-    const visible = view.screen === 'playing'
-      && view.focusResumeRequired !== true
-      && view.panels.length === 0
-      && hint !== null;
+    const canShow = view.screen === 'playing' && view.focusResumeRequired !== true && view.panels.length === 0;
+    const hint = canShow
+      ? contextHint(view, (action) => effectiveKeyText(view.saveData?.settings.bindings ?? {}, action))
+      : null;
+    const visible = hint !== null;
     shell.classList.toggle('has-interaction-hint', visible);
     interactionHintRow.hidden = !visible;
-    if (!visible || !hint) {
+    if (!hint) {
       contextTargetKey = null;
       if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
       delete interactionHintRow.dataset.targetKey;
@@ -1071,7 +1071,11 @@ export function createUi(
       : view.pickupHint?.targetKey === hint.targetKey ? view.pickupHint : null;
     contextTargetKey = interaction && !interaction.blockedMessage ? hint.targetKey : null;
     const text = hint.text;
-    if (interactionHintRow.textContent !== text) interactionHintRow.textContent = text;
+    if (interactionHintRow.textContent !== text) {
+      interactionHintRow.replaceChildren(...hint.parts.map((part) =>
+        typeof part === 'string' ? part : makeElement(document, 'kbd', '', part.key)));
+    }
+    interactionHintRow.classList.toggle('is-blocked', Boolean(interaction?.blockedMessage));
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
     const targetKey = hint.targetKey;
     if (interactionHintRow.dataset.targetKey !== targetKey) interactionHintRow.dataset.targetKey = targetKey;

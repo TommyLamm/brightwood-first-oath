@@ -59,6 +59,7 @@ describe('pickup targets and reminders', () => {
     const movementHint = { kind: 'drop' as const, targetKey: 'drop:platform' };
     expect(contextHint({ pickupHint, movementHint }, () => 'P')).toEqual({
       targetKey: 'pickup:coins', text: 'P 拾取：7 金幣｜按住連續拾取',
+      parts: [{ key: 'P' }, ' 拾取：7 金幣｜按住連續拾取'],
     });
     expect(contextHint({ pickupHint, interactionHint: { targetKey: 'npc:guide', kind: 'npc', label: '森芽', blockedMessage: null } }, () => 'E')?.targetKey).toBe('npc:guide');
   });

@@ -43,7 +43,11 @@ describe('contextual movement controls', () => {
   it('gives interactions priority and retains the exact locked-portal explanation', () => {
     const view = { movementHint: { kind: 'climb' as const, targetKey: 'climb:l', attached: false },
       interactionHint: { targetKey: 'portal:p', kind: 'portal' as const, label: '木葉鎮', blockedMessage: '請先回報任務。' } };
-    expect(contextHint(view, (action) => keys[action])).toEqual({ targetKey: 'portal:p', text: 'E 前往：木葉鎮｜請先回報任務。' });
+    expect(contextHint(view, (action) => keys[action])).toEqual({
+      targetKey: 'portal:p',
+      text: 'E 前往：木葉鎮｜請先回報任務。',
+      parts: [{ key: 'E' }, ' 前往：木葉鎮｜請先回報任務。'],
+    });
     expect(contextHint({ ...view, interactionHint: { ...view.interactionHint, kind: 'npc', label: '森芽', blockedMessage: null } }, (action) => keys[action])?.text)
       .toBe('E 互動：森芽');
     expect(contextHint({}, (action) => keys[action])).toBeNull();

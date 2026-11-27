@@ -1,33 +1,33 @@
 import type { UiSnapshot } from '../contracts/ports.js';
 
 type MovementKey = 'climbUp' | 'climbDown' | 'jump';
+type HintPart = string | { key: string };
 
-function movementHintText(
-  hint: NonNullable<UiSnapshot['movementHint']>,
-  keyText: (action: MovementKey) => string,
-): string {
-  if (hint.kind === 'drop') return keyText('climbDown') + ' + ' + keyText('jump') + ' 向下跳落';
-  return keyText('climbUp') + ' / ' + keyText('climbDown') + ' 攀爬'
-    + (hint.attached ? '｜' + keyText('jump') + ' 跳離' : '');
+function makeHint(targetKey: string, parts: HintPart[]) {
+  return { targetKey, parts, text: parts.map((part) => typeof part === 'string' ? part : part.key).join('') };
 }
 
 export function contextHint(
   view: Pick<UiSnapshot, 'interactionHint' | 'movementHint' | 'pickupHint'>,
   keyText: (action: MovementKey | 'interact' | 'pickup') => string,
-): { targetKey: string; text: string } | null {
+) {
+  const key = (action: Parameters<typeof keyText>[0]) => ({ key: keyText(action) });
   const interaction = view.interactionHint;
   const pickup = view.pickupHint;
   const canCollectBeforeTravel = interaction?.kind === 'portal' && interaction.blockedMessage
     && pickup && !pickup.blockedMessage;
-  if (interaction && !canCollectBeforeTravel) return {
-    targetKey: interaction.targetKey,
-    text: keyText('interact') + ' ' + (interaction.kind === 'portal' ? '前往' : '互動') + '：' + interaction.label
+  if (interaction && !canCollectBeforeTravel) return makeHint(interaction.targetKey, [
+    key('interact'),
+    ' ' + (interaction.kind === 'portal' ? '前往' : '互動') + '：' + interaction.label
       + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
-  };
-  if (pickup) return {
-    targetKey: pickup.targetKey,
-    text: keyText('pickup') + ' 拾取：' + pickup.label + '｜' + (pickup.blockedMessage ?? '按住連續拾取'),
-  };
+  ]);
+  if (pickup) return makeHint(pickup.targetKey, [
+    key('pickup'), ' 拾取：' + pickup.label + '｜' + (pickup.blockedMessage ?? '按住連續拾取'),
+  ]);
   const movement = view.movementHint;
-  return movement ? { targetKey: movement.targetKey, text: movementHintText(movement, keyText) } : null;
+  if (!movement) return null;
+  if (movement.kind === 'drop') return makeHint(movement.targetKey, [key('climbDown'), ' + ', key('jump'), ' 向下跳落']);
+  const parts: HintPart[] = [key('climbUp'), ' / ', key('climbDown'), ' 攀爬'];
+  if (movement.attached) parts.push('｜', key('jump'), ' 跳離');
+  return makeHint(movement.targetKey, parts);
 }

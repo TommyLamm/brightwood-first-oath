@@ -459,6 +459,23 @@
   pointer-events: none;
 }
 
+.ms-interaction-hint kbd {
+  display: inline-block;
+  min-inline-size: 1.65em;
+  padding: 0 .3em;
+  border: 1px solid #e1c784;
+  border-radius: 3px;
+  color: #38291b;
+  background: #fff1c3;
+  box-shadow: 0 1px 0 #937443;
+  font: inherit;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ms-interaction-hint.is-blocked kbd { color: #52463a; background: #d7d0be; border-color: #a49a84; box-shadow: none; }
+
 .maple-ui.is-focus-resume-gated .ms-footer {
   position: relative;
   z-index: 51;
