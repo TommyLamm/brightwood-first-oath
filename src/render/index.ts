@@ -89,7 +89,6 @@ type MapVisual = {
   npcSprites: Map<string, {
     imageKey: string;
     nameText: Phaser.GameObjects.Text;
-    questMarker: Phaser.GameObjects.Sprite;
   }>;
 };
 
@@ -317,8 +316,6 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob
   for (const skill of Object.values(catalog.rules.skills)) {
     if (skill.effectKey) keys.add(skill.effectKey);
   }
-  if (map.npcs.length > 0) keys.add('marker:quest');
-
   for (const placement of map.npcs) {
     const npc = catalog.world.npcs[placement.npcId];
     if (npc) keys.add(npc.actorKey);
@@ -791,11 +788,7 @@ export function createWorldRenderer(
       layers.push(decorations);
     }
     const environmentTextureKeys = new Set<string>();
-    const npcSprites = new Map<string, {
-      imageKey: string;
-      nameText: Phaser.GameObjects.Text;
-      questMarker: Phaser.GameObjects.Sprite;
-    }>();
+    const npcSprites: MapVisual['npcSprites'] = new Map();
 
     try {
     if (decorationKey) {
@@ -927,16 +920,9 @@ export function createWorldRenderer(
         stroke: '#27323a',
         strokeThickness: 3,
       }).setOrigin(nameGeometry.originX, nameGeometry.originY);
-      const markerImage = assets.images.get('marker:quest')!;
-      const questMarker = scene.add.sprite(placement.x, placement.y, markerImage.key, frameKey(markerImage.key, 0))
-        .setDisplaySize(markerImage.displayWidth, markerImage.displayHeight)
-        .setOrigin(markerImage.pivotX, markerImage.pivotY)
-        .setVisible(false);
       foregroundLayer.add(text);
-      foregroundLayer.add(questMarker);
-      npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text, questMarker });
+      npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text });
       text.setDepth(placement.y + 0.1);
-      questMarker.setDepth(placement.y + 0.2);
     }
     void effectLayer;
     return { map, backgrounds, environmentLayers: layers, environmentTextureKeys, npcSprites };
@@ -1232,7 +1218,6 @@ export function createWorldRenderer(
       }
       if (!isInViewport(placement)) {
         npcVisual.nameText.setVisible(false);
-        npcVisual.questMarker.setVisible(false).setActive(false);
         continue;
       }
       const npcKey = 'npc:' + placement.npcId;
@@ -1251,8 +1236,7 @@ export function createWorldRenderer(
       if (npcVisual.nameText.style.color !== color) npcVisual.nameText.setColor(color);
       npcVisual.nameText.setVisible(true);
       const showMarker = !questTarget && questState !== undefined;
-      npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
-        .setVisible(showMarker).setActive(showMarker);
+      if (showMarker) drawQuestCue(guidanceGraphics, 'npc', markerGeometry.x, markerGeometry.y, undefined, questState);
       const offset = questTarget || showMarker ? 24 : 0;
       const markerX = markerGeometry.x + offset;
       if (isMentor && !mentorEdge) {
