@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawContextFocus, drawPortalLock, drawQuestCue, drawSpecializationCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
+import {
+  drawContextFocus, drawPortalLock, drawQuestCue, drawSpecializationCue,
+  questCueAppearance, questEdgeCue, questExitCue, type QuestCueKind,
+} from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1305,6 +1308,9 @@ export function createWorldRenderer(
         if (!inViewport) sprite.setVisible(false).setActive(false);
         if (drop.itemId && targets.items.has(drop.itemId)) {
           guideTarget('item', { x: drop.position.x, y: drop.position.y - sprite.displayHeight - 12 });
+          if (inViewport && drop.id !== pickupFocus) {
+            drawContextFocus(guidanceGraphics, drop.position, 30, questCueAppearance.item.color);
+          }
         }
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {

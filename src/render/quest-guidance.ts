@@ -14,9 +14,11 @@ export const questCueAppearance = {
 } as const;
 export type QuestCueKind = keyof typeof questCueAppearance;
 
-export function drawContextFocus(graphics: Phaser.GameObjects.Graphics, { x, y }: Readonly<Vec2>, width: number): void {
+export function drawContextFocus(
+  graphics: Phaser.GameObjects.Graphics, { x, y }: Readonly<Vec2>, width: number, color = 0xa8f1c6,
+): void {
   graphics.fillStyle(0x18392f, .3).fillEllipse(x, y + 1, width, 12);
-  graphics.lineStyle(2, 0xa8f1c6, 1).strokeEllipse(x, y + 1, width, 12);
+  graphics.lineStyle(2, color, 1).strokeEllipse(x, y + 1, width, 12);
 }
 
 export function drawPortalLock(graphics: Phaser.GameObjects.Graphics, x: number, y: number): void {
