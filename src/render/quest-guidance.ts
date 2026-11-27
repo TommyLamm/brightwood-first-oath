@@ -61,9 +61,10 @@ export function drawPortalLock(graphics: Phaser.GameObjects.Graphics, x: number,
   graphics.fillStyle(0x20242a, 1).fillCircle(x, y + 2, 1.25);
 }
 
-export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: number, y: number): void {
+export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: number, y: number, direction?: CueDirection): void {
   const color = 0x98dcff;
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  if (direction) drawEdgeChevron(graphics, x, y, direction, color);
   graphics.lineStyle(2, color, 1).beginPath().moveTo(x - 5, y - 4).lineTo(x, y + 1)
     .lineTo(x + 5, y - 4).strokePath().lineBetween(x, y + 1, x, y + 6);
   graphics.fillStyle(color, 1).fillCircle(x - 5, y - 4, 1.6).fillCircle(x + 5, y - 4, 1.6);
@@ -126,15 +127,7 @@ export function drawQuestCue(
     strokeCueChevron(graphics, x, y, dx, dy);
     return;
   }
-  if (direction) {
-    const { x: dx, y: dy } = directions[direction];
-    const arrowX = x + dx * 14;
-    const arrowY = y + dy * 14;
-    graphics.lineStyle(4, 0x20242a, 1);
-    strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
-    graphics.lineStyle(2, color, 1);
-    strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
-  }
+  if (direction) drawEdgeChevron(graphics, x, y, direction, color);
   if (kind === 'npc') {
     if (npcState === 'ready') {
       graphics.lineStyle(2, color, 1).beginPath().moveTo(x - 5, y).lineTo(x - 1, y + 4)
@@ -159,6 +152,16 @@ export function drawQuestCue(
   }
   graphics.lineStyle(2, color, 1).strokeRoundedRect(x - 5, y - 4, 10, 9, 2)
     .lineBetween(x - 5, y - 1, x + 5, y - 1);
+}
+
+function drawEdgeChevron(graphics: Phaser.GameObjects.Graphics, x: number, y: number, direction: CueDirection, color: number): void {
+  const { x: dx, y: dy } = directions[direction];
+  const arrowX = x + dx * 14;
+  const arrowY = y + dy * 14;
+  graphics.lineStyle(4, 0x20242a, 1);
+  strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
+  graphics.lineStyle(2, color, 1);
+  strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
 }
 
 function strokeCueChevron(graphics: Phaser.GameObjects.Graphics, x: number, y: number, dx: number, dy: number): void {

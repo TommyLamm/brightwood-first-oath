@@ -210,7 +210,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
     canTrade: gameplay !== null && canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId),
-    nearSpecializationMentor: state.panels.at(-1) === 'skills' && gameplay !== null && player !== undefined
+    nearSpecializationMentor: (state.panels.at(-1) === 'skills' || state.panels.at(-1) === 'dialogue') && gameplay !== null && player !== undefined
       && canChooseSpecialization(player)
       && isNearSpecializationMentor(map, gameplay.movement.position, effectiveJob(player)),
     canReturnTown,

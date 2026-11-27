@@ -9,6 +9,7 @@ const actionIcons: Record<string, string> = {
   'pickup': 'pickup', 'interact': 'dialogue', 'inspect-stele': 'inspect',
   'inspect-route-marker': 'inspect', 'review-sidequest': '@icon-scroll',
   'review-npc-map': '@icon-map', 'review-quest-map': '@icon-map', 'use-item': '#item-small-red-v1',
+  'review-specialization': '@icon-skillbook',
   'equip-bag': 'equip', 'sell-bag': 'trade', 'sell-materials': 'trade',
   'unequip': 'unequip', 'allocate-ap': 'upgrade', 'learn-skill': 'upgrade',
   'accept-quest': '@icon-scroll', 'claim-quest': 'reward', 'buy': 'trade',

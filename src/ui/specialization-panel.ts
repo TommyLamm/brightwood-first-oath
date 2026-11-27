@@ -27,7 +27,10 @@ export function specializationPanel(document: Document, player: PlayerProgress, 
     return root;
   }
 
-  root.append(visualNode(document, 'h3', '', 'Lv.20 二轉分支'));
+  const heading = visualNode(document, 'h3', '', 'Lv.20 二轉分支');
+  heading.tabIndex = -1;
+  heading.dataset.focus = 'specialization-heading';
+  root.append(heading);
   const mentorId = specializationMentors[player.job];
   const mentor = view.catalog.world.npcs[mentorId];
   const location = resolveNpcMapTarget(view.catalog.world, mentorId);

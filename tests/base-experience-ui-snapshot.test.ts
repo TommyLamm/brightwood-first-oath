@@ -51,6 +51,7 @@ describe('base experience UI snapshot', () => {
     const mentor = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'mage-mentor')!;
     gameplay.movement.position = { x: mentor.x, y: mentor.y };
     expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(true);
+    expect(snapshotFor(gameplay, { panels: ['dialogue'] })?.nearSpecializationMentor).toBe(true);
 
     gameplay.saveData.player.level = 19;
     expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(false);

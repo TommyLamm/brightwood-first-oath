@@ -2,7 +2,7 @@ import './styles.css';
 import { classPortrait, classSkillNames, classActionLabel, playerClassLabel, equipmentJobLabel } from './class-presentation.js';
 import { buildRosterManager } from './roster-manager.js';
 import { specializationPanel } from './specialization-panel.js';
-import { isSpecialization, playerSkillRank, specializations } from '../content/rules/specializations.js';
+import { isSpecialization, playerSkillRank, specializationMentors, specializations } from '../content/rules/specializations.js';
 import { canEquipForJob, effectiveJob, jobs, resolveSkillSlot } from '../content/rules/jobs.js';
 import './journal.css';
 import './world-map.css';
@@ -98,7 +98,7 @@ type UiAction =
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag' | 'select-bag-upgrade'
   | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'review-quest-map' | 'review-quest-item' | 'select-quest' | 'track-quest'
-  | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'accept-quest'
+  | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'review-specialization' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'toggle-quest-tracker' | 'settings-reset-bindings' | 'reload-page';
 
@@ -767,6 +767,7 @@ export function createUi(
   let selectedMapFocus: LocalMapFocus | null = null;
   let selectedQuestId: string | null = null;
   let pendingSkillReview: string | null = null;
+  let pendingSpecializationReview = false;
   let pendingBagReview = false;
   let createRequested = false;
   let plannedJobDraft: PlayerJob = 'swordsman';
@@ -794,6 +795,7 @@ export function createUi(
   const clearTransientViewState = (): void => {
     selectedBagIndex = null;
     pendingSkillReview = null;
+    pendingSpecializationReview = false;
     pendingBagReview = false;
     sellQuantities = new Map();
     shopQuantities = new Map();
@@ -1801,7 +1803,7 @@ export function createUi(
       inventoryQuestId: inventoryQuest?.questId,
       inventoryQuestStatus: inventoryQuest?.status,
       canTrade: (inventory || panel === 'shop') && view.canTrade,
-      nearSpecializationMentor: panel === 'skills' && view.nearSpecializationMentor === true,
+      nearSpecializationMentor: (panel === 'skills' || panel === 'dialogue') && view.nearSpecializationMentor === true,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
       selectedMapId,
@@ -1914,6 +1916,12 @@ export function createUi(
       pendingSkillReview = null;
       heading?.focus({ preventScroll: true });
       heading?.closest('.ms-skill-card')?.scrollIntoView({ block: 'nearest' });
+    }
+    if (panel === 'skills' && pendingSpecializationReview) {
+      pendingSpecializationReview = false;
+      const heading = panelHost.querySelector<HTMLElement>('[data-focus="specialization-heading"]');
+      heading?.focus({ preventScroll: true });
+      heading?.scrollIntoView({ block: 'start' });
     }
   };
 
@@ -2325,6 +2333,12 @@ export function createUi(
         pendingSkillReview = button.dataset.skillId;
         if (view.panels.at(-1) === 'skills') renderPanel(view, true);
         else dispatchDraft({ type: 'setPanel', payload: { panel: 'skills' } });
+        return;
+      }
+      case 'review-specialization': {
+        if (view.screen !== 'playing' || view.focusResumeRequired || !view.nearSpecializationMentor) return;
+        pendingSpecializationReview = true;
+        dispatchDraft({ type: 'setPanel', payload: { panel: 'skills' } });
         return;
       }
       case 'accept-quest': {
@@ -3859,8 +3873,7 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     parent.append(makeElement(document, 'p', 'ms-panel-note', '與晨露互動可在城鎮免費恢復 HP／MP。'));
   }
 
-  if (relevant.length === 0) return;
-  parent.append(makeSectionTitle(document, '任務對話'));
+  if (relevant.length > 0) parent.append(makeSectionTitle(document, '任務對話'));
   for (const quest of relevant) {
     const definition = view.catalog.world.quests[quest.questId];
     if (!definition) continue;
@@ -3901,6 +3914,13 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       card.append(makeDialogueObjectives(document, view, quest));
     }
     parent.append(card);
+  }
+  const player = view.saveData?.player;
+  if (player && view.nearSpecializationMentor && specializationMentors[effectiveJob(player)] === interaction.npcId) {
+    parent.append(makeButton(document, '查看二轉分支', 'review-specialization', {
+      className: 'ms-button ms-button--primary',
+      data: { focus: 'dialogue-review-specialization' },
+    }));
   }
 }
 

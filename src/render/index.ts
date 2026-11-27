@@ -1187,6 +1187,7 @@ export function createWorldRenderer(
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
     const visibleQuestTargets = new Set<string>();
     const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
+    let mentorEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
     let visibleQuestDrop = false;
     const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): boolean => {
       const targetKey = kind + ':' + id;
@@ -1214,7 +1215,17 @@ export function createWorldRenderer(
       const image = assets.images.get(npcVisual.imageKey)!;
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       const questTarget = targets.npcs.has(placement.npcId);
+      const isMentor = placement.npcId === snapshot.specializationMentorId;
       if (questTarget) guideTarget('npc', placement.npcId, npc.name, markerGeometry);
+      if (isMentor && !questTarget) {
+        const cue = questEdgeCue(markerGeometry, viewport);
+        if (cue) {
+          // Town nameplates use the lower edge band.
+          const y = cue.direction === 'left' || cue.direction === 'right'
+            ? viewport.y + viewport.height * .46 : cue.y;
+          mentorEdge = { label: npc.name, cue: { ...cue, y } };
+        }
+      }
       if (!isInViewport(placement)) {
         npcVisual.nameText.setVisible(false);
         npcVisual.questMarker.setVisible(false).setActive(false);
@@ -1240,7 +1251,7 @@ export function createWorldRenderer(
         .setVisible(showMarker).setActive(showMarker);
       const offset = questTarget || showMarker ? 24 : 0;
       const markerX = markerGeometry.x + offset;
-      if (placement.npcId === snapshot.specializationMentorId) {
+      if (isMentor && !mentorEdge) {
         drawSpecializationCue(guidanceGraphics, markerX, markerGeometry.y);
       } else if (npc.role === 'merchant' || npc.role === 'healer') {
         drawServiceCue(guidanceGraphics, npc.role, markerX, markerGeometry.y);
@@ -1401,6 +1412,10 @@ export function createWorldRenderer(
         const { x, y, direction } = target.cue;
         drawQuestCue(guidanceGraphics, target.kind, x, y, direction, npcStatus);
         showEdgeLabel(target.label, target.cue);
+      } else if (mentorEdge) {
+        const { x, y, direction } = mentorEdge.cue;
+        drawSpecializationCue(guidanceGraphics, x, y, direction);
+        showEdgeLabel(mentorEdge.label, mentorEdge.cue);
       }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
