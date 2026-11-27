@@ -460,7 +460,8 @@
   pointer-events: none;
 }
 
-.ms-interaction-hint kbd {
+.ms-interaction-hint kbd,
+.ms-skill-card__key {
   display: inline-block;
   min-inline-size: 1.65em;
   padding: 0 .3em;

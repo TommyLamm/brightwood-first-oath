@@ -3505,14 +3505,15 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
   }
   // Name the player's own skill keys (they may be rebound) and how much SP is left to spend.
   const bindings = view.saveData?.settings.bindings ?? {};
-  const key = (action: 'skill1' | 'skill2' | 'skill3') => effectiveKeyText(bindings, action);
+  const shortcuts = new Map(([1, 2, 3] as const).map((slot) =>
+    [resolveSkillSlot(player, slot), effectiveKeyText(bindings, `skill${slot}`)]));
   const note = makeElement(document, 'p', 'ms-panel-note', '');
   note.append(
     makeElement(document, 'strong', '', '可用 SP：' + player.sp),
-    document.createTextNode((player.job !== 'beginner' ? '。每次升級獲得 1 SP。' : '。正式轉職後，每次升級獲得 1 SP。') + '快捷鍵 ' + key('skill1') + '／' + key('skill2') + '／' + key('skill3') + ' 對應' + classSkillNames(player,view.catalog.rules) + '。'),
+    document.createTextNode(player.job !== 'beginner' ? '。每次升級獲得 1 SP。' : '。正式轉職後，每次升級獲得 1 SP。'),
   );
   parent.append(note);
-  const specialization = specializationPanel(document, player, view);
+  const specialization = specializationPanel(document, player, view, shortcuts);
   if (specialization) parent.append(specialization);
   const grid = makeElement(document, 'div', 'ms-skill-list');
   const learnableSkills = jobs[effectiveJob(player)].learnableSkills;
@@ -3533,16 +3534,18 @@ function buildSkillsPanel(document: Document, view: UiSnapshot, parent: HTMLElem
     heading.id = 'brightwood-first-oath-skill-heading-' + skill.id;
     heading.dataset.focus = 'skill-heading-' + skill.id;
     heading.tabIndex = -1;
+    const shortcut = shortcuts.get(skill.id);
     head.append(
       makeInterfaceIcon(document, view, 'skill:' + skill.id, skill.name, 'ms-skill-card__icon'),
       heading,
+      shortcut ? makeElement(document, 'kbd', 'ms-skill-card__key', shortcut)
+        : makeBadge(document, skill.kind === 'passive' ? '被動' : '未配置', 'neutral'),
       makeBadge(document, '等級 ' + rank + '/' + skill.maxRank, learned ? 'level' : 'neutral'),
     );
     // The badge above already shows 等級 N/M, so the detail line leaves it out.
     card.append(head, makeElement(document, 'p', 'ms-detail-copy', skillDetails(skill, rank, false)));
     const preview = skillNextRankPreview(skill, rank);
     if (preview) card.append(makeElement(document, 'p', 'ms-skill-card__next', preview));
-    if (skill.kind === 'passive') card.append(makeElement(document, 'p', 'ms-panel-note', '被動技能不會放入快捷欄。'));
     if (skill.requiredJob === 'rogue' && skill.kind !== 'passive') card.append(makeElement(document,'p','ms-panel-note','地面出招、收招後才可移動；受擊取消未發生段落，已花MP不退回。煙幕不清除首領仇恨。'));
     if (skill.id === 'archer-steady-aim') card.append(makeElement(document,'p','ms-panel-note','站穩不動600ms後就緒；下一次射擊只強化第一個有效命中。移動、跳躍、攀爬、受擊或射擊會消耗／中斷。'));
     if (skill.id === 'archer-retreat-shot') card.append(makeElement(document,'p','ms-panel-note','需要地面及身後空間，後撤最多100；受地形阻擋，不提供無敵。'));

@@ -3,7 +3,9 @@ import { specializationMentors, specializations } from '../content/rules/special
 import { visualActor, visualButton, visualIcon, visualNode } from './illustrated-panels.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 
-export function specializationPanel(document: Document, player: PlayerProgress, view: UiSnapshot): HTMLElement | null {
+export function specializationPanel(
+  document: Document, player: PlayerProgress, view: UiSnapshot, shortcuts: ReadonlyMap<string, string>,
+): HTMLElement | null {
   if (player.job === 'beginner') return null;
 
   const root = visualNode(document, 'section', 'ms-specializations');
@@ -15,6 +17,8 @@ export function specializationPanel(document: Document, player: PlayerProgress, 
     const icon = visualIcon(document, view, 'skill:' + skill.id, skill.name);
     icon.setAttribute('aria-hidden', 'true');
     heading.append(icon, visualNode(document, 'h3', '', '二轉 · ' + branch.name));
+    const shortcut = shortcuts.get(skill.id);
+    if (shortcut) heading.append(visualNode(document, 'kbd', 'ms-skill-card__key', shortcut));
     card.append(
       heading,
       visualNode(document, 'p', 'ms-detail-copy', branch.description),
