@@ -1257,7 +1257,7 @@ export function createUi(
       const buffLeftSec = skill.kind === 'buff' && rank > 0
         ? skill.id === 'guardian-rally' ? view.activeGuard?.remainingSeconds ?? 0 : Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
-      const queued = view.combatUi?.bufferedSkillId === slotId;
+      const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
       const displayState = screenState
         || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
@@ -1266,6 +1266,7 @@ export function createUi(
               : basic ? 'MP 0' : '等級 ' + rank + '・MP ' + skill.mpCost));
       button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
       button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
+      button.classList.toggle('is-action-queued', queued);
       // A click may still buffer a basic attack during a short cooldown.
       button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
       const showAim = view.aimReady === true && basic && !stanceReason;
@@ -1277,12 +1278,13 @@ export function createUi(
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
       if (buffLeftSec > 0 && view.activeGuard) button.title += '｜防禦 +' + view.activeGuard.defenseBonus;
       if (reason) button.title += '｜' + reason;
-      else if (queued && !screenState && buffLeftSec === 0) button.title += '｜已排隊';
-      else if (actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
+      if (queued) button.title += '｜已排隊';
+      else if (!reason && actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
       if (screenState) button.title += '｜' + screenState;
       const reviewLabel = unlearned && canAct ? '開啟技能詳情' : '';
       if (reviewLabel) button.title += '｜' + reviewLabel;
-      button.setAttribute('aria-label', skill.name + ' ' + displayState + (reviewLabel ? ' ' + reviewLabel : ''));
+      const queueState = queued && displayState !== '已排隊' ? '，已排隊' : '';
+      button.setAttribute('aria-label', skill.name + ' ' + displayState + queueState + (reviewLabel ? ' ' + reviewLabel : ''));
     }
 
     pauseButton.hidden = !playing;

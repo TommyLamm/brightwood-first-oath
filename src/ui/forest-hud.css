@@ -69,6 +69,14 @@
   background: #a5e8ff;
   border-color: #285775;
 }
+.maple-ui .ms-quick-slot.is-action-queued {
+  box-shadow: inset 0 0 0 2px #ddc6ff, 0 0 0 1px #5d3a78;
+}
+.maple-ui .ms-quick-slot.is-action-queued .ms-quick-slot__key {
+  color: #3d2656;
+  background: #ddc6ff;
+  border-color: #5d3a78;
+}
 .maple-ui .ms-quick-slot__key {
   position: absolute;
   top: -11px;
