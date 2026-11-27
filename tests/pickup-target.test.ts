@@ -61,7 +61,14 @@ describe('pickup targets and reminders', () => {
       targetKey: 'pickup:coins', text: 'P 拾取：7 金幣｜按住連續拾取',
       parts: [{ key: 'P' }, ' 拾取：7 金幣｜按住連續拾取'],
     });
-    expect(contextHint({ pickupHint, interactionHint: { targetKey: 'npc:guide', kind: 'npc', label: '森芽', blockedMessage: null } }, () => 'E')?.targetKey).toBe('npc:guide');
+    const interactionHint = { targetKey: 'npc:guide', kind: 'npc' as const, label: '森芽', blockedMessage: null };
+    const keyText = (action: string) => action === 'pickup' ? 'P' : 'E';
+    expect(contextHint({ pickupHint, interactionHint }, keyText)).toEqual({
+      targetKey: 'npc:guide', text: 'E 互動：森芽\nP 拾取：7 金幣',
+      parts: [{ key: 'E' }, ' 互動：森芽', '\n', { key: 'P' }, ' 拾取：7 金幣'],
+    });
+    expect(contextHint({ pickupHint: { ...pickupHint, blockedMessage: '背包已滿' }, interactionHint }, keyText)?.text)
+      .toBe('E 互動：森芽');
   });
 
   it('shows collectable loot before a locked gate, then restores the gate instruction', () => {
@@ -73,8 +80,9 @@ describe('pickup targets and reminders', () => {
     expect(contextHint({ interactionHint }, keyText)?.text).toContain(interactionHint.blockedMessage);
     expect(contextHint({ interactionHint, pickupHint: { ...pickupHint, blockedMessage: '背包已滿' } }, keyText)?.targetKey)
       .toBe('portal:camp:east');
-    expect(contextHint({ interactionHint: { ...interactionHint, blockedMessage: null }, pickupHint }, keyText)?.targetKey)
-      .toBe('portal:camp:east');
+    const openGate = contextHint({ interactionHint: { ...interactionHint, blockedMessage: null }, pickupHint }, keyText);
+    expect(openGate?.targetKey).toBe('portal:camp:east');
+    expect(openGate?.text).toBe('Space 前往：木葉鎮\nZ 拾取：7 金幣');
   });
 
   it('the command collects the advertised live target and never rewards an expired one', () => {

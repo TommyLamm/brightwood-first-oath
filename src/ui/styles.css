@@ -456,6 +456,7 @@
   font-size: 11px;
   line-height: 1.4;
   overflow-wrap: anywhere;
+  white-space: pre-line;
   pointer-events: none;
 }
 

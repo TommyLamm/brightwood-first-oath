@@ -16,11 +16,17 @@ export function contextHint(
   const pickup = view.pickupHint;
   const canCollectBeforeTravel = interaction?.kind === 'portal' && interaction.blockedMessage
     && pickup && !pickup.blockedMessage;
-  if (interaction && !canCollectBeforeTravel) return makeHint(interaction.targetKey, [
-    key('interact'),
-    ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
-      + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
-  ]);
+  if (interaction && !canCollectBeforeTravel) {
+    const parts: HintPart[] = [
+      key('interact'),
+      ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
+        + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
+    ];
+    if (!interaction.blockedMessage && pickup && !pickup.blockedMessage) {
+      parts.push('\n', key('pickup'), ' 拾取：' + pickup.label);
+    }
+    return makeHint(interaction.targetKey, parts);
+  }
   if (pickup) return makeHint(pickup.targetKey, [
     key('pickup'), ' 拾取：' + pickup.label + '｜' + (pickup.blockedMessage ?? '按住連續拾取'),
   ]);
