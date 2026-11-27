@@ -238,6 +238,10 @@
 .ms-quest-tracker__objective { display: grid; grid-template-columns: auto minmax(0, 1fr) max-content; align-items: start; gap: 5px; }
 .ms-quest-cue { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #20242a; font-size: 13px; font-weight: 700; line-height: 1; }
 .ms-quest-tracker__objective > .ms-quest-cue { margin-top: 1px; }
+.ms-dialogue-objectives { display: grid; gap: 4px; margin: 4px 0; padding: 0; list-style: none; }
+.ms-dialogue-objectives li { padding: 5px 8px; border: 1px solid #c7ad82; border-radius: 4px; background: #fff2d8; }
+.ms-dialogue-objectives li.is-complete { border-color: #a2aa7a; background: #eef1d9; }
+.ms-dialogue-objectives .is-complete .ms-quest-tracker__counter { color: #356740; }
 .ms-quest-tracker__more { padding-left: 21px; }
 .maple-ui .ms-quest-tracker__review { justify-self: end; font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
 @media (pointer: coarse) {

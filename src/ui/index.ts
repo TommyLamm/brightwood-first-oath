@@ -525,7 +525,7 @@ function makeQuestCueBadge(document: Document, kind: QuestCueKind): HTMLElement 
   return badge;
 }
 
-function questTrackerLine(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
+function makeQuestGuideRow(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
   const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
   const label = makeElement(document, 'span', '', text);
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
@@ -1045,13 +1045,13 @@ export function createUi(
       : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
     if (quest?.status === 'active' && objectives.length > 0) {
       const rows = objectives.slice(0, 2).map((objective) =>
-        questTrackerLine(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), objectiveCount(objective)));
+        makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), objectiveCount(objective)));
       questDetail.replaceChildren(...rows);
       if (objectives.length > rows.length) {
         questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
       }
     } else if (quest?.status === 'available' || quest?.status === 'ready') {
-      questDetail.replaceChildren(questTrackerLine(document, 'npc', detail, undefined, place));
+      questDetail.replaceChildren(makeQuestGuideRow(document, 'npc', detail, undefined, place));
     } else {
       questDetail.textContent = detail;
     }
@@ -3710,6 +3710,20 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   parent.append(sellSection);
 }
 
+function makeDialogueObjectives(document: Document, view: UiSnapshot, quest: UiSnapshot['questViews'][number]): HTMLElement {
+  const list = makeElement(document, 'ul', 'ms-dialogue-objectives');
+  list.setAttribute('role', 'list');
+  list.setAttribute('aria-label', quest.status === 'active' ? '任務進度' : '任務目標');
+  for (const objective of quest.objectives) {
+    const complete = objective.current >= objective.required;
+    const entry = makeElement(document, 'li', complete ? 'is-complete' : '');
+    const count = (complete ? '✓ ' : '') + objectiveCount(objective);
+    entry.append(makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), count));
+    list.append(entry);
+  }
+  return list;
+}
+
 function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLElement): void {
   const interaction = view.interaction;
   if (!interaction) {
@@ -3798,7 +3812,7 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       makeElement(document, 'p', 'ms-panel-note', definition.summary),
     );
     if (quest.status === 'available') {
-      card.append(makeElement(document, 'p', 'ms-reward-line', '目標：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
+      card.append(makeDialogueObjectives(document, view, quest));
       card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
       const acceptButton = makeButton(document, '接取任務', 'accept-quest', {
         className: 'ms-button ms-button--primary',
@@ -3824,7 +3838,7 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       card.append(claimButton);
       if (claimReason) card.append(makeElement(document, 'span', 'ms-disabled-reason', claimReason));
     } else {
-      card.append(makeElement(document, 'p', 'ms-reward-line', '進度：' + quest.objectives.map((objective) => objectiveText(view, objective)).join('；')));
+      card.append(makeDialogueObjectives(document, view, quest));
     }
     parent.append(card);
   }
