@@ -12,6 +12,11 @@ export const questCueAppearance = {
   item: { color: 0xa5f5ed, symbol: '▣' },
   portal: { color: 0xe1ccff, symbol: '↓' },
 } as const;
+export const npcServiceCueAppearance = {
+  merchant: { color: 0xffc78a, symbol: '', label: '商店' },
+  healer: { color: 0x9cffe4, symbol: '+', label: '回復 HP／MP' },
+  specialization: { color: 0x98dcff, symbol: 'Y', label: '二轉導師' },
+} as const;
 export type QuestCueKind = keyof typeof questCueAppearance;
 export type QuestTargetKind = Exclude<QuestCueKind, 'portal'>;
 export type QuestNpcCueState = 'available' | 'ready';
@@ -62,7 +67,7 @@ export function drawPortalLock(graphics: Phaser.GameObjects.Graphics, x: number,
 }
 
 export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: number, y: number, direction?: CueDirection): void {
-  const color = 0x98dcff;
+  const { color } = npcServiceCueAppearance.specialization;
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
   if (direction) drawEdgeChevron(graphics, x, y, direction, color);
   graphics.lineStyle(2, color, 1).beginPath().moveTo(x - 5, y - 4).lineTo(x, y + 1)
@@ -71,12 +76,13 @@ export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: 
 }
 
 export function drawServiceCue(graphics: Phaser.GameObjects.Graphics, role: 'merchant' | 'healer', x: number, y: number): void {
+  const { color } = npcServiceCueAppearance[role];
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
   if (role === 'healer') {
-    graphics.lineStyle(3, 0x9cffe4, 1).lineBetween(x - 5, y, x + 5, y).lineBetween(x, y - 5, x, y + 5);
+    graphics.lineStyle(3, color, 1).lineBetween(x - 5, y, x + 5, y).lineBetween(x, y - 5, x, y + 5);
     return;
   }
-  graphics.lineStyle(2, 0xffc78a, 1).strokeEllipse(x, y - 3, 12, 6)
+  graphics.lineStyle(2, color, 1).strokeEllipse(x, y - 3, 12, 6)
     .lineBetween(x - 6, y - 3, x - 6, y + 3).lineBetween(x + 6, y - 3, x + 6, y + 3).strokeEllipse(x, y + 3, 12, 6);
 }
 

@@ -1,7 +1,9 @@
 import type { MapDef, Vec2 } from '../contracts/index.js';
 import type { UiSnapshot } from '../contracts/ports.js';
+import { effectiveJob } from '../content/rules/jobs.js';
+import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import { questTargets } from '../domain/quests/selection.js';
-import { questCueAppearance } from '../render/quest-guidance.js';
+import { npcServiceCueAppearance, questCueAppearance } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
@@ -70,9 +72,23 @@ export function buildLocalMap(
     legend.append(entry);
     return mark;
   };
-  map.npcs.forEach((npc, index) => marker('npc', index, npc,
-    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId,
-    focus?.kind === 'npc' ? npc.npcId === focus.id : targets?.npcs.has(npc.npcId)));
+  const playerData = view.saveData?.player;
+  const mentorId = playerData && canChooseSpecialization(playerData) ? specializationMentors[effectiveJob(playerData)] : null;
+  map.npcs.forEach((placement, index) => {
+    const { npcId } = placement;
+    const npc = view.catalog.world.npcs[npcId];
+    const role = npcId === mentorId ? 'specialization' : npc?.role;
+    const service = role === 'merchant' || role === 'healer' || role === 'specialization' ? role : undefined;
+    const appearance = service ? npcServiceCueAppearance[service] : undefined;
+    const label = (npc?.name ?? npcId) + (appearance ? ' · ' + appearance.label : '');
+    const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets?.npcs.has(npcId);
+    const mark = marker('npc', index, placement, label, highlighted);
+    if (service && appearance) {
+      const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
+      badge.style.color = '#' + appearance.color.toString(16);
+      mark.append(badge);
+    }
+  });
   let monsterCount = 0;
   if (targets?.monsters.size) {
     for (const spawn of map.monsters) {

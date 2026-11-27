@@ -11,6 +11,10 @@
 .ms-local-map__chart .is-wall { fill: #687a5366; stroke: #4e6143; }
 .ms-local-map__marker { position: absolute; display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 3px; transform: translate(-50%, -105%); border: 2px solid #fff8df; font-size: 11px; font-weight: 800; line-height: 1; box-shadow: 0 1px 3px #342b2670; }
 .ms-local-map__marker.is-npc { border-radius: 50%; color: white; background: #406750; }
+.ms-local-map__service { position: absolute; inset: -6px -6px auto auto; display: grid; place-items: center; width: 15px; height: 15px; border: 1px solid #fff4d7; border-radius: 50%; background: #20242a; font-size: 11px; }
+.ms-local-map__service.is-merchant::before, .ms-local-map__service.is-merchant::after { content: ''; position: absolute; left: 2px; right: 2px; height: 4px; border: 1px solid currentColor; border-radius: 50%; }
+.ms-local-map__service.is-merchant::before { top: 3px; }
+.ms-local-map__service.is-merchant::after { top: 6px; }
 .ms-local-map__marker.is-target { z-index: 3; display: flex; gap: 3px; background: #794414; outline: 2px solid #794414; outline-offset: 1px; }
 .ms-local-map__cue { font-size: 13px; }
 .ms-local-map__marker.is-monster { border-radius: 4px; color: #fff6df; background: #8b3f24; outline-color: #8b3f24; }
