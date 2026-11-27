@@ -47,6 +47,7 @@ import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
 import { contextHint } from './context-hint.js';
+import { questCueAppearance, type QuestCueKind } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
 import { createScreenModalFocus } from './screen-modal-focus.js';
 import { nextInventoryBagIndex } from './inventory-navigation.js';
@@ -480,13 +481,39 @@ function rewardText(view: UiSnapshot, reward: UiSnapshot['questViews'][number]['
   return parts.join('・');
 }
 
-function objectiveText(view: UiSnapshot, objective: UiSnapshot['questViews'][number]['objectives'][number]): string {
+type TrackedObjective = UiSnapshot['questViews'][number]['objectives'][number];
+
+const questObjectiveCue: Record<TrackedObjective['type'], QuestCueKind> = {
+  kill: 'monster', collect: 'item', equip: 'item', reach: 'portal', inspect: 'npc',
+};
+
+function objectiveLabel(view: UiSnapshot, objective: TrackedObjective): string {
   const action = {
     kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達', inspect: '調律',
   }[objective.type];
   const objectiveAction = objective.type === 'inspect' && objective.targetId.startsWith('archery-target-') ? '命中' : objective.type === 'inspect' && objective.targetId === 'frost-route-marker' ? '調查' : action;
-  return objectiveAction + ' ' + targetName(view, objective.targetId, objective.type)
-    + ' ' + Math.min(objective.current, objective.required) + '/' + objective.required;
+  return objectiveAction + ' ' + targetName(view, objective.targetId, objective.type);
+}
+
+function objectiveCount(objective: TrackedObjective): string {
+  return Math.min(objective.current, objective.required) + '/' + objective.required;
+}
+
+function objectiveText(view: UiSnapshot, objective: TrackedObjective): string {
+  return objectiveLabel(view, objective) + ' ' + objectiveCount(objective);
+}
+
+function questTrackerLine(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
+  const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
+  const appearance = questCueAppearance[kind];
+  const badge = makeElement(document, 'span', 'ms-quest-tracker__cue', appearance.symbol);
+  badge.style.color = '#' + appearance.color.toString(16);
+  badge.setAttribute('aria-hidden', 'true');
+  const label = makeElement(document, 'span', '', text);
+  if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
+  line.append(badge, label);
+  if (count) line.append(makeElement(document, 'strong', 'ms-quest-tracker__counter', count));
+  return line;
 }
 
 function preserveFocus(container: HTMLElement, renderContent: () => void, skipDisabled = false): void {
@@ -994,7 +1021,8 @@ export function createUi(
       : quest.status === 'available' ? where(definition?.giverNpcId)
       : quest.status === 'ready' ? where(definition?.turnInNpcId)
       : '';
-    const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required);
+    const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required) ?? [];
+    const objectives = remainingObjectives.length ? remainingObjectives : quest?.objectives ?? [];
     const detail = !quest
       ? (worldComplete ? '四區主線已完成；可自由探索並重看冒險手帳。'
         : chapterComplete ? '古礦已重歸寧靜，可繼續自由探索木葉世界。' : '探索世界，尋找新的故事。')
@@ -1002,11 +1030,19 @@ export function createUi(
         ? '前往霜雪群島的雪痕海岸找' + giver + '，接續主線'
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
-      : (remainingObjectives?.length ? remainingObjectives : quest.objectives)
-        .map((objective) => objectiveText(view, objective)).join(' · ');
-    questDetail.textContent = detail;
-    // Keep the map name in one piece: it used to wrap as 「（赤岩山」/「徑）」.
-    if (place) questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
+      : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
+    if (quest?.status === 'active' && objectives.length > 0) {
+      const rows = objectives.slice(0, 2).map((objective) =>
+        questTrackerLine(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), objectiveCount(objective)));
+      questDetail.replaceChildren(...rows);
+      if (objectives.length > rows.length) {
+        questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
+      }
+    } else if (quest?.status === 'available' || quest?.status === 'ready') {
+      questDetail.replaceChildren(questTrackerLine(document, 'npc', detail, undefined, place));
+    } else {
+      questDetail.textContent = detail;
+    }
     const summary = questTrackerSummary(quest, (objective) => targetName(view, objective.targetId, objective.type));
     questTitle.textContent = title;
     questTarget.textContent = summary.label;
