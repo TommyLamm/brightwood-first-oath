@@ -639,7 +639,8 @@ export function createUi(
   questMapReview.append(makeQuestCueBadge(document, 'portal'), document.createTextNode('查看地點'));
   questMapReview.hidden = true;
   const questItemReview = makeButton(document, '', 'review-quest-item', { className: shortcutClass });
-  questItemReview.append(makeQuestCueBadge(document, 'item'), document.createTextNode('查看裝備'));
+  const questItemReviewLabel = document.createTextNode('');
+  questItemReview.append(makeQuestCueBadge(document, 'item'), questItemReviewLabel);
   questItemReview.hidden = true;
   const questActions = makeElement(document, 'div', 'ms-quest-tracker__actions');
   questActions.append(questItemReview, questMapReview, questReview);
@@ -1052,13 +1053,18 @@ export function createUi(
       questMapReview.setAttribute('aria-label', mapLabel);
     }
     const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required) ?? [];
-    const equipObjective = remainingObjectives.find(({ type, targetId }) => type === 'equip'
-      && view.saveData?.player.bag.some(({ itemId }) => itemId === targetId));
-    questItemReview.hidden = !equipObjective || quest?.status !== 'active';
-    if (equipObjective) {
-      questItemReview.dataset.itemId = equipObjective.targetId;
-      const item = targetName(view, equipObjective.targetId, 'equip');
-      questItemReview.title = '在背包查看任務裝備 ' + item;
+    const hasItem = ({ targetId }: TrackedObjective) => view.saveData?.player.bag.some(({ itemId }) => itemId === targetId);
+    const itemObjective = quest?.status === 'active'
+      ? remainingObjectives.find((objective) => objective.type === 'equip' && hasItem(objective))
+        ?? remainingObjectives.find((objective) => objective.type === 'collect' && hasItem(objective))
+      : undefined;
+    questItemReview.hidden = !itemObjective;
+    if (itemObjective) {
+      questItemReview.dataset.itemId = itemObjective.targetId;
+      const item = targetName(view, itemObjective.targetId, itemObjective.type);
+      const category = itemObjective.type === 'equip' ? '裝備' : '道具';
+      questItemReviewLabel.data = '查看' + category;
+      questItemReview.title = '在背包查看任務' + category + ' ' + item;
       questItemReview.setAttribute('aria-label', questItemReview.title);
     }
     const objectives = remainingObjectives.length ? remainingObjectives : quest?.objectives ?? [];
@@ -2191,7 +2197,8 @@ export function createUi(
         const latestView = currentView ?? view;
         const index = latestView.saveData?.player.bag.findIndex(({ itemId }) => itemId === button.dataset.itemId) ?? -1;
         if (index < 0) return;
-        inventoryFilter = 'equipment';
+        const item = latestView.catalog.rules.items[button.dataset.itemId ?? ''];
+        inventoryFilter = item?.slot ? 'equipment' : INVENTORY_FILTERS.find(({ id }) => id === item?.kind)?.id ?? 'all';
         selectedBagIndex = index;
         bagStateMessage = '';
         if (latestView.panels.at(-1) === 'inventory') renderPanel(latestView, true);
