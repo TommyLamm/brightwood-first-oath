@@ -631,6 +631,10 @@ export function createUi(
   questCounter.setAttribute('aria-live', 'polite');
   questProgress.append(questTarget, questCounter);
   questToggle.append(questArrow, questTitle, questProgress);
+  const questMeter = makeElement(document, 'progress', 'ms-quest-tracker__meter');
+  questMeter.max = 1;
+  questMeter.hidden = true;
+  questMeter.setAttribute('aria-hidden', 'true');
   const questBody = makeElement(document, 'div', 'ms-quest-tracker__body');
   questBody.id = 'ms-quest-tracker-body';
   questToggle.setAttribute('aria-controls', questBody.id);
@@ -648,7 +652,7 @@ export function createUi(
   const questActions = makeElement(document, 'div', 'ms-quest-tracker__actions');
   questActions.append(questItemReview, questMapReview, questReview);
   questBody.append(questDetail, questActions);
-  questTracker.append(questToggle, questBody);
+  questTracker.append(questToggle, questMeter, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
   let contextTargetKey: string | null = null;
   let contextPickupKey: string | null = null;
@@ -1103,6 +1107,8 @@ export function createUi(
     questTitle.textContent = title;
     questTarget.textContent = summary.label;
     questCounter.textContent = summary.value;
+    questMeter.hidden = summary.fraction === undefined;
+    questMeter.value = summary.fraction ?? 0;
     questTracker.classList.toggle('is-collapsed', collapsed);
     questTracker.classList.toggle('is-ready', quest?.status === 'ready');
     questArrow.textContent = collapsed ? '▸' : '▾';

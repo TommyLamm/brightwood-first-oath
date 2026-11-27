@@ -78,19 +78,25 @@ export function createQuestTrackerState(gameId: string, storage: StorageLike | n
 export function questTrackerSummary(
   quest: QuestView | undefined,
   targetName: (objective: QuestView['objectives'][number]) => string,
-): { label: string; value: string } {
-  if (quest?.status === 'ready') return { label: '', value: '✓ 可交付' };
+): { label: string; value: string; fraction?: number } {
+  if (quest?.status === 'ready') return { label: '', value: '✓ 可交付', fraction: 1 };
   if (quest?.status === 'available') return { label: '', value: '可接取' };
   if (quest?.status !== 'active' || quest.objectives.length === 0) return { label: '', value: '' };
   if (quest.objectives.length === 1) {
     const objective = quest.objectives[0]!;
+    const current = Math.min(objective.current, objective.required);
     return {
       label: targetName(objective),
-      value: Math.min(objective.current, objective.required) + '/' + objective.required,
+      value: current + '/' + objective.required,
+      fraction: current / objective.required,
     };
   }
   const remaining = quest.objectives.filter(({ current, required }) => current < required);
   const next = remaining[0];
   const completed = quest.objectives.length - remaining.length;
-  return { label: next ? targetName(next) : '', value: completed + '/' + quest.objectives.length + ' 項' };
+  return {
+    label: next ? targetName(next) : '',
+    value: completed + '/' + quest.objectives.length + ' 項',
+    fraction: completed / quest.objectives.length,
+  };
 }
