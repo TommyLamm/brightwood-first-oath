@@ -424,6 +424,8 @@ export function createWorldRenderer(
   const appliedSpriteFrames = new WeakMap<Phaser.GameObjects.Sprite, string>();
   const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
+  let visibleActors = new Set<Phaser.GameObjects.Sprite>();
+  let drawnActors = new Set<Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
@@ -982,7 +984,9 @@ export function createWorldRenderer(
     }
     const footOffsetY = imageKey.startsWith('actor:') ? actorFootOffsets.get(imageKey)?.[frame] ?? 0 : 0;
     setImageFrame(sprite, image, frame);
-    sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0).setVisible(true).setActive(true).setDepth(position.y);
+    sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0).setDepth(position.y);
+    if (!sprite.visible) sprite.setVisible(true).setActive(true);
+    drawnActors.add(sprite);
     return { sprite, frame, footOffsetY };
   };
 
@@ -1021,7 +1025,7 @@ export function createWorldRenderer(
     if (!activeVisual) throw new RendererAssetError('請先成功呼叫 loadMap(map)');
     if (snapshot.mapId !== activeVisual.map.id) throw new RendererAssetError(`Snapshot mapId ${snapshot.mapId} 與已載入地圖 ${activeVisual.map.id} 不一致`);
 
-    for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
+    drawnActors.clear();
     for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
@@ -1492,6 +1496,12 @@ export function createWorldRenderer(
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
     prunePlayedVisualEventIds(playedVisualEventIds, snapshot.effects);
     pruneEvents(snapshot.nowMs);
+    for (const sprite of visibleActors) {
+      if (!drawnActors.has(sprite) && sprite.scene) sprite.setVisible(false).setActive(false);
+    }
+    const previousActors = visibleActors;
+    visibleActors = drawnActors;
+    drawnActors = previousActors;
     actorsLayer.sort('depth');
   };
 
@@ -1715,6 +1725,8 @@ export function createWorldRenderer(
         activeVisual = candidate;
         parallaxMotion.resetForMap();
         for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
+        visibleActors.clear();
+        drawnActors.clear();
         if (old) {
           for (const [key, sprite] of actorSprites) {
             if (key !== 'player') {
@@ -1787,6 +1799,8 @@ export function createWorldRenderer(
       activeVisual = null;
       for (const sprite of actorSprites.values()) sprite.destroy();
       actorSprites.clear();
+      visibleActors.clear();
+      drawnActors.clear();
       actorAnimationClocks.clear();
       dropSprites.clear();
       for (const effect of eventTexts.values()) effect.object.destroy();
