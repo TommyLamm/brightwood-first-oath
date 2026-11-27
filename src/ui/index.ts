@@ -654,6 +654,14 @@ export function createUi(
   questBody.append(questDetail, questActions);
   questTracker.append(questToggle, questMeter, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
+  const interactionHintText = makeElement(document, 'span', '');
+  const pickupBagButton = makeButton(document, '', 'open-panel', {
+    className: 'ms-button ms-button--small ms-context-button ms-interaction-hint__bag',
+    data: { panel: 'inventory' },
+  });
+  pickupBagButton.append(makeJournalIcon(document, 'inventory'), document.createTextNode('整理背包'));
+  pickupBagButton.hidden = true;
+  interactionHintRow.append(interactionHintText, pickupBagButton);
   let contextTargetKey: string | null = null;
   let contextPickupKey: string | null = null;
   interactionHintRow.hidden = true;
@@ -1131,9 +1139,10 @@ export function createUi(
     shell.classList.toggle('has-interaction-hint', visible);
     interactionHintRow.hidden = !visible;
     contextPickupKey = hint?.secondaryPickupKey ?? null;
+    pickupBagButton.hidden = !hint || view.pickupHint?.targetKey !== hint.targetKey || !view.pickupHint.bagFull;
     if (!hint) {
       contextTargetKey = null;
-      if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
+      if (interactionHintText.textContent !== '') interactionHintText.textContent = '';
       delete interactionHintRow.dataset.targetKey;
       delete interactionHintRow.dataset.iconKey;
       interactionHintRow.removeAttribute('title');
@@ -1146,7 +1155,7 @@ export function createUi(
     const icon = hint.parts.find((part): part is { iconKey: string } => typeof part !== 'string' && 'iconKey' in part);
     const iconKey = icon?.iconKey ?? '';
     if (interactionHintRow.title !== text || (interactionHintRow.dataset.iconKey ?? '') !== iconKey) {
-      interactionHintRow.replaceChildren(...hint.parts.map((part) => {
+      interactionHintText.replaceChildren(...hint.parts.map((part) => {
         if (typeof part === 'string') return part;
         if ('key' in part) return makeElement(document, 'kbd', '', part.key);
         const image = makeInterfaceIcon(document, view, part.iconKey, '', 'ms-interaction-hint__item');

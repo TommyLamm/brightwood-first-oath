@@ -489,6 +489,12 @@
 
 .ms-interaction-hint__item.ms-interface-icon-fallback { display: none; }
 
+.ms-interaction-hint__bag {
+  display: flex;
+  margin-top: 4px;
+  pointer-events: auto;
+}
+
 .maple-ui.is-focus-resume-gated .ms-footer {
   position: relative;
   z-index: 51;

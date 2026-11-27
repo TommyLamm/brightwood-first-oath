@@ -137,12 +137,14 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     if (pickup) {
       const { drop, result } = pickup;
       const item = drop.itemId === null ? undefined : catalog.rules.items[drop.itemId];
+      const bagFull = !result.ok && result.code === 'BAG_FULL';
       pickupHint = {
       targetKey: 'pickup:' + drop.id,
       label: drop.itemId === null ? drop.coins + ' 金幣'
           : (item?.name ?? drop.itemId) + ' × ' + drop.quantity,
         ...(item?.iconKey ? { iconKey: item.iconKey } : {}),
-        blockedMessage: result.ok ? null : result.code === 'BAG_FULL' ? '背包已滿，請先整理空位' : result.message,
+        blockedMessage: result.ok ? null : bagFull ? '背包已滿，請先整理空位' : result.message,
+        ...(bagFull ? { bagFull } : {}),
       };
     }
     const target = resolveInteractionTarget(map, gameplay.movement.position);

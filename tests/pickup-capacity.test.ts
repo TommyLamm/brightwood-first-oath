@@ -59,6 +59,7 @@ describe('pickup capacity feedback', () => {
   it('shows the blocked reason when nothing fits and keeps the item and player unchanged', () => {
     const current = state(); current.gameplay.drops = [loot('red', 'small-red', 102)];
     const view = createUiSnapshot(current)!;
+    expect(view.pickupHint?.bagFull).toBe(true);
     expect(view.pickupHint?.blockedMessage).toBe('背包已滿，請先整理空位');
     expect(contextHint(view, () => 'Z')?.text).toContain('背包已滿');
     expect(contextHint(view, () => 'Z')?.text).not.toContain('按住連續拾取');
