@@ -1313,7 +1313,7 @@ export function createWorldRenderer(
       }
     }
 
-    const visibleDrops = [...snapshot.drops]
+    const visibleDrops = snapshot.drops
       .filter((drop) => drop.expiresAtMs > snapshot.nowMs)
       .sort((a, b) => vectorDistanceSquared(a.position, snapshot.player.movement.position) - vectorDistanceSquared(b.position, snapshot.player.movement.position))
       .slice(0, DROP_DRAW_LIMIT);
@@ -1334,23 +1334,26 @@ export function createWorldRenderer(
     }
     for (const drop of visibleDrops) {
       const item = drop.itemId ? catalog.rules.items[drop.itemId] : undefined;
-      const imageKey = item?.iconKey;
-      if (imageKey && assets.images.has(imageKey)) {
-        const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
-        const inViewport = isInViewport(drop.position);
-        if (!inViewport) sprite.setVisible(false).setActive(false);
-        if (drop.itemId && targets.items.has(drop.itemId)) {
-          guideTarget('item', drop.itemId, item?.name ?? drop.itemId, { x: drop.position.x, y: drop.position.y - sprite.displayHeight - 12 });
-          if (inViewport && drop.id !== pickupFocus) {
-            drawContextFocus(guidanceGraphics, drop.position, 30, questCueAppearance.item.color);
-          }
+      const image = item && assets.images.get(item.iconKey);
+      const inViewport = isInViewport(drop.position);
+      if (item && image && targets.items.has(item.id)) {
+        guideTarget('item', item.id, item.name, { x: drop.position.x, y: drop.position.y - image.displayHeight - 12 });
+        if (inViewport && drop.id !== pickupFocus) {
+          drawContextFocus(guidanceGraphics, drop.position, 30, questCueAppearance.item.color);
         }
+      }
+      if (!inViewport) {
+        dropLabels.get(drop.id)?.setVisible(false);
+        continue;
+      }
+      if (image) {
+        const sprite = drawActor(`drop:${drop.id}`, image.key, '', drop.position, 1, snapshot.nowMs).sprite;
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
         const label = getDropText(drop.id, `${drop.coins} 金幣`, drop.position, snapshot.nowMs);
         label.setVisible(true).setPosition(drop.position.x, drop.position.y - 8);
       }
-      if (drop.id === pickupFocus && isInViewport(drop.position)) {
+      if (drop.id === pickupFocus) {
         drawContextFocus(guidanceGraphics, drop.position, 32);
       }
     }
@@ -1367,26 +1370,32 @@ export function createWorldRenderer(
       }
     }
 
+    const showEdgeLabel = (label: string, { x, y, direction }: QuestEdgeTarget['cue']): void => {
+      if (questEdgeLabel.text !== label) questEdgeLabel.setText(label);
+      if (direction === 'left' || direction === 'right') {
+        questEdgeLabel.setOrigin(direction === 'left' ? 0 : 1, .5).setPosition(x + (direction === 'left' ? 15 : -15), y);
+      } else {
+        const inset = questEdgeLabel.width / 2 + 4;
+        const labelX = Math.max(viewport.x + inset, Math.min(viewport.x + viewport.width - inset, x));
+        questEdgeLabel.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
+      }
+      questEdgeLabel.setVisible(true);
+    };
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
     if (questExit) {
       const anchor = portalFootAnchor(questExit);
       const portalImage = assets.images.get('env:portal')!;
-      const cue = questExitCue({ x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 }, viewport);
+      const point = { x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 };
+      const cue = questExitCue(point, viewport);
       drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
+      const destination = catalog.world.maps[questExit.targetMapId];
+      if (destination && (cue.x !== point.x || cue.y !== point.y)) showEdgeLabel(destination.name, cue);
     } else {
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
       if (target) {
         const { x, y, direction } = target.cue;
         drawQuestCue(guidanceGraphics, target.kind, x, y, direction);
-        if (questEdgeLabel.text !== target.label) questEdgeLabel.setText(target.label);
-        if (direction === 'left' || direction === 'right') {
-          questEdgeLabel.setOrigin(direction === 'left' ? 0 : 1, .5).setPosition(x + (direction === 'left' ? 15 : -15), y);
-        } else {
-          const inset = questEdgeLabel.width / 2 + 4;
-          const labelX = Math.max(viewport.x + inset, Math.min(viewport.x + viewport.width - inset, x));
-          questEdgeLabel.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
-        }
-        questEdgeLabel.setVisible(true);
+        showEdgeLabel(target.label, target.cue);
       }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
