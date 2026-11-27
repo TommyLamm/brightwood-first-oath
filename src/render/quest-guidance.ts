@@ -27,6 +27,14 @@ export function drawPortalLock(graphics: Phaser.GameObjects.Graphics, x: number,
   graphics.fillStyle(0x20242a, 1).fillCircle(x, y + 2, 1.25);
 }
 
+export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: number, y: number): void {
+  const color = 0x98dcff;
+  graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  graphics.lineStyle(2, color, 1).beginPath().moveTo(x - 5, y - 4).lineTo(x, y + 1)
+    .lineTo(x + 5, y - 4).strokePath().lineBetween(x, y + 1, x, y + 6);
+  graphics.fillStyle(color, 1).fillCircle(x - 5, y - 4, 1.6).fillCircle(x + 5, y - 4, 1.6);
+}
+
 export function questEdgeCue(
   point: Readonly<Vec2>,
   viewport: Readonly<Vec2 & { width: number; height: number }>,

@@ -4,6 +4,10 @@ export const specializationMentors: Record<PlayerJob, string> = {
   swordsman: 'mentor', archer: 'archer-mentor', mage: 'mage-mentor', rogue: 'rogue-mentor',
 };
 
+export function canChooseSpecialization(player: PlayerProgress): boolean {
+  return player.job !== 'beginner' && player.level >= 20 && !player.specialization;
+}
+
 export const specializations: Record<SpecializationId, { name: string; job: PlayerJob; skill: string; description: string }> = {
   guardian: { name: '劍衛', job: 'swordsman', skill: 'guardian-rally', description: '守護戰吼：恢復少量HP並獲得短時間防禦，適合穩定近戰。' },
   berserker: { name: '狂劍', job: 'swordsman', skill: 'berserker-flurry', description: '狂風三斬：長收招的三段近身範圍攻擊；受擊會中斷後續段落。' },

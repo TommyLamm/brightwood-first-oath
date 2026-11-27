@@ -14,6 +14,8 @@ import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, r
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
 import { classCatalog } from '../content/world/class-quests.js';
+import { canChooseSpecialization } from '../content/rules/specializations.js';
+import { effectiveJob } from '../content/rules/jobs.js';
 
 export type StartupStatus = 'loading' | 'ready' | 'incomplete';
 
@@ -207,8 +209,8 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     interaction: gameplay?.interaction ?? null,
     canTrade: gameplay !== null && canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId),
     nearSpecializationMentor: state.panels.at(-1) === 'skills' && gameplay !== null && player !== undefined
-      && player.job !== 'beginner' && player.level >= 20 && !player.specialization
-      && isNearSpecializationMentor(map, gameplay.movement.position, player.job),
+      && canChooseSpecialization(player)
+      && isNearSpecializationMentor(map, gameplay.movement.position, effectiveJob(player)),
     canReturnTown,
     nowMs: state.gameTimeMs,
     skillReadyAtMs: playerId && gameplay

@@ -13,7 +13,7 @@ import type {
 } from '../../contracts/index.js';
 import { BAG_CAPACITY, COIN_CAP } from '../../contracts/limits.js';
 import { playerLearnableIds } from '../../content/rules/index.js';
-import { isSpecialization, specializations } from '../../content/rules/specializations.js';
+import { canChooseSpecialization, isSpecialization, specializations } from '../../content/rules/specializations.js';
 import { bowPassiveBonus, canEquipForJob, effectiveJob, isPlayerJob, jobs, magePassiveRank, roguePassiveRank } from '../../content/rules/jobs.js';
 
 
@@ -522,8 +522,8 @@ export function applyProgressAction(
       return success(draft);
     }
     case 'advanceJob': {
-      if (!isSpecialization(action.specialization) || draft.job === 'beginner' || draft.level < 20
-        || specializations[action.specialization].job !== draft.job || draft.specialization) return failure('REQUIREMENT', '二轉需要Lv20正式職業，且每個角色只能選擇一次本職業分支。');
+      if (!isSpecialization(action.specialization) || !canChooseSpecialization(draft)
+        || specializations[action.specialization].job !== draft.job) return failure('REQUIREMENT', '二轉需要Lv20正式職業，且每個角色只能選擇一次本職業分支。');
       draft.specialization = action.specialization;
       draft.advancedSkillEquipped = true;
       return success(draft);

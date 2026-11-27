@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawContextFocus, drawPortalLock, drawQuestCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
+import { drawContextFocus, drawPortalLock, drawQuestCue, drawSpecializationCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1211,6 +1211,10 @@ export function createWorldRenderer(
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
       if (questTarget) guideTarget('npc', markerGeometry);
+      if (npcInViewport && placement.npcId === snapshot.specializationMentorId) {
+        const offset = questTarget || showMarker ? 24 : 0;
+        drawSpecializationCue(guidanceGraphics, markerGeometry.x + offset, markerGeometry.y);
+      }
     }
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];

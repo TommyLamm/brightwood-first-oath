@@ -32,7 +32,7 @@ import { POTION_COOLDOWN_MS, resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
 import { effectiveJob, resolveSkillSlot, jobs, magePassiveRank, roguePassiveRank } from '../content/rules/jobs.js';
-import { advancedSkill, playerSkillRank, specializations } from '../content/rules/specializations.js';
+import { advancedSkill, canChooseSpecialization, playerSkillRank, specializationMentors, specializations } from '../content/rules/specializations.js';
 import { gainRhythm, lungeDestination, type RogueRhythm, type SmokeZone } from '../domain/combat/rogue.js';
 import { blinkDestination, MAGE_MUZZLE } from '../domain/combat/mage.js';
 import { AIM_TIME_MS, bowPassiveBonus, canStartRetreat, stepRetreat, type RetreatState } from '../domain/combat/archer.js';
@@ -623,7 +623,8 @@ export function makeWorldSnapshot(
 ): WorldSnapshot {
   const map = catalog.world.maps[gameplay.saveData.location.mapId];
   if (!map) throw new RangeError(`Unknown map in save location: ${gameplay.saveData.location.mapId}`);
-  const stats = deriveStats(gameplay.saveData.player, catalog.rules);
+  const player = gameplay.saveData.player;
+  const stats = deriveStats(player, catalog.rules);
   const movement = gameplay.movement;
   const animationKey = movement.mode === 'climbing'
     ? 'climb'
@@ -641,15 +642,16 @@ export function makeWorldSnapshot(
     trackedQuestId,
     questExitId: findQuestExit(gameplay.saveData, catalog, questViews, trackedQuestId),
     lockedPortalIds: map.portals.filter((portal) => isPortalLocked(gameplay.saveData, portal)).map(({ id }) => id),
+    specializationMentorId: map.id === 'town' && canChooseSpecialization(player) ? specializationMentors[effectiveJob(player)] : null,
     movementGuide: showMovementGuide ? deriveMovementHint(movement, map, catalog.rules.movement) : null,
     contextTargetKey,
     player: {
       id: gameplay.playerEntityId,
       movement,
-      hp: gameplay.saveData.player.hp,
+      hp: player.hp,
       maxHp: stats.maxHp,
       animationKey,
-      visual: { ...gameplay.saveData.player.equipment },
+      visual: { ...player.equipment },
       invulnerableUntilMs: gameplay.invulnerableUntilMs,
         aimReady: gameplay.aimReady ?? false,
       rhythmStacks: gameplay.rogueRhythm && nowMs < gameplay.rogueRhythm.expiresAtMs ? gameplay.rogueRhythm.stacks : 0,
