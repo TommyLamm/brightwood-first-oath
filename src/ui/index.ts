@@ -740,8 +740,13 @@ export function createUi(
   let lastScreenSignature = '';
   let playerProfileView: ReturnType<typeof makePlayerProfileView> | null | undefined;
   let lastMapCoins: number | null = null;
-  let lastQuestViews: UiSnapshot['questViews'] | undefined;
-  let lastQuestSignature = '';
+  let lastQuestTracker: {
+    views: UiSnapshot['questViews'];
+    mapId: string | undefined;
+    chapterComplete: boolean;
+    collapsed: boolean;
+    trackedQuestId: string | null;
+  } | undefined;
   let lastPanelSignature = '';
   let lastPanelSources: {
     data: UiSnapshot['saveData'] | PlayerProgress | undefined;
@@ -1010,18 +1015,17 @@ export function createUi(
   };
 
   const renderQuestTracker = (view: UiSnapshot): void => {
-    if (view.saveData) questTrackerState.reconcile(view.questViews);
     const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
-    const signature = JSON.stringify({
-      map: view.saveData?.location.mapId, chapterComplete,
-      collapsed: questTrackerState.collapsed,
-      trackedQuestId: questTrackerState.trackedQuestId,
-    });
-    if (view.questViews === lastQuestViews && signature === lastQuestSignature) return;
-    lastQuestViews = view.questViews;
+    const mapId = view.saveData?.location.mapId;
+    const collapsed = questTrackerState.collapsed;
+    if (lastQuestTracker?.views === view.questViews && lastQuestTracker.mapId === mapId
+      && lastQuestTracker.chapterComplete === chapterComplete && lastQuestTracker.collapsed === collapsed
+      && lastQuestTracker.trackedQuestId === questTrackerState.trackedQuestId) return;
+    if (view.saveData) questTrackerState.reconcile(view.questViews);
+    const trackedQuestId = questTrackerState.trackedQuestId;
+    lastQuestTracker = { views: view.questViews, mapId, chapterComplete, collapsed, trackedQuestId };
     const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
-    lastQuestSignature = signature;
-    const quest = selectTrackerQuest(view.questViews, questTrackerState.trackedQuestId);
+    const quest = selectTrackerQuest(view.questViews, trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
@@ -1069,7 +1073,6 @@ export function createUi(
     questTitle.textContent = title;
     questTarget.textContent = summary.label;
     questCounter.textContent = summary.value;
-    const collapsed = questTrackerState.collapsed;
     questTracker.classList.toggle('is-collapsed', collapsed);
     questTracker.classList.toggle('is-ready', quest?.status === 'ready');
     questArrow.textContent = collapsed ? '▸' : '▾';
@@ -1077,7 +1080,7 @@ export function createUi(
     questToggle.setAttribute('aria-label', (collapsed ? '展開' : '收起') + '任務追蹤：' + title + '，' + summary.label + ' ' + summary.value);
     questBody.hidden = collapsed;
     questReview.hidden = !quest;
-    const explicitlyTracked = quest !== undefined && quest.questId === questTrackerState.trackedQuestId;
+    const explicitlyTracked = quest !== undefined && quest.questId === trackedQuestId;
     questReview.textContent = explicitlyTracked ? '指定追蹤 · 查看任務 →' : '查看任務 →';
     questReview.dataset.questId = quest?.questId ?? '';
     questTracker.title = (explicitlyTracked ? '指定追蹤｜' : '') + title + '｜' + detail + place;
