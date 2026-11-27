@@ -419,6 +419,7 @@ export function createWorldRenderer(
   const eventSprites = new Map<string, SpriteEffect>();
   const playedVisualEventIds = new Set<string>();
   const actorAnimationClocks = new Map<string, { animationKey: string; startedAtMs: number }>();
+  const appliedSpriteFrames = new WeakMap<Phaser.GameObjects.Sprite, string>();
   const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
@@ -669,7 +670,10 @@ export function createWorldRenderer(
 
   const setImageFrame = (sprite: Phaser.GameObjects.Sprite, image: AssetImage, frame: number): void => {
     const maxFrame = image.columns * image.rows - 1;
-    sprite.setTexture(image.key, frameKey(image.key, Math.max(0, Math.min(frame, maxFrame))));
+    const key = frameKey(image.key, Math.max(0, Math.min(frame, maxFrame)));
+    if (appliedSpriteFrames.get(sprite) === key) return;
+    appliedSpriteFrames.set(sprite, key);
+    sprite.setTexture(image.key, key);
     sprite.setDisplaySize(image.displayWidth, image.displayHeight);
     sprite.setOrigin(image.pivotX, image.pivotY);
   };
@@ -987,8 +991,8 @@ export function createWorldRenderer(
       actorsLayer.add(sprite);
       gearSprites.set(slot, sprite);
     }
-    sprite.setTexture(image.key, frameKey(image.key, 0))
-      .setDisplaySize(image.displayWidth, image.displayHeight)
+    setImageFrame(sprite, image, 0);
+    sprite
       // flipX mirrors the texture inside its frame but keeps the origin, so mirror the
       // pivot too; otherwise off-centre grips (swords) detach from the hand facing left.
       .setOrigin(facing < 0 ? 1 - image.pivotX : image.pivotX, image.pivotY)
@@ -1007,7 +1011,6 @@ export function createWorldRenderer(
     for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
     for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
-    for (const sprite of dropSprites.values()) sprite.setVisible(false).setActive(false);
     hpGraphics.clear();
     steleGlowGraphics.clear();
     guidanceGraphics.clear();
