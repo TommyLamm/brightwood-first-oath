@@ -2,6 +2,7 @@ import type { UiSnapshot } from '../contracts/ports.js';
 
 type MovementKey = 'climbUp' | 'climbDown' | 'jump';
 type HintPart = string | { key: string };
+type ContextHint = { targetKey: string; parts: HintPart[]; text: string; secondaryPickupKey?: string };
 
 function makeHint(targetKey: string, parts: HintPart[]) {
   return { targetKey, parts, text: parts.map((part) => typeof part === 'string' ? part : part.key).join('') };
@@ -10,7 +11,7 @@ function makeHint(targetKey: string, parts: HintPart[]) {
 export function contextHint(
   view: Pick<UiSnapshot, 'interactionHint' | 'movementHint' | 'pickupHint'>,
   keyText: (action: MovementKey | 'interact' | 'pickup') => string,
-) {
+): ContextHint | null {
   const key = (action: Parameters<typeof keyText>[0]) => ({ key: keyText(action) });
   const interaction = view.interactionHint;
   const pickup = view.pickupHint;
@@ -24,6 +25,7 @@ export function contextHint(
     ];
     if (!interaction.blockedMessage && pickup && !pickup.blockedMessage) {
       parts.push('\n', key('pickup'), ' 拾取：' + pickup.label);
+      return { ...makeHint(interaction.targetKey, parts), secondaryPickupKey: pickup.targetKey };
     }
     return makeHint(interaction.targetKey, parts);
   }

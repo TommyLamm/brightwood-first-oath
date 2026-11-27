@@ -644,6 +644,7 @@ export function createUi(
   questTracker.append(questToggle, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
   let contextTargetKey: string | null = null;
+  let contextPickupKey: string | null = null;
   interactionHintRow.hidden = true;
   interactionHintRow.setAttribute('role', 'note');
   const bottomBar = makeElement(document, 'div', 'ms-bottom-bar');
@@ -1103,6 +1104,7 @@ export function createUi(
     const visible = hint !== null;
     shell.classList.toggle('has-interaction-hint', visible);
     interactionHintRow.hidden = !visible;
+    contextPickupKey = hint?.secondaryPickupKey ?? null;
     if (!hint) {
       contextTargetKey = null;
       if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
@@ -2736,6 +2738,7 @@ export function createUi(
   return {
     get trackedQuestId() { return questTrackerState.trackedQuestId; },
     get contextTargetKey() { return contextTargetKey; },
+    get contextPickupKey() { return contextPickupKey; },
     render,
     setPanel(panel): void {
       dispatchDraft({ type: 'setPanel', payload: { panel } });

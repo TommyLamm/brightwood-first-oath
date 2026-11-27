@@ -14,7 +14,7 @@ export type AppStatusReporter = (title: string, details: string) => void;
 export function createAppScenes(
   app: GameApp,
   reportStatus: AppStatusReporter,
-  guidance: () => Pick<UiController, 'trackedQuestId' | 'contextTargetKey'>,
+  guidance: () => Pick<UiController, 'trackedQuestId' | 'contextTargetKey' | 'contextPickupKey'>,
 ) {
   class BootScene extends Phaser.Scene {
     private statusText?: Phaser.GameObjects.Text;
@@ -50,7 +50,7 @@ export function createAppScenes(
     private rendererReady = false;
     private awaitingFirstRender = true;
     private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number;
-      trackedQuestId: string | null; showMovementGuide: boolean; contextTargetKey: string | null };
+      trackedQuestId: string | null; showMovementGuide: boolean; contextTargetKey: string | null; contextPickupKey: string | null };
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
@@ -166,12 +166,16 @@ export function createAppScenes(
       const trackedQuestId = hints.trackedQuestId;
       const showMovementGuide = canShowContextHints(state);
       const contextTargetKey = showMovementGuide ? hints.contextTargetKey : null;
+      const contextPickupKey = showMovementGuide ? hints.contextPickupKey : null;
       const last = this.lastWorldFrame;
       if (!this.awaitingFirstRender && last?.gameplay === gameplay && last.time === state.gameTimeMs
         && last.scrollX === scrollX && last.scrollY === scrollY && last.trackedQuestId === trackedQuestId
-        && last.showMovementGuide === showMovementGuide && last.contextTargetKey === contextTargetKey) return;
-      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId, showMovementGuide, contextTargetKey };
-      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, { trackedQuestId, showMovementGuide, contextTargetKey }));
+        && last.showMovementGuide === showMovementGuide && last.contextTargetKey === contextTargetKey
+        && last.contextPickupKey === contextPickupKey) return;
+      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId, showMovementGuide, contextTargetKey, contextPickupKey };
+      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, {
+        trackedQuestId, showMovementGuide, contextTargetKey, contextPickupKey,
+      }));
       this.awaitingFirstRender = false;
     }
 

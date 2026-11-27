@@ -162,6 +162,7 @@ export type WorldSnapshot = {
   specializationMentorId?: Id | null;
   movementGuide?: MovementGuide | null;
   contextTargetKey?: string | null;
+  contextPickupKey?: string | null;
   player: {
     id: EntityId;
     movement: MovementState;
@@ -257,6 +258,7 @@ export type UiSnapshot = {
 export type UiController = {
   readonly trackedQuestId: Id | null;
   readonly contextTargetKey: string | null;
+  readonly contextPickupKey: string | null;
   render(view: UiSnapshot): void;
   setPanel(panel: PanelId | null): void;
   isInputCaptured(): boolean;

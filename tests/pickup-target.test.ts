@@ -65,6 +65,7 @@ describe('pickup targets and reminders', () => {
     const keyText = (action: string) => action === 'pickup' ? 'P' : 'E';
     expect(contextHint({ pickupHint, interactionHint }, keyText)).toEqual({
       targetKey: 'npc:guide', text: 'E 互動：森芽\nP 拾取：7 金幣',
+      secondaryPickupKey: 'pickup:coins',
       parts: [{ key: 'E' }, ' 互動：森芽', '\n', { key: 'P' }, ' 拾取：7 金幣'],
     });
     expect(contextHint({ pickupHint: { ...pickupHint, blockedMessage: '背包已滿' }, interactionHint }, keyText)?.text)
@@ -82,6 +83,7 @@ describe('pickup targets and reminders', () => {
       .toBe('portal:camp:east');
     const openGate = contextHint({ interactionHint: { ...interactionHint, blockedMessage: null }, pickupHint }, keyText);
     expect(openGate?.targetKey).toBe('portal:camp:east');
+    expect(openGate?.secondaryPickupKey).toBe('pickup:coins');
     expect(openGate?.text).toBe('Space 前往：木葉鎮\nZ 拾取：7 金幣');
   });
 

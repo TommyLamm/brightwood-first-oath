@@ -617,8 +617,9 @@ export function makeWorldSnapshot(
   gameplay: GameplayState,
   catalog: ContentCatalog,
   nowMs: number,
-  { trackedQuestId = null, showMovementGuide = false, contextTargetKey = null }: {
-    trackedQuestId?: string | null; showMovementGuide?: boolean; contextTargetKey?: string | null;
+  { trackedQuestId = null, showMovementGuide = false, contextTargetKey = null, contextPickupKey = null }: {
+    trackedQuestId?: string | null; showMovementGuide?: boolean;
+    contextTargetKey?: string | null; contextPickupKey?: string | null;
   } = {},
 ): WorldSnapshot {
   const map = catalog.world.maps[gameplay.saveData.location.mapId];
@@ -645,6 +646,7 @@ export function makeWorldSnapshot(
     specializationMentorId: map.id === 'town' && canChooseSpecialization(player) ? specializationMentors[effectiveJob(player)] : null,
     movementGuide: showMovementGuide ? deriveMovementHint(movement, map, catalog.rules.movement) : null,
     contextTargetKey,
+    contextPickupKey,
     player: {
       id: gameplay.playerEntityId,
       movement,

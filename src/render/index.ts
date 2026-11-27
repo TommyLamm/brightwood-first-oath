@@ -1201,7 +1201,8 @@ export function createWorldRenderer(
       return false;
     };
     const contextKey = snapshot.contextTargetKey;
-    const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
+    const pickupKey = snapshot.contextPickupKey ?? contextKey;
+    const pickupFocus = pickupKey?.startsWith('pickup:') ? pickupKey.slice('pickup:'.length) : null;
     const npcIdleStartedAtMs = activeVisual.npcIdleStartedAtMs ??= snapshot.nowMs;
     const markerImage = assets.images.get('marker:quest')!;
     for (const placement of activeVisual.map.npcs) {
@@ -1356,7 +1357,7 @@ export function createWorldRenderer(
         label.setVisible(true).setPosition(drop.position.x, drop.position.y - 8);
       }
       if (drop.id === pickupFocus) {
-        drawContextFocus(guidanceGraphics, drop.position, 32);
+        drawContextFocus(guidanceGraphics, drop.position, 32, questCueAppearance.item.color);
       }
     }
 
