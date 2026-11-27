@@ -24,6 +24,10 @@ export function createCombatState(): CombatState {
   return { attacks: [], cooldowns: {} };
 }
 
+export function isLowHealth(hp: number, maxHp: number): boolean {
+  return hp > 0 && hp <= maxHp * 0.3;
+}
+
 export function skillCooldownMs(skill: SkillDef, rank: number): number {
   return Math.max(0, skill.cooldownMs - (skill.cooldownPerRank ?? 0) * (Math.max(1, rank) - 1));
 }

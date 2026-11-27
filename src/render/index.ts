@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
+import { isLowHealth } from '../domain/combat/index.js';
 import {
   drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
@@ -1387,6 +1388,14 @@ export function createWorldRenderer(
     }
     let heroInWarning = false;
     const heroFeet = snapshot.player.movement.position;
+    const { hp, maxHp } = snapshot.player;
+    if (isLowHealth(hp, maxHp)) {
+      const x = heroFeet.x - 19;
+      const y = heroFeet.y + 9;
+      hpGraphics.fillStyle(0x292126, .96).fillRoundedRect(x, y, 38, 7, 2);
+      hpGraphics.lineStyle(1, 0xffa091, 1).strokeRoundedRect(x, y, 38, 7, 2);
+      hpGraphics.fillStyle(0xff756b, 1).fillRect(x + 2, y + 2, Math.max(1, 34 * hp / maxHp), 3);
+    }
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
       const bossTelegraph = source ? isBossMonster(source.monsterId) : false;

@@ -32,7 +32,7 @@ import type { PlayerJob, PlayerProgress, Settings } from '../contracts/types.js'
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { validatePlayerName } from '../domain/progression/index.js';
 import { POTION_COOLDOWN_MS, resolveItemUse } from '../app/item-use.js';
-import { skillCooldownMs } from '../domain/combat/index.js';
+import { isLowHealth, skillCooldownMs } from '../domain/combat/index.js';
 import { reconcileBagViewState } from './bag-view-state.js';
 import { previewEquipmentAction } from './equipment-preview.js';
 import { previewEquipmentStats, type EquipmentStatsPreview } from './equipment-stats-preview.js';
@@ -360,10 +360,6 @@ function remainingSeconds(milliseconds: number): string {
 
 function compactQuickSlotState(text: string): string {
   return text.replace(/(\d+(?:\.\d+)?) 秒/g, '$1秒');
-}
-
-function isLowHealth(hp: number, maxHp: number): boolean {
-  return hp > 0 && hp <= maxHp * 0.3;
 }
 
 function renderCooldownProgress(track: HTMLElement, remaining: number, duration: number): void {
