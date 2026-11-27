@@ -526,14 +526,26 @@ function makeQuestCueBadge(document: Document, kind: QuestCueKind, npcState?: Qu
 
 function makeQuestGuideRow(
   document: Document, kind: QuestCueKind, text: string,
-  { count, place, npcState }: { count?: string; place?: string; npcState?: QuestNpcCueState } = {},
+  { count, place, npcState, icon }: { count?: string; place?: string; npcState?: QuestNpcCueState; icon?: HTMLElement } = {},
 ): HTMLElement {
   const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
   const label = makeElement(document, 'span', '', text);
+  if (icon) label.prepend(icon);
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
   line.append(makeQuestCueBadge(document, kind, npcState), label);
   if (count) line.append(makeElement(document, 'strong', 'ms-quest-tracker__counter', count));
   return line;
+}
+
+function makeObjectiveGuideRow(
+  document: Document, view: UiSnapshot, objective: TrackedObjective, count = objectiveCount(objective),
+): HTMLElement {
+  const kind = questObjectiveCue(objective);
+  const iconKey = kind === 'item' ? view.catalog.rules.items[objective.targetId]?.iconKey : undefined;
+  const icon = iconKey && view.interfaceManifest
+    ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon') : undefined;
+  icon?.setAttribute('aria-hidden', 'true');
+  return makeQuestGuideRow(document, kind, objectiveLabel(view, objective), { count, icon });
 }
 
 function preserveFocus(container: HTMLElement, renderContent: () => void, skipDisabled = false): void {
@@ -762,6 +774,7 @@ export function createUi(
   let lastMapCoins: number | null = null;
   let lastQuestTracker: {
     views: UiSnapshot['questViews'];
+    interfaceManifest: UiSnapshot['interfaceManifest'];
     mapId: string | undefined;
     chapterComplete: boolean;
     collapsed: boolean;
@@ -1047,11 +1060,12 @@ export function createUi(
     const mapId = view.saveData?.location.mapId;
     const collapsed = questTrackerState.collapsed;
     if (lastQuestTracker?.views === view.questViews && lastQuestTracker.mapId === mapId
+      && lastQuestTracker.interfaceManifest === view.interfaceManifest
       && lastQuestTracker.chapterComplete === chapterComplete && lastQuestTracker.collapsed === collapsed
       && lastQuestTracker.trackedQuestId === questTrackerState.trackedQuestId) return;
     if (view.saveData) questTrackerState.reconcile(view.questViews);
     const trackedQuestId = questTrackerState.trackedQuestId;
-    lastQuestTracker = { views: view.questViews, mapId, chapterComplete, collapsed, trackedQuestId };
+    lastQuestTracker = { views: view.questViews, interfaceManifest: view.interfaceManifest, mapId, chapterComplete, collapsed, trackedQuestId };
     const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     const quest = selectTrackerQuest(view.questViews, trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
@@ -1100,8 +1114,7 @@ export function createUi(
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
     if (quest?.status === 'active' && objectives.length > 0) {
-      const rows = objectives.slice(0, 2).map((objective) =>
-        makeQuestGuideRow(document, questObjectiveCue(objective), objectiveLabel(view, objective), { count: objectiveCount(objective) }));
+      const rows = objectives.slice(0, 2).map((objective) => makeObjectiveGuideRow(document, view, objective));
       questDetail.replaceChildren(...rows);
       if (objectives.length > rows.length) {
         questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
@@ -3838,7 +3851,7 @@ function makeDialogueObjectives(document: Document, view: UiSnapshot, quest: UiS
     const complete = objective.current >= objective.required;
     const entry = makeElement(document, 'li', complete ? 'is-complete' : '');
     const count = (complete ? '✓ ' : '') + objectiveCount(objective);
-    entry.append(makeQuestGuideRow(document, questObjectiveCue(objective), objectiveLabel(view, objective), { count }));
+    entry.append(makeObjectiveGuideRow(document, view, objective, count));
     list.append(entry);
   }
   return list;

@@ -478,7 +478,8 @@
 
 .ms-interaction-hint.is-blocked kbd { color: #52463a; background: #d7d0be; border-color: #a49a84; box-shadow: none; }
 
-.ms-interaction-hint__item {
+.ms-interaction-hint__item,
+.ms-quest-tracker__item-icon {
   display: inline-block;
   width: 1.5em;
   height: 1.5em;
@@ -487,7 +488,8 @@
   vertical-align: middle;
 }
 
-.ms-interaction-hint__item.ms-interface-icon-fallback { display: none; }
+.ms-interaction-hint__item.ms-interface-icon-fallback,
+.ms-quest-tracker__item-icon.ms-interface-icon-fallback { display: none; }
 
 .ms-interaction-hint__bag {
   display: flex;
