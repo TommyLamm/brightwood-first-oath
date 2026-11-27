@@ -1151,10 +1151,12 @@ export function createUi(
     const playing = view.screen === 'playing';
     const focusBlocked = view.focusResumeRequired === true;
     const canAct = playing && !focusBlocked;
-    const showRecoveryCue = canAct && view.panels.length === 0 && player && view.stats
+    const showRecoveryCues = canAct && view.panels.length === 0;
+    const lowHealth = showRecoveryCues && player && view.stats
       && isLowHealth(player.hp, view.stats.maxHp);
     const stanceBlock = view.combatUi?.stanceBlock;
     const stanceReason = stanceBlock ? { airborne: '需站穩', climbing: '攀爬中', knockback: '受擊硬直' }[stanceBlock] : '';
+    let needsMana = false;
     for (const [slotIndex, entry] of quickButtons.entries()) {
       const { slot, button, key, iconHost, label, state, cooldownTrack } = entry;
       const definitionId = slot.id;
@@ -1163,15 +1165,19 @@ export function createUi(
       const trial = slotId === 'rogue-double-stab' && player?.job === 'beginner' && effectiveJob(player) === 'rogue'
         && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
       const rank = player && slot.kind !== 'item' ? (basic || trial ? 1 : playerSkillRank(player, slotId)) : 0;
+      const skill = slot.kind === 'item' ? undefined : view.catalog.rules.skills[slotId];
+      const lacksMana = Boolean(player && skill && rank > 0 && !basic && !trial && player.mp < skill.mpCost);
+      needsMana ||= lacksMana;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
       const cooldown = Math.max(0, readyAt - view.nowMs);
       const healthPotion = slotId === 'small-red';
+      const showRecoveryCue = healthPotion ? lowHealth === true : showRecoveryCues && needsMana;
       const full = slot.kind === 'item' && Boolean(player && view.stats
         && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp));
       // Timers invalidate at the same precision shown on the button.
       const inputs = slot.kind === 'item' ? [
         view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, player?.bag,
-        full, healthPotion && showRecoveryCue === true, Math.ceil(cooldown / 100),
+        full, showRecoveryCue, Math.ceil(cooldown / 100),
       ] : rank === 0 ? [
         view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, slotId, Boolean(player),
       ] : [
@@ -1214,16 +1220,18 @@ export function createUi(
         const displayState = !playing ? '不可操作'
           : focusBlocked ? '按「繼續遊戲」恢復'
             : reason || ('×' + count);
-        const recommend = healthPotion && showRecoveryCue === true && !reason;
+        const recommend = showRecoveryCue && !reason;
+        const recoveryHint = recommend ? (healthPotion ? 'HP 偏低，可補血' : 'MP 不足，可補充 MP') : '';
         button.classList.toggle('is-unavailable', Boolean(reason));
-        button.classList.toggle('is-health-recommended', recommend);
+        button.classList.toggle('is-health-recommended', healthPotion && recommend);
+        button.classList.toggle('is-mana-recommended', !healthPotion && recommend);
         button.disabled = !canAct || Boolean(reason);
         const compactState = canAct && cooldownText && count > 0 ? cooldownText : displayState;
         state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(compactState);
         const quantity = '數量 ' + count;
-        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '') + (recommend ? '｜HP 偏低，可補血' : '');
+        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '') + (recoveryHint ? '｜' + recoveryHint : '');
         button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : '')
-          + (recommend ? '，HP 偏低，可補血' : ''));
+          + (recoveryHint ? '，' + recoveryHint : ''));
         continue;
       }
 
@@ -1231,9 +1239,7 @@ export function createUi(
       const iconKey = slot.kind === 'skill' || slotId === 'bow-basic' || slotId === 'wand-basic'
         ? 'skill:' + slotId
         : view.catalog.rules.items['starter-sword']?.iconKey ?? null;
-      renderQuickIcon(slotId, iconHost, view, iconKey, view.catalog.rules.skills[slotId]?.name ?? slot.label, 'ms-quick-slot__icon-image', slot.kind === 'attack' ? '普攻' : undefined);
-
-      const skill = view.catalog.rules.skills[slotId];
+      renderQuickIcon(slotId, iconHost, view, iconKey, skill?.name ?? slot.label, 'ms-quick-slot__icon-image', basic ? '普攻' : undefined);
       if (!player || !skill) {
         button.disabled = true;
         cooldownTrack.hidden = true;
@@ -1245,8 +1251,7 @@ export function createUi(
       button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
       button.classList.toggle('is-unlearned', unlearned);
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
-      const castBlock = unlearned ? '未學習' : stanceReason
-        || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足' : '');
+      const castBlock = unlearned ? '未學習' : stanceReason || (lacksMana ? 'MP 不足' : '');
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
       // Keep the active buff duration above cast blockers, as the old quickbar did.
       const buffLeftSec = skill.kind === 'buff' && rank > 0
