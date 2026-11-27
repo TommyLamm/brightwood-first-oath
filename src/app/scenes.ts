@@ -6,12 +6,16 @@ import { makeWorldSnapshot, type GameplayState } from './gameplay.js';
 import { shouldAttemptMapVisualLoad } from './map-load-retry.js';
 import { canShowContextHints } from './movement-hint.js';
 import type { MapDef } from '../contracts/definitions.js';
-import type { WorldRenderer, WorldRendererFactory } from '../contracts/ports.js';
+import type { UiController, WorldRenderer, WorldRendererFactory } from '../contracts/ports.js';
 
 export type AppStatusReporter = (title: string, details: string) => void;
 
 /** All Phaser scenes are created and transitioned by the app entry point. */
-export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, trackedQuest: () => string | null) {
+export function createAppScenes(
+  app: GameApp,
+  reportStatus: AppStatusReporter,
+  guidance: () => Pick<UiController, 'trackedQuestId' | 'contextTargetKey'>,
+) {
   class BootScene extends Phaser.Scene {
     private statusText?: Phaser.GameObjects.Text;
 
@@ -46,7 +50,7 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, t
     private rendererReady = false;
     private awaitingFirstRender = true;
     private lastWorldFrame?: { gameplay: GameplayState; time: number; scrollX: number; scrollY: number;
-      trackedQuestId: string | null; showMovementGuide: boolean };
+      trackedQuestId: string | null; showMovementGuide: boolean; contextTargetKey: string | null };
     private transitionKey: string | null = null;
     private activeMapId: string | null = null;
     private readonly failedMapIds = new Set<string>();
@@ -158,14 +162,16 @@ export function createAppScenes(app: GameApp, reportStatus: AppStatusReporter, t
       if (!this.rendererReady || !this.worldRenderer || !catalog || !gameplay
         || this.activeMapId !== gameplay.saveData.location.mapId) return;
       const { scrollX, scrollY } = this.cameras.main;
-      const trackedQuestId = trackedQuest();
+      const hints = guidance();
+      const trackedQuestId = hints.trackedQuestId;
       const showMovementGuide = canShowContextHints(state);
+      const contextTargetKey = showMovementGuide ? hints.contextTargetKey : null;
       const last = this.lastWorldFrame;
       if (!this.awaitingFirstRender && last?.gameplay === gameplay && last.time === state.gameTimeMs
         && last.scrollX === scrollX && last.scrollY === scrollY && last.trackedQuestId === trackedQuestId
-        && last.showMovementGuide === showMovementGuide) return;
-      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId, showMovementGuide };
-      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, { trackedQuestId, showMovementGuide }));
+        && last.showMovementGuide === showMovementGuide && last.contextTargetKey === contextTargetKey) return;
+      this.lastWorldFrame = { gameplay, time: state.gameTimeMs, scrollX, scrollY, trackedQuestId, showMovementGuide, contextTargetKey };
+      this.worldRenderer.render(makeWorldSnapshot(gameplay, catalog, state.gameTimeMs, { trackedQuestId, showMovementGuide, contextTargetKey }));
       this.awaitingFirstRender = false;
     }
 

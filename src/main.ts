@@ -55,7 +55,7 @@ const game = new Phaser.Game({
   width: 1920,
   height: 1080,
   backgroundColor: '#21323a',
-  scene: createAppScenes(app, (title, details) => statusView.update(app.state, title, details), () => ui.trackedQuestId),
+  scene: createAppScenes(app, (title, details) => statusView.update(app.state, title, details), () => ui),
   // Preserve small actor contours at the 2x world density. CSS handles the
   // final FIT downscale separately so it does not impose a pixel grid on UI.
   render: { antialias: false },

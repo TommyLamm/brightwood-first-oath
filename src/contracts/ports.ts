@@ -156,6 +156,7 @@ export type WorldSnapshot = {
   trackedQuestId?: Id | null;
   questExitId?: Id | null;
   movementGuide?: MovementGuide | null;
+  contextTargetKey?: string | null;
   player: {
     id: EntityId;
     movement: MovementState;
@@ -250,6 +251,7 @@ export type UiSnapshot = {
 
 export type UiController = {
   readonly trackedQuestId: Id | null;
+  readonly contextTargetKey: string | null;
   render(view: UiSnapshot): void;
   setPanel(panel: PanelId | null): void;
   isInputCaptured(): boolean;

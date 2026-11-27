@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawQuestCue, questExitCue } from './quest-guidance.js';
+import { drawContextFocus, drawQuestCue, questExitCue } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1162,19 +1162,23 @@ export function createWorldRenderer(
     const right = viewport.x + viewport.width + margin;
     const bottom = viewport.y + viewport.height + margin;
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
+    const contextKey = snapshot.contextTargetKey;
+    const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
       if (!npc || !npcVisual) continue;
       const image = assets.images.get(npcVisual.imageKey)!;
-      const npcSprite = drawActor(`npc:${placement.npcId}`, npcVisual.imageKey, `npc:${npc.id}:idle`, { x: placement.x, y: placement.y }, 1, snapshot.nowMs).sprite;
+      const npcKey = 'npc:' + placement.npcId;
+      const npcSprite = drawActor(npcKey, npcVisual.imageKey, `npc:${npc.id}:idle`, placement, 1, snapshot.nowMs).sprite;
       if (STELE_NPC_IDS.has(placement.npcId) && tunedSteles.has(placement.npcId)) {
         const glowY = placement.y - image.displayHeight * 0.58;
         steleGlowGraphics.fillStyle(0xffd979, 0.2).fillCircle(placement.x, glowY, 16);
         steleGlowGraphics.lineStyle(2, 0xffe9a8, 0.72).strokeCircle(placement.x, glowY, 16);
       }
-      const npcInViewport = isInViewport({ x: placement.x, y: placement.y });
+      const npcInViewport = isInViewport(placement);
       if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
+      if (npcInViewport && npcKey === contextKey) drawContextFocus(guidanceGraphics, placement, 46);
       const questState = markers.get(placement.npcId);
       const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
       const label = npc.name + questLabel;
@@ -1284,7 +1288,13 @@ export function createWorldRenderer(
         const label = getDropText(drop.id, `${drop.coins} 金幣`, drop.position, snapshot.nowMs);
         label.setVisible(true).setPosition(drop.position.x, drop.position.y - 8);
       }
+      if (drop.id === pickupFocus && isInViewport(drop.position)) {
+        drawContextFocus(guidanceGraphics, drop.position, 32);
+      }
     }
+
+    const contextPortal = contextKey?.startsWith('portal:') && activeVisual.map.portals.find(({ id }) => 'portal:' + id === contextKey);
+    if (contextPortal && isInViewport(contextPortal)) drawContextFocus(guidanceGraphics, contextPortal, 50);
 
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
     if (questExit) {

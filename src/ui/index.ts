@@ -580,6 +580,7 @@ export function createUi(
   questBody.append(questDetail, questReview);
   questTracker.append(questToggle, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
+  let contextTargetKey: string | null = null;
   interactionHintRow.hidden = true;
   interactionHintRow.setAttribute('role', 'note');
   const bottomBar = makeElement(document, 'div', 'ms-bottom-bar');
@@ -1021,10 +1022,14 @@ export function createUi(
     shell.classList.toggle('has-interaction-hint', visible);
     interactionHintRow.hidden = !visible;
     if (!visible || !hint) {
+      contextTargetKey = null;
       if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
       delete interactionHintRow.dataset.targetKey;
       return;
     }
+    const interaction = view.interactionHint?.targetKey === hint.targetKey ? view.interactionHint
+      : view.pickupHint?.targetKey === hint.targetKey ? view.pickupHint : null;
+    contextTargetKey = interaction && !interaction.blockedMessage ? hint.targetKey : null;
     const text = hint.text;
     if (interactionHintRow.textContent !== text) interactionHintRow.textContent = text;
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
@@ -2614,6 +2619,7 @@ export function createUi(
 
   return {
     get trackedQuestId() { return questTrackerState.trackedQuestId; },
+    get contextTargetKey() { return contextTargetKey; },
     render,
     setPanel(panel): void {
       dispatchDraft({ type: 'setPanel', payload: { panel } });

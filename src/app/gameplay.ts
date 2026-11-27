@@ -617,7 +617,9 @@ export function makeWorldSnapshot(
   gameplay: GameplayState,
   catalog: ContentCatalog,
   nowMs: number,
-  { trackedQuestId = null, showMovementGuide = false }: { trackedQuestId?: string | null; showMovementGuide?: boolean } = {},
+  { trackedQuestId = null, showMovementGuide = false, contextTargetKey = null }: {
+    trackedQuestId?: string | null; showMovementGuide?: boolean; contextTargetKey?: string | null;
+  } = {},
 ): WorldSnapshot {
   const map = catalog.world.maps[gameplay.saveData.location.mapId];
   if (!map) throw new RangeError(`Unknown map in save location: ${gameplay.saveData.location.mapId}`);
@@ -639,6 +641,7 @@ export function makeWorldSnapshot(
     trackedQuestId,
     questExitId: findQuestExit(gameplay.saveData, catalog, questViews, trackedQuestId),
     movementGuide: showMovementGuide ? deriveMovementHint(movement, map, catalog.rules.movement) : null,
+    contextTargetKey,
     player: {
       id: gameplay.playerEntityId,
       movement,
