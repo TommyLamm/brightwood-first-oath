@@ -17,6 +17,21 @@ export type InventoryEntry = {
   item: ItemDef | undefined;
 };
 
+export function inventoryFilterForItem(item: ItemDef | undefined): InventoryFilter {
+  if (!item) return 'all';
+  if (item.kind === 'weapon' || item.kind === 'body' || item.kind === 'hat') return 'equipment';
+  return item.kind;
+}
+
+export function countInventoryEntries(bag: readonly BagStack[], items: RulesCatalog['items']): Record<InventoryFilter, number> {
+  const counts = { all: bag.length, equipment: 0, consumable: 0, material: 0, quest: 0 };
+  for (const { itemId } of bag) {
+    const filter = inventoryFilterForItem(items[itemId]);
+    if (filter !== 'all') counts[filter]++;
+  }
+  return counts;
+}
+
 export function selectInventoryEntries(
   bag: readonly BagStack[],
   items: RulesCatalog['items'],
@@ -24,9 +39,5 @@ export function selectInventoryEntries(
 ): InventoryEntry[] {
   return bag
     .map((stack, bagIndex) => ({ stack, bagIndex, item: items[stack.itemId] }))
-    .filter(({ item }) => {
-      if (filter === 'all') return true;
-      if (filter === 'equipment') return item?.kind === 'weapon' || item?.kind === 'body' || item?.kind === 'hat';
-      return item?.kind === filter;
-    });
+    .filter(({ item }) => filter === 'all' || inventoryFilterForItem(item) === filter);
 }

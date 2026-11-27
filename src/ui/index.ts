@@ -42,7 +42,7 @@ import { previewBuy } from './trade-preview.js';
 import { previewMaximumBuy } from './maximum-buy-preview.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { previewSkillLearning } from './skill-learning-preview.js';
-import { INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
+import { countInventoryEntries, inventoryFilterForItem, INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
 import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
@@ -767,6 +767,7 @@ export function createUi(
   let selectedMapFocus: LocalMapFocus | null = null;
   let selectedQuestId: string | null = null;
   let pendingSkillReview: string | null = null;
+  let pendingBagReview = false;
   let createRequested = false;
   let plannedJobDraft: PlayerJob = 'swordsman';
   let slotDraft: string | undefined;
@@ -793,6 +794,7 @@ export function createUi(
   const clearTransientViewState = (): void => {
     selectedBagIndex = null;
     pendingSkillReview = null;
+    pendingBagReview = false;
     sellQuantities = new Map();
     shopQuantities = new Map();
     bagStateMessage = '';
@@ -1901,6 +1903,12 @@ export function createUi(
     }
     const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
+    if (panel === 'inventory' && pendingBagReview) {
+      pendingBagReview = false;
+      const item = panelHost.querySelector<HTMLElement>('.ms-bag-slot[aria-pressed="true"]');
+      item?.focus({ preventScroll: true });
+      item?.scrollIntoView({ block: 'nearest' });
+    }
     if (panel === 'skills' && pendingSkillReview) {
       const heading = document.getElementById('brightwood-first-oath-skill-heading-' + pendingSkillReview);
       pendingSkillReview = null;
@@ -2198,8 +2206,9 @@ export function createUi(
         const index = latestView.saveData?.player.bag.findIndex(({ itemId }) => itemId === button.dataset.itemId) ?? -1;
         if (index < 0) return;
         const item = latestView.catalog.rules.items[button.dataset.itemId ?? ''];
-        inventoryFilter = item?.slot ? 'equipment' : INVENTORY_FILTERS.find(({ id }) => id === item?.kind)?.id ?? 'all';
+        inventoryFilter = inventoryFilterForItem(item);
         selectedBagIndex = index;
+        pendingBagReview = true;
         bagStateMessage = '';
         if (latestView.panels.at(-1) === 'inventory') renderPanel(latestView, true);
         else dispatchDraft({ type: 'setPanel', payload: { panel: 'inventory' } });
@@ -3196,12 +3205,12 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     resetNote.setAttribute('role', 'status');
     parent.append(resetNote);
   }
-  const categories = INVENTORY_FILTERS;
+  const counts = countInventoryEntries(player.bag, view.catalog.rules.items);
   const categoryBar = makeElement(document, 'div', 'ms-category-bar');
   categoryBar.setAttribute('role', 'group');
   categoryBar.setAttribute('aria-label', '背包分類');
-  for (const category of categories) {
-    const count = selectInventoryEntries(player.bag, view.catalog.rules.items, category.id).length;
+  for (const category of INVENTORY_FILTERS) {
+    const count = counts[category.id];
     const button = makeButton(document, category.label + '（' + count + '）', 'inventory-filter', {
       className: 'ms-chip' + (state.inventoryFilter === category.id ? ' is-active' : ''),
       data: { kind: category.id },
@@ -3219,7 +3228,7 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
     ? trackedQuest.objectives.filter(({ type }) => type === 'collect' || type === 'equip').map(({ targetId }) => targetId)
     : []);
   parent.append(makeElement(document, 'p', 'ms-panel-note', '物品格取得焦點後，可用方向鍵切換選取；Home／End 跳至首末物品。'));
-  const categoryLabel = categories.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
+  const categoryLabel = INVENTORY_FILTERS.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
   const selected = filtered.find(({ bagIndex }) => bagIndex === state.selectedBagIndex) ?? null;
   const layout = makeElement(document, 'div', 'ms-inventory-layout');
   const grid = makeElement(document, 'div', 'ms-bag-grid');

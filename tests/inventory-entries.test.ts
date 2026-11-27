@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { BagStack } from '../src/contracts/types.js';
 import type { ItemDef, RulesCatalog } from '../src/contracts/definitions.js';
 import {
+  countInventoryEntries,
   INVENTORY_FILTERS,
   selectInventoryEntries,
   type InventoryFilter,
@@ -66,6 +67,9 @@ describe('selectInventoryEntries', () => {
     expect(entries[0].item).toBe(potion);
     expect(entries[2].item).toBe(potion);
     expect(entries[3].item).toBeUndefined();
+    expect(countInventoryEntries(bag, itemCatalog(potion, sword))).toEqual({
+      all: 4, equipment: 1, consumable: 2, material: 0, quest: 0,
+    });
   });
 
   it('includes exactly weapon, body, and hat in the equipment filter', () => {
