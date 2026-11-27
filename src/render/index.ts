@@ -1186,13 +1186,13 @@ export function createWorldRenderer(
     const visibleQuestTargets = new Set<string>();
     const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
     let visibleQuestDrop = false;
-    const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2): void => {
+    const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): void => {
       const targetKey = kind + ':' + id;
       const edge = questEdgeCue(point, viewport);
       if (!edge) {
         visibleQuestTargets.add(targetKey);
         visibleQuestDrop ||= kind === 'item';
-        drawQuestCue(guidanceGraphics, kind, point.x, point.y);
+        drawQuestCue(guidanceGraphics, kind, marker.x, marker.y);
         return;
       }
       const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
@@ -1306,7 +1306,9 @@ export function createWorldRenderer(
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
         if (targets.monsters.has(monster.monsterId)) {
-          guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y: bar.y - 28 });
+          const y = bar.y + bar.height / 2;
+          const beside = bar.x - 15 < viewport.x + 12 ? bar.x + bar.width + 15 : bar.x - 15;
+          guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y }, { x: beside, y });
         }
       }
     }
