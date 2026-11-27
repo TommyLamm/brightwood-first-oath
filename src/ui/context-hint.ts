@@ -27,7 +27,9 @@ export function contextHint(
   const movement = view.movementHint;
   if (!movement) return null;
   if (movement.kind === 'drop') return makeHint(movement.targetKey, [key('climbDown'), ' + ', key('jump'), ' 向下跳落']);
-  const parts: HintPart[] = [key('climbUp'), ' / ', key('climbDown'), ' 攀爬'];
+  const parts: HintPart[] = movement.direction === 'both'
+    ? [key('climbUp'), ' / ', key('climbDown'), ' 攀爬']
+    : [key(movement.direction === 'up' ? 'climbUp' : 'climbDown'), ' 攀爬'];
   if (movement.attached) parts.push('｜', key('jump'), ' 跳離');
   return makeHint(movement.targetKey, parts);
 }

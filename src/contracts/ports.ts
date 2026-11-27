@@ -144,9 +144,12 @@ export type DropState = {
   expiresAtMs: number;
 };
 
+type ClimbHint = { kind: 'climb'; targetKey: string; attached: boolean; direction: 'up' | 'down' | 'both' };
+type DropHint = { kind: 'drop'; targetKey: string };
+
 export type MovementGuide =
-  | { kind: 'climb'; targetKey: string; attached: boolean; ladder: MapDef['ladders'][number] }
-  | { kind: 'drop'; targetKey: string; position: Vec2 };
+  | ClimbHint & { ladder: MapDef['ladders'][number] }
+  | DropHint & { position: Vec2 };
 
 export type WorldSnapshot = {
   poisonedIds?: EntityId[];
@@ -215,8 +218,7 @@ export type UiSnapshot = {
     blockedMessage: string | null;
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */
-  movementHint?: { targetKey: string; kind: 'climb'; attached: boolean }
-    | { targetKey: string; kind: 'drop' } | null;
+  movementHint?: ClimbHint | DropHint | null;
   /** The unexpired nearby drop selected by the actual pickup command. */
   pickupHint?: { targetKey: string; label: string; blockedMessage?: string | null } | null;
   /** Runtime-only location for the open terrain guide; never persisted. */

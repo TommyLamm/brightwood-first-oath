@@ -15,7 +15,11 @@ export function deriveMovementHint(
   if (!map || state.mode === 'dead') return null;
   const attached = state.mode === 'climbing';
   const ladder = attached ? map.ladders.find((route) => route.id === state.ladderId) : findNearbyLadder(state.position, map, config);
-  if (ladder) return { targetKey: 'climb:' + ladder.id, kind: 'climb', attached, ladder };
+  if (ladder) {
+    const { y } = state.position;
+    const direction = y <= ladder.topY ? 'down' : y >= ladder.bottomY ? 'up' : 'both';
+    return { targetKey: 'climb:' + ladder.id, kind: 'climb', attached, ladder, direction };
+  }
   const foothold = state.mode === 'grounded' ? map.footholds.find((f) => f.id === state.footholdId) : undefined;
   return foothold?.dropThrough ? { targetKey: 'drop:' + foothold.id, kind: 'drop', position: state.position } : null;
 }

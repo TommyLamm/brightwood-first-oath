@@ -19,8 +19,8 @@ export function drawMovementGuide(graphics: Phaser.GameObjects.Graphics, guide: 
   const { x, topY, bottomY } = guide.ladder;
   const cueX = x + 22;
   const cueY = Math.max(topY + 14, Math.min(bottomY - 14, playerY - 18));
-  const up = playerY > topY + 10;
-  const down = playerY < bottomY - 10;
+  const up = guide.direction !== 'down';
+  const down = guide.direction !== 'up';
   graphics.fillStyle(0x20242a, .92).fillRoundedRect(cueX - 10, cueY - 12, 20, 24, 5);
   graphics.lineStyle(2, 0xffdf9e, 1);
   if (up) chevron(graphics, cueX, cueY - (down ? 5 : 0), -1);

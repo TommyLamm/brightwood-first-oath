@@ -36,12 +36,19 @@ describe('contextual movement controls', () => {
   it('keeps custom bindings in both climbing and down-jump reminders', () => {
     expect(contextHint({ movementHint: { kind: 'drop', targetKey: 'drop:p' } }, (action) => keys[action])?.text)
       .toBe('S + Space 向下跳落');
-    expect(contextHint({ movementHint: { kind: 'climb', targetKey: 'climb:l', attached: true } }, (action) => keys[action])?.text)
+    expect(contextHint({ movementHint: { kind: 'climb', targetKey: 'climb:l', attached: true, direction: 'both' } }, (action) => keys[action])?.text)
       .toBe('W / S 攀爬｜Space 跳離');
   });
 
+  it('advertises the useful direction at each ladder endpoint', () => {
+    for (const [y, expected] of [[400, 'S 攀爬'], [600, 'W 攀爬']] as const) {
+      const movementHint = deriveMovementHint(createMovement({ x: 100, y }), map, config);
+      expect(contextHint({ movementHint }, (action) => keys[action])?.text).toBe(expected);
+    }
+  });
+
   it('gives interactions priority and retains the exact locked-portal explanation', () => {
-    const view = { movementHint: { kind: 'climb' as const, targetKey: 'climb:l', attached: false },
+    const view = { movementHint: { kind: 'climb' as const, targetKey: 'climb:l', attached: false, direction: 'both' as const },
       interactionHint: { targetKey: 'portal:p', kind: 'portal' as const, label: '木葉鎮', blockedMessage: '請先回報任務。' } };
     expect(contextHint(view, (action) => keys[action])).toEqual({
       targetKey: 'portal:p',
@@ -69,7 +76,7 @@ describe('contextual movement controls', () => {
     gameplay.movement = { ...gameplay.movement, position: { x: 100, y: 500 }, mode: 'climbing', ladderId: 'hint-ladder', footholdId: null };
     expect(createUiSnapshot(state)?.movementHint).toMatchObject({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true });
     expect(makeWorldSnapshot(gameplay, catalog, 0, { showMovementGuide: true }).movementGuide)
-      .toEqual({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true, ladder: map.ladders[0] });
+      .toEqual({ targetKey: 'climb:hint-ladder', kind: 'climb', attached: true, direction: 'both', ladder: map.ladders[0] });
     expect(makeWorldSnapshot(gameplay, catalog, 0).movementGuide).toBeNull();
     expect(JSON.stringify(gameplay.saveData)).toBe(saved);
   });
