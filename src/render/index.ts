@@ -1216,7 +1216,16 @@ export function createWorldRenderer(
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       const questTarget = targets.npcs.has(placement.npcId);
       const isMentor = placement.npcId === snapshot.specializationMentorId;
-      if (questTarget) guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
+      if (questTarget) {
+        if (npc.actorKey === 'actor:ruins-stele') {
+          const point = { x: placement.x, y: placement.y - image.displayHeight * .34 };
+          const offset = image.displayWidth / 2 + 10;
+          const beside = point.x + offset > viewport.x + viewport.width - 16 ? point.x - offset : point.x + offset;
+          guideTarget('npc', placement.npcId, npc.name, point, { x: beside, y: point.y });
+        } else {
+          guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
+        }
+      }
       if (isMentor && !questTarget) {
         const cue = questEdgeCue(markerGeometry, viewport);
         if (cue) mentorEdge = { label: npc.name, cue };
