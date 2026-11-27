@@ -503,15 +503,19 @@ function objectiveText(view: UiSnapshot, objective: TrackedObjective): string {
   return objectiveLabel(view, objective) + ' ' + objectiveCount(objective);
 }
 
-function questTrackerLine(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
-  const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
+function makeQuestCueBadge(document: Document, kind: QuestCueKind): HTMLElement {
   const appearance = questCueAppearance[kind];
-  const badge = makeElement(document, 'span', 'ms-quest-tracker__cue', appearance.symbol);
+  const badge = makeElement(document, 'span', 'ms-quest-cue', appearance.symbol);
   badge.style.color = '#' + appearance.color.toString(16);
   badge.setAttribute('aria-hidden', 'true');
+  return badge;
+}
+
+function questTrackerLine(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
+  const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
   const label = makeElement(document, 'span', '', text);
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
-  line.append(badge, label);
+  line.append(makeQuestCueBadge(document, kind), label);
   if (count) line.append(makeElement(document, 'strong', 'ms-quest-tracker__counter', count));
   return line;
 }
@@ -1712,11 +1716,13 @@ export function createUi(
       return;
     }
     const inventory = panel === 'inventory';
+    const trackedQuestId = questTrackerState.trackedQuestId;
+    const inventoryQuest = inventory ? selectTrackerQuest(view.questViews, trackedQuestId) : undefined;
     const signature = JSON.stringify({
       panel,
       data: inventory ? view.saveData?.player : view.saveData,
       interfaceReady: Boolean(view.interfaceManifest),
-      quests: inventory ? undefined : view.questViews,
+      quests: inventory ? inventoryQuest && [inventoryQuest.questId, inventoryQuest.status] : view.questViews,
       interaction: inventory ? undefined : view.interaction,
       canTrade: (inventory || panel === 'shop') && view.canTrade,
       nearSpecializationMentor: panel === 'skills' && view.nearSpecializationMentor === true,
@@ -1725,7 +1731,7 @@ export function createUi(
       selectedMapId,
       selectedMapFocus,
       selectedQuestId,
-      trackedQuestId: questTrackerState.trackedQuestId,
+      trackedQuestId,
       inventoryFilter,
       readingSize: readingPreference.size,
       holdBasicAttack: view.holdBasicAttack ?? false,
@@ -1781,7 +1787,7 @@ export function createUi(
         selectedMapId,
         selectedMapFocus,
         selectedQuestId,
-        trackedQuestId: questTrackerState.trackedQuestId,
+        trackedQuestId,
         inventoryFilter,
         readingSize: readingPreference.size,
         shopFilter,
@@ -3105,6 +3111,10 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   parent.append(categoryBar);
 
   const filtered = selectInventoryEntries(player.bag, view.catalog.rules.items, state.inventoryFilter);
+  const trackedQuest = selectTrackerQuest(view.questViews, state.trackedQuestId);
+  const trackedItems = new Set(trackedQuest?.status === 'active' || trackedQuest?.status === 'ready'
+    ? trackedQuest.objectives.filter(({ type }) => type === 'collect' || type === 'equip').map(({ targetId }) => targetId)
+    : []);
   parent.append(makeElement(document, 'p', 'ms-panel-note', '物品格取得焦點後，可用方向鍵切換選取；Home／End 跳至首末物品。'));
   const categoryLabel = categories.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
   const selected = filtered.find(({ bagIndex }) => bagIndex === state.selectedBagIndex) ?? null;
@@ -3142,6 +3152,14 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
       upgrade.title = '比目前裝備更好';
       slot.append(upgrade);
       slot.setAttribute('aria-label', slot.getAttribute('aria-label') + '，可升級裝備');
+    }
+    if (trackedQuest && trackedItems.has(stack.itemId)) {
+      const badge = makeQuestCueBadge(document, 'item');
+      badge.classList.add('ms-bag-slot__quest-cue');
+      const task = '追蹤中的任務「' + trackedQuest.title + '」';
+      slot.title += '\n' + task;
+      slot.setAttribute('aria-label', slot.getAttribute('aria-label') + '，' + task);
+      slot.append(badge);
     }
     grid.append(slot);
   }
