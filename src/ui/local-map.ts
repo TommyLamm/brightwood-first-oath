@@ -15,7 +15,9 @@ function positionMarker(element: HTMLElement, point: Vec2): void {
 }
 
 /** Read-only terrain guide: no map travel, encounter state or save writes. */
-export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef, focus?: LocalMapFocus | null): HTMLDetailsElement {
+export function buildLocalMap(
+  document: Document, view: UiSnapshot, map: MapDef, focus: LocalMapFocus | null | undefined, questExitId: string | null,
+): HTMLDetailsElement {
   const details = document.createElement('details');
   details.className = 'ms-local-map'; details.dataset.detailId = 'local-terrain:' + map.id;
   details.dataset.localMapId = map.id;
@@ -56,14 +58,17 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
     if (highlighted) {
       mark.classList.add('is-target');
       entry.classList.add('is-target');
-      if (focus?.kind === 'npc') entry.setAttribute('aria-current', 'true');
+      if (kind === 'npc' && focus?.kind === 'npc') {
+        entry.setAttribute('aria-current', 'true');
+        details.open = true;
+      }
       const appearance = questCueAppearance[kind];
       const cue = text(document, 'span', 'ms-local-map__cue', appearance.symbol);
       cue.style.color = '#' + appearance.color.toString(16);
       mark.prepend(cue);
-      details.open = true;
     }
     legend.append(entry);
+    return mark;
   };
   map.npcs.forEach((npc, index) => marker('npc', index, npc,
     view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId,
@@ -81,7 +86,11 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
   map.portals.forEach((portal, index) => {
     const target = view.catalog.world.maps[portal.targetMapId]?.name ?? portal.targetMapId;
     const requirement = portalRequirements(portal, view.saveData!, view.catalog);
-    marker('portal', index, portal, '前往' + target + '：' + requirement.text);
+    const mark = marker('portal', index, portal, '前往' + target + '：' + requirement.text, portal.id === questExitId);
+    if (!requirement.open) {
+      mark.classList.add('is-locked');
+      mark.prepend(text(document, 'span', 'ms-local-map__lock', ''));
+    }
   });
   const player = text(document, 'span', 'ms-local-map__player', '◆');
   player.title = '你在這裡'; player.dataset.localPlayer = ''; chart.append(player);

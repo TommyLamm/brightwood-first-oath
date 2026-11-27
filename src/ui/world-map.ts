@@ -228,7 +228,8 @@ export function buildWorldMap(
   }
   root.append(legend);
   if (selected && canViewLocalMap(selected.id, data)) {
-    root.insertBefore(buildLocalMap(document, view, selected, focus), layout);
+    const questExitId = selected.id === data.location.mapId ? exit : null;
+    root.insertBefore(buildLocalMap(document, view, selected, focus, questExitId), layout);
   }
   return root;
 }

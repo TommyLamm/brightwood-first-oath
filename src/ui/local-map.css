@@ -15,6 +15,12 @@
 .ms-local-map__cue { font-size: 13px; }
 .ms-local-map__marker.is-monster { border-radius: 4px; color: #fff6df; background: #8b3f24; outline-color: #8b3f24; }
 .ms-local-map__marker.is-portal { transform: translate(-50%, 4px); border-radius: 3px; color: white; background: #674e83; }
+.ms-local-map__marker.is-portal.is-target { background: #563278; outline-color: #563278; }
+.ms-local-map__marker.is-portal.is-locked { color: #fff2d1; background: #4e4944; }
+.ms-local-map__lock { position: absolute; inset: -7px -5px auto auto; width: 14px; height: 14px; border: 1px solid #fff0bd; border-radius: 50%; background: #3c3029; }
+.ms-local-map__lock::before, .ms-local-map__lock::after { content: ''; position: absolute; }
+.ms-local-map__lock::before { inset: 2px 3px 4px; border: 1px solid #ffde9b; border-radius: 3px; }
+.ms-local-map__lock::after { inset: 5px 2px 2px; border-radius: 1px; background: #ffde9b; }
 .ms-local-map__player { position: absolute; z-index: 2; color: #b6412d; font-size: 23px; line-height: 1; text-shadow: 0 0 2px white, 0 0 2px white; transform: translate(-50%, -190%); }
 .ms-local-map__player[hidden] { display: none; }
 .ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
