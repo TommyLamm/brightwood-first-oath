@@ -1,6 +1,7 @@
 import type { MapDef, Vec2 } from '../contracts/index.js';
 import type { UiSnapshot } from '../contracts/ports.js';
 import { questTargets } from '../domain/quests/selection.js';
+import { questCueAppearance } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
@@ -44,6 +45,9 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
   const codes = { npc: 'N', portal: 'P', monster: 'M' } as const;
+  const targets = focus?.kind === 'quest'
+    ? questTargets(view.questViews.find(({ questId }) => questId === focus.id))
+    : undefined;
   const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
@@ -52,16 +56,20 @@ export function buildLocalMap(document: Document, view: UiSnapshot, map: MapDef,
     if (highlighted) {
       mark.classList.add('is-target');
       entry.classList.add('is-target');
-      if (kind === 'npc') entry.setAttribute('aria-current', 'true');
+      if (focus?.kind === 'npc') entry.setAttribute('aria-current', 'true');
+      const appearance = questCueAppearance[kind];
+      const cue = text(document, 'span', 'ms-local-map__cue', appearance.symbol);
+      cue.style.color = '#' + appearance.color.toString(16);
+      mark.prepend(cue);
       details.open = true;
     }
     legend.append(entry);
   };
   map.npcs.forEach((npc, index) => marker('npc', index, npc,
-    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId, focus?.kind === 'npc' && npc.npcId === focus.id));
+    view.catalog.world.npcs[npc.npcId]?.name ?? npc.npcId,
+    focus?.kind === 'npc' ? npc.npcId === focus.id : targets?.npcs.has(npc.npcId)));
   let monsterCount = 0;
-  if (focus?.kind === 'quest') {
-    const targets = questTargets(view.questViews.find(({ questId }) => questId === focus.id));
+  if (targets?.monsters.size) {
     for (const spawn of map.monsters) {
       if (!targets.monsters.has(spawn.monsterId)) continue;
       line({ x: spawn.roamLeft, y: spawn.y }, { x: spawn.roamRight, y: spawn.y }, 'is-monster-range');

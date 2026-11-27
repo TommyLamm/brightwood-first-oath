@@ -2916,10 +2916,11 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
     actions.append(track);
 
     const definition = view.catalog.world.quests[selectedQuest.questId];
-    const next = selectedQuest.objectives.find(({ current, required }) => current < required);
+    const remaining = selectedQuest.objectives.filter(({ current, required }) => current < required);
+    const next = remaining[0];
     const destination = selectedQuest.status === 'available' ? { npcId: definition?.giverNpcId, text: '接取' }
       : selectedQuest.status === 'ready' ? { npcId: definition?.turnInNpcId, text: '回報' }
-        : next?.type === 'inspect' ? { npcId: next.targetId, text: '目標' } : null;
+        : remaining.length === 1 && next?.type === 'inspect' ? { npcId: next.targetId, text: '目標' } : null;
     if (destination?.npcId) {
       const npcId = destination.npcId;
       const target = resolveNpcMapTarget(view.catalog.world, npcId);
