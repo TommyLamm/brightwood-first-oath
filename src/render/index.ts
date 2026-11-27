@@ -1455,15 +1455,15 @@ export function createWorldRenderer(
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
       heroInWarning ||= snapshot.player.hp > 0 && bodyOverlapsTelegraph(heroFeet, catalog.rules.movement, cue.rect);
+      const { x, y, width, height } = cue.rect;
+      if (x + width < left || x > right || y + height < top || y > bottom) continue;
       const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;
       const borderColor = bossTelegraph ? 0xffd071 : 0xff8a73;
-      telegraphGraphics.fillStyle(fillColor, cue.fillAlpha)
-        .fillRect(cue.rect.x, cue.rect.y, cue.rect.width, cue.rect.height);
-      telegraphGraphics.lineStyle(cue.borderWidth, borderColor, cue.borderAlpha)
-        .strokeRect(cue.rect.x, cue.rect.y, cue.rect.width, cue.rect.height);
+      telegraphGraphics.fillStyle(fillColor, cue.fillAlpha).fillRect(x, y, width, height);
+      telegraphGraphics.lineStyle(cue.borderWidth + 3, 0x2b1e25, .84).strokeRect(x, y, width, height);
+      telegraphGraphics.lineStyle(cue.borderWidth, borderColor, cue.borderAlpha).strokeRect(x, y, width, height);
       if (cue.progressWidth !== null && cue.progressWidth > 0) {
-        telegraphGraphics.fillStyle(borderColor, cue.borderAlpha)
-          .fillRect(cue.rect.x, cue.rect.y, cue.progressWidth, Math.min(4, cue.rect.height));
+        telegraphGraphics.fillStyle(borderColor, cue.borderAlpha).fillRect(x, y, cue.progressWidth, Math.min(4, height));
       }
     }
     if (heroInWarning) {
