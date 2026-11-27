@@ -1,7 +1,7 @@
 import type { UiSnapshot } from '../contracts/ports.js';
 
 type MovementKey = 'climbUp' | 'climbDown' | 'jump';
-type HintPart = string | { key: string } | { iconKey: string };
+type HintPart = string | { key: string } | { iconKey: string } | { questStatus: 'available' | 'ready' };
 type ContextHint = { targetKey: string; parts: HintPart[]; text: string; secondaryPickupKey?: string };
 type ClimbHint = Extract<NonNullable<UiSnapshot['movementHint']>, { kind: 'climb' }>;
 
@@ -39,6 +39,8 @@ export function contextHint(
       ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
         + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
     ];
+    if (interaction.questStatus) parts.push('｜', { questStatus: interaction.questStatus },
+      interaction.questStatus === 'ready' ? '可交付' : '可接取');
     if (!interaction.blockedMessage && pickup && !pickup.blockedMessage) {
       parts.push('\n', ...pickupParts(pickup, key('pickup')));
       return { ...makeHint(interaction.targetKey, parts), secondaryPickupKey: pickup.targetKey };

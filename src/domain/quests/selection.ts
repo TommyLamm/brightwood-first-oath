@@ -1,4 +1,4 @@
-import type { QuestView, WorldCatalog } from '../../contracts/definitions.js';
+import type { QuestDef, QuestView, WorldCatalog } from '../../contracts/definitions.js';
 import { questDropByQuest } from '../../content/rules/monsters.js';
 
 export type QuestTargets = {
@@ -7,6 +7,27 @@ export type QuestTargets = {
   monsters: ReadonlySet<string>;
   items: ReadonlySet<string>;
 };
+
+type QuestNpcState = 'available' | 'ready';
+type QuestNpcDefinitions = Readonly<Record<string, Pick<QuestDef, 'giverNpcId' | 'turnInNpcId'>>>;
+const markerCache = new WeakMap<readonly QuestView[], { quests: QuestNpcDefinitions; states: ReadonlyMap<string, QuestNpcState> }>();
+
+/** Turn-ins take precedence over new quests, regardless of projection order. */
+export function questMarkerStates(questViews: readonly QuestView[], quests: QuestNpcDefinitions): ReadonlyMap<string, QuestNpcState> {
+  const cached = markerCache.get(questViews);
+  if (cached?.quests === quests) return cached.states;
+  const states = new Map<string, QuestNpcState>();
+  for (const view of questViews) {
+    const quest = quests[view.questId];
+    if (!quest) continue;
+    const giver = view.giverNpcId ?? quest.giverNpcId;
+    const turnIn = view.turnInNpcId ?? quest.turnInNpcId;
+    if (view.status === 'available' && !states.has(giver)) states.set(giver, 'available');
+    if (view.status === 'ready') states.set(turnIn, 'ready');
+  }
+  markerCache.set(questViews, { quests, states });
+  return states;
+}
 
 export function isTrackableQuest(quest: QuestView | undefined): quest is QuestView {
   return quest?.status === 'available' || quest?.status === 'active' || quest?.status === 'ready';

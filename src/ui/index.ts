@@ -1171,6 +1171,7 @@ export function createUi(
       interactionHintText.replaceChildren(...hint.parts.map((part) => {
         if (typeof part === 'string') return part;
         if ('key' in part) return makeElement(document, 'kbd', '', part.key);
+        if ('questStatus' in part) return makeQuestCueBadge(document, 'npc', part.questStatus);
         const image = makeInterfaceIcon(document, view, part.iconKey, '', 'ms-interaction-hint__item');
         image.setAttribute('aria-hidden', 'true');
         return image;

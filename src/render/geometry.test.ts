@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Foothold, QuestDef, QuestView } from '../contracts/definitions.js';
+import { questMarkerStates } from '../domain/quests/selection.js';
 import {
   GROUND_TILE_OVERLAP,
   groundTilePositions,
@@ -18,7 +19,6 @@ import {
   heroAnchorPosition,
   heroAnchorRotation,
   questMarkerGeometry,
-  questMarkerStates,
 } from './geometry.js';
 
 function foothold(x1: number, y1: number, x2: number, y2: number, dropThrough = false): Foothold {

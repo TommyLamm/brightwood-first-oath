@@ -6,6 +6,7 @@ import type { GameProfile, RandomSource, SaveStatus, SaveUpgradeRequired, UiSnap
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
 import { getQuestViews } from '../domain/quests/index.js';
+import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import type { GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
@@ -151,6 +152,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     if (target?.kind === 'npc') {
       const npc = catalog.world.npcs[target.placement.npcId];
       if (npc) {
+        const questStatus = questMarkerStates(questViews, catalog.world.quests).get(npc.id);
         let actionLabel = npc.role === 'merchant' ? '開啟商店'
           : npc.actorKey === 'actor:ruins-stele' ? '查看' : undefined;
         if (npc.role === 'healer' && stats) {
@@ -166,6 +168,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
           kind: 'npc',
           label: npc.name,
           ...(actionLabel ? { actionLabel } : {}),
+          ...(questStatus ? { questStatus } : {}),
           blockedMessage: null,
         };
       }

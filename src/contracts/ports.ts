@@ -216,6 +216,7 @@ export type UiSnapshot = {
     kind: 'npc' | 'portal';
     label: string;
     actionLabel?: string;
+    questStatus?: 'available' | 'ready';
     blockedMessage: string | null;
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */

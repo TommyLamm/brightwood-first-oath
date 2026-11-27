@@ -71,6 +71,7 @@ describe('base experience UI snapshot', () => {
       targetKey: 'npc:guide',
       kind: 'npc',
       label: '森芽',
+      questStatus: 'available',
       blockedMessage: null,
     });
     expect(snapshot?.combatUi).toEqual({ actionLockUntilMs: 1_650, bufferedSkillId: 'heavy-strike', stanceBlock: null });

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
+import { questMarkerStates, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { isLowHealth } from '../domain/combat/index.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
 import { canEquipForJob } from '../content/rules/jobs.js';
@@ -48,7 +48,6 @@ import {
   ladderSpriteGeometry,
   npcNameGeometry,
   questMarkerGeometry,
-  questMarkerStates,
   PLATFORM_TILE_DISPLAY_HEIGHT,
   PLATFORM_TILE_DISPLAY_WIDTH,
   platformTilePositions,

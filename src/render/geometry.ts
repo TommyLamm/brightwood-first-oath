@@ -1,6 +1,6 @@
 import type { AssetImage } from '../contracts/asset-manifest.js';
 import type { HeroAnchorCoordinateSpace, HeroAnchorFrame } from '../contracts/hero-anchors.js';
-import type { Foothold, Ladder, NpcPlacement, Portal, QuestDef, QuestView } from '../contracts/definitions.js';
+import type { Foothold, Ladder, NpcPlacement, Portal } from '../contracts/definitions.js';
 
 export type TerrainPoint = { x: number; y: number };
 
@@ -115,23 +115,6 @@ export function heroAnchorPosition(
 /** Mirrors an anchor-driven weapon angle together with the sprite's horizontal flip. */
 export function heroAnchorRotation(rotationDeg: number, facing: -1 | 1): number {
   return facing > 0 ? rotationDeg : -rotationDeg;
-}
-
-/** Turn-ins take precedence over new quests, regardless of the projection's iteration order. */
-export function questMarkerStates(
-  questViews: readonly QuestView[],
-  quests: Readonly<Record<string, Pick<QuestDef, 'giverNpcId' | 'turnInNpcId'>>>,
-): Map<string, 'available' | 'ready'> {
-  const states = new Map<string, 'available' | 'ready'>();
-  for (const view of questViews) {
-    const quest = quests[view.questId];
-    if (!quest) continue;
-    const giver = view.giverNpcId ?? quest.giverNpcId;
-    const turnIn = view.turnInNpcId ?? quest.turnInNpcId;
-    if (view.status === 'available' && !states.has(giver)) states.set(giver, 'available');
-    if (view.status === 'ready') states.set(turnIn, 'ready');
-  }
-  return states;
 }
 
 /** Places a quest marker above both the actor and its name label. */
