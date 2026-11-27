@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { QuestView } from '../contracts/definitions.js';
 import { questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
-import { questExitCue } from './quest-guidance.js';
+import { questEdgeCue, questExitCue } from './quest-guidance.js';
 
 function quest(questId: string, status: QuestView['status'], objectives: QuestView['objectives'] = []): QuestView {
   return {
@@ -39,5 +39,12 @@ describe('in-world quest guidance', () => {
     expect(questExitCue({ x: 960, y: 250 }, viewport)).toEqual({ x: 780, y: 320, direction: 'right' });
     expect(questExitCue({ x: 300, y: 70 }, viewport)).toEqual({ x: 300, y: 120, direction: 'up' });
     expect(questExitCue({ x: 300, y: 250 }, viewport)).toEqual({ x: 300, y: 250, direction: 'down' });
+  });
+
+  it('keeps a directional target marker clear of the edge and lets the normal marker take over', () => {
+    const viewport = { x: 200, y: 100, width: 600, height: 400 };
+    expect(questEdgeCue({ x: 219, y: 250 }, viewport)).toEqual({ x: 220, y: 320, direction: 'left' });
+    expect(questEdgeCue({ x: 220, y: 250 }, viewport)).toBeUndefined();
+    expect(questEdgeCue({ x: 350, y: 550 }, viewport)).toEqual({ x: 350, y: 480, direction: 'down' });
   });
 });

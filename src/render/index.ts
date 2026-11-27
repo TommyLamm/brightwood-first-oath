@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawContextFocus, drawQuestCue, questExitCue } from './quest-guidance.js';
+import { drawContextFocus, drawQuestCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1163,6 +1163,23 @@ export function createWorldRenderer(
     const right = viewport.x + viewport.width + margin;
     const bottom = viewport.y + viewport.height + margin;
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
+    type TargetKind = Exclude<QuestCueKind, 'portal'>;
+    type EdgeTarget = { kind: TargetKind; cue: NonNullable<ReturnType<typeof questEdgeCue>>; priority: number; distance: number };
+    const targetGuide: { visiblePriority: number; nearest?: EdgeTarget } = { visiblePriority: -1 };
+    const guideTarget = (kind: TargetKind, point: Vec2): void => {
+      const priority = kind === 'item' ? 1 : 0;
+      const edge = questEdgeCue(point, viewport);
+      if (!edge) {
+        targetGuide.visiblePriority = Math.max(targetGuide.visiblePriority, priority);
+        drawQuestCue(guidanceGraphics, kind, point.x, point.y);
+        return;
+      }
+      const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
+      const nearest = targetGuide.nearest;
+      if (!nearest || priority > nearest.priority || (priority === nearest.priority && distance < nearest.distance)) {
+        targetGuide.nearest = { kind, cue: edge, priority, distance };
+      }
+    };
     const contextKey = snapshot.contextTargetKey;
     const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
     for (const placement of activeVisual.map.npcs) {
@@ -1193,7 +1210,7 @@ export function createWorldRenderer(
       const showMarker = npcInViewport && !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
-      if (npcInViewport && questTarget) drawQuestCue(guidanceGraphics, 'npc', markerGeometry.x, markerGeometry.y);
+      if (questTarget) guideTarget('npc', markerGeometry);
     }
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
@@ -1250,9 +1267,10 @@ export function createWorldRenderer(
           if (nameText.text !== label) nameText.setText(label);
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
-        if (targets.monsters.has(monster.monsterId)) {
-          drawQuestCue(guidanceGraphics, 'monster', bar.x + bar.width / 2, bar.y - 28);
-        }
+        if (targets.monsters.has(monster.monsterId)) guideTarget('monster', { x: bar.x + bar.width / 2, y: bar.y - 28 });
+      } else if (!dead && targets.monsters.has(monster.monsterId)) {
+        const position = monster.movement.position;
+        guideTarget('monster', { x: position.x, y: position.y - monster.height - 28 });
       }
     }
 
@@ -1281,8 +1299,8 @@ export function createWorldRenderer(
         const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
         const inViewport = isInViewport(drop.position);
         if (!inViewport) sprite.setVisible(false).setActive(false);
-        if (inViewport && drop.itemId && targets.items.has(drop.itemId)) {
-          drawQuestCue(guidanceGraphics, 'item', drop.position.x, drop.position.y - sprite.displayHeight - 12);
+        if (drop.itemId && targets.items.has(drop.itemId)) {
+          guideTarget('item', { x: drop.position.x, y: drop.position.y - sprite.displayHeight - 12 });
         }
         dropSprites.set(drop.id, sprite);
       } else if (drop.coins > 0) {
@@ -1303,6 +1321,9 @@ export function createWorldRenderer(
       const portalImage = assets.images.get('env:portal')!;
       const cue = questExitCue({ x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 }, viewport);
       drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
+    } else if (targetGuide.nearest && targetGuide.nearest.priority > targetGuide.visiblePriority) {
+      const { kind, cue } = targetGuide.nearest;
+      drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction);
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 

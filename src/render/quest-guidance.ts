@@ -19,10 +19,10 @@ export function drawContextFocus(graphics: Phaser.GameObjects.Graphics, { x, y }
   graphics.lineStyle(2, 0xa8f1c6, 1).strokeEllipse(x, y + 1, width, 12);
 }
 
-export function questExitCue(
+export function questEdgeCue(
   point: Readonly<Vec2>,
   viewport: Readonly<Vec2 & { width: number; height: number }>,
-): Vec2 & { direction: CueDirection } {
+): (Vec2 & { direction: CueDirection }) | undefined {
   const inset = 20;
   const left = viewport.x + inset;
   const right = viewport.x + viewport.width - inset;
@@ -35,7 +35,10 @@ export function questExitCue(
   if (point.y < top || point.y > bottom) {
     return { x: point.x, y: point.y < top ? top : bottom, direction: point.y < top ? 'up' : 'down' };
   }
-  return { ...point, direction: 'down' };
+}
+
+export function questExitCue(point: Readonly<Vec2>, viewport: Parameters<typeof questEdgeCue>[1]) {
+  return questEdgeCue(point, viewport) ?? { ...point, direction: 'down' as const };
 }
 
 /** Shape and color distinguish each type of quest target at game scale. */
@@ -44,10 +47,25 @@ export function drawQuestCue(
   kind: QuestCueKind,
   x: number,
   y: number,
-  direction: CueDirection = 'down',
+  direction?: CueDirection,
 ): void {
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
   const { color } = questCueAppearance[kind];
+  if (kind === 'portal') {
+    const { x: dx, y: dy } = directions[direction ?? 'down'];
+    graphics.lineStyle(2, color, 1).lineBetween(x - dx * 6, y - dy * 6, x + dx * 4, y + dy * 4);
+    strokeCueChevron(graphics, x, y, dx, dy);
+    return;
+  }
+  if (direction) {
+    const { x: dx, y: dy } = directions[direction];
+    const arrowX = x + dx * 14;
+    const arrowY = y + dy * 14;
+    graphics.lineStyle(4, 0x20242a, 1);
+    strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
+    graphics.lineStyle(2, color, 1);
+    strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
+  }
   if (kind === 'npc') {
     graphics.lineStyle(2, color, 1).beginPath().moveTo(x, y - 6).lineTo(x + 6, y)
       .lineTo(x, y + 6).lineTo(x - 6, y).closePath().strokePath();
@@ -60,15 +78,11 @@ export function drawQuestCue(
       .lineBetween(x - 7, y, x - 4, y).lineBetween(x + 4, y, x + 7, y);
     return;
   }
-  if (kind === 'portal') {
-    const { x: dx, y: dy } = directions[direction];
-    const tipX = x + dx * 4;
-    const tipY = y + dy * 4;
-    graphics.lineStyle(2, color, 1).beginPath().moveTo(x - dx - dy * 5, y - dy + dx * 5)
-      .lineTo(tipX, tipY).lineTo(x - dx + dy * 5, y - dy - dx * 5).strokePath();
-    graphics.lineBetween(x - dx * 6, y - dy * 6, tipX, tipY);
-    return;
-  }
   graphics.lineStyle(2, color, 1).strokeRoundedRect(x - 5, y - 4, 10, 9, 2)
     .lineBetween(x - 5, y - 1, x + 5, y - 1);
+}
+
+function strokeCueChevron(graphics: Phaser.GameObjects.Graphics, x: number, y: number, dx: number, dy: number): void {
+  graphics.beginPath().moveTo(x - dx - dy * 5, y - dy + dx * 5)
+    .lineTo(x + dx * 4, y + dy * 4).lineTo(x - dx + dy * 5, y - dy - dx * 5).strokePath();
 }
