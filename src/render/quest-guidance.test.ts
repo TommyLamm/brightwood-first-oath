@@ -59,5 +59,8 @@ describe('in-world quest guidance', () => {
     expect(selectQuestEdgeTarget([monster, sentinel], new Set([monster.targetKey]))).toBe(sentinel);
     expect(selectQuestEdgeTarget([monster, npc], new Set([item.targetKey]), true)).toBe(npc);
     expect(selectQuestEdgeTarget([monster, npc, item], new Set())).toBe(item);
+    const west: QuestEdgeTarget = { ...npc, cue: { x: 220, y: 285, direction: 'left' } };
+    expect(selectQuestEdgeTarget([monster, west, item], new Set(), false, 'left')).toBe(west);
+    expect(selectQuestEdgeTarget([monster, west, item], new Set([west.targetKey]), false, 'left')).toBeUndefined();
   });
 });

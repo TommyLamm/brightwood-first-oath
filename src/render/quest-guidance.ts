@@ -41,9 +41,11 @@ export function selectQuestEdgeTarget(
   nearestByTarget: Iterable<QuestEdgeTarget>,
   visible: ReadonlySet<string>,
   visibleDrop = false,
+  direction?: CueDirection,
 ): QuestEdgeTarget | undefined {
   let nearest: QuestEdgeTarget | undefined;
   for (const target of nearestByTarget) {
+    if (direction && target.cue.direction !== direction) continue;
     if (visible.has(target.targetKey) || (target.kind === 'monster' && visibleDrop)) continue;
     if (target.kind === 'item') return target;
     if (!nearest || target.distance < nearest.distance) nearest = target;

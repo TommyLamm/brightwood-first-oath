@@ -444,11 +444,13 @@ export function createWorldRenderer(
     color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
     stroke: '#2a1d22', strokeThickness: 4,
   }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health).setVisible(false);
-  const questEdgeLabel = scene.add.text(0, 0, '', {
+  const makeQuestEdgeLabel = () => scene.add.text(0, 0, '', {
     resolution: WORLD_TEXT_RESOLUTION,
     color: '#fff4d4', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontStyle: 'bold',
     stroke: '#20242a', strokeThickness: 3,
   }).setDepth(WORLD_DEPTH.health).setVisible(false);
+  const questEdgeLabel = makeQuestEdgeLabel();
+  const oppositeQuestEdgeLabel = makeQuestEdgeLabel();
   /** Small name plates for ordinary monsters near the hero, so quest targets like 赤背野豬 are recognisable. */
   const monsterNameTexts = new Map<string, Phaser.GameObjects.Text>();
   const monsterNameText = (key: string): Phaser.GameObjects.Text => {
@@ -1040,6 +1042,7 @@ export function createWorldRenderer(
     for (const attack of snapshot.attacks) attacksBySource.set(attack.sourceId, attack);
     bossNameText.setVisible(false);
     questEdgeLabel.setVisible(false);
+    oppositeQuestEdgeLabel.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
@@ -1378,16 +1381,20 @@ export function createWorldRenderer(
       drawPortalLock(guidanceGraphics, anchor.x, anchor.y - portalImage.displayHeight - 38);
     }
 
-    const showEdgeLabel = (label: string, { x, y, direction }: QuestEdgeTarget['cue']): void => {
-      if (questEdgeLabel.text !== label) questEdgeLabel.setText(label);
+    const showEdgeLabel = (label: string, { x, y, direction }: QuestEdgeTarget['cue'], text = questEdgeLabel): void => {
+      if (text.text !== label) text.setText(label);
       if (direction === 'left' || direction === 'right') {
-        questEdgeLabel.setOrigin(direction === 'left' ? 0 : 1, .5).setPosition(x + (direction === 'left' ? 15 : -15), y);
+        text.setOrigin(direction === 'left' ? 0 : 1, .5).setPosition(x + (direction === 'left' ? 15 : -15), y);
       } else {
-        const inset = questEdgeLabel.width / 2 + 4;
+        const inset = text.width / 2 + 4;
         const labelX = Math.max(viewport.x + inset, Math.min(viewport.x + viewport.width - inset, x));
-        questEdgeLabel.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
+        text.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
       }
-      questEdgeLabel.setVisible(true);
+      text.setVisible(true);
+    };
+    const showEdgeTarget = ({ label, kind, cue }: QuestEdgeTarget, text?: Phaser.GameObjects.Text): void => {
+      drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction, npcStatus);
+      showEdgeLabel(label, cue, text);
     };
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
     if (questExit) {
@@ -1401,9 +1408,13 @@ export function createWorldRenderer(
     } else {
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
       if (target) {
-        const { x, y, direction } = target.cue;
-        drawQuestCue(guidanceGraphics, target.kind, x, y, direction, npcStatus);
-        showEdgeLabel(target.label, target.cue);
+        showEdgeTarget(target);
+        const { direction } = target.cue;
+        if (direction === 'left' || direction === 'right') {
+          const other = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop,
+            direction === 'left' ? 'right' : 'left');
+          if (other) showEdgeTarget(other, oppositeQuestEdgeLabel);
+        }
       } else if (mentorEdge) {
         const { x, y, direction } = mentorEdge.cue;
         drawSpecializationCue(guidanceGraphics, x, y, direction);
@@ -1798,6 +1809,7 @@ export function createWorldRenderer(
       guidanceGraphics.destroy();
       bossNameText.destroy();
       questEdgeLabel.destroy();
+      oppositeQuestEdgeLabel.destroy();
       destroyMonsterNames();
       telegraphGraphics.destroy();
       attackGraphics.destroy();
