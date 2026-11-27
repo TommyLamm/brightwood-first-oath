@@ -48,7 +48,7 @@ import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
 import { contextHint } from './context-hint.js';
-import { questCueAppearance, type QuestCueKind } from '../render/quest-guidance.js';
+import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
 import { createScreenModalFocus } from './screen-modal-focus.js';
 import { nextInventoryBagIndex } from './inventory-navigation.js';
@@ -513,19 +513,22 @@ function objectiveText(view: UiSnapshot, objective: TrackedObjective): string {
   return objectiveLabel(view, objective) + ' ' + objectiveCount(objective);
 }
 
-function makeQuestCueBadge(document: Document, kind: QuestCueKind): HTMLElement {
-  const appearance = questCueAppearance[kind];
+function makeQuestCueBadge(document: Document, kind: QuestCueKind, npcState?: QuestNpcCueState): HTMLElement {
+  const appearance = questCueStyle(kind, npcState);
   const badge = makeElement(document, 'span', 'ms-quest-cue', appearance.symbol);
   badge.style.color = '#' + appearance.color.toString(16);
   badge.setAttribute('aria-hidden', 'true');
   return badge;
 }
 
-function makeQuestGuideRow(document: Document, kind: QuestCueKind, text: string, count?: string, place?: string): HTMLElement {
+function makeQuestGuideRow(
+  document: Document, kind: QuestCueKind, text: string,
+  { count, place, npcState }: { count?: string; place?: string; npcState?: QuestNpcCueState } = {},
+): HTMLElement {
   const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
   const label = makeElement(document, 'span', '', text);
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
-  line.append(makeQuestCueBadge(document, kind), label);
+  line.append(makeQuestCueBadge(document, kind, npcState), label);
   if (count) line.append(makeElement(document, 'strong', 'ms-quest-tracker__counter', count));
   return line;
 }
@@ -1069,13 +1072,13 @@ export function createUi(
       : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
     if (quest?.status === 'active' && objectives.length > 0) {
       const rows = objectives.slice(0, 2).map((objective) =>
-        makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), objectiveCount(objective)));
+        makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), { count: objectiveCount(objective) }));
       questDetail.replaceChildren(...rows);
       if (objectives.length > rows.length) {
         questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
       }
     } else if (quest?.status === 'available' || quest?.status === 'ready') {
-      questDetail.replaceChildren(makeQuestGuideRow(document, 'npc', detail, undefined, place));
+      questDetail.replaceChildren(makeQuestGuideRow(document, 'npc', detail, { place, npcState: quest.status }));
     } else {
       questDetail.textContent = detail;
     }
@@ -3759,7 +3762,7 @@ function makeDialogueObjectives(document: Document, view: UiSnapshot, quest: UiS
     const complete = objective.current >= objective.required;
     const entry = makeElement(document, 'li', complete ? 'is-complete' : '');
     const count = (complete ? '✓ ' : '') + objectiveCount(objective);
-    entry.append(makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), count));
+    entry.append(makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), { count }));
     list.append(entry);
   }
   return list;

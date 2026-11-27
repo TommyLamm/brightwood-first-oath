@@ -15,6 +15,15 @@ export const questCueAppearance = {
 export type QuestCueKind = keyof typeof questCueAppearance;
 export type QuestTargetKind = Exclude<QuestCueKind, 'portal'>;
 export type QuestNpcCueState = 'available' | 'ready';
+const npcCueAppearance = {
+  available: { color: questCueAppearance.npc.color, symbol: '!' },
+  ready: { color: 0xb9f6b5, symbol: '✓' },
+} as const;
+
+export function questCueStyle(kind: QuestCueKind, npcState?: QuestNpcCueState) {
+  return kind === 'npc' && npcState ? npcCueAppearance[npcState] : questCueAppearance[kind];
+}
+
 export type QuestEdgeTarget = {
   kind: QuestTargetKind;
   targetKey: string;
@@ -79,12 +88,20 @@ export function questEdgeCue(
   const right = viewport.x + viewport.width - inset;
   const top = viewport.y + inset;
   const bottom = viewport.y + viewport.height - inset;
+  // Leave extra room for the chevron that extends beyond the edge marker.
+  const chevronClearance = 8;
   if (point.x < left || point.x > right) {
     const atLeft = point.x < left;
-    return { x: atLeft ? left : right, y: viewport.y + viewport.height * 0.55, direction: atLeft ? 'left' : 'right' };
+    return {
+      x: atLeft ? left + chevronClearance : right - chevronClearance,
+      y: viewport.y + viewport.height * 0.55, direction: atLeft ? 'left' : 'right',
+    };
   }
   if (point.y < top || point.y > bottom) {
-    return { x: point.x, y: point.y < top ? top : bottom, direction: point.y < top ? 'up' : 'down' };
+    return {
+      x: point.x, y: point.y < top ? top + chevronClearance : bottom - chevronClearance,
+      direction: point.y < top ? 'up' : 'down',
+    };
   }
 }
 
@@ -102,7 +119,7 @@ export function drawQuestCue(
   npcState?: QuestNpcCueState,
 ): void {
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
-  const color = kind === 'npc' && npcState === 'ready' ? 0xb9f6b5 : questCueAppearance[kind].color;
+  const { color } = questCueStyle(kind, npcState);
   if (kind === 'portal') {
     const { x: dx, y: dy } = directions[direction ?? 'down'];
     graphics.lineStyle(2, color, 1).lineBetween(x - dx * 6, y - dy * 6, x + dx * 4, y + dy * 4);

@@ -35,17 +35,17 @@ describe('in-world quest guidance', () => {
 
   it('points outward when the exit is beyond the visible world and points down at the visible portal', () => {
     const viewport = { x: 200, y: 100, width: 600, height: 400 };
-    expect(questExitCue({ x: 80, y: 250 }, viewport)).toEqual({ x: 220, y: 320, direction: 'left' });
-    expect(questExitCue({ x: 960, y: 250 }, viewport)).toEqual({ x: 780, y: 320, direction: 'right' });
-    expect(questExitCue({ x: 300, y: 70 }, viewport)).toEqual({ x: 300, y: 120, direction: 'up' });
+    expect(questExitCue({ x: 80, y: 250 }, viewport)).toEqual({ x: 228, y: 320, direction: 'left' });
+    expect(questExitCue({ x: 960, y: 250 }, viewport)).toEqual({ x: 772, y: 320, direction: 'right' });
+    expect(questExitCue({ x: 300, y: 70 }, viewport)).toEqual({ x: 300, y: 128, direction: 'up' });
     expect(questExitCue({ x: 300, y: 250 }, viewport)).toEqual({ x: 300, y: 250, direction: 'down' });
   });
 
   it('keeps a directional target marker clear of the edge and lets the normal marker take over', () => {
     const viewport = { x: 200, y: 100, width: 600, height: 400 };
-    expect(questEdgeCue({ x: 219, y: 250 }, viewport)).toEqual({ x: 220, y: 320, direction: 'left' });
+    expect(questEdgeCue({ x: 219, y: 250 }, viewport)).toEqual({ x: 228, y: 320, direction: 'left' });
     expect(questEdgeCue({ x: 220, y: 250 }, viewport)).toBeUndefined();
-    expect(questEdgeCue({ x: 350, y: 550 }, viewport)).toEqual({ x: 350, y: 480, direction: 'down' });
+    expect(questEdgeCue({ x: 350, y: 550 }, viewport)).toEqual({ x: 350, y: 472, direction: 'down' });
   });
 
   it('keeps a different objective discoverable when monsters are already visible', () => {
