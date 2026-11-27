@@ -55,8 +55,11 @@ describe('contextual movement controls', () => {
       text: 'E 前往：木葉鎮｜請先回報任務。',
       parts: [{ key: 'E' }, ' 前往：木葉鎮｜請先回報任務。'],
     });
-    expect(contextHint({ ...view, interactionHint: { ...view.interactionHint, kind: 'npc', label: '森芽', blockedMessage: null } }, (action) => keys[action])?.text)
-      .toBe('E 互動：森芽');
+    const npc = { ...view.interactionHint, kind: 'npc' as const, label: '森芽', blockedMessage: null };
+    expect(contextHint({ ...view, interactionHint: npc }, (action) => keys[action])?.text)
+      .toBe('E 互動：森芽\nW / S 攀爬');
+    expect(contextHint({ ...view, interactionHint: npc, movementHint: { ...view.movementHint, attached: true } }, (action) => keys[action])?.text)
+      .toBe('E 互動：森芽\nW / S 攀爬｜Space 跳離');
     expect(contextHint({}, (action) => keys[action])).toBeNull();
   });
 
