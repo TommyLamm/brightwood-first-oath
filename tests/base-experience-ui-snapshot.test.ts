@@ -93,6 +93,22 @@ describe('base experience UI snapshot', () => {
     });
   });
 
+  it('tells the player which resources the healer can restore', () => {
+    const gameplay = newGameplay();
+    gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
+    const healer = catalog.world.maps.town!.npcs.find(({ npcId }) => npcId === 'healer')!;
+    gameplay.movement.position = { x: healer.x, y: healer.y };
+    const player = gameplay.saveData.player;
+
+    expect(snapshotFor(gameplay)?.interactionHint?.actionLabel).toBe('交談');
+    player.hp -= 1;
+    expect(snapshotFor(gameplay)?.interactionHint?.actionLabel).toBe('回復 HP');
+    player.mp -= 1;
+    expect(snapshotFor(gameplay)?.interactionHint?.actionLabel).toBe('回復 HP／MP');
+    player.hp += 1;
+    expect(snapshotFor(gameplay)?.interactionHint?.actionLabel).toBe('回復 MP');
+  });
+
   it('defaults absent runtime data safely and suppresses world hints behind the resume gate', () => {
     const empty = createUiSnapshot({
       ...createInitialAppState(2, 'base-experience-ui-snapshot-empty'),

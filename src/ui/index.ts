@@ -3615,6 +3615,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
       const owned = Object.values(player.equipment).includes(item.id) || player.bag.some((stack) => stack.itemId === item.id);
       if (player.level < item.minLevel) badges.append(makeBadge(document, 'Lv.' + item.minLevel + ' 才能裝備', 'warning'));
       if (owned) badges.append(makeBadge(document, '已擁有', 'neutral'));
+      else if (isWearableUpgrade(view, player, item)) badges.append(makeBadge(document, '▲ 可升級', 'success'));
     } else if (stackable) {
       // Show the potions already carried so restocking doesn't need a trip to the bag panel.
       const carried = player.bag.reduce((sum, stack) => sum + (stack.itemId === item.id ? stack.quantity : 0), 0);

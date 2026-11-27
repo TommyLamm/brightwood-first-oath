@@ -1078,15 +1078,19 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
   if (target?.kind === 'npc') {
     const definition = catalog.world.npcs[target.placement.npcId];
     if (!definition) return withToast(gameplay, '找不到這位 NPC 的對話資料。');
+    let toast: string | null = null;
     if (definition.role === 'healer') {
-      const stats = deriveStats(gameplay.saveData.player, catalog.rules);
-      gameplay.saveData = {
-        ...gameplay.saveData,
-        player: { ...gameplay.saveData.player, hp: stats.maxHp, mp: stats.maxMp },
-      };
+      const player = gameplay.saveData.player;
+      const { maxHp, maxMp } = deriveStats(player, catalog.rules);
+      if (player.hp === maxHp && player.mp === maxMp) {
+        toast = 'HP 與 MP 已滿。';
+      } else {
+        gameplay.saveData = { ...gameplay.saveData, player: { ...player, hp: maxHp, mp: maxMp } };
+        toast = '體力與魔力已恢復。';
+      }
     }
     gameplay.interaction = { npcId: definition.id, dialogue: npcDialogue(gameplay.saveData, definition.id, catalog) };
-    gameplay.toast = definition.role === 'healer' ? '體力與魔力已恢復。' : null;
+    gameplay.toast = toast;
     return { gameplay, ...(definition.role === 'merchant' ? { openPanel: 'shop' as const } : { openPanel: 'dialogue' as const }) };
   }
 

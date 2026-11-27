@@ -147,8 +147,16 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     if (target?.kind === 'npc') {
       const npc = catalog.world.npcs[target.placement.npcId];
       if (npc) {
-        const actionLabel = npc.role === 'merchant' ? '開啟商店' : npc.role === 'healer' ? '回復 HP／MP'
+        let actionLabel = npc.role === 'merchant' ? '開啟商店'
           : npc.actorKey === 'actor:ruins-stele' ? '查看' : undefined;
+        if (npc.role === 'healer' && stats) {
+          const needsHp = saveData.player.hp < stats.maxHp;
+          const needsMp = saveData.player.mp < stats.maxMp;
+          if (needsHp && needsMp) actionLabel = '回復 HP／MP';
+          else if (needsHp) actionLabel = '回復 HP';
+          else if (needsMp) actionLabel = '回復 MP';
+          else actionLabel = '交談';
+        }
         interactionHint = {
           targetKey: 'npc:' + target.placement.npcId,
           kind: 'npc',
