@@ -45,6 +45,7 @@ describe('renderer combat primitives', () => {
       borderWidth: 3,
     });
     expect(telegraphCueGeometry(telegraph, 1250, undefined, true)?.progressWidth).toBeNull();
+    expect(telegraphCueGeometry({ ...telegraph, startedAtMs: 1000 }, 1250, undefined, false)?.progressWidth).toBe(40);
     expect(telegraphCueGeometry(telegraph, 1500, 1000, true)).toBeNull();
   });
 

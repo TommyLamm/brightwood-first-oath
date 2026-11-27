@@ -63,7 +63,7 @@ export function monsterHealthBarGeometry(
   };
 }
 
-/** Uses the AI windup timestamp, when available, to advance a telegraph's warning meter. */
+/** Uses the warning or AI windup start time to advance the warning meter. */
 export function telegraphCueGeometry(
   telegraph: Telegraph,
   nowMs: number,
@@ -73,13 +73,14 @@ export function telegraphCueGeometry(
   const remainingMs = telegraph.resolveAtMs - nowMs;
   if (!Number.isFinite(remainingMs) || remainingMs <= 0) return null;
 
-  const validStartTime = typeof windupStartedAtMs === 'number' && Number.isFinite(windupStartedAtMs);
+  const startedAtMs = telegraph.startedAtMs ?? windupStartedAtMs;
+  const validStartTime = typeof startedAtMs === 'number' && Number.isFinite(startedAtMs);
   const windupDurationMs = validStartTime
-    ? telegraph.resolveAtMs - windupStartedAtMs
+    ? telegraph.resolveAtMs - startedAtMs
     : 0;
   const progress = Number.isFinite(windupDurationMs) && windupDurationMs > 0
     && validStartTime
-    ? clamp((nowMs - windupStartedAtMs) / windupDurationMs)
+    ? clamp((nowMs - startedAtMs) / windupDurationMs)
     : null;
 
   return {

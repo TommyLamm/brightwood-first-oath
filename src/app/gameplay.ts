@@ -42,6 +42,7 @@ import { deriveActiveGuard } from './guard-status.js';
 const MAX_ACTIVE_EFFECTS = 80;
 const BASIC_ATTACK_IDS = new Set(['basic', 'bow-basic', 'wand-basic', 'dagger-basic']);
 const ACTION_INPUT_WINDOW_MS = 100;
+const ROGUE_TRIAL_WARNING_MS = 900;
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
 const INSPECT_TARGETS = {
   'ruins-stele-west': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
@@ -83,7 +84,7 @@ export type GameplayState = {
   aimReady?: boolean;
   rogueRhythm?: RogueRhythm;
   smoke?: SmokeZone;
-  rogueTrial?: { position: { x: number; y: number }; resolveAtMs: number };
+  rogueTrial?: { position: { x: number; y: number }; startedAtMs: number; resolveAtMs: number };
   poisons?: { targetId: string; damage: number; nextTickAtMs: number; expiresAtMs: number }[];
   rallyUntilMs?: number;
 };
@@ -447,8 +448,12 @@ export function stepGameplay(
           objective = targetId;
           if (!gameplay.rogueTrial) {
             const placement = map.npcs.find(({ npcId }) => npcId === targetId)!;
-            gameplay.rogueTrial = { position: { x: placement.x, y: placement.y }, resolveAtMs: input.nowMs + 900 };
-            gameplay.toast = '紅框將在900ms後判定，請走出框線！';
+            gameplay.rogueTrial = {
+              position: { x: placement.x, y: placement.y },
+              startedAtMs: input.nowMs,
+              resolveAtMs: input.nowMs + ROGUE_TRIAL_WARNING_MS,
+            };
+            gameplay.toast = '請在紅框上的進度條填滿前離開範圍！';
           }
         }
         if (objective) gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
@@ -533,7 +538,8 @@ export function stepGameplay(
       } else gameplay.toast = '仍在紅框內。再對連刺靶完成兩段連刺，即可重試撤離。';
       delete gameplay.rogueTrial;
     } else gameplay.telegraphs.push({ id: 'rogue-trial-warning', sourceId: 'training:rogue-target-double', kind: 'rect',
-      rect: { x: trial.position.x - 90, y: trial.position.y - 80, width: 180, height: 80 }, resolveAtMs: trial.resolveAtMs });
+      rect: { x: trial.position.x - 90, y: trial.position.y - 80, width: 180, height: 80 },
+      startedAtMs: trial.startedAtMs, resolveAtMs: trial.resolveAtMs });
   }
 
   // T06's deathReported bit is the once-only event gate. Reward, drop creation

@@ -284,6 +284,7 @@ export type Telegraph = {
   sourceId: EntityId;
   kind: 'rect';
   rect: { x: number; y: number; width: number; height: number };
+  startedAtMs?: number;
   resolveAtMs: number;
 };
 
