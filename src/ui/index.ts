@@ -1165,7 +1165,7 @@ export function createUi(
       ];
       if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
-      button.classList.toggle('has-action-feedback', false);
+      const cooldownText = cooldown > 0 ? remainingSeconds(cooldown) : '';
       const binding = effectiveKeyText(bindings, keyForSkill[definitionId]!);
       if (key.title !== binding) {
         key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
@@ -1191,7 +1191,7 @@ export function createUi(
         renderCooldownProgress(cooldownTrack, cooldown, POTION_COOLDOWN_MS);
         const showFull = count > 0 && cooldown === 0 && full;
         const reason = count === 0 ? '沒有藥水'
-          : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown)
+          : cooldownText ? '冷卻 ' + cooldownText
             : showFull ? (healthPotion ? 'HP 已滿' : 'MP 已滿') : '';
         const displayState = !playing ? '不可操作'
           : focusBlocked ? '按「繼續遊戲」恢復'
@@ -1200,7 +1200,8 @@ export function createUi(
         button.classList.toggle('is-unavailable', Boolean(reason));
         button.classList.toggle('is-health-recommended', recommend);
         button.disabled = !canAct || Boolean(reason);
-        state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(displayState);
+        const compactState = canAct && cooldownText && count > 0 ? cooldownText : displayState;
+        state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(compactState);
         const quantity = '數量 ' + count;
         button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '') + (recommend ? '｜HP 偏低，可補血' : '');
         button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : '')
@@ -1231,9 +1232,9 @@ export function createUi(
       button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
       button.classList.toggle('is-unlearned', unlearned);
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
-      const reason = rank === 0 ? '未學習' : stanceReason
-        || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足'
-          : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '');
+      const castBlock = unlearned ? '未學習' : stanceReason
+        || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足' : '');
+      const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
       // Keep the active buff duration above cast blockers, as the old quickbar did.
       const buffLeftSec = skill.kind === 'buff' && rank > 0
         ? skill.id === 'guardian-rally' ? view.activeGuard?.remainingSeconds ?? 0 : Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
@@ -1250,7 +1251,8 @@ export function createUi(
       // A click may still buffer a basic attack during a short cooldown.
       button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
       const showAim = view.aimReady === true && basic && !stanceReason;
-      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : displayState);
+      const compactState = canAct && !castBlock && buffLeftSec === 0 && cooldownText ? cooldownText : displayState;
+      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : compactState);
       button.classList.toggle('is-buff-active', showAim || buffLeftSec > 0);
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
