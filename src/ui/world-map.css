@@ -36,6 +36,7 @@
 .ms-atlas-inhabitants { color: #7b6345; font-size: 11px; }
 .ms-atlas-path-heading { margin: 4px 0 0; padding-top: 9px; border-top: 1px solid #c8ac80; font-size: 12px; }
 .ms-atlas-connection { display: grid; gap: 4px; }
+.maple-ui .ms-atlas-quest-review { justify-self: start; padding: 6px 9px; font-size: 11px; }
 .maple-ui .ms-atlas-region-link { justify-self: start; padding: 3px 6px; border: 0; background: transparent; box-shadow: none; color: #416348; font-size: 12px; font-weight: 700; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
 .ms-atlas-condition { padding-left: 6px; color: #95623c; font-size: 10px; line-height: 1.6; }
 .ms-atlas-condition.is-open { color: #54704c; }

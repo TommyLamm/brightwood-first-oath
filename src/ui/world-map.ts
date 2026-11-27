@@ -386,6 +386,17 @@ function buildDetails(
       const row = element(document, 'div', 'ms-atlas-connection');
       const link = mapButton(document, target.id, '↗ ' + target.name, 'ms-atlas-region-link');
       row.append(link, element(document, 'span', requirement.open ? 'ms-atlas-condition is-open' : 'ms-atlas-condition', requirement.text));
+      const quest = view.questViews.find(({ questId, status }) => questId === portal.requiredQuestId && status !== 'claimed');
+      if (quest) {
+        const review = element(document, 'button', 'ms-button ms-button--secondary ms-atlas-quest-review', '查看解鎖任務');
+        review.type = 'button';
+        review.dataset.uiAction = 'select-quest';
+        review.dataset.questId = quest.questId;
+        review.dataset.focus = 'portal-quest:' + portal.id;
+        review.setAttribute('aria-label', '查看通往' + target.name + '的解鎖任務「' + quest.title + '」');
+        decorateControl(review, '查看解鎖任務', 'select-quest', '@icon-scroll');
+        row.append(review);
+      }
       details.append(row);
     }
   }

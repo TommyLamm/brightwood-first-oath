@@ -768,7 +768,9 @@ export function createUi(
   let shopFilter: ShopFilter = 'all';
   let selectedMapId: string | null = null;
   let selectedMapFocus: LocalMapFocus | null = null;
+  let mapQuestReturn: PanelFocusSnapshot | null = null;
   let selectedQuestId: string | null = null;
+  let pendingQuestReview = false;
   let pendingSkillReview: string | null = null;
   let pendingSpecializationReview = false;
   let pendingBagReview = false;
@@ -797,6 +799,8 @@ export function createUi(
 
   const clearTransientViewState = (): void => {
     selectedBagIndex = null;
+    pendingQuestReview = false;
+    mapQuestReturn = null;
     pendingSkillReview = null;
     pendingSpecializationReview = false;
     pendingBagReview = false;
@@ -1774,9 +1778,10 @@ export function createUi(
     panelHost.classList.toggle('is-world-map', panel === 'map');
     panelHost.classList.toggle('is-illustrated-panel', panel === 'stats' || panel === 'quests');
     if (!view.panels.includes('quests')) selectedQuestId = null;
-    if (panel !== 'map') {
+    if (!view.panels.includes('map')) {
       selectedMapId = null;
       selectedMapFocus = null;
+      mapQuestReturn = null;
     }
     if (!panel) {
       if (lastPanelSignature !== '') {
@@ -1908,11 +1913,28 @@ export function createUi(
     }
     const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
+    if (panel === 'map' && mapQuestReturn) {
+      const { focusKey, scrollTop } = mapQuestReturn;
+      mapQuestReturn = null;
+      const shortcut = Array.from(panelHost.querySelectorAll<HTMLElement>('[data-focus]'))
+        .find((element) => element.dataset.focus === focusKey);
+      shortcut?.focus({ preventScroll: true });
+      if (renderedBody) renderedBody.scrollTop = scrollTop;
+    }
     if (panel === 'inventory' && pendingBagReview) {
       pendingBagReview = false;
       const item = panelHost.querySelector<HTMLElement>('.ms-bag-slot[aria-pressed="true"]');
       item?.focus({ preventScroll: true });
       item?.scrollIntoView({ block: 'nearest' });
+    }
+    if (panel === 'quests' && pendingQuestReview) {
+      pendingQuestReview = false;
+      const heading = panelHost.querySelector<HTMLElement>('.ms-journal-sheet .ms-journal-heading h3');
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+        heading.scrollIntoView({ block: 'start' });
+      }
     }
     if (panel === 'skills' && pendingSkillReview) {
       const heading = document.getElementById('brightwood-first-oath-skill-heading-' + pendingSkillReview);
@@ -1990,13 +2012,10 @@ export function createUi(
       case 'select-quest': {
         if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
         selectedQuestId = button.dataset.questId!;
-        renderPanel(view, true);
-        const heading = panelHost.querySelector<HTMLElement>('.ms-journal-sheet .ms-journal-heading h3');
-        if (heading) {
-          heading.tabIndex = -1;
-          heading.focus({ preventScroll: true });
-          heading.scrollIntoView({ block: 'start' });
-        }
+        pendingQuestReview = true;
+        if (view.panels.at(-1) === 'map') mapQuestReturn = capturePanelFocus(view, button);
+        if (view.panels.at(-1) === 'quests') renderPanel(view, true);
+        else dispatchDraft({ type: 'setPanel', payload: { panel: 'quests' } });
         return;
       }
       case 'select-map':
