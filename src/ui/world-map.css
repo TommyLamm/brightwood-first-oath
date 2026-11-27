@@ -22,6 +22,7 @@
 .maple-ui .ms-atlas-landmark:hover:not(:disabled) { transform: translate(-50%, -12px); filter: brightness(1.08); }
 .maple-ui .ms-atlas-landmark:hover::after { content: none; }
 .ms-atlas-pin { display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid #f6e5ad; border-radius: 50%; color: #e8dcbd; background: #756b52; box-shadow: 0 1px 4px #302f28; font-size: 13px; line-height: 1; }
+.ms-atlas-quest-pin { position: absolute; top: 0; left: calc(50% + 12px); pointer-events: none; }
 .is-visited .ms-atlas-pin { color: #e8f0c7; background: #54714d; }
 .is-current .ms-atlas-pin { color: #fff4b5; background: #bd6b35; box-shadow: 0 0 0 4px #fff1bc80, 0 1px 5px #513722; }
 .ms-atlas-label { display: block; padding: 4px 9px; border: 1px solid #85623c; border-inline-width: 4px; border-radius: 2px; color: #543820; background: linear-gradient(#fff0c8, #e2c495); box-shadow: 0 2px 2px #3d493b70, inset 0 0 0 1px #fff0c5; font-size: clamp(10px, 1.15cqw, 14px); font-weight: 700; white-space: nowrap; }

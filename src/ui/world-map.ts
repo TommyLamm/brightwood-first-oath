@@ -1,4 +1,6 @@
 import type { UiSnapshot } from '../contracts/ports.js';
+import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
+import { questCueAppearance } from '../render/quest-guidance.js';
 import { decorateControl } from './control-art.js';
 import {
   WORLD_LANDMARKS,
@@ -19,7 +21,7 @@ import {
 } from './world-map-model.js';
 import type { AtlasScope, MapLandmark, RegionOverview } from './world-map-model.js';
 import { buildLocalMap } from './local-map.js';
-import { canViewLocalMap, type LocalMapFocus } from './local-map-model.js';
+import { canViewLocalMap, resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 
 function element<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, text = ''): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -39,7 +41,13 @@ function mapButton(document: Document, id: string, label: string, className: str
 }
 
 /** Informational atlas: selecting a landmark changes the chart selection, never the player's location. */
-export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: string | null, focus?: LocalMapFocus | null): HTMLElement {
+export function buildWorldMap(
+  document: Document,
+  view: UiSnapshot,
+  selectedId: string | null,
+  focus?: LocalMapFocus | null,
+  trackedQuestId: string | null = null,
+): HTMLElement {
   const root = element(document, 'div', 'ms-world-map');
   const data = view.saveData;
   if (!data) {
@@ -169,6 +177,31 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     }
   }
 
+  const quest = focus?.kind === 'quest' ? view.questViews.find(({ questId }) => questId === focus.id)
+    : selectTrackerQuest(view.questViews, trackedQuestId);
+  const destination = resolveQuestMapTarget(view.catalog.world, data, quest);
+  const questMapIds = destination ? new Set([destination.id])
+    : questDestinationMapIds(view.catalog.world, questTargets(quest));
+  let hasQuestPin = false;
+  if (quest && questMapIds.size > 0) {
+    const regions = new Set([...questMapIds].map(atlasScopeForMapId));
+    for (const button of chart.querySelectorAll<HTMLButtonElement>('.ms-atlas-landmark[data-map-id]')) {
+      const id = button.dataset.mapId!;
+      const isTarget = button.classList.contains('ms-atlas-landmark--island')
+        ? regions.has(atlasScopeForMapId(id)) : questMapIds.has(id);
+      if (!isTarget) continue;
+      const appearance = questCueAppearance.portal;
+      const badge = element(document, 'span', 'ms-quest-cue ms-atlas-quest-pin', appearance.symbol);
+      badge.style.color = '#' + appearance.color.toString(16);
+      badge.setAttribute('aria-hidden', 'true');
+      const label = '任務目標「' + quest.title + '」';
+      button.title += ' · ' + label;
+      button.setAttribute('aria-label', button.getAttribute('aria-label') + '，' + label);
+      button.append(badge);
+      hasQuestPin = true;
+    }
+  }
+
   const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview, ruinsOverview);
   layout.append(chart, details);
   root.append(layout);
@@ -180,6 +213,7 @@ export function buildWorldMap(document: Document, view: UiSnapshot, selectedId: 
     element(document, 'span', '', '◇ 未探索'),
     element(document, 'span', '', atlas.scope === 'world' ? '虛線為島嶼間通道' : '虛線為區域通道'),
   );
+  if (hasQuestPin) legend.append(element(document, 'span', '', questCueAppearance.portal.symbol + ' 任務目標'));
   if (atlas.scope === 'world' && PLANNED_REGIONS.some(({ id }) => id === 'planned-golden-sands' && sandOverview.totalCount === 0
     || id === 'planned-ancient-ruins' && ruinsOverview.totalCount === 0)) {
     legend.append(element(document, 'span', '', '▧ 待開發'));

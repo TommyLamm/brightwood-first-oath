@@ -3088,7 +3088,7 @@ function buildPanelContent(
       content.append(buildWorldJournal(document, view, state.selectedQuestId, state.trackedQuestId));
       break;
     case 'map':
-      content.append(buildWorldMap(document, view, state.selectedMapId, state.selectedMapFocus));
+      content.append(buildWorldMap(document, view, state.selectedMapId, state.selectedMapFocus, state.trackedQuestId));
       break;
     case 'shop':
       buildShopPanel(document, view, state, content);

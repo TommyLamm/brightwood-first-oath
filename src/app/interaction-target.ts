@@ -11,19 +11,31 @@ export type InteractionTarget =
   | { kind: 'npc'; placement: Readonly<NpcPlacement> }
   | { kind: 'portal'; portal: Readonly<Portal> };
 
+function nearestWithin<T extends Readonly<Vec2>>(
+  placements: readonly T[],
+  position: Readonly<Vec2>,
+  radius: number,
+  id: (placement: T) => string,
+): T | null {
+  let nearest: T | null = null;
+  let bestDistance = radius;
+  for (const placement of placements) {
+    const distance = Math.hypot(placement.x - position.x, placement.y - position.y);
+    if (distance < bestDistance
+      || (distance === bestDistance && (!nearest || id(placement).localeCompare(id(nearest)) < 0))) {
+      nearest = placement;
+      bestDistance = distance;
+    }
+  }
+  return nearest;
+}
+
 export function nearestNpcPlacement(
   map: MapDef | undefined,
   position: Readonly<Vec2>,
   radius: number,
 ): Readonly<NpcPlacement> | null {
-  if (!map) return null;
-
-  const candidates = map.npcs.map((placement) => ({
-    placement,
-    distance: Math.hypot(placement.x - position.x, placement.y - position.y),
-  })).filter(({ distance }) => distance <= radius)
-    .sort((a, b) => a.distance - b.distance || a.placement.npcId.localeCompare(b.placement.npcId));
-  return candidates[0]?.placement ?? null;
+  return map ? nearestWithin(map.npcs, position, radius, ({ npcId }) => npcId) : null;
 }
 
 export function canTradeWithMerchant(
@@ -48,12 +60,7 @@ export function resolveInteractionTarget(
   if (placement) return { kind: 'npc', placement };
   if (!map) return null;
 
-  const portals = map.portals.map((portal) => ({
-    portal,
-    distance: Math.hypot(portal.x - position.x, portal.y - position.y),
-  })).filter(({ distance }) => distance <= INTERACTION_RANGE_PX)
-    .sort((a, b) => a.distance - b.distance || a.portal.id.localeCompare(b.portal.id));
-  const portal = portals[0]?.portal;
+  const portal = nearestWithin(map.portals, position, INTERACTION_RANGE_PX, ({ id }) => id);
   return portal ? { kind: 'portal', portal } : null;
 }
 
