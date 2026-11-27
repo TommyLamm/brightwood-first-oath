@@ -944,6 +944,15 @@ export function createWorldRenderer(
     }
   };
 
+  const actorAnimationStart = (key: string, animationKey: string, nowMs: number, startedAtMs?: number): number => {
+    const previous = actorAnimationClocks.get(key);
+    const start = startedAtMs ?? (previous?.animationKey === animationKey ? previous.startedAtMs : nowMs);
+    if (previous?.animationKey !== animationKey || previous.startedAtMs !== start) {
+      actorAnimationClocks.set(key, { animationKey, startedAtMs: start });
+    }
+    return start;
+  };
+
   const drawActor = (
     key: string,
     imageKey: string,
@@ -965,11 +974,7 @@ export function createWorldRenderer(
     }
     let frame = frameOverride ?? 0;
     if (animationKey) {
-      const previousClock = actorAnimationClocks.get(key);
-      const animationStartedAtMs = startedAtMs ?? (previousClock?.animationKey === animationKey ? previousClock.startedAtMs : nowMs);
-      if (previousClock?.animationKey !== animationKey || previousClock.startedAtMs !== animationStartedAtMs) {
-        actorAnimationClocks.set(key, { animationKey, startedAtMs: animationStartedAtMs });
-      }
+      const animationStartedAtMs = actorAnimationStart(key, animationKey, nowMs, startedAtMs);
       if (frameOverride === undefined) {
         frame = pickAnimationFrame(animationFor(assets, imageKey, animationKey), nowMs, animationStartedAtMs, totalDurationMs);
       }
@@ -1240,32 +1245,40 @@ export function createWorldRenderer(
     for (const monster of snapshot.monsters) {
       const definition = catalog.rules.monsters[monster.monsterId];
       if (!definition) continue;
-      const isNamedBoss = isBossMonster(monster.monsterId);
       const attack = attacksBySource.get(monster.id);
       const animationKey = selectMonsterAnimation(monster, snapshot.nowMs, attack !== undefined);
       const dead = monster.mode === 'dead' || monster.movement.mode === 'dead';
       const monsterIsAttacking = animationKey.endsWith(':attack') || animationKey.endsWith(':attack-sweep');
-      const monsterSprite = drawActor(
-        `monster:${monster.spawnId}`,
+      const key = `monster:${monster.spawnId}`;
+      const position = monster.movement.position;
+      const startedAtMs = dead ? monster.deadAtMs ?? snapshot.nowMs : monsterIsAttacking ? attack?.startedAtMs : undefined;
+      if (!isInViewport(position)) {
+        actorAnimationStart(key, animationKey, snapshot.nowMs, startedAtMs);
+        if (!dead && targets.monsters.has(monster.monsterId)) {
+          guideTarget('monster', monster.monsterId, definition.name, { x: position.x, y: position.y - monster.height - 28 });
+        }
+        continue;
+      }
+      const isNamedBoss = isBossMonster(monster.monsterId);
+      drawActor(
+        key,
         definition.actorKey,
         animationKey,
-        monster.movement.position,
+        position,
         monster.movement.facing,
         snapshot.nowMs,
-        dead ? monster.deadAtMs ?? snapshot.nowMs : monsterIsAttacking ? attack?.startedAtMs : undefined,
+        startedAtMs,
         // These four-frame attacks use authored frame times so the active pose matches the 100 ms hit window.
         monsterIsAttacking && attack && !AUTHORED_ATTACK_FRAME_MONSTER_IDS.has(monster.monsterId)
           ? skillDuration(attack, catalog)
           : undefined,
-      ).sprite;
-      const inViewport = isInViewport(monster.movement.position);
-      if (!inViewport) monsterSprite.setVisible(false).setActive(false);
-      if (monster.monsterId === 'ruins-bell-keeper' && monster.mode === 'phase-transition' && inViewport) {
+      );
+      if (monster.monsterId === 'ruins-bell-keeper' && monster.mode === 'phase-transition') {
         const glowY = monster.movement.position.y - (actorContentSizes.get(definition.actorKey)?.height ?? definition.height) * 0.55;
         steleGlowGraphics.fillStyle(0x81d8d5, 0.14).fillCircle(monster.movement.position.x, glowY, 34);
         steleGlowGraphics.lineStyle(2, 0xd0f6e7, 0.64).strokeCircle(monster.movement.position.x, glowY, 36);
       }
-      if (!dead && inViewport) {
+      if (!dead) {
         const image = assets.images.get(definition.actorKey);
         const content = actorContentSizes.get(definition.actorKey);
         const bar = monsterHealthBarGeometry(
@@ -1295,9 +1308,6 @@ export function createWorldRenderer(
         if (targets.monsters.has(monster.monsterId)) {
           guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y: bar.y - 28 });
         }
-      } else if (!dead && targets.monsters.has(monster.monsterId)) {
-        const position = monster.movement.position;
-        guideTarget('monster', monster.monsterId, definition.name, { x: position.x, y: position.y - monster.height - 28 });
       }
     }
 
@@ -1510,7 +1520,7 @@ export function createWorldRenderer(
       y: attack.origin.y - skill.height / 2,
     };
     setImageFrame(sprite, image, frame);
-    sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0).setDepth(WORLD_DEPTH.effect)
+    sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0)
       .setVisible(true).setActive(true);
   };
 
