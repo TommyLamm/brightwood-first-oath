@@ -5,7 +5,7 @@ import { createNextEntityId, createSeededRandom } from '../src/contracts/helpers
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { acceptQuest, getQuestView, recordQuestEvent } from '../src/domain/quests/index.js';
-import { startNewGame, stepGameplay } from '../src/app/gameplay.js';
+import { makeWorldSnapshot, startNewGame, stepGameplay } from '../src/app/gameplay.js';
 import { KeyboardInputState } from '../src/app/keyboard.js';
 import {
   INTERACTION_RANGE_PX,
@@ -150,8 +150,10 @@ describe('shared interaction target', () => {
       expected: null,
     },
   ])('keeps the $status quest instruction until it is claimed', ({ status, expected }) => {
-    const portal = portalAt('quest-route', 0, 0, { minLevel: 1, requiredQuestId: 'q01' });
-    expect(portalBlockMessage(saveForQuestStatus(status), portal, catalog)).toBe(expected);
+    const portal = catalog.world.maps.camp!.portals[0]!;
+    const gameplay = { ...startGameplay(), saveData: saveForQuestStatus(status) };
+    expect(portalBlockMessage(gameplay.saveData, portal, catalog)).toBe(expected);
+    expect(makeWorldSnapshot(gameplay, catalog, 0).lockedPortalIds).toEqual(expected === null ? [] : [portal.id]);
   });
 
   it('uses the current target for Space and keeps the existing no-target and nearest-NPC behavior', () => {

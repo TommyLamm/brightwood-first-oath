@@ -19,6 +19,14 @@ export function drawContextFocus(graphics: Phaser.GameObjects.Graphics, { x, y }
   graphics.lineStyle(2, 0xa8f1c6, 1).strokeEllipse(x, y + 1, width, 12);
 }
 
+export function drawPortalLock(graphics: Phaser.GameObjects.Graphics, x: number, y: number): void {
+  const color = 0xffce79;
+  graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  graphics.lineStyle(2, color, 1).strokeRoundedRect(x - 3, y - 6, 6, 8, 3);
+  graphics.fillStyle(color, 1).fillRoundedRect(x - 6, y - 1, 12, 7, 2);
+  graphics.fillStyle(0x20242a, 1).fillCircle(x, y + 2, 1.25);
+}
+
 export function questEdgeCue(
   point: Readonly<Vec2>,
   viewport: Readonly<Vec2 & { width: number; height: number }>,

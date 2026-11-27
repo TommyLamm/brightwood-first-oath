@@ -57,14 +57,23 @@ export function resolveInteractionTarget(
   return portal ? { kind: 'portal', portal } : null;
 }
 
+function unclaimedPortalQuest(save: SaveData, portal: Readonly<Portal>): string | null {
+  const questId = portal.requiredQuestId;
+  return questId && save.quests[questId]?.status !== 'claimed' ? questId : null;
+}
+
+export function isPortalLocked(save: SaveData, portal: Readonly<Portal>): boolean {
+  return save.player.level < portal.minLevel || unclaimedPortalQuest(save, portal) !== null;
+}
+
 export function portalBlockMessage(
   save: SaveData,
   portal: Readonly<Portal>,
   catalog: ContentCatalog,
 ): string | null {
   if (save.player.level < portal.minLevel) return `需要等級 ${portal.minLevel} 才能通過。`;
-  const questId = portal.requiredQuestId;
-  if (!questId || save.quests[questId]?.status === 'claimed') return null;
+  const questId = unclaimedPortalQuest(save, portal);
+  if (!questId) return null;
 
   const quest = catalog.world.quests[questId];
   const place = catalog.world.maps[portal.targetMapId]?.name ?? '前方';

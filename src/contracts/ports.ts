@@ -155,6 +155,7 @@ export type WorldSnapshot = {
   questViews: QuestView[];
   trackedQuestId?: Id | null;
   questExitId?: Id | null;
+  lockedPortalIds?: readonly Id[];
   movementGuide?: MovementGuide | null;
   contextTargetKey?: string | null;
   player: {

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
-import { drawContextFocus, drawQuestCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
+import { drawContextFocus, drawPortalLock, drawQuestCue, questEdgeCue, questExitCue, type QuestCueKind } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -1314,6 +1314,15 @@ export function createWorldRenderer(
 
     const contextPortal = contextKey?.startsWith('portal:') && activeVisual.map.portals.find(({ id }) => 'portal:' + id === contextKey);
     if (contextPortal && isInViewport(contextPortal)) drawContextFocus(guidanceGraphics, contextPortal, 50);
+
+    if (snapshot.lockedPortalIds?.length) {
+      const portalImage = assets.images.get('env:portal')!;
+      for (const portal of activeVisual.map.portals) {
+        if (!snapshot.lockedPortalIds.includes(portal.id) || !isInViewport(portal)) continue;
+        const anchor = portalFootAnchor(portal);
+        drawPortalLock(guidanceGraphics, anchor.x, anchor.y - portalImage.displayHeight - 38);
+      }
+    }
 
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
     if (questExit) {

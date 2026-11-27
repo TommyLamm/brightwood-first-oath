@@ -1,6 +1,6 @@
 import type { ContentCatalog, QuestView, SaveData } from '../contracts/index.js';
 import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
-import { portalBlockMessage } from './interaction-target.js';
+import { isPortalLocked } from './interaction-target.js';
 
 type Route = { mapId: string; exitId: string | null };
 type CachedRoute = Route & {
@@ -38,7 +38,7 @@ function nextExit(save: SaveData, catalog: ContentCatalog, quest: QuestView | un
   for (const route of queue) {
     if (destinations.has(route.mapId)) return route.exitId;
     for (const portal of catalog.world.maps[route.mapId]?.portals ?? []) {
-      if (visited.has(portal.targetMapId) || portalBlockMessage(save, portal, catalog) !== null) continue;
+      if (visited.has(portal.targetMapId) || isPortalLocked(save, portal)) continue;
       visited.add(portal.targetMapId);
       queue.push({ mapId: portal.targetMapId, exitId: route.exitId ?? portal.id });
     }

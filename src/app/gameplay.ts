@@ -25,7 +25,7 @@ import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '../contracts/ports.js';
-import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, isPortalLocked, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findQuestExit } from './quest-route.js';
 import { deriveMovementHint } from './movement-hint.js';
 import { POTION_COOLDOWN_MS, resolveItemUse } from './item-use.js';
@@ -640,6 +640,7 @@ export function makeWorldSnapshot(
     questViews,
     trackedQuestId,
     questExitId: findQuestExit(gameplay.saveData, catalog, questViews, trackedQuestId),
+    lockedPortalIds: map.portals.filter((portal) => isPortalLocked(gameplay.saveData, portal)).map(({ id }) => id),
     movementGuide: showMovementGuide ? deriveMovementHint(movement, map, catalog.rules.movement) : null,
     contextTargetKey,
     player: {
