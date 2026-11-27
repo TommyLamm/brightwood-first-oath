@@ -66,10 +66,10 @@ describe('quest tracker presentation preference', () => {
 
 describe('collapsed quest progress', () => {
   it('keeps a single target counter and caps excess inventory at the required count', () => {
-    expect(questTrackerSummary(active, () => '苔殼蝸牛')).toEqual({ label: '苔殼蝸牛', value: '1/3' });
+    expect(questTrackerSummary(active, () => '苔殼蝸牛')).toEqual({ label: '苔殼蝸牛', value: '1/3', fraction: 1 / 3 });
     expect(questTrackerSummary({ ...active,
       objectives: [{ type: 'collect', targetId: 'ore', current: 99, required: 6 }],
-    }, () => '礦石')).toEqual({ label: '礦石', value: '6/6' });
+    }, () => '礦石')).toEqual({ label: '礦石', value: '6/6', fraction: 1 });
   });
 
   it('shows the next unfinished target alongside the number of completed objectives', () => {
@@ -77,12 +77,12 @@ describe('collapsed quest progress', () => {
       { type: 'kill', targetId: 'snail', current: 3, required: 3 },
       { type: 'collect', targetId: 'ore', current: 2, required: 6 },
       { type: 'reach', targetId: 'camp', current: 1, required: 1 },
-    ] }, ({ targetId }) => targetId)).toEqual({ label: 'ore', value: '2/3 項' });
+    ] }, ({ targetId }) => targetId)).toEqual({ label: 'ore', value: '2/3 項', fraction: 2 / 3 });
   });
 
   it('prioritizes the delivery reminder over numeric progress when ready', () => {
     expect(questTrackerSummary({ ...active, status: 'ready' }, () => '苔殼蝸牛'))
-      .toEqual({ label: '', value: '✓ 可交付' });
+      .toEqual({ label: '', value: '✓ 可交付', fraction: 1 });
     expect(questTrackerSummary({ ...active, status: 'available' }, () => ''))
       .toEqual({ label: '', value: '可接取' });
   });

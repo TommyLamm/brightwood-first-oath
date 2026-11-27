@@ -2,7 +2,7 @@ import type { MapDef, Vec2 } from '../contracts/index.js';
 import type { UiSnapshot } from '../contracts/ports.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
-import { questTargets } from '../domain/quests/selection.js';
+import type { QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueAppearance } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
@@ -18,7 +18,8 @@ function positionMarker(element: HTMLElement, point: Vec2): void {
 
 /** Read-only terrain guide: no map travel, encounter state or save writes. */
 export function buildLocalMap(
-  document: Document, view: UiSnapshot, map: MapDef, focus: LocalMapFocus | null | undefined, questExitId: string | null,
+  document: Document, view: UiSnapshot, map: MapDef, focus: LocalMapFocus | null | undefined,
+  questExitId: string | null, targets: QuestTargets,
 ): HTMLDetailsElement {
   const details = document.createElement('details');
   details.className = 'ms-local-map'; details.dataset.detailId = 'local-terrain:' + map.id;
@@ -49,9 +50,6 @@ export function buildLocalMap(
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
   const codes = { npc: 'N', portal: 'P', monster: 'M' } as const;
-  const targets = focus?.kind === 'quest'
-    ? questTargets(view.questViews.find(({ questId }) => questId === focus.id))
-    : undefined;
   const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
@@ -81,7 +79,7 @@ export function buildLocalMap(
     const service = role === 'merchant' || role === 'healer' || role === 'specialization' ? role : undefined;
     const appearance = service ? npcServiceCueAppearance[service] : undefined;
     const label = (npc?.name ?? npcId) + (appearance ? ' · ' + appearance.label : '');
-    const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets?.npcs.has(npcId);
+    const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets.npcs.has(npcId);
     const mark = marker('npc', index, placement, label, highlighted);
     if (service && appearance) {
       const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
@@ -90,7 +88,7 @@ export function buildLocalMap(
     }
   });
   let monsterCount = 0;
-  if (targets?.monsters.size) {
+  if (targets.monsters.size) {
     for (const spawn of map.monsters) {
       if (!targets.monsters.has(spawn.monsterId)) continue;
       line({ x: spawn.roamLeft, y: spawn.y }, { x: spawn.roamRight, y: spawn.y }, 'is-monster-range');

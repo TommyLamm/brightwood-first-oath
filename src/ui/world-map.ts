@@ -139,6 +139,7 @@ export function buildWorldMap(
 
   const quest = focus?.kind === 'quest' ? view.questViews.find(({ questId }) => questId === focus.id)
     : selectTrackerQuest(view.questViews, trackedQuestId);
+  const targets = questTargets(quest);
   const exit = quest ? findQuestExit(data, view.catalog, view.questViews, quest.questId) : null;
   const nextMapId = exit ? view.catalog.world.maps[data.location.mapId]?.portals.find(({ id }) => id === exit)?.targetMapId : undefined;
   const questPair = nextMapId ? routePair(data.location.mapId, nextMapId) : null;
@@ -186,7 +187,7 @@ export function buildWorldMap(
 
   const destination = resolveQuestMapTarget(view.catalog.world, data, quest);
   const questMapIds = destination ? new Set([destination.id])
-    : questDestinationMapIds(view.catalog.world, questTargets(quest));
+    : questDestinationMapIds(view.catalog.world, targets);
   let hasQuestPin = false;
   if (quest && questMapIds.size > 0) {
     const regions = new Set([...questMapIds].map(atlasScopeForMapId));
@@ -229,7 +230,7 @@ export function buildWorldMap(
   root.append(legend);
   if (selected && canViewLocalMap(selected.id, data)) {
     const questExitId = selected.id === data.location.mapId ? exit : null;
-    root.insertBefore(buildLocalMap(document, view, selected, focus, questExitId), layout);
+    root.insertBefore(buildLocalMap(document, view, selected, focus, questExitId, targets), layout);
   }
   return root;
 }
