@@ -18,6 +18,7 @@
 .ms-atlas-routes path { fill: none; stroke: #7b6044; stroke-width: 2; stroke-dasharray: 4 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .ms-atlas-routes path.is-open { stroke: #3d6c4c; stroke-width: 3; }
 .ms-atlas-routes path.is-locked { stroke-opacity: .7; }
+.ms-atlas-routes path.is-quest-route { stroke: #7047af; stroke-width: 4px; stroke-dasharray: none; filter: drop-shadow(0 0 1px #fff4d1); }
 .maple-ui .ms-atlas-landmark { position: absolute; z-index: 3; display: grid; justify-items: center; gap: 1px; min-width: 84px; min-height: 50px; padding: 0; transform: translate(-50%, -12px); border: 0; background: none; box-shadow: none; color: #513820; cursor: pointer; }
 .maple-ui .ms-atlas-landmark:hover:not(:disabled) { transform: translate(-50%, -12px); filter: brightness(1.08); }
 .maple-ui .ms-atlas-landmark:hover::after { content: none; }
@@ -43,6 +44,7 @@
 .ms-atlas-return-note { color: #95623c; }
 .ms-atlas-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px 18px; color: #786044; font-size: 11px; }
 .ms-atlas-legend-current { color: #a46132; }
+.ms-atlas-legend-route { color: #573777; }
 @container (max-width: 850px) {
   .ms-atlas-layout { grid-template-columns: minmax(0, 1fr); }
   .ms-atlas-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }

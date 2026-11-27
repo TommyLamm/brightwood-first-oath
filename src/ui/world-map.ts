@@ -1,4 +1,5 @@
 import type { UiSnapshot } from '../contracts/ports.js';
+import { findQuestExit } from '../app/quest-route.js';
 import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
 import { questCueAppearance } from '../render/quest-guidance.js';
 import { decorateControl } from './control-art.js';
@@ -136,7 +137,13 @@ export function buildWorldMap(
     chart.append(compass);
   }
 
-  chart.append(buildRoutes(document, view, atlas.maps, landmarks, atlas.scope));
+  const quest = focus?.kind === 'quest' ? view.questViews.find(({ questId }) => questId === focus.id)
+    : selectTrackerQuest(view.questViews, trackedQuestId);
+  const exit = quest ? findQuestExit(data, view.catalog, view.questViews, quest.questId) : null;
+  const nextMapId = exit ? view.catalog.world.maps[data.location.mapId]?.portals.find(({ id }) => id === exit)?.targetMapId : undefined;
+  const questPair = nextMapId ? routePair(data.location.mapId, nextMapId) : null;
+  const routes = buildRoutes(document, view, atlas.maps, landmarks, atlas.scope, questPair);
+  chart.append(routes);
   for (const map of atlas.maps) {
     const landmark = landmarks[map.id];
     const current = map.id === data.location.mapId;
@@ -177,8 +184,6 @@ export function buildWorldMap(
     }
   }
 
-  const quest = focus?.kind === 'quest' ? view.questViews.find(({ questId }) => questId === focus.id)
-    : selectTrackerQuest(view.questViews, trackedQuestId);
   const destination = resolveQuestMapTarget(view.catalog.world, data, quest);
   const questMapIds = destination ? new Set([destination.id])
     : questDestinationMapIds(view.catalog.world, questTargets(quest));
@@ -214,6 +219,9 @@ export function buildWorldMap(
     element(document, 'span', '', atlas.scope === 'world' ? '虛線為島嶼間通道' : '虛線為區域通道'),
   );
   if (hasQuestPin) legend.append(element(document, 'span', '', questCueAppearance.portal.symbol + ' 任務目標'));
+  if (routes.querySelector('.is-quest-route')) {
+    legend.append(element(document, 'span', 'ms-atlas-legend-route', '━ 下一段任務路線'));
+  }
   if (atlas.scope === 'world' && PLANNED_REGIONS.some(({ id }) => id === 'planned-golden-sands' && sandOverview.totalCount === 0
     || id === 'planned-ancient-ruins' && ruinsOverview.totalCount === 0)) {
     legend.append(element(document, 'span', '', '▧ 待開發'));
@@ -225,12 +233,17 @@ export function buildWorldMap(
   return root;
 }
 
+function routePair(from: string, to: string): string {
+  return from < to ? from + ':' + to : to + ':' + from;
+}
+
 function buildRoutes(
   document: Document,
   view: UiSnapshot,
   maps: UiSnapshot['catalog']['world']['maps'][string][],
   landmarks: Record<string, MapLandmark>,
   scope: AtlasScope,
+  questPair: string | null,
 ): SVGSVGElement {
   const routes = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   routes.setAttribute('viewBox', '0 0 100 100');
@@ -238,6 +251,7 @@ function buildRoutes(
   routes.setAttribute('class', 'ms-atlas-routes');
   routes.setAttribute('aria-hidden', 'true');
   const pairs = new Set<string>();
+  let questRoute: SVGPathElement | undefined;
   const routeMaps = scope === 'world' ? Object.values(view.catalog.world.maps) : maps;
   const coordinate = (mapId: string): { x: number; y: number } | undefined => {
     const mapScope = atlasScopeForMapId(mapId);
@@ -260,17 +274,23 @@ function buildRoutes(
         && targetMap.id !== 'frost-shore' && targetMap.id !== 'sand-glass-shore' && targetMap.id !== 'ruins-tide-camp') continue;
       const to = coordinate(targetMap.id);
       if (!to) continue;
-      const pair = [map.id, targetMap.id].sort().join(':');
+      const pair = routePair(map.id, targetMap.id);
       if (pairs.has(pair)) continue;
       pairs.add(pair);
       const open = portalRequirements(portal, view.saveData!, view.catalog).open;
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       const midpointX = (from.x + to.x) / 2;
       path.setAttribute('d', 'M ' + from.x + ' ' + from.y + ' Q ' + midpointX + ' ' + (Math.min(from.y, to.y) - 2) + ' ' + to.x + ' ' + to.y);
-      path.setAttribute('class', open ? 'is-open' : 'is-locked');
-      routes.append(path);
+      if (pair === questPair) {
+        path.setAttribute('class', 'is-quest-route');
+        questRoute = path;
+      } else {
+        path.setAttribute('class', open ? 'is-open' : 'is-locked');
+        routes.append(path);
+      }
     }
   }
+  if (questRoute) routes.append(questRoute);
   return routes;
 }
 
