@@ -631,7 +631,12 @@ export function createUi(
   const questDetail = makeElement(document, 'span', 'ms-quest-tracker__detail');
   const questReview = makeButton(document, '', 'review-sidequest', { className: 'ms-quest-tracker__review' });
   questReview.textContent = '查看任務 →';
-  questBody.append(questDetail, questReview);
+  const questMapReview = makeButton(document, '', 'review-quest-map', { className: 'ms-quest-tracker__review ms-quest-tracker__map' });
+  questMapReview.append(makeQuestCueBadge(document, 'portal'), document.createTextNode('查看地點'));
+  questMapReview.hidden = true;
+  const questActions = makeElement(document, 'div', 'ms-quest-tracker__actions');
+  questActions.append(questMapReview, questReview);
+  questBody.append(questDetail, questActions);
   questTracker.append(questToggle, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
   let contextTargetKey: string | null = null;
@@ -1023,16 +1028,23 @@ export function createUi(
     const definition = quest ? view.catalog.world.quests[quest.questId] : undefined;
     const giver = definition ? view.catalog.world.npcs[definition.giverNpcId]?.name ?? definition.giverNpcId : '任務委託人';
     const recipient = definition ? view.catalog.world.npcs[definition.turnInNpcId]?.name ?? definition.turnInNpcId : '任務委託人';
-    // Name the NPC's map too: after dying (respawn is always 木葉鎮) players otherwise had to
-    // remember that 礦道守望者 waits three maps away.
-    const where = (npcId: string | undefined): string => {
-      const map = npcId ? Object.values(view.catalog.world.maps).find((entry) => entry.npcs.some((npc) => npc.npcId === npcId)) : undefined;
-      return map ? '（' + map.name + '）' : '';
-    };
-    const place = !quest ? ''
-      : quest.status === 'available' ? where(definition?.giverNpcId)
-      : quest.status === 'ready' ? where(definition?.turnInNpcId)
-      : '';
+    const npcId = quest?.status === 'available' ? definition?.giverNpcId
+      : quest?.status === 'ready' ? definition?.turnInNpcId : undefined;
+    const npcPlace = npcId ? resolveNpcMapTarget(view.catalog.world, npcId) : null;
+    const place = npcPlace ? '（' + npcPlace.mapName + '）' : '';
+    const objectiveMap = quest?.status === 'active' && view.saveData
+      ? resolveQuestMapTarget(view.catalog.world, view.saveData, quest) : undefined;
+    const mapName = npcPlace?.mapName ?? objectiveMap?.name;
+    questMapReview.hidden = !mapName;
+    if (mapName && quest) {
+      const useNpc = npcPlace && npcId;
+      questMapReview.dataset.uiAction = useNpc ? 'review-npc-map' : 'review-quest-map';
+      questMapReview.dataset.npcId = useNpc || '';
+      questMapReview.dataset.questId = quest.questId;
+      const mapLabel = '查看「' + quest.title + '」目標地點 · ' + mapName;
+      questMapReview.title = mapLabel;
+      questMapReview.setAttribute('aria-label', mapLabel);
+    }
     const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required) ?? [];
     const objectives = remainingObjectives.length ? remainingObjectives : quest?.objectives ?? [];
     const detail = !quest

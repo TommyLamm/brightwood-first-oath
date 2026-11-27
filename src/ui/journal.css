@@ -243,7 +243,9 @@
 .ms-dialogue-objectives li.is-complete { border-color: #a2aa7a; background: #eef1d9; }
 .ms-dialogue-objectives .is-complete .ms-quest-tracker__counter { color: #356740; }
 .ms-quest-tracker__more { padding-left: 21px; }
-.maple-ui .ms-quest-tracker__review { justify-self: end; font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+.ms-quest-tracker__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.maple-ui .ms-quest-tracker__review { font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+.maple-ui .ms-quest-tracker__map:not([hidden]) { display: inline-flex; align-items: center; gap: 4px; }
 @media (pointer: coarse) {
   .maple-ui .ms-quest-tracker__toggle { min-height: 32px; }
   .maple-ui .ms-quest-tracker__review { min-height: 44px; }
