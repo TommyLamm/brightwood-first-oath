@@ -609,6 +609,10 @@ export function createUi(
   const profile = makeElement(document, 'section', 'ms-card ms-profile');
   const quickbar = makeElement(document, 'section', 'ms-quickbar');
   const mapCard = makeElement(document, 'section', 'ms-card ms-map-indicator');
+  const mapNameLabel = makeElement(document, 'strong', '', '尚未開始');
+  const mapCoins = makeElement(document, 'span', 'ms-map-indicator__coins');
+  mapCoins.hidden = true;
+  mapCard.append(mapNameLabel, mapCoins);
   const region = makeElement(document, 'aside', 'ms-region');
   const systemControls = makeElement(document, 'nav', 'ms-system-controls');
   systemControls.setAttribute('aria-label', '遊戲系統');
@@ -735,7 +739,7 @@ export function createUi(
   let currentView: UiSnapshot | null = null;
   let lastScreenSignature = '';
   let playerProfileView: ReturnType<typeof makePlayerProfileView> | null | undefined;
-  let lastMapSignature = '';
+  let lastMapCoins: number | null = null;
   let lastQuestViews: UiSnapshot['questViews'] | undefined;
   let lastQuestSignature = '';
   let lastPanelSignature = '';
@@ -995,20 +999,14 @@ export function createUi(
   };
 
   const renderMapIndicator = (view: UiSnapshot): void => {
-    const data = view.saveData;
-    const signature = data ? data.location.mapId + ':' + data.location.spawnId + ':' + data.player.coins : 'none';
-    if (signature === lastMapSignature) return;
-    lastMapSignature = signature;
-    mapCard.replaceChildren();
-    if (!data) {
-      mapCard.append(makeElement(document, 'strong', '', '尚未開始'));
-      return;
-    }
-    const map = view.catalog.world.maps[data.location.mapId];
-    mapCard.append(
-      makeElement(document, 'strong', '', map?.name ?? data.location.mapId),
-      makeElement(document, 'span', 'ms-map-indicator__coins', '金幣 ' + formatNumber(data.player.coins)),
-    );
+    const mapId = view.saveData?.location.mapId;
+    const name = mapId ? view.catalog.world.maps[mapId]?.name ?? mapId : '尚未開始';
+    if (mapNameLabel.textContent !== name) mapNameLabel.textContent = name;
+    const coins = view.saveData?.player.coins ?? null;
+    if (lastMapCoins === coins) return;
+    lastMapCoins = coins;
+    mapCoins.hidden = coins === null;
+    if (coins !== null) mapCoins.textContent = '金幣 ' + formatNumber(coins);
   };
 
   const renderQuestTracker = (view: UiSnapshot): void => {
