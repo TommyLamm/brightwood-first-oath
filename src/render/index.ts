@@ -2,7 +2,8 @@ import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import {
   drawContextFocus, drawPortalLock, drawQuestCue, drawSpecializationCue,
-  questCueAppearance, questEdgeCue, questExitCue, type QuestCueKind,
+  questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
+  type QuestEdgeTarget, type QuestTargetKind,
 } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
@@ -1166,22 +1167,18 @@ export function createWorldRenderer(
     const right = viewport.x + viewport.width + margin;
     const bottom = viewport.y + viewport.height + margin;
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
-    type TargetKind = Exclude<QuestCueKind, 'portal'>;
-    type EdgeTarget = { kind: TargetKind; cue: NonNullable<ReturnType<typeof questEdgeCue>>; priority: number; distance: number };
-    const targetGuide: { visiblePriority: number; nearest?: EdgeTarget } = { visiblePriority: -1 };
-    const guideTarget = (kind: TargetKind, point: Vec2): void => {
-      const priority = kind === 'item' ? 1 : 0;
+    const visibleQuestKinds = new Set<QuestTargetKind>();
+    const nearestQuestTargets = new Map<QuestTargetKind, QuestEdgeTarget>();
+    const guideTarget = (kind: QuestTargetKind, point: Vec2): void => {
       const edge = questEdgeCue(point, viewport);
       if (!edge) {
-        targetGuide.visiblePriority = Math.max(targetGuide.visiblePriority, priority);
+        visibleQuestKinds.add(kind);
         drawQuestCue(guidanceGraphics, kind, point.x, point.y);
         return;
       }
       const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
-      const nearest = targetGuide.nearest;
-      if (!nearest || priority > nearest.priority || (priority === nearest.priority && distance < nearest.distance)) {
-        targetGuide.nearest = { kind, cue: edge, priority, distance };
-      }
+      const nearest = nearestQuestTargets.get(kind);
+      if (!nearest || distance < nearest.distance) nearestQuestTargets.set(kind, { kind, cue: edge, distance });
     };
     const contextKey = snapshot.contextTargetKey;
     const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
@@ -1340,9 +1337,9 @@ export function createWorldRenderer(
       const portalImage = assets.images.get('env:portal')!;
       const cue = questExitCue({ x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 }, viewport);
       drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
-    } else if (targetGuide.nearest && targetGuide.nearest.priority > targetGuide.visiblePriority) {
-      const { kind, cue } = targetGuide.nearest;
-      drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction);
+    } else {
+      const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestKinds);
+      if (target) drawQuestCue(guidanceGraphics, target.kind, target.cue.x, target.cue.y, target.cue.direction);
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 

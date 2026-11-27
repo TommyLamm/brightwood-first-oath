@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { QuestView } from '../contracts/definitions.js';
 import { questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
-import { questEdgeCue, questExitCue } from './quest-guidance.js';
+import { questEdgeCue, questExitCue, selectQuestEdgeTarget, type QuestEdgeTarget } from './quest-guidance.js';
 
 function quest(questId: string, status: QuestView['status'], objectives: QuestView['objectives'] = []): QuestView {
   return {
@@ -46,5 +46,15 @@ describe('in-world quest guidance', () => {
     expect(questEdgeCue({ x: 219, y: 250 }, viewport)).toEqual({ x: 220, y: 320, direction: 'left' });
     expect(questEdgeCue({ x: 220, y: 250 }, viewport)).toBeUndefined();
     expect(questEdgeCue({ x: 350, y: 550 }, viewport)).toEqual({ x: 350, y: 480, direction: 'down' });
+  });
+
+  it('keeps a different objective discoverable when monsters are already visible', () => {
+    const cue = { x: 780, y: 300, direction: 'right' } as const;
+    const npc: QuestEdgeTarget = { kind: 'npc', cue, distance: 20 };
+    const monster: QuestEdgeTarget = { kind: 'monster', cue, distance: 10 };
+    expect(selectQuestEdgeTarget([monster, npc], new Set(['monster']))).toBe(npc);
+    expect(selectQuestEdgeTarget([monster, npc], new Set(['monster', 'npc']))).toBeUndefined();
+    expect(selectQuestEdgeTarget([monster, npc], new Set(['item']))).toBe(npc);
+    expect(selectQuestEdgeTarget([monster, npc, { kind: 'item', cue, distance: 40 }], new Set())).toMatchObject({ kind: 'item' });
   });
 });

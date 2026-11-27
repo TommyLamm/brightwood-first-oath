@@ -13,6 +13,25 @@ export const questCueAppearance = {
   portal: { color: 0xe1ccff, symbol: '↓' },
 } as const;
 export type QuestCueKind = keyof typeof questCueAppearance;
+export type QuestTargetKind = Exclude<QuestCueKind, 'portal'>;
+export type QuestEdgeTarget = {
+  kind: QuestTargetKind;
+  cue: Vec2 & { direction: CueDirection };
+  distance: number;
+};
+
+export function selectQuestEdgeTarget(
+  nearestByKind: Iterable<QuestEdgeTarget>,
+  visible: ReadonlySet<QuestTargetKind>,
+): QuestEdgeTarget | undefined {
+  let nearest: QuestEdgeTarget | undefined;
+  for (const target of nearestByKind) {
+    if (visible.has(target.kind) || (target.kind === 'monster' && visible.has('item'))) continue;
+    if (target.kind === 'item') return target;
+    if (!nearest || target.distance < nearest.distance) nearest = target;
+  }
+  return nearest;
+}
 
 export function drawContextFocus(
   graphics: Phaser.GameObjects.Graphics, { x, y }: Readonly<Vec2>, width: number, color = 0xa8f1c6,
