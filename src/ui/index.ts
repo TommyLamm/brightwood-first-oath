@@ -28,7 +28,7 @@ import {
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import { BAG_CAPACITY } from '../contracts/limits.js';
 import type { StorageLike, UiController, UiSnapshot } from '../contracts/ports.js';
-import type { PlayerJob, Settings } from '../contracts/types.js';
+import type { PlayerJob, PlayerProgress, Settings } from '../contracts/types.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { validatePlayerName } from '../domain/progression/index.js';
 import { POTION_COOLDOWN_MS, resolveItemUse } from '../app/item-use.js';
@@ -734,6 +734,12 @@ export function createUi(
   let lastQuestViews: UiSnapshot['questViews'] | undefined;
   let lastQuestSignature = '';
   let lastPanelSignature = '';
+  let lastPanelSources: {
+    data: UiSnapshot['saveData'] | PlayerProgress | undefined;
+    quests: UiSnapshot['questViews'] | undefined;
+    interaction: UiSnapshot['interaction'] | undefined;
+    signature: string;
+  } | null = null;
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
   let selectedBagIndex: number | null = null;
   let inventoryFilter: InventoryFilter = 'all';
@@ -1730,6 +1736,7 @@ export function createUi(
     if (!panel) {
       if (lastPanelSignature !== '') {
         lastPanelSignature = '';
+        lastPanelSources = null;
         panelHost.replaceChildren();
           if (view.screen === 'playing' && view.focusResumeRequired !== true) focusGameCanvas();
       }
@@ -1738,12 +1745,21 @@ export function createUi(
     const inventory = panel === 'inventory';
     const trackedQuestId = questTrackerState.trackedQuestId;
     const inventoryQuest = inventory ? selectTrackerQuest(view.questViews, trackedQuestId) : undefined;
+    const data = inventory ? view.saveData?.player : view.saveData;
+    const quests = inventory ? undefined : view.questViews;
+    const interaction = inventory ? undefined : view.interaction;
+    const previousSources = lastPanelSources;
+    // Gameplay replaces these branches when they change. Serialize only after a reference changes.
+    const sources = !force && previousSources && previousSources.data === data
+      && previousSources.quests === quests && previousSources.interaction === interaction
+      ? previousSources
+      : { data, quests, interaction, signature: JSON.stringify({ data, quests, interaction }) };
+    lastPanelSources = sources;
     const signature = JSON.stringify({
       panel,
-      data: inventory ? view.saveData?.player : view.saveData,
       interfaceReady: Boolean(view.interfaceManifest),
-      quests: inventory ? inventoryQuest && [inventoryQuest.questId, inventoryQuest.status] : view.questViews,
-      interaction: inventory ? undefined : view.interaction,
+      inventoryQuestId: inventoryQuest?.questId,
+      inventoryQuestStatus: inventoryQuest?.status,
       canTrade: (inventory || panel === 'shop') && view.canTrade,
       nearSpecializationMentor: panel === 'skills' && view.nearSpecializationMentor === true,
       canReturnTown: view.canReturnTown,
@@ -1766,7 +1782,7 @@ export function createUi(
       bindingMessage,
       bindingMessageAction,
     });
-    if (!force && signature === lastPanelSignature) return;
+    if (!force && signature === lastPanelSignature && sources.signature === previousSources?.signature) return;
     lastPanelSignature = signature;
     const samePanel = panelHost.querySelector<HTMLElement>('.ms-panel')?.dataset.panel === panel;
     const previousFocus = document.activeElement;
