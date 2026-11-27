@@ -23,6 +23,7 @@ import {
   getEffectiveKeyCodes,
   resolveEffectiveBindings,
   type GameAction,
+  type KeyBindings,
 } from '../app/keyboard.js';
 import type { CommandDraft, PanelId } from '../contracts/commands.js';
 import { BAG_CAPACITY } from '../contracts/limits.js';
@@ -196,8 +197,21 @@ const KEY_GUIDE_SECTIONS: {
   },
 ];
 
-function effectiveKeyText(bindings: Partial<Record<GameAction, string>>, action: GameAction): string {
-  const codes = getEffectiveKeyCodes(action, resolveEffectiveBindings(bindings));
+// Settings updates replace the bindings object. HUD and panels can share its derived labels.
+const keyLabelsByBindings = new WeakMap<KeyBindings, ReadonlyMap<GameAction, string>>();
+
+function effectiveKeyText(bindings: KeyBindings, action: GameAction): string {
+  let labels = keyLabelsByBindings.get(bindings);
+  if (!labels) {
+    const effective = resolveEffectiveBindings(bindings);
+    labels = new Map((Object.keys(DEFAULT_KEY_BINDINGS) as GameAction[])
+      .map((key) => [key, formatKeyCodes(getEffectiveKeyCodes(key, effective))]));
+    keyLabelsByBindings.set(bindings, labels);
+  }
+  return labels.get(action) ?? '未生效';
+}
+
+function formatKeyCodes(codes: readonly string[]): string {
   if (codes.length === 0) return '未生效';
   if (codes.includes('ControlLeft') && codes.includes('ControlRight') && codes.length === 2) return '左／右 Ctrl';
   if (codes.includes('AltLeft') && codes.includes('AltRight') && codes.length === 2) return '左／右 Alt';
@@ -1056,7 +1070,7 @@ export function createUi(
   const updateInteractionHint = (view: UiSnapshot): void => {
     const canShow = view.screen === 'playing' && view.focusResumeRequired !== true && view.panels.length === 0;
     const hint = canShow
-      ? contextHint(view, (action) => effectiveKeyText(view.saveData?.settings.bindings ?? {}, action))
+      ? contextHint(view, (action) => effectiveKeyText(view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS, action))
       : null;
     const visible = hint !== null;
     shell.classList.toggle('has-interaction-hint', visible);
@@ -1116,9 +1130,11 @@ export function createUi(
       if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
       button.classList.toggle('has-action-feedback', false);
-      const binding = effectiveKeyText(view.saveData?.settings.bindings ?? {}, keyForSkill[definitionId]!);
-      key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
-      key.title = binding;
+      const binding = effectiveKeyText(view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS, keyForSkill[definitionId]!);
+      if (key.title !== binding) {
+        key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
+        key.title = binding;
+      }
 
       if (slot.kind === 'item') {
         const healthPotion = slotId === 'small-red';
