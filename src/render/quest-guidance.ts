@@ -14,6 +14,7 @@ export const questCueAppearance = {
 } as const;
 export type QuestCueKind = keyof typeof questCueAppearance;
 export type QuestTargetKind = Exclude<QuestCueKind, 'portal'>;
+export type QuestNpcCueState = 'available' | 'ready';
 export type QuestEdgeTarget = {
   kind: QuestTargetKind;
   targetKey: string;
@@ -98,9 +99,10 @@ export function drawQuestCue(
   x: number,
   y: number,
   direction?: CueDirection,
+  npcState?: QuestNpcCueState,
 ): void {
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
-  const { color } = questCueAppearance[kind];
+  const color = kind === 'npc' && npcState === 'ready' ? 0xb9f6b5 : questCueAppearance[kind].color;
   if (kind === 'portal') {
     const { x: dx, y: dy } = directions[direction ?? 'down'];
     graphics.lineStyle(2, color, 1).lineBetween(x - dx * 6, y - dy * 6, x + dx * 4, y + dy * 4);
@@ -117,6 +119,16 @@ export function drawQuestCue(
     strokeCueChevron(graphics, arrowX, arrowY, dx, dy);
   }
   if (kind === 'npc') {
+    if (npcState === 'ready') {
+      graphics.lineStyle(2, color, 1).beginPath().moveTo(x - 5, y).lineTo(x - 1, y + 4)
+        .lineTo(x + 5, y - 4).strokePath();
+      return;
+    }
+    if (npcState === 'available') {
+      graphics.lineStyle(2, color, 1).lineBetween(x, y - 5, x, y + 1);
+      graphics.fillStyle(color, 1).fillCircle(x, y + 5, 1.35);
+      return;
+    }
     graphics.lineStyle(2, color, 1).beginPath().moveTo(x, y - 6).lineTo(x + 6, y)
       .lineTo(x, y + 6).lineTo(x - 6, y).closePath().strokePath();
     graphics.fillStyle(color, 1).fillCircle(x, y, 1.5);

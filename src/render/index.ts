@@ -4,7 +4,7 @@ import { isLowHealth } from '../domain/combat/index.js';
 import {
   drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
-  type QuestEdgeTarget, type QuestTargetKind,
+  type QuestEdgeTarget, type QuestNpcCueState, type QuestTargetKind,
 } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
 import { isBossMonster } from '../content/rules/monsters.js';
@@ -432,6 +432,7 @@ export function createWorldRenderer(
   let questGuide: {
     views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets;
     markers: ReturnType<typeof questMarkerStates>; tunedSteles: ReadonlySet<string>;
+    npcStatus: QuestNpcCueState | undefined;
   } | undefined;
   /** Name plate drawn above the boss health bar so the arena fight reads as a named encounter. */
   const bossNameText = scene.add.text(0, 0, '', {
@@ -1033,10 +1034,11 @@ export function createWorldRenderer(
       const tunedSteles = steleQuest?.status === 'claimed' ? STELE_NPC_IDS : new Set(steleQuest?.objectives
         .filter(({ type, current, required }) => type === 'inspect' && current >= required)
         .map(({ targetId }) => targetId));
-      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest),
+      const npcStatus = quest?.status === 'available' || quest?.status === 'ready' ? quest.status : undefined;
+      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest), npcStatus,
         markers: questMarkerStates(snapshot.questViews, catalog.world.quests), tunedSteles };
     }
-    const { targets, markers, tunedSteles } = questGuide;
+    const { targets, markers, tunedSteles, npcStatus } = questGuide;
     attacksBySource.clear();
     for (const attack of snapshot.attacks) attacksBySource.set(attack.sourceId, attack);
     bossNameText.setVisible(false);
@@ -1192,7 +1194,7 @@ export function createWorldRenderer(
       if (!edge) {
         visibleQuestTargets.add(targetKey);
         visibleQuestDrop ||= kind === 'item';
-        drawQuestCue(guidanceGraphics, kind, marker.x, marker.y);
+        drawQuestCue(guidanceGraphics, kind, marker.x, marker.y, undefined, npcStatus);
         return true;
       }
       const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
@@ -1397,7 +1399,7 @@ export function createWorldRenderer(
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
       if (target) {
         const { x, y, direction } = target.cue;
-        drawQuestCue(guidanceGraphics, target.kind, x, y, direction);
+        drawQuestCue(guidanceGraphics, target.kind, x, y, direction, npcStatus);
         showEdgeLabel(target.label, target.cue);
       }
     }
