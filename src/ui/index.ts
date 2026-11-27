@@ -3016,18 +3016,20 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   }
   // Say how full the bag is, so a "bag full" refusal never comes as a surprise.
   const used = player.bag.length;
+  const overview = makeElement(document, 'div', 'ms-inventory-overview');
   const note = makeElement(document, 'p', 'ms-panel-note', '');
   const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格');
-  note.append(usage, document.createTextNode('。點選物品可查看能力與價格；滑鼠停留可看完整名稱。'));
+  note.append(usage);
+  overview.append(note);
   const upgrades = new Set(wearableUpgradeIndices(view, player));
   if (upgrades.size > 0) {
     const shortcut = makeButton(document, '▲ 可升級裝備（' + upgrades.size + '）', 'select-bag-upgrade', {
       className: 'ms-chip ms-bag-upgrades', title: '查看下一件可升級裝備',
     });
     shortcut.setAttribute('aria-label', '查看下一件可升級裝備，共 ' + upgrades.size + ' 件');
-    note.append(shortcut);
+    overview.append(shortcut);
   }
-  parent.append(note);
+  parent.append(overview);
   if (state.bagStateMessage) {
     const resetNote = makeElement(document, 'p', 'ms-panel-note ms-bag-state-note', state.bagStateMessage);
     resetNote.setAttribute('role', 'status');
@@ -3053,8 +3055,6 @@ function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelB
   const filtered = selectInventoryEntries(player.bag, view.catalog.rules.items, state.inventoryFilter);
   parent.append(makeElement(document, 'p', 'ms-panel-note', '物品格取得焦點後，可用方向鍵切換選取；Home／End 跳至首末物品。'));
   const categoryLabel = categories.find(({ id }) => id === state.inventoryFilter)?.label ?? state.inventoryFilter;
-  note.append(document.createTextNode(' 目前分類「' + categoryLabel + '」共 ' + filtered.length + ' 組物品。'
-    + (state.inventoryFilter === 'all' ? '' : ' 其他分類的物品仍計入已用格數。')));
   const selected = filtered.find(({ bagIndex }) => bagIndex === state.selectedBagIndex) ?? null;
   const layout = makeElement(document, 'div', 'ms-inventory-layout');
   const grid = makeElement(document, 'div', 'ms-bag-grid');
