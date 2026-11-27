@@ -1129,15 +1129,25 @@ export function createUi(
       contextTargetKey = null;
       if (interactionHintRow.textContent !== '') interactionHintRow.textContent = '';
       delete interactionHintRow.dataset.targetKey;
+      delete interactionHintRow.dataset.iconKey;
+      interactionHintRow.removeAttribute('title');
       return;
     }
     const interaction = view.interactionHint?.targetKey === hint.targetKey ? view.interactionHint
       : view.pickupHint?.targetKey === hint.targetKey ? view.pickupHint : null;
     contextTargetKey = interaction && !interaction.blockedMessage ? hint.targetKey : null;
     const text = hint.text;
-    if (interactionHintRow.textContent !== text) {
-      interactionHintRow.replaceChildren(...hint.parts.map((part) =>
-        typeof part === 'string' ? part : makeElement(document, 'kbd', '', part.key)));
+    const icon = hint.parts.find((part): part is { iconKey: string } => typeof part !== 'string' && 'iconKey' in part);
+    const iconKey = icon?.iconKey ?? '';
+    if (interactionHintRow.title !== text || (interactionHintRow.dataset.iconKey ?? '') !== iconKey) {
+      interactionHintRow.replaceChildren(...hint.parts.map((part) => {
+        if (typeof part === 'string') return part;
+        if ('key' in part) return makeElement(document, 'kbd', '', part.key);
+        const image = makeInterfaceIcon(document, view, part.iconKey, '', 'ms-interaction-hint__item');
+        image.setAttribute('aria-hidden', 'true');
+        return image;
+      }));
+      interactionHintRow.dataset.iconKey = iconKey;
     }
     interactionHintRow.classList.toggle('is-blocked', Boolean(interaction?.blockedMessage));
     if (interactionHintRow.title !== text) interactionHintRow.title = text;

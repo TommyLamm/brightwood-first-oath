@@ -221,7 +221,7 @@ export type UiSnapshot = {
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */
   movementHint?: ClimbHint | DropHint | null;
   /** The unexpired nearby drop selected by the actual pickup command. */
-  pickupHint?: { targetKey: string; label: string; blockedMessage?: string | null } | null;
+  pickupHint?: { targetKey: string; label: string; iconKey?: string; blockedMessage?: string | null } | null;
   /** Runtime-only location for the open terrain guide; never persisted. */
   playerPosition?: Vec2 | null;
   /** Device-local opt-in for repeating the keyboard basic attack while held. */

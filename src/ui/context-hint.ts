@@ -1,7 +1,7 @@
 import type { UiSnapshot } from '../contracts/ports.js';
 
 type MovementKey = 'climbUp' | 'climbDown' | 'jump';
-type HintPart = string | { key: string };
+type HintPart = string | { key: string } | { iconKey: string };
 type ContextHint = { targetKey: string; parts: HintPart[]; text: string; secondaryPickupKey?: string };
 type ClimbHint = Extract<NonNullable<UiSnapshot['movementHint']>, { kind: 'climb' }>;
 
@@ -14,7 +14,13 @@ function climbParts(hint: ClimbHint, key: (action: MovementKey) => HintPart): Hi
 }
 
 function makeHint(targetKey: string, parts: HintPart[]) {
-  return { targetKey, parts, text: parts.map((part) => typeof part === 'string' ? part : part.key).join('') };
+  return { targetKey, parts, text: parts.map((part) => typeof part === 'string' ? part : 'key' in part ? part.key : '').join('') };
+}
+
+function pickupParts(pickup: NonNullable<UiSnapshot['pickupHint']>, key: HintPart, suffix = ''): HintPart[] {
+  const label = pickup.label + suffix;
+  if (!pickup.iconKey) return [key, ' 拾取：' + label];
+  return [key, ' 拾取：', { iconKey: pickup.iconKey }, label];
 }
 
 export function contextHint(
@@ -34,7 +40,7 @@ export function contextHint(
         + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
     ];
     if (!interaction.blockedMessage && pickup && !pickup.blockedMessage) {
-      parts.push('\n', key('pickup'), ' 拾取：' + pickup.label);
+      parts.push('\n', ...pickupParts(pickup, key('pickup')));
       return { ...makeHint(interaction.targetKey, parts), secondaryPickupKey: pickup.targetKey };
     }
     if (!interaction.blockedMessage && movement?.kind === 'climb') {
@@ -42,9 +48,8 @@ export function contextHint(
     }
     return makeHint(interaction.targetKey, parts);
   }
-  if (pickup) return makeHint(pickup.targetKey, [
-    key('pickup'), ' 拾取：' + pickup.label + '｜' + (pickup.blockedMessage ?? '按住連續拾取'),
-  ]);
+  if (pickup) return makeHint(pickup.targetKey,
+    pickupParts(pickup, key('pickup'), '｜' + (pickup.blockedMessage ?? '按住連續拾取')));
   if (!movement) return null;
   if (movement.kind === 'drop') return makeHint(movement.targetKey, [key('climbDown'), ' + ', key('jump'), ' 向下跳落']);
   return makeHint(movement.targetKey, climbParts(movement, key));

@@ -40,7 +40,11 @@ describe('pickup targets and reminders', () => {
     const item = Object.values(rulesCatalog.items)[0]!;
     state.gameplay.drops = [{ ...coin('item', 105), itemId: item.id, quantity: 3, coins: 0 }];
     const save = JSON.stringify(state.gameplay.saveData);
-    expect(createUiSnapshot(state)?.pickupHint).toEqual({ targetKey: 'pickup:item', label: item.name + ' × 3', blockedMessage: null });
+    const view = createUiSnapshot(state)!;
+    expect(view.pickupHint).toEqual({ targetKey: 'pickup:item', label: item.name + ' × 3', iconKey: item.iconKey, blockedMessage: null });
+    const hint = contextHint(view, () => 'Z');
+    expect(hint?.parts).toContainEqual({ iconKey: item.iconKey });
+    expect(hint?.text).toContain(item.name + ' × 3');
     state.gameplay.drops = [coin('coins', 105)];
     expect(createUiSnapshot(state)?.pickupHint?.label).toBe('7 金幣');
     expect(JSON.stringify(state.gameplay.saveData)).toBe(save);
