@@ -28,7 +28,7 @@ import type { AttackStanceBlock, DropState, VisualEvent, WorldSnapshot } from '.
 import { canTradeWithMerchant, INTERACTION_RANGE_PX, isNearSpecializationMentor, nearestNpcPlacement, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findQuestExit } from './quest-route.js';
 import { deriveMovementHint } from './movement-hint.js';
-import { resolveItemUse } from './item-use.js';
+import { POTION_COOLDOWN_MS, resolveItemUse } from './item-use.js';
 import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
 import { effectiveJob, resolveSkillSlot, jobs, magePassiveRank, roguePassiveRank } from '../content/rules/jobs.js';
@@ -882,7 +882,7 @@ function processCommand(
         potionReadyAtMs: gameplay.potionReadyAtMs,
       });
       if (!result.ok) return withToast(gameplay, result.message);
-      gameplay.potionReadyAtMs = context.nowMs + 1000;
+      gameplay.potionReadyAtMs = context.nowMs + POTION_COOLDOWN_MS;
       return { gameplay: withPlayer(gameplay, result.value.player, null) };
     }
     case 'setSettings':

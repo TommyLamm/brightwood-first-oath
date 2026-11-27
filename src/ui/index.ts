@@ -30,7 +30,8 @@ import type { StorageLike, UiController, UiSnapshot } from '../contracts/ports.j
 import type { PlayerJob, Settings } from '../contracts/types.js';
 import { resolveQuestClaim } from '../domain/quests/claim.js';
 import { validatePlayerName } from '../domain/progression/index.js';
-import { resolveItemUse } from '../app/item-use.js';
+import { POTION_COOLDOWN_MS, resolveItemUse } from '../app/item-use.js';
+import { skillCooldownMs } from '../domain/combat/index.js';
 import { reconcileBagViewState } from './bag-view-state.js';
 import { previewEquipmentAction } from './equipment-preview.js';
 import { previewEquipmentStats, type EquipmentStatsPreview } from './equipment-stats-preview.js';
@@ -350,6 +351,14 @@ function isLowHealth(hp: number, maxHp: number): boolean {
   return hp > 0 && hp <= maxHp * 0.3;
 }
 
+function renderCooldownProgress(track: HTMLElement, remaining: number, duration: number): void {
+  const visible = remaining > 0 && duration > 0;
+  if (track.hidden === visible) track.hidden = !visible;
+  if (!visible) return;
+  const percent = Math.round(clamp(1 - remaining / duration, 0, 1) * 100) + '%';
+  if (track.style.getPropertyValue('--cooldown-progress') !== percent) track.style.setProperty('--cooldown-progress', percent);
+}
+
 function statusLabel(status: UiSnapshot['saveStatus']): string {
   return {
     unavailable: '未連線',
@@ -626,7 +635,7 @@ export function createUi(
   ] as const;
   const quickButtons: {
     slot: typeof quickDefinitions[number]; button: HTMLButtonElement; key: HTMLElement;
-    iconHost: HTMLElement; label: HTMLElement; state: HTMLElement; previousInputs: unknown[];
+    iconHost: HTMLElement; label: HTMLElement; state: HTMLElement; cooldownTrack: HTMLElement; previousInputs: unknown[];
   }[] = [];
   for (const slot of quickDefinitions) {
     const button = makeButton(document, '', slot.kind === 'item' ? 'use-item' : 'attack', {
@@ -637,11 +646,14 @@ export function createUi(
     const icon = makeElement(document, 'span', 'ms-quick-slot__icon');
     const label = makeElement(document, 'strong', 'ms-quick-slot__label', slot.label);
     const state = makeElement(document, 'span', 'ms-quick-slot__state', '');
+    const cooldownTrack = makeElement(document, 'span', 'ms-quick-slot__cooldown');
+    cooldownTrack.hidden = true;
+    cooldownTrack.setAttribute('aria-hidden', 'true');
     button.setAttribute('aria-label', slot.label);
     if (slot.kind === 'item') button.classList.add('ms-quick-slot--item');
-    button.append(keyHint, icon, label, state);
+    button.append(keyHint, icon, label, state, cooldownTrack);
     quickSlots.append(button);
-    quickButtons.push({ slot, button, key: keyHint, iconHost: icon, label, state, previousInputs: [] as unknown[] });
+    quickButtons.push({ slot, button, key: keyHint, iconHost: icon, label, state, cooldownTrack, previousInputs: [] });
   }
   quickbar.setAttribute('aria-label', '戰鬥與藥水快捷列');
   quickbar.append(quickSlots);
@@ -1055,14 +1067,15 @@ export function createUi(
       'small-blue': 'potionMp',
     };
     for (const [slotIndex, entry] of quickButtons.entries()) {
-      const { slot, button, key, iconHost, label, state } = entry;
+      const { slot, button, key, iconHost, label, state, cooldownTrack } = entry;
       const definitionId = slot.id;
       const slotId = player && slotIndex < 4 ? resolveSkillSlot(player, slotIndex as 0|1|2|3) : definitionId;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
+      const cooldown = Math.max(0, readyAt - view.nowMs);
       // Timers invalidate at the same precision shown on the button.
       const inputs = [
         view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
-        Math.ceil(Math.max(0, readyAt - view.nowMs) / 100),
+        Math.ceil(cooldown / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
         Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
         view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
@@ -1092,7 +1105,7 @@ export function createUi(
         label.textContent = itemName;
         renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName, 'ms-quick-slot__icon-image');
 
-        const cooldown = Math.max(0, view.potionReadyAtMs - view.nowMs);
+        renderCooldownProgress(cooldownTrack, cooldown, POTION_COOLDOWN_MS);
         const full = player && view.stats
           && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp);
         const showFull = count > 0 && cooldown === 0 && full;
@@ -1123,6 +1136,7 @@ export function createUi(
       const skill = view.catalog.rules.skills[slotId];
       if (!player || !skill) {
         button.disabled = true;
+        cooldownTrack.hidden = true;
         state.textContent = '尚未載入';
         continue;
       }
@@ -1135,7 +1149,7 @@ export function createUi(
       const unlearned = rank === 0;
       button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
       button.classList.toggle('is-unlearned', unlearned);
-      const cooldown = Math.max(0, (view.skillReadyAtMs[slotId] ?? 0) - view.nowMs);
+      renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
       const reason = rank === 0 ? '未學習' : stanceReason
         || (!basic && !trial && player.mp < skill.mpCost ? 'MP 不足'
           : cooldown > 0 ? '冷卻 ' + remainingSeconds(cooldown) : '');
@@ -2701,7 +2715,7 @@ function skillDetails(skill: UiSnapshot['catalog']['rules']['skills'][string], r
     '需求 Lv.' + skill.requiredLevel + ' ' + (skill.requiredJob === 'rogue' ? '盜賊' : skill.requiredJob === 'mage' ? '法師' : skill.requiredJob === 'archer' ? '弓箭手' : skill.requiredJob === 'swordsman' ? '劍士' : '初心者'),
   ];
   // Passives have no cost or cooldown; "MP 0｜冷卻 0ms" only added noise.
-  if (skill.kind !== 'passive') parts.push('MP ' + skill.mpCost, '冷卻 ' + ((skill.cooldownMs - (skill.cooldownPerRank ?? 0) * (Math.max(1,rank)-1)) / 1000) + ' 秒');
+  if (skill.kind !== 'passive') parts.push('MP ' + skill.mpCost, '冷卻 ' + (skillCooldownMs(skill, rank) / 1000) + ' 秒');
   // Must match domain/combat calculateDamage: multiplierBase + multiplierPerRank × (rank − 1).
   if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (Math.max(1, rank) - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('持續 ' + Math.round(skill.durationMs / 1000) + ' 秒・防禦 +' + skill.defensePerRank * Math.max(1, rank));
@@ -2726,7 +2740,7 @@ function skillNextRankPreview(skill: UiSnapshot['catalog']['rules']['skills'][st
   if (skill.kind === 'attack') parts.push('倍率 ' + (skill.multiplierBase + skill.multiplierPerRank * (next - 1)).toFixed(2));
   if (skill.kind === 'buff') parts.push('防禦 +' + skill.defensePerRank * next);
   if (skill.id === 'rogue-smoke') parts.push('持續 ' + ((2200 + (next - 1) * 100) / 1000).toFixed(1) + ' 秒');
-  if (skill.cooldownPerRank) parts.push('冷卻 ' + ((skill.cooldownMs - skill.cooldownPerRank * (next-1))/1000) + ' 秒');
+  if (skill.cooldownPerRank) parts.push('冷卻 ' + (skillCooldownMs(skill, next) / 1000) + ' 秒');
   if (skill.hpPerRank) parts.push('最大 HP +' + skill.hpPerRank * next);
   if (skill.regenPerRank) parts.push('每 2 秒恢復 ' + skill.regenPerRank * next + (skill.requiredJob === 'mage' ? ' MP・最大MP +' + 8 * next : ' HP'));
   if (skill.damagePerRank) parts.push('加成 +' + Number((skill.damagePerRank * next * 100).toFixed(1)) + '%');

@@ -45,6 +45,12 @@
 .maple-ui .ms-quick-slot:hover:not(:disabled) { transform: none; border-color: #f0d49a; }
 .maple-ui .ms-quick-slot:not(.is-unlearned):hover::after { content: none; }
 .maple-ui .ms-quick-slot:focus-visible { outline: 2px solid #ffe2a0; outline-offset: 3px; }
+.ms-quick-slot__cooldown {
+  position: absolute; right: 4px; bottom: 1px; left: 4px; height: 4px; overflow: hidden;
+  border-radius: 2px; background: #101c17; pointer-events: none;
+}
+.ms-quick-slot__cooldown[hidden] { display: none; }
+.ms-quick-slot__cooldown::after { content: ''; display: block; width: var(--cooldown-progress, 0%); height: 100%; background: #9fe5bc; }
 .maple-ui .ms-quick-slot.is-health-recommended {
   border-color: #ffdb8a;
   box-shadow: inset 0 0 0 2px #ffd78d, 0 0 0 1px #774926;

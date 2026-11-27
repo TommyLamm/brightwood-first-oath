@@ -24,6 +24,10 @@ export function createCombatState(): CombatState {
   return { attacks: [], cooldowns: {} };
 }
 
+export function skillCooldownMs(skill: SkillDef, rank: number): number {
+  return Math.max(0, skill.cooldownMs - (skill.cooldownPerRank ?? 0) * (Math.max(1, rank) - 1));
+}
+
 export function attackLockUntil(state: CombatState, sourceId: EntityId, rules: RulesCatalog, nowMs: number): number {
   let deadline = 0;
   for (const attack of state.attacks) {
@@ -95,7 +99,7 @@ export function tryAttack(
   };
   const cooldowns = cloneCooldowns(state.cooldowns);
   const sourceCooldowns = { ...(cooldowns[source.id] ?? {}) };
-  sourceCooldowns[skill.id] = nowMs + Math.max(0, skill.cooldownMs - (skill.cooldownPerRank ?? 0) * (rank - 1));
+  sourceCooldowns[skill.id] = nowMs + skillCooldownMs(skill, rank);
   cooldowns[source.id] = sourceCooldowns;
 
   return success({

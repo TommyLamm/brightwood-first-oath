@@ -1,6 +1,8 @@
 import type { Id, PlayerProgress, Result, RulesCatalog } from '../contracts/index.js';
 import { applyProgressAction } from '../domain/progression/index.js';
 
+export const POTION_COOLDOWN_MS = 1000;
+
 type ResolveItemUseInput = {
   player: PlayerProgress;
   rules: RulesCatalog;
