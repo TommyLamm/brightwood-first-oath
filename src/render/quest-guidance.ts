@@ -16,17 +16,20 @@ export type QuestCueKind = keyof typeof questCueAppearance;
 export type QuestTargetKind = Exclude<QuestCueKind, 'portal'>;
 export type QuestEdgeTarget = {
   kind: QuestTargetKind;
+  targetKey: string;
+  label: string;
   cue: Vec2 & { direction: CueDirection };
   distance: number;
 };
 
 export function selectQuestEdgeTarget(
-  nearestByKind: Iterable<QuestEdgeTarget>,
-  visible: ReadonlySet<QuestTargetKind>,
+  nearestByTarget: Iterable<QuestEdgeTarget>,
+  visible: ReadonlySet<string>,
+  visibleDrop = false,
 ): QuestEdgeTarget | undefined {
   let nearest: QuestEdgeTarget | undefined;
-  for (const target of nearestByKind) {
-    if (visible.has(target.kind) || (target.kind === 'monster' && visible.has('item'))) continue;
+  for (const target of nearestByTarget) {
+    if (visible.has(target.targetKey) || (target.kind === 'monster' && visibleDrop)) continue;
     if (target.kind === 'item') return target;
     if (!nearest || target.distance < nearest.distance) nearest = target;
   }

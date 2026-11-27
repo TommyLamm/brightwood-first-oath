@@ -438,6 +438,11 @@ export function createWorldRenderer(
     color: '#ffe7a8', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontStyle: 'bold',
     stroke: '#2a1d22', strokeThickness: 4,
   }).setOrigin(0.5, 1).setDepth(WORLD_DEPTH.health).setVisible(false);
+  const questEdgeLabel = scene.add.text(0, 0, '', {
+    resolution: WORLD_TEXT_RESOLUTION,
+    color: '#fff4d4', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontStyle: 'bold',
+    stroke: '#20242a', strokeThickness: 3,
+  }).setDepth(WORLD_DEPTH.health).setVisible(false);
   /** Small name plates for ordinary monsters near the hero, so quest targets like 赤背野豬 are recognisable. */
   const monsterNameTexts = new Map<string, Phaser.GameObjects.Text>();
   const monsterNameText = (key: string): Phaser.GameObjects.Text => {
@@ -1029,6 +1034,7 @@ export function createWorldRenderer(
     attacksBySource.clear();
     for (const attack of snapshot.attacks) attacksBySource.set(attack.sourceId, attack);
     bossNameText.setVisible(false);
+    questEdgeLabel.setVisible(false);
     for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
@@ -1171,18 +1177,21 @@ export function createWorldRenderer(
     const right = viewport.x + viewport.width + margin;
     const bottom = viewport.y + viewport.height + margin;
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
-    const visibleQuestKinds = new Set<QuestTargetKind>();
-    const nearestQuestTargets = new Map<QuestTargetKind, QuestEdgeTarget>();
-    const guideTarget = (kind: QuestTargetKind, point: Vec2): void => {
+    const visibleQuestTargets = new Set<string>();
+    const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
+    let visibleQuestDrop = false;
+    const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2): void => {
+      const targetKey = kind + ':' + id;
       const edge = questEdgeCue(point, viewport);
       if (!edge) {
-        visibleQuestKinds.add(kind);
+        visibleQuestTargets.add(targetKey);
+        visibleQuestDrop ||= kind === 'item';
         drawQuestCue(guidanceGraphics, kind, point.x, point.y);
         return;
       }
       const distance = vectorDistanceSquared(point, snapshot.player.movement.position);
-      const nearest = nearestQuestTargets.get(kind);
-      if (!nearest || distance < nearest.distance) nearestQuestTargets.set(kind, { kind, cue: edge, distance });
+      const nearest = nearestQuestTargets.get(targetKey);
+      if (!nearest || distance < nearest.distance) nearestQuestTargets.set(targetKey, { kind, targetKey, label, cue: edge, distance });
     };
     const contextKey = snapshot.contextTargetKey;
     const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
@@ -1214,7 +1223,7 @@ export function createWorldRenderer(
       const showMarker = npcInViewport && !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
-      if (questTarget) guideTarget('npc', markerGeometry);
+      if (questTarget) guideTarget('npc', placement.npcId, npc.name, markerGeometry);
       if (npcInViewport) {
         const offset = questTarget || showMarker ? 24 : 0;
         const markerX = markerGeometry.x + offset;
@@ -1280,10 +1289,12 @@ export function createWorldRenderer(
           if (nameText.text !== label) nameText.setText(label);
           nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
         }
-        if (targets.monsters.has(monster.monsterId)) guideTarget('monster', { x: bar.x + bar.width / 2, y: bar.y - 28 });
+        if (targets.monsters.has(monster.monsterId)) {
+          guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y: bar.y - 28 });
+        }
       } else if (!dead && targets.monsters.has(monster.monsterId)) {
         const position = monster.movement.position;
-        guideTarget('monster', { x: position.x, y: position.y - monster.height - 28 });
+        guideTarget('monster', monster.monsterId, definition.name, { x: position.x, y: position.y - monster.height - 28 });
       }
     }
 
@@ -1307,13 +1318,14 @@ export function createWorldRenderer(
       }
     }
     for (const drop of visibleDrops) {
-      const imageKey = drop.itemId ? catalog.rules.items[drop.itemId]?.iconKey : undefined;
+      const item = drop.itemId ? catalog.rules.items[drop.itemId] : undefined;
+      const imageKey = item?.iconKey;
       if (imageKey && assets.images.has(imageKey)) {
         const sprite = drawActor(`drop:${drop.id}`, imageKey, '', drop.position, 1, snapshot.nowMs).sprite;
         const inViewport = isInViewport(drop.position);
         if (!inViewport) sprite.setVisible(false).setActive(false);
         if (drop.itemId && targets.items.has(drop.itemId)) {
-          guideTarget('item', { x: drop.position.x, y: drop.position.y - sprite.displayHeight - 12 });
+          guideTarget('item', drop.itemId, item?.name ?? drop.itemId, { x: drop.position.x, y: drop.position.y - sprite.displayHeight - 12 });
           if (inViewport && drop.id !== pickupFocus) {
             drawContextFocus(guidanceGraphics, drop.position, 30, questCueAppearance.item.color);
           }
@@ -1347,8 +1359,20 @@ export function createWorldRenderer(
       const cue = questExitCue({ x: anchor.x, y: anchor.y - portalImage.displayHeight - 38 }, viewport);
       drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
     } else {
-      const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestKinds);
-      if (target) drawQuestCue(guidanceGraphics, target.kind, target.cue.x, target.cue.y, target.cue.direction);
+      const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
+      if (target) {
+        const { x, y, direction } = target.cue;
+        drawQuestCue(guidanceGraphics, target.kind, x, y, direction);
+        if (questEdgeLabel.text !== target.label) questEdgeLabel.setText(target.label);
+        if (direction === 'left' || direction === 'right') {
+          questEdgeLabel.setOrigin(direction === 'left' ? 0 : 1, .5).setPosition(x + (direction === 'left' ? 15 : -15), y);
+        } else {
+          const inset = questEdgeLabel.width / 2 + 4;
+          const labelX = Math.max(viewport.x + inset, Math.min(viewport.x + viewport.width - inset, x));
+          questEdgeLabel.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
+        }
+        questEdgeLabel.setVisible(true);
+      }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 
@@ -1727,6 +1751,7 @@ export function createWorldRenderer(
       steleGlowGraphics.destroy();
       guidanceGraphics.destroy();
       bossNameText.destroy();
+      questEdgeLabel.destroy();
       destroyMonsterNames();
       telegraphGraphics.destroy();
       attackGraphics.destroy();

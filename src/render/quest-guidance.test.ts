@@ -50,11 +50,14 @@ describe('in-world quest guidance', () => {
 
   it('keeps a different objective discoverable when monsters are already visible', () => {
     const cue = { x: 780, y: 300, direction: 'right' } as const;
-    const npc: QuestEdgeTarget = { kind: 'npc', cue, distance: 20 };
-    const monster: QuestEdgeTarget = { kind: 'monster', cue, distance: 10 };
-    expect(selectQuestEdgeTarget([monster, npc], new Set(['monster']))).toBe(npc);
-    expect(selectQuestEdgeTarget([monster, npc], new Set(['monster', 'npc']))).toBeUndefined();
-    expect(selectQuestEdgeTarget([monster, npc], new Set(['item']))).toBe(npc);
-    expect(selectQuestEdgeTarget([monster, npc, { kind: 'item', cue, distance: 40 }], new Set())).toMatchObject({ kind: 'item' });
+    const npc: QuestEdgeTarget = { kind: 'npc', targetKey: 'npc:stele', label: '石碑', cue, distance: 20 };
+    const monster: QuestEdgeTarget = { kind: 'monster', targetKey: 'monster:golem', label: '石像', cue, distance: 10 };
+    const sentinel: QuestEdgeTarget = { ...monster, targetKey: 'monster:sentinel', label: '哨兵', distance: 30 };
+    const item: QuestEdgeTarget = { kind: 'item', targetKey: 'item:seed', label: '種子', cue, distance: 40 };
+    expect(selectQuestEdgeTarget([monster, npc], new Set([monster.targetKey]))).toBe(npc);
+    expect(selectQuestEdgeTarget([monster, npc], new Set([monster.targetKey, npc.targetKey]))).toBeUndefined();
+    expect(selectQuestEdgeTarget([monster, sentinel], new Set([monster.targetKey]))).toBe(sentinel);
+    expect(selectQuestEdgeTarget([monster, npc], new Set([item.targetKey]), true)).toBe(npc);
+    expect(selectQuestEdgeTarget([monster, npc, item], new Set())).toBe(item);
   });
 });
