@@ -101,7 +101,7 @@ export function questEdgeCue(
     const atLeft = point.x < left;
     return {
       x: atLeft ? left + chevronClearance : right - chevronClearance,
-      y: viewport.y + viewport.height * 0.55, direction: atLeft ? 'left' : 'right',
+      y: viewport.y + viewport.height * .46, direction: atLeft ? 'left' : 'right',
     };
   }
   if (point.y < top || point.y > bottom) {

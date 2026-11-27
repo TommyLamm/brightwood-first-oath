@@ -1216,12 +1216,7 @@ export function createWorldRenderer(
       if (questTarget) guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
       if (isMentor && !questTarget) {
         const cue = questEdgeCue(markerGeometry, viewport);
-        if (cue) {
-          // Town nameplates use the lower edge band.
-          const y = cue.direction === 'left' || cue.direction === 'right'
-            ? viewport.y + viewport.height * .46 : cue.y;
-          mentorEdge = { label: npc.name, cue: { ...cue, y } };
-        }
+        if (cue) mentorEdge = { label: npc.name, cue };
       }
       if (!isInViewport(placement)) {
         npcVisual.nameText.setVisible(false);
