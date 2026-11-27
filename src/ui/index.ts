@@ -711,7 +711,7 @@ export function createUi(
 
   let currentView: UiSnapshot | null = null;
   let lastScreenSignature = '';
-  let lastProfileSignature = '';
+  let playerProfileView: ReturnType<typeof makePlayerProfileView> | null | undefined;
   let lastMapSignature = '';
   let lastQuestViews: UiSnapshot['questViews'] | undefined;
   let lastQuestSignature = '';
@@ -928,53 +928,41 @@ export function createUi(
 
   const renderProfile = (view: UiSnapshot): void => {
     const player = view.saveData?.player;
-    const signature = player
-      ? JSON.stringify({ player, stats: view.stats, interfaceReady: Boolean(view.interfaceManifest) })
-      : 'empty';
-    if (signature === lastProfileSignature) return;
-    lastProfileSignature = signature;
-    profile.replaceChildren();
     if (!player) {
-      profile.append(
+      if (playerProfileView === null) return;
+      playerProfileView = null;
+      profile.replaceChildren(
         makeElement(document, 'div', 'ms-profile__portrait ms-profile__portrait--empty', '劍'),
         makeElement(document, 'div', 'ms-profile__main', '登入或建立角色後開始冒險'),
       );
       return;
     }
-
-    const portrait = makeButton(document, '', 'open-panel', {
-      className: 'ms-profile__portrait', data: { panel: 'stats' },
-    });
-    const hero = makeElement(document, 'img', 'ms-profile__hero');
-    hero.src = new URL(classPortrait(player), document.baseURI).href;
-    hero.alt = '';
-    hero.draggable = false;
-    portrait.append(hero);
-    portrait.setAttribute('aria-label', '開啟' + player.name + '的角色資訊');
-    portrait.title = '角色資訊：職業、能力與經驗值';
-    const main = makeElement(document, 'div', 'ms-profile__main');
-    const heading = makeElement(document, 'div', 'ms-profile__heading');
-    heading.append(
-      makeElement(document, 'strong', '', player.name),
-      makeBadge(document, 'Lv.' + player.level, 'level'),
-    );
-    const maxHp = view.stats?.maxHp ?? player.hp;
-    const hp = makeMeter(document, 'HP', player.hp, maxHp, 'hp', formatNumber(player.hp) + '/' + formatNumber(maxHp));
-    // Static (not pulsing): the profile is rebuilt on every HP change, which would restart an animation.
-    if (isLowHealth(player.hp, maxHp)) {
-      hp.classList.add('is-low');
-      hp.title = 'HP 偏低';
+    if (!playerProfileView) {
+      playerProfileView = makePlayerProfileView(document);
+      profile.replaceChildren(...playerProfileView.elements);
     }
-    const maxMp = view.stats?.maxMp ?? player.mp;
-    const mp = makeMeter(document, 'MP', player.mp, maxMp, 'mp', formatNumber(player.mp) + '/' + formatNumber(maxMp));
+    const { portrait, hero, name, level, hp, mp, exp } = playerProfileView;
+    const portraitPath = classPortrait(player);
+    if (hero.getAttribute('src') !== portraitPath) hero.setAttribute('src', portraitPath);
+    if (name.textContent !== player.name) {
+      name.textContent = player.name;
+      portrait.setAttribute('aria-label', '開啟' + player.name + '的角色資訊');
+    }
+    const levelText = 'Lv.' + player.level;
+    if (level.textContent !== levelText) level.textContent = levelText;
+    const maxHp = view.stats?.maxHp ?? player.hp;
+    if (hp.update(player.hp, maxHp)) {
+      const lowHealth = isLowHealth(player.hp, maxHp);
+      hp.element.classList.toggle('is-low', lowHealth);
+      if (lowHealth) hp.element.title = 'HP 偏低';
+      else hp.element.removeAttribute('title');
+    }
+    mp.update(player.mp, view.stats?.maxMp ?? player.mp);
     const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
     const nextExp = view.catalog.rules.progression.expToNext[player.level] ?? 0;
-    const exp = atMaxLevel
-      ? makeMeter(document, 'EXP', 1, 1, 'exp', 'MAX')
-      : makeMeter(document, 'EXP', player.exp, nextExp, 'exp');
-    exp.title = atMaxLevel ? 'EXP：MAX（已達等級上限）' : 'EXP：' + formatNumber(player.exp) + ' / ' + formatNumber(nextExp);
-    main.append(heading, hp, mp);
-    profile.append(portrait, main, exp);
+    if (exp.update(atMaxLevel ? 1 : player.exp, atMaxLevel ? 1 : nextExp, atMaxLevel ? 'MAX' : undefined)) {
+      exp.element.title = atMaxLevel ? 'EXP：MAX（已達等級上限）' : 'EXP：' + formatNumber(player.exp) + ' / ' + formatNumber(nextExp);
+    }
   };
 
   const renderMapIndicator = (view: UiSnapshot): void => {
@@ -2706,30 +2694,58 @@ export function createUi(
   };
 }
 
-function makeMeter(
-  document: Document,
-  label: string,
-  value: number,
-  maximum: number,
-  tone: string,
-  valueText = formatNumber(value) + ' / ' + formatNumber(maximum),
-): HTMLElement {
+function makePlayerProfileView(document: Document) {
+  const portrait = makeButton(document, '', 'open-panel', {
+    className: 'ms-profile__portrait', data: { panel: 'stats' },
+  });
+  const hero = makeElement(document, 'img', 'ms-profile__hero');
+  hero.alt = '';
+  hero.draggable = false;
+  portrait.append(hero);
+  portrait.title = '角色資訊：職業、能力與經驗值';
+  const main = makeElement(document, 'div', 'ms-profile__main');
+  const heading = makeElement(document, 'div', 'ms-profile__heading');
+  const name = makeElement(document, 'strong');
+  const level = makeBadge(document, '', 'level');
+  heading.append(name, level);
+  const hp = makeMeter(document, 'HP', 'hp');
+  const mp = makeMeter(document, 'MP', 'mp');
+  const exp = makeMeter(document, 'EXP', 'exp');
+  main.append(heading, hp.element, mp.element);
+  return { elements: [portrait, main, exp.element], portrait, hero, name, level, hp, mp, exp };
+}
+
+function makeMeter(document: Document, label: string, tone: string) {
   const meter = makeElement(document, 'div', 'ms-meter ms-meter--' + tone);
   const heading = makeElement(document, 'div', 'ms-meter__label');
-  heading.append(makeElement(document, 'span', '', label));
-  heading.append(makeElement(document, 'strong', '', valueText));
+  const reading = makeElement(document, 'strong');
+  heading.append(makeElement(document, 'span', '', label), reading);
   const track = makeElement(document, 'div', 'ms-meter__track');
   const fill = makeElement(document, 'span', 'ms-meter__fill');
-  fill.style.width = percent(value, maximum) + '%';
   track.append(fill);
   meter.append(heading, track);
   meter.setAttribute('role', 'meter');
   meter.setAttribute('aria-label', label);
   meter.setAttribute('aria-valuemin', '0');
-  meter.setAttribute('aria-valuemax', String(maximum));
-  meter.setAttribute('aria-valuenow', String(Math.min(value, maximum)));
-  meter.setAttribute('aria-valuetext', valueText);
-  return meter;
+  let previousValue: number | undefined;
+  let previousMaximum: number | undefined;
+  let previousLabel: string | undefined;
+  return {
+    element: meter,
+    update(value: number, maximum: number, override?: string): boolean {
+      if (value === previousValue && maximum === previousMaximum && override === previousLabel) return false;
+      if (maximum !== previousMaximum) meter.setAttribute('aria-valuemax', String(maximum));
+      previousValue = value;
+      previousMaximum = maximum;
+      previousLabel = override;
+      const valueText = override ?? formatNumber(value) + (tone === 'exp' ? ' / ' : '/') + formatNumber(maximum);
+      fill.style.width = percent(value, maximum) + '%';
+      reading.textContent = valueText;
+      meter.setAttribute('aria-valuenow', String(Math.min(value, maximum)));
+      meter.setAttribute('aria-valuetext', valueText);
+      return true;
+    },
+  };
 }
 
 function makeScreenCard(document: Document, title: string, description: string): HTMLElement {
