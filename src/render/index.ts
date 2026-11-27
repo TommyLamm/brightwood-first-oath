@@ -8,6 +8,7 @@ import {
   type QuestEdgeTarget, type QuestNpcCueState, type QuestTargetKind,
 } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
+import { mapDropImageKeys } from './map-drop-images.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
 import type { AssetAnimation, AssetImage, AssetManifest } from '../contracts/asset-manifest.js';
@@ -307,6 +308,7 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob
     ...HERO_IMAGE_KEYS,
     'vfx:arrow',
     ...requiredTerrainImageKeys(map),
+    ...mapDropImageKeys(map, catalog),
   ]);
   for (const pose of ['archer', 'mage', 'rogue']) {
     if (job && job !== pose) continue;
@@ -329,7 +331,6 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob
     if (item.kind === 'weapon' || item.kind === 'hat') {
       if (item.visualKey) keys.add(item.visualKey);
     }
-    keys.add(item.iconKey);
   }
   return keys;
 }
