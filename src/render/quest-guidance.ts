@@ -56,6 +56,16 @@ export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: 
   graphics.fillStyle(color, 1).fillCircle(x - 5, y - 4, 1.6).fillCircle(x + 5, y - 4, 1.6);
 }
 
+export function drawServiceCue(graphics: Phaser.GameObjects.Graphics, role: 'merchant' | 'healer', x: number, y: number): void {
+  graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  if (role === 'healer') {
+    graphics.lineStyle(3, 0x9cffe4, 1).lineBetween(x - 5, y, x + 5, y).lineBetween(x, y - 5, x, y + 5);
+    return;
+  }
+  graphics.lineStyle(2, 0xffc78a, 1).strokeEllipse(x, y - 3, 12, 6)
+    .lineBetween(x - 6, y - 3, x - 6, y + 3).lineBetween(x + 6, y - 3, x + 6, y + 3).strokeEllipse(x, y + 3, 12, 6);
+}
+
 export function questEdgeCue(
   point: Readonly<Vec2>,
   viewport: Readonly<Vec2 & { width: number; height: number }>,

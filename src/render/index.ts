@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import {
-  drawContextFocus, drawPortalLock, drawQuestCue, drawSpecializationCue,
+  drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
   type QuestEdgeTarget, type QuestTargetKind,
 } from './quest-guidance.js';
@@ -1214,9 +1214,14 @@ export function createWorldRenderer(
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
       if (questTarget) guideTarget('npc', markerGeometry);
-      if (npcInViewport && placement.npcId === snapshot.specializationMentorId) {
+      if (npcInViewport) {
         const offset = questTarget || showMarker ? 24 : 0;
-        drawSpecializationCue(guidanceGraphics, markerGeometry.x + offset, markerGeometry.y);
+        const markerX = markerGeometry.x + offset;
+        if (placement.npcId === snapshot.specializationMentorId) {
+          drawSpecializationCue(guidanceGraphics, markerX, markerGeometry.y);
+        } else if (npc.role === 'merchant' || npc.role === 'healer') {
+          drawServiceCue(guidanceGraphics, npc.role, markerX, markerGeometry.y);
+        }
       }
     }
     for (const monster of snapshot.monsters) {

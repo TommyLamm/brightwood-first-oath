@@ -211,6 +211,7 @@ export type UiSnapshot = {
     targetKey: string;
     kind: 'npc' | 'portal';
     label: string;
+    actionLabel?: string;
     blockedMessage: string | null;
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */

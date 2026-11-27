@@ -18,7 +18,7 @@ export function contextHint(
     && pickup && !pickup.blockedMessage;
   if (interaction && !canCollectBeforeTravel) return makeHint(interaction.targetKey, [
     key('interact'),
-    ' ' + (interaction.kind === 'portal' ? '前往' : '互動') + '：' + interaction.label
+    ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
       + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
   ]);
   if (pickup) return makeHint(pickup.targetKey, [

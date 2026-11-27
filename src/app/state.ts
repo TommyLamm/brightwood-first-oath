@@ -147,10 +147,12 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     if (target?.kind === 'npc') {
       const npc = catalog.world.npcs[target.placement.npcId];
       if (npc) {
+        const actionLabel = npc.role === 'merchant' ? '開啟商店' : npc.role === 'healer' ? '回復 HP／MP' : undefined;
         interactionHint = {
           targetKey: 'npc:' + target.placement.npcId,
           kind: 'npc',
           label: npc.name,
+          ...(actionLabel ? { actionLabel } : {}),
           blockedMessage: null,
         };
       }
