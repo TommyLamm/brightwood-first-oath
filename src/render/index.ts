@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { isLowHealth } from '../domain/combat/index.js';
+import { combatTrialActions } from '../content/world/class-quests.js';
 import {
   drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
@@ -1206,7 +1207,7 @@ export function createWorldRenderer(
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       const questTarget = targets.npcs.has(placement.npcId);
       const isMentor = placement.npcId === snapshot.specializationMentorId;
-      if (questTarget) guideTarget('npc', placement.npcId, npc.name, markerGeometry);
+      if (questTarget) guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
       if (isMentor && !questTarget) {
         const cue = questEdgeCue(markerGeometry, viewport);
         if (cue) {

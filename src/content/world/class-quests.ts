@@ -4,6 +4,12 @@ import { items, STAFF_BY_SWORD, DAGGER_BY_SWORD } from '../rules/items.js';
 
 export const ARCHERY_TARGET_IDS = ['archery-target-low', 'archery-target-high', 'archery-target-far'] as const;
 export const ROGUE_TRIAL_IDS = ['rogue-target-close', 'rogue-target-double', 'rogue-target-evade'] as const;
+export const combatTrialActions: ReadonlyMap<string, string> = new Map([
+  ...ARCHERY_TARGET_IDS.map((id) => [id, '命中'] as const),
+  [ROGUE_TRIAL_IDS[0], '命中'],
+  [ROGUE_TRIAL_IDS[1], '連刺兩段'],
+  [ROGUE_TRIAL_IDS[2], '避開預警'],
+]);
 export const BOW_BY_SWORD: Readonly<Record<string, string>> = {
   'starter-sword': 'starter-bow', 'iron-sword': 'iron-bow', 'steel-sword': 'steel-bow',
   'guardian-sword': 'guardian-bow', 'frost-tide-sword': 'frost-tide-bow', 'sunwell-oathblade': 'sunwell-oathbow',

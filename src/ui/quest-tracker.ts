@@ -1,8 +1,13 @@
 import type { QuestView } from '../contracts/definitions.js';
 import type { StorageLike } from '../contracts/ports.js';
+import { combatTrialActions } from '../content/world/class-quests.js';
 import { isTrackableQuest } from '../domain/quests/selection.js';
 
 export { isTrackableQuest, selectTrackerQuest } from '../domain/quests/selection.js';
+
+export function inspectObjectiveAction(targetId: string): string {
+  return combatTrialActions.get(targetId) ?? (targetId.startsWith('ruins-stele-') ? '調律' : '調查');
+}
 
 /** Device-local presentation preference; it never writes to a character or cloud save. */
 export function createQuestTrackerState(gameId: string, storage: StorageLike | null) {

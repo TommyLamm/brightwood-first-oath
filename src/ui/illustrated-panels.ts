@@ -6,6 +6,7 @@ import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
+import { inspectObjectiveAction } from './quest-tracker.js';
 
 function node<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className = '', text = ''): HTMLElementTagNameMap[K] {
   const item = document.createElement(tag);
@@ -294,7 +295,9 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
           ? actor(document, view, inspectNpc.actorKey, targetName ?? '')
           : icon(document, view, objective.type === 'reach' ? 'marker:portal' : 'item:' + objective.targetId, targetName ?? '');
       const target = node(document, 'div', 'ms-journal-objective__target');
-      target.append(node(document, 'span', 'ms-journal-objective__verb', objective.targetId.startsWith('archery-target-') ? '命中' : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達', inspect: '調律' }[objective.type]), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
+      const verb = objective.type === 'inspect' ? inspectObjectiveAction(objective.targetId)
+        : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達' }[objective.type];
+      target.append(node(document, 'span', 'ms-journal-objective__verb', verb), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
       const quantity = node(document, 'strong', 'ms-journal-objective__count', (done ? '✓ ' : '') + current + ' / ' + objective.required);
       const progress = node(document, 'progress', 'ms-journal-progress');
       progress.max = Math.max(1, objective.required);

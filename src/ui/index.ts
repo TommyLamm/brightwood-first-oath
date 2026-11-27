@@ -46,7 +46,8 @@ import { countInventoryEntries, inventoryFilterForItem, INVENTORY_FILTERS, selec
 import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
-import { createQuestTrackerState, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
+import { createQuestTrackerState, inspectObjectiveAction, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
+import { combatTrialActions } from '../content/world/class-quests.js';
 import { contextHint } from './context-hint.js';
 import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
@@ -493,16 +494,18 @@ function rewardText(view: UiSnapshot, reward: UiSnapshot['questViews'][number]['
 
 type TrackedObjective = UiSnapshot['questViews'][number]['objectives'][number];
 
-const questObjectiveCue: Record<TrackedObjective['type'], QuestCueKind> = {
+const questObjectiveCues: Record<TrackedObjective['type'], QuestCueKind> = {
   kill: 'monster', collect: 'item', equip: 'item', reach: 'portal', inspect: 'npc',
 };
 
+function questObjectiveCue(objective: TrackedObjective): QuestCueKind {
+  return objective.type === 'inspect' && combatTrialActions.has(objective.targetId) ? 'monster' : questObjectiveCues[objective.type];
+}
+
 function objectiveLabel(view: UiSnapshot, objective: TrackedObjective): string {
-  const action = {
-    kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達', inspect: '調律',
-  }[objective.type];
-  const objectiveAction = objective.type === 'inspect' && objective.targetId.startsWith('archery-target-') ? '命中' : objective.type === 'inspect' && objective.targetId === 'frost-route-marker' ? '調查' : action;
-  return objectiveAction + ' ' + targetName(view, objective.targetId, objective.type);
+  const action = objective.type === 'inspect' ? inspectObjectiveAction(objective.targetId)
+    : { kill: '擊敗', collect: '持有', equip: '裝備', reach: '到達' }[objective.type];
+  return action + ' ' + targetName(view, objective.targetId, objective.type);
 }
 
 function objectiveCount(objective: TrackedObjective): string {
@@ -1082,7 +1085,7 @@ export function createUi(
       : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
     if (quest?.status === 'active' && objectives.length > 0) {
       const rows = objectives.slice(0, 2).map((objective) =>
-        makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), { count: objectiveCount(objective) }));
+        makeQuestGuideRow(document, questObjectiveCue(objective), objectiveLabel(view, objective), { count: objectiveCount(objective) }));
       questDetail.replaceChildren(...rows);
       if (objectives.length > rows.length) {
         questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
@@ -3107,11 +3110,6 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
     journal.append(section);
   }
 
-  if (selectedQuest?.questId === 'q21') {
-    for (const verb of selectedCard.querySelectorAll<HTMLElement>('.ms-journal-objective__verb')) {
-      if (verb.textContent === '調律') verb.textContent = '調查';
-    }
-  }
   if (selectedQuest && selectedQuest.reward.exp > 0
     && view.saveData.player.level >= view.catalog.rules.progression.maxLevel) {
     selectedCard.querySelector('.ms-journal-rewards')?.append(
@@ -3792,7 +3790,7 @@ function makeDialogueObjectives(document: Document, view: UiSnapshot, quest: UiS
     const complete = objective.current >= objective.required;
     const entry = makeElement(document, 'li', complete ? 'is-complete' : '');
     const count = (complete ? '✓ ' : '') + objectiveCount(objective);
-    entry.append(makeQuestGuideRow(document, questObjectiveCue[objective.type], objectiveLabel(view, objective), { count }));
+    entry.append(makeQuestGuideRow(document, questObjectiveCue(objective), objectiveLabel(view, objective), { count }));
     list.append(entry);
   }
   return list;
