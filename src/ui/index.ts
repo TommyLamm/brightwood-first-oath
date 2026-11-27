@@ -688,12 +688,12 @@ export function createUi(
 
   const quickSlots = makeElement(document, 'div', 'ms-quickbar__slots');
   const quickDefinitions = [
-    { id: 'basic', label: '普通攻擊', kind: 'attack' },
-    { id: 'heavy-strike', label: '重斬', kind: 'skill' },
-    { id: 'sweep', label: '橫掃', kind: 'skill' },
-    { id: 'iron-guard', label: '堅韌守護', kind: 'skill' },
-    { id: 'small-red', label: 'HP 藥水', kind: 'item' },
-    { id: 'small-blue', label: 'MP 藥水', kind: 'item' },
+    { id: 'basic', label: '普通攻擊', kind: 'attack', action: 'attack' },
+    { id: 'heavy-strike', label: '重斬', kind: 'skill', action: 'skill1' },
+    { id: 'sweep', label: '橫掃', kind: 'skill', action: 'skill2' },
+    { id: 'iron-guard', label: '堅韌守護', kind: 'skill', action: 'skill3' },
+    { id: 'small-red', label: 'HP 藥水', kind: 'item', action: 'potionHp' },
+    { id: 'small-blue', label: 'MP 藥水', kind: 'item', action: 'potionMp' },
   ] as const;
   const quickButtons: {
     slot: typeof quickDefinitions[number]; button: HTMLButtonElement; key: HTMLElement;
@@ -1155,18 +1155,14 @@ export function createUi(
       && isLowHealth(player.hp, view.stats.maxHp);
     const stanceBlock = view.combatUi?.stanceBlock;
     const stanceReason = stanceBlock ? { airborne: '需站穩', climbing: '攀爬中', knockback: '受擊硬直' }[stanceBlock] : '';
-    const keyForSkill: Record<string, GameAction> = {
-      basic: 'attack',
-      'heavy-strike': 'skill1',
-      sweep: 'skill2',
-      'iron-guard': 'skill3',
-      'small-red': 'potionHp',
-      'small-blue': 'potionMp',
-    };
     for (const [slotIndex, entry] of quickButtons.entries()) {
       const { slot, button, key, iconHost, label, state, cooldownTrack } = entry;
       const definitionId = slot.id;
       const slotId = player && slotIndex < 4 ? resolveSkillSlot(player, slotIndex as 0|1|2|3) : definitionId;
+      const basic = slot.kind === 'attack';
+      const trial = slotId === 'rogue-double-stab' && player?.job === 'beginner' && effectiveJob(player) === 'rogue'
+        && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
+      const rank = player && slot.kind !== 'item' ? (basic || trial ? 1 : playerSkillRank(player, slotId)) : 0;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
       const cooldown = Math.max(0, readyAt - view.nowMs);
       const healthPotion = slotId === 'small-red';
@@ -1176,6 +1172,8 @@ export function createUi(
       const inputs = slot.kind === 'item' ? [
         view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, player?.bag,
         full, healthPotion && showRecoveryCue === true, Math.ceil(cooldown / 100),
+      ] : rank === 0 ? [
+        view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, slotId, Boolean(player),
       ] : [
         view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
         Math.ceil(cooldown / 100),
@@ -1183,10 +1181,10 @@ export function createUi(
         Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
         view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
       ];
-      if (entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
+      if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
       const cooldownText = cooldown > 0 ? remainingSeconds(cooldown) : '';
-      const binding = effectiveKeyText(bindings, keyForSkill[definitionId]!);
+      const binding = effectiveKeyText(bindings, slot.action);
       if (key.title !== binding) {
         key.textContent = binding === '左／右 Ctrl' ? 'Ctrl' : binding;
         key.title = binding;
@@ -1243,11 +1241,6 @@ export function createUi(
         continue;
       }
       label.textContent = skill.name;
-      button.setAttribute('aria-label', skill.name);
-      const basic = slot.kind === 'attack';
-      const trial = slotId === 'rogue-double-stab' && effectiveJob(player) === 'rogue' && player.job === 'beginner'
-        && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
-      const rank = basic || trial ? 1 : playerSkillRank(player, slotId);
       const unlearned = rank === 0;
       button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
       button.classList.toggle('is-unlearned', unlearned);
