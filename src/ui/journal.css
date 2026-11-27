@@ -245,7 +245,7 @@
 .ms-quest-tracker__more { padding-left: 21px; }
 .ms-quest-tracker__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .maple-ui .ms-quest-tracker__review { font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
-.maple-ui .ms-quest-tracker__map:not([hidden]) { display: inline-flex; align-items: center; gap: 4px; }
+.maple-ui .ms-quest-tracker__shortcut:not([hidden]) { display: inline-flex; align-items: center; gap: 4px; }
 @media (pointer: coarse) {
   .maple-ui .ms-quest-tracker__toggle { min-height: 32px; }
   .maple-ui .ms-quest-tracker__review { min-height: 44px; }

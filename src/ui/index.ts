@@ -97,7 +97,7 @@ type UiAction =
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel' | 'choose-route' | 'select-character'
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
   | 'return-town' | 'attack' | 'pickup' | 'interact' | 'inspect-stele' | 'inspect-route-marker' | 'review-sidequest' | 'use-item' | 'select-bag' | 'select-bag-upgrade'
-  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'review-quest-map' | 'select-quest' | 'track-quest'
+  | 'inventory-filter' | 'shop-filter' | 'select-map' | 'review-npc-map' | 'review-quest-map' | 'review-quest-item' | 'select-quest' | 'track-quest'
   | 'equip-bag' | 'sell-bag' | 'sell-materials' | 'unequip' | 'allocate-ap' | 'learn-skill' | 'review-skill' | 'accept-quest'
   | 'claim-quest' | 'buy' | 'select-max-buy' | 'settings-mute' | 'settings-reading-size' | 'settings-hold-attack' | 'settings-background-motion' | 'settings-rebind' | 'use-cloud-version'
   | 'toggle-key-guide' | 'toggle-quest-tracker' | 'settings-reset-bindings' | 'reload-page';
@@ -635,11 +635,15 @@ export function createUi(
   const questDetail = makeElement(document, 'span', 'ms-quest-tracker__detail');
   const questReview = makeButton(document, '', 'review-sidequest', { className: 'ms-quest-tracker__review' });
   questReview.textContent = '查看任務 →';
-  const questMapReview = makeButton(document, '', 'review-quest-map', { className: 'ms-quest-tracker__review ms-quest-tracker__map' });
+  const shortcutClass = 'ms-quest-tracker__review ms-quest-tracker__shortcut';
+  const questMapReview = makeButton(document, '', 'review-quest-map', { className: shortcutClass });
   questMapReview.append(makeQuestCueBadge(document, 'portal'), document.createTextNode('查看地點'));
   questMapReview.hidden = true;
+  const questItemReview = makeButton(document, '', 'review-quest-item', { className: shortcutClass });
+  questItemReview.append(makeQuestCueBadge(document, 'item'), document.createTextNode('查看裝備'));
+  questItemReview.hidden = true;
   const questActions = makeElement(document, 'div', 'ms-quest-tracker__actions');
-  questActions.append(questMapReview, questReview);
+  questActions.append(questItemReview, questMapReview, questReview);
   questBody.append(questDetail, questActions);
   questTracker.append(questToggle, questBody);
   const interactionHintRow = makeElement(document, 'div', 'ms-interaction-hint');
@@ -1048,6 +1052,15 @@ export function createUi(
       questMapReview.setAttribute('aria-label', mapLabel);
     }
     const remainingObjectives = quest?.objectives.filter(({ current, required }) => current < required) ?? [];
+    const equipObjective = remainingObjectives.find(({ type, targetId }) => type === 'equip'
+      && view.saveData?.player.bag.some(({ itemId }) => itemId === targetId));
+    questItemReview.hidden = !equipObjective || quest?.status !== 'active';
+    if (equipObjective) {
+      questItemReview.dataset.itemId = equipObjective.targetId;
+      const item = targetName(view, equipObjective.targetId, 'equip');
+      questItemReview.title = '在背包查看任務裝備 ' + item;
+      questItemReview.setAttribute('aria-label', questItemReview.title);
+    }
     const objectives = remainingObjectives.length ? remainingObjectives : quest?.objectives ?? [];
     const detail = !quest
       ? (worldComplete ? '四區主線已完成；可自由探索並重看冒險手帳。'
@@ -2168,6 +2181,17 @@ export function createUi(
           renderPanel(view, true);
         }
         return;
+      case 'review-quest-item': {
+        const latestView = currentView ?? view;
+        const index = latestView.saveData?.player.bag.findIndex(({ itemId }) => itemId === button.dataset.itemId) ?? -1;
+        if (index < 0) return;
+        inventoryFilter = 'equipment';
+        selectedBagIndex = index;
+        bagStateMessage = '';
+        if (latestView.panels.at(-1) === 'inventory') renderPanel(latestView, true);
+        else dispatchDraft({ type: 'setPanel', payload: { panel: 'inventory' } });
+        return;
+      }
       case 'select-bag-upgrade': {
         const player = view.saveData?.player;
         if (!player) return;
