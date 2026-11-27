@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { isLowHealth } from '../domain/combat/index.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
+import { canEquipForJob } from '../content/rules/jobs.js';
 import {
   drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
@@ -328,8 +329,9 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob
     if (monster) keys.add(monster.actorKey);
   }
   for (const item of Object.values(catalog.rules.items)) {
-    if (item.kind === 'weapon' || item.kind === 'hat') {
-      if (item.visualKey) keys.add(item.visualKey);
+    if ((item.kind === 'weapon' || item.kind === 'hat') && item.visualKey
+      && (!job || canEquipForJob({ job }, item))) {
+      keys.add(item.visualKey);
     }
   }
   return keys;
