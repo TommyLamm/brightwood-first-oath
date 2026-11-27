@@ -89,6 +89,7 @@ type MapVisual = {
   backgrounds: Phaser.GameObjects.TileSprite[];
   environmentLayers: Phaser.GameObjects.Container[];
   environmentTextureKeys: Set<string>;
+  portalSprites: Map<string, Phaser.GameObjects.Sprite>;
   npcSprites: Map<string, {
     imageKey: string;
     nameText: Phaser.GameObjects.Text;
@@ -792,6 +793,7 @@ export function createWorldRenderer(
       layers.push(decorations);
     }
     const environmentTextureKeys = new Set<string>();
+    const portalSprites: MapVisual['portalSprites'] = new Map();
     const npcSprites: MapVisual['npcSprites'] = new Map();
 
     try {
@@ -886,7 +888,8 @@ export function createWorldRenderer(
     }
     for (const portal of map.portals) {
       const anchor = portalFootAnchor(portal);
-      addStaticSprite(terrainLayer, 'env:portal', anchor.x, anchor.y).setOrigin(anchor.originX, anchor.originY);
+      const sprite = addStaticSprite(terrainLayer, 'env:portal', anchor.x, anchor.y).setOrigin(anchor.originX, anchor.originY);
+      portalSprites.set(portal.id, sprite);
       const destination = catalog.world.maps[portal.targetMapId];
       if (destination) {
         const portalImage = assets.images.get('env:portal')!;
@@ -929,7 +932,7 @@ export function createWorldRenderer(
       text.setDepth(placement.y + 0.1);
     }
     void effectLayer;
-    return { map, backgrounds, environmentLayers: layers, environmentTextureKeys, npcSprites };
+    return { map, backgrounds, environmentLayers: layers, environmentTextureKeys, portalSprites, npcSprites };
     } catch (error) {
       for (const background of backgrounds) background.destroy();
       for (const layer of layers) layer.destroy(true);
@@ -1369,13 +1372,15 @@ export function createWorldRenderer(
     const contextPortal = contextKey?.startsWith('portal:') && activeVisual.map.portals.find(({ id }) => 'portal:' + id === contextKey);
     if (contextPortal && isInViewport(contextPortal)) drawContextFocus(guidanceGraphics, contextPortal, 50);
 
-    if (snapshot.lockedPortalIds?.length) {
+    for (const portal of activeVisual.map.portals) {
+      const locked = snapshot.lockedPortalIds?.includes(portal.id) === true;
+      const sprite = activeVisual.portalSprites.get(portal.id)!;
+      const alpha = locked ? .58 : 1;
+      if (sprite.alpha !== alpha) sprite.setAlpha(alpha);
+      if (!locked || !isInViewport(portal)) continue;
       const portalImage = assets.images.get('env:portal')!;
-      for (const portal of activeVisual.map.portals) {
-        if (!snapshot.lockedPortalIds.includes(portal.id) || !isInViewport(portal)) continue;
-        const anchor = portalFootAnchor(portal);
-        drawPortalLock(guidanceGraphics, anchor.x, anchor.y - portalImage.displayHeight - 38);
-      }
+      const anchor = portalFootAnchor(portal);
+      drawPortalLock(guidanceGraphics, anchor.x, anchor.y - portalImage.displayHeight - 38);
     }
 
     const showEdgeLabel = (label: string, { x, y, direction }: QuestEdgeTarget['cue']): void => {
