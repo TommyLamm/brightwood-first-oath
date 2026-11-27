@@ -500,8 +500,12 @@
 .ms-bag-slot__upgrade { position: absolute; top: 2px; left: 3px; color: #3f7a36; font-size: 12px; line-height: 1; text-shadow: 0 1px 0 #fff6dc; }
 .ms-bag-slot__quest-cue { position: absolute; top: 2px; right: 2px; }
 
-.ms-bag-usage { color: #5d4428; }
+.ms-bag-usage { display: inline-flex; align-items: center; gap: 7px; color: #5d4428; }
 .ms-bag-usage.is-near-full { color: #a52d22; }
+.ms-bag-usage__meter { width: 72px; height: 9px; }
+.ms-bag-usage__meter::-webkit-meter-bar { border-color: #a4845d; border-radius: 4px; background: #ddcda8; }
+.ms-bag-usage__meter::-webkit-meter-optimum-value { background: #56754e; }
+.ms-bag-usage__meter::-webkit-meter-suboptimum-value { background: #a84436; }
 .ms-skill-card__next { margin: 0; color: #3f6a45; font-size: 12px; font-weight: 700; }
 .ms-dialogue-head { display: flex; align-items: center; gap: 12px; }
 .ms-dialogue-head h3 { margin: 0; }

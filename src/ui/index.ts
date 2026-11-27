@@ -3103,18 +3103,33 @@ function buildPanelContent(
   return content;
 }
 
+function makeBagCapacity(document: Document, used: number): HTMLElement {
+  const nearFull = BAG_CAPACITY - 4;
+  const reading = '已用 ' + used + '／' + BAG_CAPACITY + ' 格';
+  const capacity = makeElement(document, 'strong', used >= nearFull ? 'ms-bag-usage is-near-full' : 'ms-bag-usage');
+  const label = makeElement(document, 'span', '', reading);
+  label.setAttribute('aria-hidden', 'true');
+  const meter = makeElement(document, 'meter', 'ms-bag-usage__meter');
+  meter.min = 0;
+  meter.max = BAG_CAPACITY;
+  meter.high = nearFull - 1;
+  meter.optimum = 0;
+  meter.value = used;
+  meter.setAttribute('aria-label', '背包容量');
+  meter.setAttribute('aria-valuetext', reading);
+  capacity.append(label, meter);
+  return capacity;
+}
+
 function buildInventoryPanel(document: Document, view: UiSnapshot, state: PanelBuildState, parent: HTMLElement): void {
   const player = view.saveData?.player;
   if (!player) {
     parent.append(makeElement(document, 'p', 'ms-empty-state', '建立角色後即可使用背包。'));
     return;
   }
-  // Say how full the bag is, so a "bag full" refusal never comes as a surprise.
-  const used = player.bag.length;
   const overview = makeElement(document, 'div', 'ms-inventory-overview');
-  const note = makeElement(document, 'p', 'ms-panel-note', '');
-  const usage = makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格');
-  note.append(usage);
+  const note = makeElement(document, 'p', 'ms-panel-note');
+  note.append(makeBagCapacity(document, player.bag.length));
   overview.append(note);
   const upgrades = new Set(wearableUpgradeIndices(view, player));
   if (upgrades.size > 0) {
@@ -3487,11 +3502,10 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     parent.append(resetNote);
   }
   parent.append(makeElement(document, 'p', 'ms-wallet', '持有金幣：' + formatNumber(player.coins)));
-  const used = player.bag.length;
   const capacityNote = makeElement(document, 'p', 'ms-panel-note');
   capacityNote.append(
     document.createTextNode('背包：'),
-    makeElement(document, 'strong', used >= 28 ? 'ms-bag-usage is-near-full' : 'ms-bag-usage', '已用 ' + used + '／' + BAG_CAPACITY + ' 格'),
+    makeBagCapacity(document, player.bag.length),
     document.createTextNode('。可堆疊物品可補入同類未滿堆疊；能否購買依各貨品提示。'),
   );
   parent.append(capacityNote);
