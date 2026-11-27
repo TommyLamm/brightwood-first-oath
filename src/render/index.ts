@@ -82,6 +82,7 @@ type RendererAssets = {
 
 type MapVisual = {
   map: MapDef;
+  npcIdleStartedAtMs?: number;
   backgrounds: Phaser.GameObjects.TileSprite[];
   environmentLayers: Phaser.GameObjects.Container[];
   environmentTextureKeys: Set<string>;
@@ -1195,43 +1196,45 @@ export function createWorldRenderer(
     };
     const contextKey = snapshot.contextTargetKey;
     const pickupFocus = contextKey?.startsWith('pickup:') ? contextKey.slice('pickup:'.length) : null;
+    const npcIdleStartedAtMs = activeVisual.npcIdleStartedAtMs ??= snapshot.nowMs;
+    const markerImage = assets.images.get('marker:quest')!;
     for (const placement of activeVisual.map.npcs) {
       const npc = catalog.world.npcs[placement.npcId];
       const npcVisual = activeVisual.npcSprites.get(placement.npcId);
       if (!npc || !npcVisual) continue;
       const image = assets.images.get(npcVisual.imageKey)!;
+      const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
+      const questTarget = targets.npcs.has(placement.npcId);
+      if (questTarget) guideTarget('npc', placement.npcId, npc.name, markerGeometry);
+      if (!isInViewport(placement)) {
+        npcVisual.nameText.setVisible(false);
+        npcVisual.questMarker.setVisible(false).setActive(false);
+        continue;
+      }
       const npcKey = 'npc:' + placement.npcId;
-      const npcSprite = drawActor(npcKey, npcVisual.imageKey, `npc:${npc.id}:idle`, placement, 1, snapshot.nowMs).sprite;
+      drawActor(npcKey, npcVisual.imageKey, `npc:${npc.id}:idle`, placement, 1, snapshot.nowMs, npcIdleStartedAtMs);
       if (STELE_NPC_IDS.has(placement.npcId) && tunedSteles.has(placement.npcId)) {
         const glowY = placement.y - image.displayHeight * 0.58;
         steleGlowGraphics.fillStyle(0xffd979, 0.2).fillCircle(placement.x, glowY, 16);
         steleGlowGraphics.lineStyle(2, 0xffe9a8, 0.72).strokeCircle(placement.x, glowY, 16);
       }
-      const npcInViewport = isInViewport(placement);
-      if (!npcInViewport) npcSprite.setVisible(false).setActive(false);
-      if (npcInViewport && npcKey === contextKey) drawContextFocus(guidanceGraphics, placement, 46);
+      if (npcKey === contextKey) drawContextFocus(guidanceGraphics, placement, 46);
       const questState = markers.get(placement.npcId);
       const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
       const label = npc.name + questLabel;
       const color = questState === 'ready' ? '#c7f8c5' : '#fff4d4';
       if (npcVisual.nameText.text !== label) npcVisual.nameText.setText(label);
       if (npcVisual.nameText.style.color !== color) npcVisual.nameText.setColor(color);
-      npcVisual.nameText.setVisible(npcInViewport);
-      const markerImage = assets.images.get('marker:quest')!;
-      const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
-      const questTarget = targets.npcs.has(placement.npcId);
-      const showMarker = npcInViewport && !questTarget && questState !== undefined;
+      npcVisual.nameText.setVisible(true);
+      const showMarker = !questTarget && questState !== undefined;
       npcVisual.questMarker.setPosition(markerGeometry.x, markerGeometry.y)
         .setVisible(showMarker).setActive(showMarker);
-      if (questTarget) guideTarget('npc', placement.npcId, npc.name, markerGeometry);
-      if (npcInViewport) {
-        const offset = questTarget || showMarker ? 24 : 0;
-        const markerX = markerGeometry.x + offset;
-        if (placement.npcId === snapshot.specializationMentorId) {
-          drawSpecializationCue(guidanceGraphics, markerX, markerGeometry.y);
-        } else if (npc.role === 'merchant' || npc.role === 'healer') {
-          drawServiceCue(guidanceGraphics, npc.role, markerX, markerGeometry.y);
-        }
+      const offset = questTarget || showMarker ? 24 : 0;
+      const markerX = markerGeometry.x + offset;
+      if (placement.npcId === snapshot.specializationMentorId) {
+        drawSpecializationCue(guidanceGraphics, markerX, markerGeometry.y);
+      } else if (npc.role === 'merchant' || npc.role === 'healer') {
+        drawServiceCue(guidanceGraphics, npc.role, markerX, markerGeometry.y);
       }
     }
     for (const monster of snapshot.monsters) {
