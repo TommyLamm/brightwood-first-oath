@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Telegraph } from '../contracts/types.js';
 import {
   DAMAGE_NUMBER_LIFETIME_MS,
+  bodyOverlapsTelegraph,
   damageNumberGeometry,
   formatDamageNumber,
   isDamageNumberEvent,
@@ -58,5 +59,14 @@ describe('renderer combat primitives', () => {
     expect(isDamageNumberEvent('levelup')).toBe(false);
     expect(formatDamageNumber(23.6)).toBe('24');
     expect(formatDamageNumber(undefined)).toBe('命中');
+  });
+
+  it('warns only while the hero’s body intersects the marked attack area', () => {
+    const rect = { x: 80, y: 550, width: 40, height: 20 };
+    const body = { width: 24, height: 44 };
+    expect(bodyOverlapsTelegraph({ x: 115, y: 600 }, body, rect)).toBe(true);
+    expect(bodyOverlapsTelegraph({ x: 132, y: 600 }, body, rect)).toBe(false);
+    expect(bodyOverlapsTelegraph({ x: 100, y: 550 }, body, rect)).toBe(false);
+    expect(bodyOverlapsTelegraph({ x: 100, y: 614 }, body, rect)).toBe(false);
   });
 });

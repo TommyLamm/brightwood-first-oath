@@ -93,6 +93,17 @@ export function telegraphCueGeometry(
   };
 }
 
+/** A fighter's position is its footpoint, so the body extends upward into the warning. */
+export function bodyOverlapsTelegraph(
+  feet: Readonly<Vec2>,
+  body: Readonly<{ width: number; height: number }>,
+  rect: Telegraph['rect'],
+): boolean {
+  const halfWidth = body.width / 2;
+  return feet.x + halfWidth > rect.x && feet.x - halfWidth < rect.x + rect.width
+    && feet.y > rect.y && feet.y - body.height < rect.y + rect.height;
+}
+
 /** Computes a damage label's world position and fade from the snapshot clock. */
 export function damageNumberGeometry(
   position: Vec2,

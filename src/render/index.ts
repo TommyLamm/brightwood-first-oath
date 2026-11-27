@@ -29,6 +29,7 @@ import {
   isDamageNumberEvent,
   monsterHealthBarGeometry,
   telegraphCueGeometry,
+  bodyOverlapsTelegraph,
 } from './combat-primitives.js';
 import {
   actorFootOffset,
@@ -1339,11 +1340,14 @@ export function createWorldRenderer(
         attackGraphics.lineStyle(3, 0x81dbe3, .45).beginPath().moveTo(x - arrow.facing * 42, y).lineTo(x, y).strokePath();
       }
     }
+    let heroInWarning = false;
+    const heroFeet = snapshot.player.movement.position;
     for (const telegraph of snapshot.telegraphs) {
       const source = snapshot.monsters.find((monster) => monster.id === telegraph.sourceId);
       const bossTelegraph = source ? isBossMonster(source.monsterId) : false;
       const cue = telegraphCueGeometry(telegraph, snapshot.nowMs, source?.lastAttackAtMs, bossTelegraph);
       if (!cue) continue;
+      heroInWarning ||= snapshot.player.hp > 0 && bodyOverlapsTelegraph(heroFeet, catalog.rules.movement, cue.rect);
       const fillColor = bossTelegraph ? 0xd94442 : 0xef6459;
       const borderColor = bossTelegraph ? 0xffd071 : 0xff8a73;
       telegraphGraphics.fillStyle(fillColor, cue.fillAlpha)
@@ -1354,6 +1358,13 @@ export function createWorldRenderer(
         telegraphGraphics.fillStyle(borderColor, cue.borderAlpha)
           .fillRect(cue.rect.x, cue.rect.y, cue.progressWidth, Math.min(4, cue.rect.height));
       }
+    }
+    if (heroInWarning) {
+      const { x } = heroFeet;
+      const y = heroFeet.y - playerSprite.displayHeight - 15;
+      telegraphGraphics.fillStyle(0x40291d, .96).fillTriangle(x, y - 11, x + 13, y + 10, x - 13, y + 10);
+      telegraphGraphics.lineStyle(2, 0xffe394, 1).strokeTriangle(x, y - 11, x + 13, y + 10, x - 13, y + 10);
+      telegraphGraphics.fillStyle(0xffe394, 1).fillRect(x - 1.5, y - 3, 3, 7).fillCircle(x, y + 7, 1.5);
     }
 
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
