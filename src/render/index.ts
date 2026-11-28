@@ -432,8 +432,8 @@ export function createWorldRenderer(
   const appliedSpriteFrames = new WeakMap<Phaser.GameObjects.Sprite, string>();
   const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
-  let visibleActors = new Set<Phaser.GameObjects.Sprite>();
-  let drawnActors = new Set<Phaser.GameObjects.Sprite>();
+  let visibleSprites = new Set<Phaser.GameObjects.Sprite>();
+  let drawnSprites = new Set<Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   let actorOrderDirty = false;
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
@@ -967,6 +967,11 @@ export function createWorldRenderer(
     actorOrderDirty = true;
   };
 
+  const showWorldSprite = (sprite: Phaser.GameObjects.Sprite): void => {
+    if (!sprite.visible) sprite.setVisible(true).setActive(true);
+    drawnSprites.add(sprite);
+  };
+
   const drawActor = (
     key: string,
     imageKey: string,
@@ -998,8 +1003,7 @@ export function createWorldRenderer(
     setImageFrame(sprite, image, frame);
     sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0);
     setActorDepth(sprite, position.y);
-    if (!sprite.visible) sprite.setVisible(true).setActive(true);
-    drawnActors.add(sprite);
+    showWorldSprite(sprite);
     return { sprite, frame, footOffsetY };
   };
 
@@ -1029,19 +1033,16 @@ export function createWorldRenderer(
       .setOrigin(facing < 0 ? 1 - image.pivotX : image.pivotX, image.pivotY)
       .setPosition(position.x, position.y)
       .setFlipX(facing < 0)
-      .setRotation(rotation)
-      .setVisible(true)
-      .setActive(true);
+      .setRotation(rotation);
     setActorDepth(sprite, depth + 0.05);
+    showWorldSprite(sprite);
   };
 
   const drawSnapshot = (snapshot: WorldSnapshot): void => {
     if (!activeVisual) throw new RendererAssetError('請先成功呼叫 loadMap(map)');
     if (snapshot.mapId !== activeVisual.map.id) throw new RendererAssetError(`Snapshot mapId ${snapshot.mapId} 與已載入地圖 ${activeVisual.map.id} 不一致`);
 
-    drawnActors.clear();
-    for (const sprite of gearSprites.values()) sprite.setVisible(false).setActive(false);
-    for (const sprite of attackEffectSprites.values()) sprite.setVisible(false).setActive(false);
+    drawnSprites.clear();
     hpGraphics.clear();
     steleGlowGraphics.clear();
     guidanceGraphics.clear();
@@ -1578,12 +1579,12 @@ export function createWorldRenderer(
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
     prunePlayedVisualEventIds(playedVisualEventIds, snapshot.effects);
     pruneEvents(snapshot.nowMs);
-    for (const sprite of visibleActors) {
-      if (!drawnActors.has(sprite) && sprite.scene) sprite.setVisible(false).setActive(false);
+    for (const sprite of visibleSprites) {
+      if (!drawnSprites.has(sprite) && sprite.scene) sprite.setVisible(false).setActive(false);
     }
-    const previousActors = visibleActors;
-    visibleActors = drawnActors;
-    drawnActors = previousActors;
+    const previousSprites = visibleSprites;
+    visibleSprites = drawnSprites;
+    drawnSprites = previousSprites;
     if (actorOrderDirty) {
       actorsLayer.sort('depth');
       actorOrderDirty = false;
@@ -1646,8 +1647,8 @@ export function createWorldRenderer(
       y: attack.origin.y - skill.height / 2,
     };
     setImageFrame(sprite, image, frame);
-    sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0)
-      .setVisible(true).setActive(true);
+    sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0);
+    showWorldSprite(sprite);
   };
 
   const getDropText = (id: string, content: string, position: Vec2, nowMs: number): Phaser.GameObjects.Text => {
@@ -1810,9 +1811,11 @@ export function createWorldRenderer(
         const old = activeVisual;
         activeVisual = candidate;
         parallaxMotion.resetForMap();
-        for (const sprite of actorSprites.values()) sprite.setVisible(false).setActive(false);
-        visibleActors.clear();
-        drawnActors.clear();
+        for (const sprite of visibleSprites) {
+          if (sprite.scene) sprite.setVisible(false).setActive(false);
+        }
+        visibleSprites.clear();
+        drawnSprites.clear();
         if (old) {
           for (const [key, sprite] of actorSprites) {
             if (key !== 'player') {
@@ -1892,8 +1895,8 @@ export function createWorldRenderer(
       activeVisual = null;
       for (const sprite of actorSprites.values()) sprite.destroy();
       actorSprites.clear();
-      visibleActors.clear();
-      drawnActors.clear();
+      visibleSprites.clear();
+      drawnSprites.clear();
       actorAnimationClocks.clear();
       dropSprites.clear();
       dropDrawList = undefined;
