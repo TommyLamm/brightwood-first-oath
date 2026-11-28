@@ -1009,13 +1009,15 @@ export class GameApp {
     const previousState = this.stateValue;
     this.stateValue = state;
     this.synchronizeAudio(previousState, state);
-    const previousBindings = this.keyboardBindingsFingerprint;
-    const nextBindings = JSON.stringify(state.gameplay?.saveData.settings.bindings ?? {});
-    if (this.keyboard && previousBindings !== nextBindings) {
-      this.keyboard.setBindings(getSavedKeyBindings(state.gameplay?.saveData.settings.bindings));
+    const bindings = state.gameplay?.saveData.settings.bindings;
+    if (bindings !== previousState.gameplay?.saveData.settings.bindings) {
+      const fingerprint = JSON.stringify(bindings ?? {});
+      if (this.keyboard && this.keyboardBindingsFingerprint !== fingerprint) {
+        this.keyboard.setBindings(getSavedKeyBindings(bindings));
+      }
+      this.keyboardBindingsFingerprint = fingerprint;
     }
-    this.keyboardBindingsFingerprint = nextBindings;
-    this.configureAttackKeys();
+    if (state.gameplay?.saveData.player !== previousState.gameplay?.saveData.player) this.configureAttackKeys();
     this.options.onStateChange?.(state);
   }
 
@@ -1068,7 +1070,7 @@ export class GameApp {
     if (!controller) return;
 
     const settings = next.gameplay?.saveData.settings;
-    if (settings) {
+    if (settings && settings !== previous.gameplay?.saveData.settings) {
       const fingerprint = audioSettingsFingerprint(settings);
       if (fingerprint !== this.audioSettingsFingerprint) {
         this.audioSettingsFingerprint = fingerprint;
@@ -1137,16 +1139,20 @@ export class GameApp {
   }
 
   private playStateTransitionAudio(previous: GameAppState, next: GameAppState): void {
-    const newPanels = next.panels.filter((panel) => !previous.panels.includes(panel));
-    if (newPanels.length > 0) this.playAudioOnce(`panel:${newPanels.join(',')}:${next.gameTimeMs}:${++this.audioEventSequence}`, 'panel-open');
+    if (next.panels !== previous.panels) {
+      const newPanels = next.panels.filter((panel) => !previous.panels.includes(panel));
+      if (newPanels.length > 0) this.playAudioOnce(`panel:${newPanels.join(',')}:${next.gameTimeMs}:${++this.audioEventSequence}`, 'panel-open');
+    }
 
     const gameplay = next.gameplay;
     if (!gameplay) return;
     const before = previous.gameplay;
 
-    const previousAttackIds = new Set(before?.combat.attacks.map(({ id }) => id) ?? []);
+    const previousAttacks = before?.combat.attacks;
+    const attacksChanged = gameplay.combat.attacks !== previousAttacks;
+    const previousAttackIds = attacksChanged ? new Set(previousAttacks?.map(({ id }) => id)) : null;
     for (const attack of gameplay.combat.attacks) {
-      if (attack.sourceId === gameplay.playerEntityId && !previousAttackIds.has(attack.id)) {
+      if (previousAttackIds && attack.sourceId === gameplay.playerEntityId && !previousAttackIds.has(attack.id)) {
         const bow = next.catalog?.rules.skills[attack.skillId]?.projectile;
         const mage = next.catalog?.rules.skills[attack.skillId]?.requiredJob === 'mage' || attack.skillId === 'wand-basic';
         const rogue = next.catalog?.rules.skills[attack.skillId]?.requiredJob === 'rogue' || attack.skillId === 'dagger-basic';
@@ -1165,13 +1171,16 @@ export class GameApp {
         && next.gameTimeMs >= attack.startedAtMs + skill.windupMs && previous.gameTimeMs < attack.startedAtMs + skill.windupMs) {
         this.playAudioOnce(`spell:${attack.id}`, attack.skillId === 'mage-blink' ? 'mage-blink' : 'mage-frost');
       }
-      if (!skill?.projectile) continue;
-      const previousAttack = before?.combat.attacks.find(({ id }) => id === attack.id);
+      if (!attacksChanged || !skill?.projectile) continue;
+      const previousAttack = previousAttacks?.find(({ id }) => id === attack.id);
       for (let shot = previousAttack?.firedShots ?? 0; shot < (attack.firedShots ?? 0); shot += 1) {
         this.playAudioOnce(`arrow:${attack.id}:${shot}`, skill.requiredJob === 'mage' || attack.skillId === 'wand-basic'
           ? 'mage-bolt' : skill.requiredJob === 'rogue' ? 'rogue-slash' : attack.skillId === 'archer-piercing-shot' || attack.skillId === 'marksman-snipe' ? 'bow-pierce' : 'bow-release');
       }
     }
+
+    // Only windup cues can cross a boundary when the fixed step advances the clock alone.
+    if (before === gameplay && previous.gameTimeMs !== next.gameTimeMs) return;
 
     const previousEffectIds = new Set(before?.effects.map(({ id }) => id) ?? []);
     for (const effect of gameplay.effects) {
@@ -1251,7 +1260,8 @@ export class GameApp {
       && !gameplay.effects.some(({ id, kind }) => kind === 'levelup' && !previousEffectIds.has(id))) {
       this.playAudioOnce(`levelup:${gameplay.playerEntityId}:${next.gameTimeMs}:${player.level}`, 'levelup');
     }
-    if (JSON.stringify(player.equipment) !== JSON.stringify(previousPlayer.equipment)) {
+    if (player.equipment !== previousPlayer.equipment
+      && JSON.stringify(player.equipment) !== JSON.stringify(previousPlayer.equipment)) {
       this.playAudioOnce(`equip:${gameplay.playerEntityId}:${next.gameTimeMs}:${++this.audioEventSequence}`, 'equip');
     }
     if (gameplay.potionReadyAtMs > before.potionReadyAtMs) {
@@ -1259,11 +1269,13 @@ export class GameApp {
     }
 
     const previousQuests = before.saveData.quests;
-    for (const [questId, quest] of Object.entries(gameplay.saveData.quests)) {
-      const oldStatus = previousQuests[questId]?.status;
-      if ((oldStatus === undefined && quest.status === 'active')
-        || (oldStatus === 'active' && quest.status === 'claimed')) {
-        this.playAudioOnce(`quest:${questId}:${quest.status}:${next.gameTimeMs}`, 'quest');
+    if (previousQuests !== gameplay.saveData.quests) {
+      for (const [questId, quest] of Object.entries(gameplay.saveData.quests)) {
+        const oldStatus = previousQuests[questId]?.status;
+        if ((oldStatus === undefined && quest.status === 'active')
+          || (oldStatus === 'active' && quest.status === 'claimed')) {
+          this.playAudioOnce(`quest:${questId}:${quest.status}:${next.gameTimeMs}`, 'quest');
+        }
       }
     }
 
