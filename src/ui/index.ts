@@ -689,7 +689,13 @@ export function createUi(
   });
   pickupBagButton.append(makeJournalIcon(document, 'inventory'), document.createTextNode('整理背包'));
   pickupBagButton.hidden = true;
-  interactionHintRow.append(interactionHintText, pickupBagButton);
+  const portalQuestReview = makeButton(document, '', 'select-quest', {
+    className: 'ms-button ms-button--small ms-context-button ms-interaction-hint__quest',
+  });
+  const portalQuestCue = makeQuestCueBadge(document, 'npc');
+  portalQuestReview.append(portalQuestCue, document.createTextNode('查看通行任務'));
+  portalQuestReview.hidden = true;
+  interactionHintRow.append(interactionHintText, pickupBagButton, portalQuestReview);
   let contextTargetKey: string | null = null;
   let contextPickupKey: string | null = null;
   interactionHintRow.hidden = true;
@@ -1224,6 +1230,24 @@ export function createUi(
     interactionHintRow.hidden = !visible;
     contextPickupKey = hint?.secondaryPickupKey ?? null;
     pickupBagButton.hidden = !hint || view.pickupHint?.targetKey !== hint.targetKey || !view.pickupHint.bagFull;
+    const portal = view.interactionHint;
+    const questId = hint && portal?.targetKey === hint.targetKey ? portal.blockedQuestId : undefined;
+    const gateQuest = questId && view.questViews.find(({ questId: id }) => id === questId);
+    portalQuestReview.hidden = !gateQuest;
+    if (gateQuest) {
+      const state = gateQuest.status === 'available' || gateQuest.status === 'ready' ? gateQuest.status : undefined;
+      const { symbol, color } = questCueStyle('npc', state);
+      if (portalQuestCue.textContent !== symbol) {
+        portalQuestCue.textContent = symbol;
+        portalQuestCue.style.color = '#' + color.toString(16);
+      }
+      const label = '查看通行任務「' + gateQuest.title + '」';
+      if (portalQuestReview.title !== label || portalQuestReview.dataset.questId !== gateQuest.questId) {
+        portalQuestReview.title = label;
+        portalQuestReview.setAttribute('aria-label', label);
+        portalQuestReview.dataset.questId = gateQuest.questId;
+      }
+    }
     if (!hint) {
       contextTargetKey = null;
       if (interactionHintText.textContent !== '') interactionHintText.textContent = '';

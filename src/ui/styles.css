@@ -492,7 +492,8 @@
 .ms-interaction-hint__item.ms-interface-icon-fallback,
 .ms-quest-tracker__item-icon.ms-interface-icon-fallback { display: none; }
 
-.ms-interaction-hint__bag {
+.ms-interaction-hint__bag,
+.ms-interaction-hint__quest {
   display: flex;
   margin-top: 4px;
   pointer-events: auto;

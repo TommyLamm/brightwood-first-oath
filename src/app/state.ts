@@ -11,7 +11,7 @@ import { applyPanelCommand, isWorldFrozen } from './panels.js';
 import { PASSIVE_RECOVERY_DELAY_MS, type GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
-import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
+import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget, unclaimedPortalQuest } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
 import { classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
@@ -190,11 +190,13 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
         };
       }
     } else if (target?.kind === 'portal') {
+      const questId = unclaimedPortalQuest(saveData, target.portal);
       interactionHint = {
         targetKey: 'portal:' + target.portal.id,
         kind: 'portal',
         label: catalog.world.maps[target.portal.targetMapId]?.name ?? target.portal.targetMapId,
         blockedMessage: portalBlockMessage(saveData, target.portal, catalog),
+        ...(questId && catalog.world.quests[questId] ? { blockedQuestId: questId } : {}),
       };
     }
   }

@@ -64,7 +64,7 @@ export function resolveInteractionTarget(
   return portal ? { kind: 'portal', portal } : null;
 }
 
-function unclaimedPortalQuest(save: SaveData, portal: Readonly<Portal>): string | null {
+export function unclaimedPortalQuest(save: SaveData, portal: Readonly<Portal>): string | null {
   const questId = portal.requiredQuestId;
   return questId && save.quests[questId]?.status !== 'claimed' ? questId : null;
 }

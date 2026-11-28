@@ -91,7 +91,16 @@ describe('base experience UI snapshot', () => {
       targetKey: 'portal:camp:east',
       kind: 'portal',
       label: '木葉鎮',
+      blockedQuestId: 'q01',
       blockedMessage: '向森芽接取並完成「第一次出發」後才能前往木葉鎮。',
+    });
+
+    gameplay.saveData = { ...gameplay.saveData, quests: { q01: { status: 'claimed', counters: { snail: 3 } } } };
+    expect(snapshotFor(gameplay)?.interactionHint).toEqual({
+      targetKey: 'portal:camp:east',
+      kind: 'portal',
+      label: '木葉鎮',
+      blockedMessage: null,
     });
   });
 
