@@ -30,12 +30,6 @@ export function controlImage(document: Document, icon: string): HTMLImageElement
   return image;
 }
 
-export function setControlLabel(button: HTMLButtonElement, text: string): void {
-  const label = button.querySelector<HTMLElement>('.ms-control-label');
-  if (label) label.textContent = text;
-  else button.textContent = text;
-}
-
 export function decorateControl(button: HTMLButtonElement, label: string, action: string, iconOverride?: string): void {
   // Existing bag slots, atlas landmarks, quickbar and illustrated tabs own their artwork.
   if (!label || button.classList.contains('ms-journal-tab')) return;

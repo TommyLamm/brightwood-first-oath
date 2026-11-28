@@ -1,5 +1,5 @@
 import './styles.css';
-import { classPortrait, classSkillNames, classActionLabel, playerClassLabel, equipmentJobLabel } from './class-presentation.js';
+import { classActionSkill, classPortrait, classSkillNames, combatSlotIconKey, playerClassLabel, equipmentJobLabel } from './class-presentation.js';
 import { buildRosterManager } from './roster-manager.js';
 import { specializationPanel } from './specialization-panel.js';
 import { isSpecialization, playerSkillRank, specializationMentors, specializations } from '../content/rules/specializations.js';
@@ -12,7 +12,7 @@ import './forest-hud.css';
 import './image-quality.css';
 import './reading-size.css';
 import './local-map.css';
-import { controlImage, decorateControl, installControlSkins, setControlLabel } from './control-art.js';
+import { controlImage, decorateControl, installControlSkins } from './control-art.js';
 import { buildQuestRewards, buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces, questActorPortrait } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
 import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
@@ -843,7 +843,7 @@ export function createUi(
   // Which row the message is about, so it shows next to that row instead of below all 17 bindings.
   let bindingMessageAction: string | null = null;
   let keyGuideExpanded = false;
-  let lastKeyGuideSignature = '';
+  let lastKeyGuideInputs: readonly unknown[] = [];
   let panelFocusBeforeResume: PanelFocusSnapshot | null = null;
   let lastPanelFocus: PanelFocusSnapshot | null = null;
   let restoreFocusAfterResume = false;
@@ -961,17 +961,19 @@ export function createUi(
   };
 
   const renderKeyGuide = (view: UiSnapshot | null): void => {
-    setControlLabel(keyGuideToggle, '?');
-    keyGuideToggle.classList.toggle('is-active', keyGuideExpanded);
-    keyGuideToggle.setAttribute('aria-expanded', String(keyGuideExpanded));
-    keyGuideCard.hidden = !keyGuideExpanded;
+    if (keyGuideCard.hidden !== !keyGuideExpanded) {
+      keyGuideToggle.classList.toggle('is-active', keyGuideExpanded);
+      keyGuideToggle.setAttribute('aria-expanded', String(keyGuideExpanded));
+      keyGuideCard.hidden = !keyGuideExpanded;
+    }
     if (!keyGuideExpanded) return;
 
     const bindings = (view?.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS) as Partial<Record<GameAction, string>>;
-    const signature = JSON.stringify({bindings, job:view?.saveData?.player && effectiveJob(view.saveData.player),
-      specialization:view?.saveData?.player.specialization, advancedSkillEquipped:view?.saveData?.player.advancedSkillEquipped});
-    if (signature === lastKeyGuideSignature && keyGuideCard.hasChildNodes()) return;
-    lastKeyGuideSignature = signature;
+    const player = view?.saveData?.player;
+    const inputs = [bindings, player && effectiveJob(player), player?.specialization, player?.advancedSkillEquipped,
+      player?.equipment.weapon, view?.catalog.rules, view?.interfaceManifest];
+    if (keyGuideCard.hasChildNodes() && inputs.every((value, index) => value === lastKeyGuideInputs[index])) return;
+    lastKeyGuideInputs = inputs;
 
     keyGuideCard.replaceChildren();
 
@@ -990,10 +992,11 @@ export function createUi(
       const grid = makeElement(document, 'div', 'ms-key-guide__grid');
       for (const item of section.items) {
         const row = makeElement(document, 'div', 'ms-key-guide__row');
-        row.append(
-          makeElement(document, 'span', 'ms-key-guide__action', view?.saveData ? classActionLabel(view.saveData.player,view.catalog.rules,item.action ?? '') ?? item.label : item.label),
-          makeElement(document, 'span', 'ms-key-guide__badge', getKeyBadgeText(bindings, item)),
-        );
+        const skill = player && view ? classActionSkill(player, view.catalog.rules, item.action ?? '') : undefined;
+        const action = makeElement(document, 'span', 'ms-key-guide__action', skill?.name ?? item.label);
+        const iconKey = skill && view ? combatSlotIconKey(player, view.catalog.rules, skill.id) : null;
+        if (iconKey && view?.interfaceManifest) action.prepend(makeInterfaceIcon(document, view, iconKey, '', 'ms-key-guide__icon'));
+        row.append(action, makeElement(document, 'span', 'ms-key-guide__badge', getKeyBadgeText(bindings, item)));
         grid.append(row);
       }
       secEl.append(grid);
@@ -1316,8 +1319,7 @@ export function createUi(
         && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
       const rank = player && slot.kind !== 'item' ? (basic || trial ? 1 : playerSkillRank(player, slotId)) : 0;
       const skill = slot.kind === 'item' ? undefined : view.catalog.rules.skills[slotId];
-      const swordIconKey = slotId === 'basic' && player?.equipment.weapon
-        ? view.catalog.rules.items[player.equipment.weapon]?.iconKey : undefined;
+      const iconKey = slot.kind !== 'item' ? combatSlotIconKey(player, view.catalog.rules, slotId) : null;
       const buffUntilMs = skill?.id === 'guardian-rally' ? view.rallyUntilMs : view.guardUntilMs;
       const buffLeftSec = skill?.kind === 'buff' && rank > 0 ? Math.ceil(Math.max(0, (buffUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const activeDefense = buffLeftSec > 0 ? view.activeGuard?.defenseBonus : undefined;
@@ -1344,7 +1346,7 @@ export function createUi(
         view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, Boolean(player),
         player?.job, player?.level, Boolean(player?.sp),
       ] : [
-        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, rank, trial, lacksMana, basic && view.aimReady, swordIconKey,
+        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, rank, trial, lacksMana, basic && view.aimReady, iconKey,
         Math.ceil(cooldown / 100),
         Math.ceil(actionLock / 100),
         buffLeftSec, activeDefense, queued, stanceBlock, windingUp, interrupted, skillReady,
@@ -1397,7 +1399,6 @@ export function createUi(
       }
 
       button.dataset.skillId = slotId;
-      const iconKey = slotId === 'basic' ? swordIconKey ?? null : 'skill:' + slotId;
       renderQuickIcon(slotId, iconHost, view, iconKey, skill?.name ?? slot.label, 'ms-quick-slot__icon-image', basic ? '普攻' : undefined);
       if (!player || !skill) {
         button.disabled = true;
