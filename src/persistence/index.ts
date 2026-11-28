@@ -134,7 +134,7 @@ function isImportantCharacterChange(previous: SaveData | null, next: SaveData, c
     || JSON.stringify(previous.visitedMaps) !== JSON.stringify(next.visitedMaps)
     || JSON.stringify(previous.quests) !== JSON.stringify(next.quests)
     || JSON.stringify(previous.flags) !== JSON.stringify(next.flags)
-    || a.job !== b.job || a.level !== b.level
+    || a.job !== b.job || a.specialization !== b.specialization || a.level !== b.level
     || a.str !== b.str || a.dex !== b.dex || a.int !== b.int || a.ap !== b.ap || a.sp !== b.sp
     || JSON.stringify(a.skillRanks) !== JSON.stringify(b.skillRanks)
     || JSON.stringify(a.bag) !== JSON.stringify(b.bag)
@@ -962,10 +962,11 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     if (!metrics.error && metrics.bytes >= SAVE_WARNING_BYTES) {
       setStatus(runtime.status, `存檔已達 ${metrics.bytes} bytes，接近 64 KiB 上限。`);
     }
-    const important = isImportantChange(runtime.lastCheckpoint, snapshot, options.catalog)
-      || isImportantChange(runtime.pending?.data ?? runtime.lastCheckpoint, snapshot, options.catalog);
-    const existingImportant = runtime.pending?.important ?? false;
-    runtime.pending = { data: snapshot, important: important || existingImportant };
+    const pending = runtime.pending;
+    const important = pending?.important === true
+      || isImportantChange(runtime.lastCheckpoint, snapshot, options.catalog)
+      || (pending != null && pending.data !== runtime.lastCheckpoint && isImportantChange(pending.data, snapshot, options.catalog));
+    runtime.pending = { data: snapshot, important };
     pump();
   };
 

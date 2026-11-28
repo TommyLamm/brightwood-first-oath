@@ -3,7 +3,7 @@ import { legacySaveData } from './fixtures/legacy-save.js';
 import type { GameProfile, CloudPort, CloudReady, CloudRecord, CloudSaveInput, CloudSaved, SaveData, StorageLike } from '../src/contracts/index.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
-import { createPlayer } from '../src/domain/progression/index.js';
+import { applyProgressAction, createPlayer } from '../src/domain/progression/index.js';
 import { getQuestView } from '../src/domain/quests/index.js';
 import { BRIGHTWOOD_GAME_ID, createPersistence, LEGACY_GAME_ID, localSaveKeyForGame, SAVE_FORMAT_VERSION, profileFromLegacySave, validateSave } from '../src/persistence/index.js';
 
@@ -153,6 +153,38 @@ describe('persistence', () => {
     const outcome = await restored.initialize();
     expect(outcome).toMatchObject({ mode: 'local', status: 'ready', data: savedData });
     restored.dispose();
+  });
+
+  it('checkpoints a permanent job branch ahead of a pending ordinary save', async () => {
+    const storage = new MemoryStorage();
+    const gameId = BRIGHTWOOD_GAME_ID;
+    const persistence = createPersistence({ gameId, storage, cloud: null, catalog });
+    try {
+      await persistence.initialize();
+      const save = makeSave();
+      save.player = { ...save.player, job: 'swordsman', level: 20, ap: 95 };
+      save.quests = { q01: { status: 'claimed', counters: { snail: 3 } }, q02: { status: 'claimed', counters: { town: 1 } } };
+      save.visitedMaps.push('town');
+      save.location = { mapId: 'town', spawnId: 'center' };
+      persistence.checkpoint(save);
+      await vi.waitFor(() => expect(storage.setItem).toHaveBeenCalledTimes(1));
+
+      const wounded = { ...save, player: { ...save.player, hp: save.player.hp - 1 } };
+      persistence.checkpoint(wounded);
+      expect(storage.setItem).toHaveBeenCalledTimes(1);
+      const branch = applyProgressAction(wounded.player, { type: 'advanceJob', specialization: 'guardian' }, rulesCatalog);
+      if (!branch.ok) throw new Error(branch.message);
+      persistence.checkpoint({ ...wounded, player: branch.value });
+
+      await vi.waitFor(() => expect(storage.setItem).toHaveBeenCalledTimes(2));
+      const stored = storage.entries.get(localSaveKeyForGame(gameId));
+      const { data } = JSON.parse(stored!) as { data: GameProfile };
+      expect(data.characters[data.activeCharacterId!]!.player).toMatchObject({
+        hp: wounded.player.hp, specialization: 'guardian', advancedSkillEquipped: true,
+      });
+    } finally {
+      persistence.dispose();
+    }
   });
 
   it.each([1, 2, 3, 4, 5])('requires explicit, verified backup before upgrading local format %i', async (formatVersion) => {

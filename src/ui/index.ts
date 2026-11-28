@@ -50,7 +50,7 @@ import { createQuestTrackerState, inspectObjectiveAction, isTrackableQuest, ques
 import { makeQuestCueBadge, questObjectiveCue, questObjectiveDropSource } from './quest-cue.js';
 import { combatTrialAttack } from '../content/world/class-quests.js';
 import { contextHint } from './context-hint.js';
-import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
+import { npcServiceCueAppearance, questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
 import { createScreenModalFocus } from './screen-modal-focus.js';
 import { nextInventoryBagIndex } from './inventory-navigation.js';
@@ -1262,6 +1262,13 @@ export function createUi(
       }));
       interactionHintRow.dataset.iconKey = iconKey;
     }
+        if ('specialization' in part) {
+          const { symbol, color } = npcServiceCueAppearance.specialization;
+          const badge = makeElement(document, 'span', 'ms-quest-cue', symbol);
+          badge.style.color = '#' + color.toString(16);
+          badge.setAttribute('aria-hidden', 'true');
+          return badge;
+        }
     interactionHintRow.classList.toggle('is-blocked', Boolean(interaction?.blockedMessage));
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
     const targetKey = hint.targetKey;

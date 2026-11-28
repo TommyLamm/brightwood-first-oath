@@ -53,9 +53,13 @@ describe('base experience UI snapshot', () => {
     gameplay.movement.position = { x: mentor.x, y: mentor.y };
     expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(true);
     expect(snapshotFor(gameplay, { panels: ['dialogue'] })?.nearSpecializationMentor).toBe(true);
+    expect(snapshotFor(gameplay)?.interactionHint).toMatchObject({
+      targetKey: 'npc:mage-mentor', actionLabel: '查看二轉分支', specializationGuide: true,
+    });
 
     gameplay.saveData.player.level = 19;
     expect(snapshotFor(gameplay, { panels: ['skills'] })?.nearSpecializationMentor).toBe(false);
+    expect(snapshotFor(gameplay)?.interactionHint?.specializationGuide).toBeUndefined();
   });
 
   it('uses the live player position and derives combat hints without changing saved data', () => {

@@ -221,6 +221,7 @@ export type UiSnapshot = {
     trialAttack?: { action: 'attack' | 'skill1'; label: string };
     questStatus?: 'available' | 'ready';
     blockedQuestId?: Id;
+    specializationGuide?: true;
     blockedMessage: string | null;
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */
