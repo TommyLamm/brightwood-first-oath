@@ -60,6 +60,8 @@ describe('contextual movement controls', () => {
       .toBe('E 互動：森芽\nW / S 攀爬');
     expect(contextHint({ ...view, interactionHint: npc, movementHint: { ...view.movementHint, attached: true } }, (action) => keys[action])?.text)
       .toBe('E 互動：森芽\nW / S 攀爬｜Space 跳離');
+    expect(contextHint({ interactionHint: npc, movementHint: { kind: 'drop', targetKey: 'drop:p' } }, (action) => keys[action])?.text)
+      .toBe('E 互動：森芽\nS + Space 向下跳落');
     expect(contextHint({}, (action) => keys[action])).toBeNull();
   });
 

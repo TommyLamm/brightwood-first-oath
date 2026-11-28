@@ -3,9 +3,10 @@ import type { UiSnapshot } from '../contracts/ports.js';
 type MovementKey = 'climbUp' | 'climbDown' | 'jump';
 type HintPart = string | { key: string } | { iconKey: string } | { questStatus: 'available' | 'ready' };
 type ContextHint = { targetKey: string; parts: HintPart[]; text: string; secondaryPickupKey?: string };
-type ClimbHint = Extract<NonNullable<UiSnapshot['movementHint']>, { kind: 'climb' }>;
+type MovementHint = NonNullable<UiSnapshot['movementHint']>;
 
-function climbParts(hint: ClimbHint, key: (action: MovementKey) => HintPart): HintPart[] {
+function movementParts(hint: MovementHint, key: (action: MovementKey) => HintPart): HintPart[] {
+  if (hint.kind === 'drop') return [key('climbDown'), ' + ', key('jump'), ' 向下跳落'];
   const parts: HintPart[] = hint.direction === 'both'
     ? [key('climbUp'), ' / ', key('climbDown'), ' 攀爬']
     : [key(hint.direction === 'up' ? 'climbUp' : 'climbDown'), ' 攀爬'];
@@ -45,14 +46,13 @@ export function contextHint(
       parts.push('\n', ...pickupParts(pickup, key('pickup')));
       return { ...makeHint(interaction.targetKey, parts), secondaryPickupKey: pickup.targetKey };
     }
-    if (!interaction.blockedMessage && movement?.kind === 'climb') {
-      parts.push('\n', ...climbParts(movement, key));
+    if (!interaction.blockedMessage && movement) {
+      parts.push('\n', ...movementParts(movement, key));
     }
     return makeHint(interaction.targetKey, parts);
   }
   if (pickup) return makeHint(pickup.targetKey,
     pickupParts(pickup, key('pickup'), '｜' + (pickup.blockedMessage ?? '按住連續拾取')));
   if (!movement) return null;
-  if (movement.kind === 'drop') return makeHint(movement.targetKey, [key('climbDown'), ' + ', key('jump'), ' 向下跳落']);
-  return makeHint(movement.targetKey, climbParts(movement, key));
+  return makeHint(movement.targetKey, movementParts(movement, key));
 }

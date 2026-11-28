@@ -1176,7 +1176,9 @@ export function createUi(
       : quest.status === 'available' ? '與' + giver + '交談'
       : quest.status === 'ready' ? '任務完成，向' + recipient + '回報'
       : objectives.map((objective) => objectiveText(view, objective)).join(' · ');
-    if (quest?.status === 'active' && objectives.length > 0) {
+    if (collapsed) {
+      if (questDetail.hasChildNodes()) questDetail.replaceChildren();
+    } else if (quest?.status === 'active' && objectives.length > 0) {
       const rows = objectives.slice(0, 2).map((objective) => makeObjectiveGuideRow(document, view, quest.questId, objective));
       questDetail.replaceChildren(...rows);
       if (objectives.length > rows.length) {
