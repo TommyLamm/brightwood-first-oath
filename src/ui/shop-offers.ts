@@ -37,3 +37,15 @@ export function selectShopOffers(
     )
     .map(({ item }) => item);
 }
+
+export function shopOffersByCategory(
+  items: Readonly<RulesCatalog['items']>,
+  player: Pick<PlayerProgress, 'job' | 'plannedJob'>,
+): Record<ShopFilter, ItemDef[]> {
+  const all = selectShopOffers(items, 'all', player);
+  return {
+    all,
+    consumable: all.filter((item) => matchesFilter(item, 'consumable')),
+    equipment: all.filter((item) => matchesFilter(item, 'equipment')),
+  };
+}

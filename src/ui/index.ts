@@ -43,7 +43,7 @@ import { previewMaximumBuy } from './maximum-buy-preview.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { previewSkillLearning } from './skill-learning-preview.js';
 import { countInventoryEntries, inventoryFilterForItem, INVENTORY_FILTERS, selectInventoryEntries, type InventoryFilter } from './inventory-entries.js';
-import { SHOP_FILTERS, selectShopOffers, type ShopFilter } from './shop-offers.js';
+import { SHOP_FILTERS, shopOffersByCategory, type ShopFilter } from './shop-offers.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, inspectObjectiveAction, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
@@ -3888,7 +3888,11 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     document.createTextNode('。可堆疊物品可補入同類未滿堆疊；能否購買依各貨品提示。'),
   );
   parent.append(capacityNote);
-  const offers = selectShopOffers(view.catalog.rules.items, state.shopFilter,player);
+  const offersByCategory = shopOffersByCategory(view.catalog.rules.items, player);
+  const offers = offersByCategory[state.shopFilter];
+  const equipped = new Set(Object.values(player.equipment));
+  const bagCounts = new Map<string, number>();
+  for (const { itemId, quantity } of player.bag) bagCounts.set(itemId, (bagCounts.get(itemId) ?? 0) + quantity);
   const grid = makeElement(document, 'div', 'ms-shop-grid');
   for (const item of offers) {
     const stackable = item.stackLimit > 1;
@@ -3900,13 +3904,13 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     badges.append(makeBadge(document, kindLabel(item.kind), 'category'));
     if (item.slot) {
       badges.append(makeBadge(document,equipmentJobLabel(item),'neutral'));
-      const owned = Object.values(player.equipment).includes(item.id) || player.bag.some((stack) => stack.itemId === item.id);
+      const owned = equipped.has(item.id) || bagCounts.has(item.id);
       if (player.level < item.minLevel) badges.append(makeBadge(document, 'Lv.' + item.minLevel + ' 才能裝備', 'warning'));
       if (owned) badges.append(makeBadge(document, '已擁有', 'neutral'));
       else if (isWearableUpgrade(view, player, item)) badges.append(makeBadge(document, '▲ 可升級', 'success'));
     } else if (stackable) {
       // Show the potions already carried so restocking doesn't need a trip to the bag panel.
-      const carried = player.bag.reduce((sum, stack) => sum + (stack.itemId === item.id ? stack.quantity : 0), 0);
+      const carried = bagCounts.get(item.id) ?? 0;
       badges.append(makeBadge(document, '持有 ×' + carried, 'neutral'));
     }
     card.append(
@@ -3975,7 +3979,7 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
   categoryBar.setAttribute('role', 'group');
   categoryBar.setAttribute('aria-label', '商店貨品分類');
   for (const category of SHOP_FILTERS) {
-    const count = selectShopOffers(view.catalog.rules.items, category.id,player).length;
+    const count = offersByCategory[category.id].length;
     const button = makeButton(document, category.label + '（' + count + '）', 'shop-filter', {
       className: 'ms-chip' + (state.shopFilter === category.id ? ' is-active' : ''),
       data: { kind: category.id },
@@ -3986,13 +3990,6 @@ function buildShopPanel(document: Document, view: UiSnapshot, state: PanelBuildS
     categoryBar.append(button);
   }
   parent.append(categoryBar);
-  const categoryLabel = SHOP_FILTERS.find(({ id }) => id === state.shopFilter)?.label ?? state.shopFilter;
-  parent.append(makeElement(
-    document,
-    'p',
-    'ms-panel-note',
-    '目前分類「' + categoryLabel + '」共 ' + offers.length + ' 件貨品。只篩選購買貨品，出售清單維持全部。',
-  ));
   if (offers.length === 0) {
     parent.append(makeElement(document, 'p', 'ms-empty-state', '目前分類沒有可購買貨品。'));
   }
