@@ -7,6 +7,7 @@
 .ms-local-map__chart .is-ground { stroke: #4e6143; stroke-width: 5; stroke-linecap: round; }
 .ms-local-map__chart .is-platform { stroke: #86632e; stroke-width: 4; stroke-dasharray: 8 4; }
 .ms-local-map__chart .is-climb { stroke: #587889; stroke-width: 5; stroke-dasharray: 2 2; }
+.ms-local-map__chart .is-quest-climb { stroke: #684695; stroke-width: 6; }
 .ms-local-map__chart .is-monster-range { stroke: #ac532e; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 5 3; }
 .ms-local-map__chart .is-wall { fill: #687a5366; stroke: #4e6143; }
 .ms-local-map__marker { position: absolute; display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 3px; transform: translate(-50%, -105%); border: 2px solid #fff8df; font-size: 11px; font-weight: 800; line-height: 1; box-shadow: 0 1px 3px #342b2670; }
@@ -33,6 +34,8 @@
 .ms-local-map__player[hidden] { display: none; }
 .ms-local-map__item { position: absolute; z-index: 4; display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid #d5f9e8; border-radius: 50%; background: #20242a; transform: translate(-50%, -40%); font-size: 13px; line-height: 1; }
 .ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
+.ms-local-map__quest-ladder { display: inline-flex; align-items: center; gap: 5px; margin-inline-start: .8em; }
+.ms-local-map__quest-ladder::before { content: ''; width: 14px; border-top: 3px dotted #684695; }
 .ms-local-map__legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding-left: 18px; line-height: 1.5; }
 .ms-local-map__legend li { overflow-wrap: anywhere; }
 .ms-local-map__legend .is-target { color: #794414; font-weight: 800; }

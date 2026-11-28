@@ -1,6 +1,8 @@
-import type { QuestDef, QuestView, WorldCatalog } from '../../contracts/definitions.js';
+import type { MapDef, QuestDef, QuestView, WorldCatalog } from '../../contracts/definitions.js';
+import type { MovementConfig } from '../../contracts/types.js';
 import { questDropByQuest } from '../../content/rules/monsters.js';
 import { trialObjectiveTargetId } from '../../content/world/class-quests.js';
+import { directLadderRoutes } from '../movement/index.js';
 
 export type QuestTargets = {
   maps: ReadonlySet<string>;
@@ -75,4 +77,9 @@ export function questDestinationMapIds(world: WorldCatalog, targets: QuestTarget
       || map.monsters.some(({ monsterId }) => targets.monsters.has(monsterId))) maps.add(map.id);
   }
   return maps;
+}
+
+export function questLadderRoutes(map: MapDef, config: MovementConfig, targets: QuestTargets): ReturnType<typeof directLadderRoutes> {
+  if (targets.monsters.size > 0 || targets.npcs.size === 0) return [];
+  return directLadderRoutes(map, config, map.npcs.filter(({ npcId }) => targets.npcs.has(npcId)));
 }

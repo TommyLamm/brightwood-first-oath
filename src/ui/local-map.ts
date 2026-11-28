@@ -4,7 +4,7 @@ import { effectiveJob } from '../content/rules/jobs.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
 import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
-import type { QuestTargets } from '../domain/quests/selection.js';
+import { questLadderRoutes, type QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
@@ -45,7 +45,11 @@ export function buildLocalMap(
     node.setAttribute('class', className); terrain.append(node);
   };
   for (const floor of map.footholds) line({ x: floor.x1, y: floor.y1 }, { x: floor.x2, y: floor.y2 }, floor.dropThrough ? 'is-platform' : 'is-ground');
-  for (const ladder of map.ladders) line({ x: ladder.x, y: ladder.topY }, { x: ladder.x, y: ladder.bottomY }, 'is-climb');
+  const questLadders = new Set(questLadderRoutes(map, view.catalog.rules.movement, targets).map(({ ladder }) => ladder.id));
+  for (const ladder of map.ladders) {
+    line({ x: ladder.x, y: ladder.topY }, { x: ladder.x, y: ladder.bottomY },
+      questLadders.has(ladder.id) ? 'is-climb is-quest-climb' : 'is-climb');
+  }
   for (const wall of map.walls) {
     const node = document.createElementNS(SVG_NS, 'rect');
     const a = point(wall); const b = point({ x: wall.x + wall.width, y: wall.y + wall.height });
@@ -117,11 +121,13 @@ export function buildLocalMap(
   });
   const player = text(document, 'span', 'ms-local-map__player', '◆');
   player.title = '你在這裡'; player.dataset.localPlayer = ''; chart.append(player);
-  details.append(chart, text(document, 'p', 'ms-local-map__key',
+  const key = text(document, 'p', 'ms-local-map__key',
     (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民　P 出口'
       + (counts.trial > 0 ? '　T 試煉靶' : '')
       + (counts.inspect > 0 ? '　I 調查點' : '')
-      + (monsterCount > 0 ? '　M 目標怪物活動區' : '')), legend);
+      + (monsterCount > 0 ? '　M 目標怪物活動區' : ''));
+  if (questLadders.size > 0) key.append(text(document, 'span', 'ms-local-map__quest-ladder', '任務梯路'));
+  details.append(chart, key, legend);
   if (view.saveData?.location.mapId === map.id && targets.items.size > 0) {
     const layer = text(document, 'div', '', '');
     const label = text(document, 'p', 'ms-local-map__key', '');

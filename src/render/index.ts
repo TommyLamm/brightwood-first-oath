@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { questMarkerStates, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
+import { questLadderRoutes, questMarkerStates, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import { isLowHealth } from '../domain/combat/index.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
@@ -10,7 +10,7 @@ import {
   type QuestEdgeTarget, type QuestNpcCueState, type QuestTargetKind,
 } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
-import { closestDirectLadder, directLadderRoutes } from '../domain/movement/index.js';
+import { closestDirectLadder } from '../domain/movement/index.js';
 import { mapDropImageKeys } from './map-drop-images.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -441,7 +441,7 @@ export function createWorldRenderer(
   const attacksBySource = new Map<string, AttackInstance>();
   let questGuide: {
     views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets;
-    mapId: string; climbRoutes: ReturnType<typeof directLadderRoutes>;
+    mapId: string; climbRoutes: ReturnType<typeof questLadderRoutes>;
     markers: ReturnType<typeof questMarkerStates>; tunedSteles: ReadonlySet<string>;
     npcStatus: QuestNpcCueState | undefined;
   } | undefined;
@@ -1044,9 +1044,7 @@ export function createWorldRenderer(
         .map(({ targetId }) => targetId));
       const npcStatus = quest?.status === 'available' || quest?.status === 'ready' ? quest.status : undefined;
       const targets = questTargets(quest);
-      const climbRoutes = targets.monsters.size === 0 && targets.npcs.size > 0
-        ? directLadderRoutes(activeVisual.map, catalog.rules.movement,
-          activeVisual.map.npcs.filter(({ npcId }) => targets.npcs.has(npcId))) : [];
+      const climbRoutes = questLadderRoutes(activeVisual.map, catalog.rules.movement, targets);
       questGuide = { views: snapshot.questViews, trackedId, targets, npcStatus,
         mapId: snapshot.mapId, climbRoutes, markers: questMarkerStates(snapshot.questViews, catalog.world.quests), tunedSteles };
     }
@@ -1437,6 +1435,12 @@ export function createWorldRenderer(
     let questEdgeDirection: QuestEdgeTarget['cue']['direction'] | undefined;
     let hasSecondQuestEdge = false;
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
+    const climb = !questExit && closestDirectLadder(questGuide.climbRoutes, snapshot.player.movement);
+    const climbEntrance = climb && {
+      x: climb.ladder.x + 22,
+      y: (climb.direction === 'up' ? climb.ladder.bottomY : climb.ladder.topY) - 18,
+    };
+    const climbEdge = climbEntrance && questEdgeCue(climbEntrance, viewport);
     if (questExit) {
       const anchor = portalFootAnchor(questExit);
       const portalImage = assets.images.get('env:portal')!;
@@ -1448,20 +1452,23 @@ export function createWorldRenderer(
         questEdgeDirection = cue.direction;
         if (destination) showEdgeLabel(destination.name, cue);
       }
+    } else if (climbEdge) {
+      questEdgeDirection = climbEdge.direction;
+      drawQuestCue(guidanceGraphics, 'portal', climbEdge.x, climbEdge.y, climbEdge.direction);
+      showEdgeLabel('任務梯口', climbEdge);
     } else {
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
       if (target) {
         showEdgeTarget(target);
-        const { direction } = target.cue;
-        questEdgeDirection = direction;
-        if (direction === 'left' || direction === 'right') {
-          const other = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop,
-            direction === 'left' ? 'right' : 'left');
-          if (other) {
-            showEdgeTarget(other, oppositeQuestEdgeLabel);
-            hasSecondQuestEdge = true;
-          }
-        }
+        questEdgeDirection = target.cue.direction;
+      }
+    }
+    if (!questExit && (questEdgeDirection === 'left' || questEdgeDirection === 'right')) {
+      const other = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop,
+        questEdgeDirection === 'left' ? 'right' : 'left');
+      if (other) {
+        showEdgeTarget(other, oppositeQuestEdgeLabel);
+        hasSecondQuestEdge = true;
       }
     }
     if (!hasSecondQuestEdge && (healerEdge || mentorEdge)) {
@@ -1477,15 +1484,13 @@ export function createWorldRenderer(
         showEdgeLabel(assistance.label, assistance.cue, questEdgeDirection ? oppositeQuestEdgeLabel : questEdgeLabel);
       }
     }
-    const climb = !questExit && closestDirectLadder(questGuide.climbRoutes, snapshot.player.movement);
-    if (climb && !(snapshot.movementGuide?.kind === 'climb' && snapshot.movementGuide.ladder.id === climb.ladder.id)) {
+    if (climb && climbEntrance && !climbEdge
+      && !(snapshot.movementGuide?.kind === 'climb' && snapshot.movementGuide.ladder.id === climb.ladder.id)) {
       const { ladder, direction } = climb;
       const entranceY = direction === 'up' ? ladder.bottomY : ladder.topY;
-      if (!questEdgeCue({ x: ladder.x + 22, y: entranceY - 18 }, viewport)) {
-        drawMovementGuide(guidanceGraphics, {
-          kind: 'climb', targetKey: 'climb:' + ladder.id, attached: false, direction, ladder,
-        }, entranceY, questCueAppearance.portal.color);
-      }
+      drawMovementGuide(guidanceGraphics, {
+        kind: 'climb', targetKey: 'climb:' + ladder.id, attached: false, direction, ladder,
+      }, entranceY, questCueAppearance.portal.color);
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 
