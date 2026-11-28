@@ -10,7 +10,7 @@ import { escapedRogueTrial } from '../domain/combat/rogue.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
-import { PASSIVE_RECOVERY_DELAY_MS, type GameplayState } from './gameplay.js';
+import { PASSIVE_RECOVERY_DELAY_MS, STARTER_CONTROLS_TOAST, type GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget, unclaimedPortalQuest } from './interaction-target.js';
@@ -277,6 +277,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     legacyImportAvailable: state.legacyImportAvailable,
     legacyImportMessage: state.legacyImportMessage,
     toast: gameplay?.toast ?? state.saveMessage,
+    ...(gameplay?.toast === STARTER_CONTROLS_TOAST ? { starterControls: true } : {}),
     panels: [...state.panels],
     interaction: gameplay?.interaction ?? null,
     canTrade: gameplay !== null && canTradeWithMerchant(map, gameplay.movement.position, gameplay.interaction?.npcId),

@@ -204,6 +204,13 @@ const KEY_GUIDE_SECTIONS: {
   },
 ];
 
+const STARTER_CONTROL_TIPS: readonly KeyGuideItem[] = [
+  { label: '移動', action: 'moveLeft' },
+  { label: '跳躍', action: 'jump' },
+  { label: '攻擊', action: 'attack' },
+  { label: '交談', action: 'interact' },
+];
+
 // Settings updates replace the bindings object. HUD and panels can share its derived labels.
 const keyLabelsByBindings = new WeakMap<KeyBindings, ReadonlyMap<GameAction, string>>();
 
@@ -820,6 +827,7 @@ export function createUi(
     signature: string;
   } | null = null;
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
+  let lastStarterControls: KeyBindings | null = null;
   let selectedBagIndex: number | null = null;
   let inventoryFilter: InventoryFilter = 'all';
   let shopFilter: ShopFilter = 'all';
@@ -1879,7 +1887,18 @@ export function createUi(
     if (footer.hidden !== hideFooter) footer.hidden = hideFooter;
     const toastText = view.toast ?? '';
     const hideToast = retryInDialog || !toastText;
-    if (toast.textContent !== toastText) toast.textContent = toastText;
+    const starterControls = view.starterControls ? view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS : null;
+    if (starterControls && starterControls !== lastStarterControls) {
+      toast.replaceChildren(...STARTER_CONTROL_TIPS.map((tip) => {
+        const hint = makeElement(document, 'span');
+        hint.append(makeElement(document, 'kbd', '', getKeyBadgeText(starterControls, tip)), ' ' + tip.label);
+        return hint;
+      }), makeElement(document, 'span', '', '「?」查看全部操作'));
+    } else if (!starterControls && toast.textContent !== toastText) {
+      toast.textContent = toastText;
+    }
+    lastStarterControls = starterControls;
+    toast.classList.toggle('ms-toast--starter', starterControls !== null);
     if (toast.hidden !== hideToast) toast.hidden = hideToast;
     // An open panel fills the middle of the screen; lift the toast above it so it never covers panel rows.
     toast.classList.toggle('ms-toast--top', view.panels.length > 0);

@@ -107,6 +107,8 @@ export type GameplayStepResult = {
   openPanel?: PanelId;
 };
 
+export const STARTER_CONTROLS_TOAST = '起步操作';
+
 export function startNewGame(
   name: string,
   catalog: ContentCatalog,
@@ -154,8 +156,7 @@ export function startNewGame(
       nextPickupAtMs: 0,
       bossResult: false,
       deathAtMs: null,
-      // First-run hint: the footer only lists Z / Space, so new players had no on-screen cue for movement, jump or attack.
-      toast: '方向鍵移動、Alt 跳躍、Ctrl 攻擊、Space 交談；右上角「?」可查看全部操作。',
+      toast: STARTER_CONTROLS_TOAST,
       interaction: null,
       pendingTransition: null,
     },

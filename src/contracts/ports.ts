@@ -266,6 +266,7 @@ export type UiSnapshot = {
   legacyImportAvailable?: boolean;
   legacyImportMessage?: string | null;
   toast: string | null;
+  starterControls?: boolean;
   panels: PanelId[];
   interaction: { npcId: Id; dialogue: string[] } | null;
   canTrade: boolean;

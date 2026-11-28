@@ -469,6 +469,7 @@
 }
 
 .ms-interaction-hint kbd,
+.ms-toast--starter kbd,
 .ms-quest-guide-key,
 .ms-skill-card__key {
   display: inline-block;
@@ -1067,6 +1068,14 @@
   pointer-events: none;
   transform: translateX(50%);
 }
+
+.ms-toast--starter:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 10px;
+}
+.ms-toast--starter > span { white-space: nowrap; }
 
 .ms-footer {
   position: absolute;
