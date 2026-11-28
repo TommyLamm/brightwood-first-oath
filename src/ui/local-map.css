@@ -18,6 +18,8 @@
 .ms-local-map__marker.is-target { z-index: 3; display: flex; gap: 3px; background: #794414; outline: 2px solid #794414; outline-offset: 1px; }
 .ms-local-map__cue { font-size: 13px; }
 .ms-local-map__marker.is-monster { border-radius: 4px; color: #fff6df; background: #8b3f24; outline-color: #8b3f24; }
+.ms-local-map__marker.is-trial { border-radius: 4px; color: #fff6df; background: #6c4b36; }
+.ms-local-map__marker.is-trial.is-target { background: #8b3f24; outline-color: #8b3f24; }
 .ms-local-map__marker.is-portal { transform: translate(-50%, 4px); border-radius: 3px; color: white; background: #674e83; }
 .ms-local-map__marker.is-portal.is-target { background: #563278; outline-color: #563278; }
 .ms-local-map__marker.is-portal.is-locked { color: #fff2d1; background: #4e4944; }
@@ -27,6 +29,7 @@
 .ms-local-map__lock::after { inset: 5px 2px 2px; border-radius: 1px; background: #ffde9b; }
 .ms-local-map__player { position: absolute; z-index: 2; color: #b6412d; font-size: 23px; line-height: 1; text-shadow: 0 0 2px white, 0 0 2px white; transform: translate(-50%, -190%); }
 .ms-local-map__player[hidden] { display: none; }
+.ms-local-map__item { position: absolute; z-index: 4; display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid #d5f9e8; border-radius: 50%; background: #20242a; transform: translate(-50%, -40%); font-size: 13px; line-height: 1; }
 .ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
 .ms-local-map__legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding-left: 18px; line-height: 1.5; }
 .ms-local-map__legend li { overflow-wrap: anywhere; }

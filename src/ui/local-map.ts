@@ -1,13 +1,17 @@
 import type { MapDef, Vec2 } from '../contracts/index.js';
-import type { UiSnapshot } from '../contracts/ports.js';
+import type { DropState, UiSnapshot } from '../contracts/ports.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
+import { combatTrialActions } from '../content/world/class-quests.js';
 import type { QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const itemMarkers = new WeakMap<HTMLElement, {
+  targetIds: ReadonlySet<string>; layer: HTMLElement; label: HTMLElement; signature: string;
+}>();
 function text<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, value: string) {
   const element = document.createElement(tag); element.className = className; element.textContent = value; return element;
 }
@@ -49,7 +53,7 @@ export function buildLocalMap(
   }
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
-  const codes = { npc: 'N', portal: 'P', monster: 'M' } as const;
+  const codes = { npc: 'N', portal: 'P', monster: 'M', trial: 'T' } as const;
   const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false, state?: QuestNpcCueState) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
@@ -59,11 +63,11 @@ export function buildLocalMap(
     if (highlighted) {
       mark.classList.add('is-target');
       entry.classList.add('is-target');
-      if (kind === 'npc' && focus?.kind === 'npc') {
+      if ((kind === 'npc' || kind === 'trial') && focus?.kind === 'npc') {
         entry.setAttribute('aria-current', 'true');
         details.open = true;
       }
-      const appearance = questCueStyle(kind, state);
+      const appearance = questCueStyle(kind === 'trial' ? 'monster' : kind, state);
       const cue = text(document, 'span', 'ms-local-map__cue', appearance.symbol);
       cue.style.color = '#' + appearance.color.toString(16);
       mark.prepend(cue);
@@ -73,7 +77,9 @@ export function buildLocalMap(
   };
   const playerData = view.saveData?.player;
   const mentorId = playerData && canChooseSpecialization(playerData) ? specializationMentors[effectiveJob(playerData)] : null;
-  map.npcs.forEach((placement, index) => {
+  let npcCount = 0;
+  let trialCount = 0;
+  for (const placement of map.npcs) {
     const { npcId } = placement;
     const npc = view.catalog.world.npcs[npcId];
     const role = npcId === mentorId ? 'specialization' : npc?.role;
@@ -81,13 +87,15 @@ export function buildLocalMap(
     const appearance = service ? npcServiceCueAppearance[service] : undefined;
     const label = (npc?.name ?? npcId) + (appearance ? ' · ' + appearance.label : '');
     const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets.npcs.has(npcId);
-    const mark = marker('npc', index, placement, label, highlighted, highlighted && targets.npcs.has(npcId) ? npcState : undefined);
+    const mark = combatTrialActions.has(npcId)
+      ? marker('trial', trialCount++, placement, label, highlighted)
+      : marker('npc', npcCount++, placement, label, highlighted, highlighted && targets.npcs.has(npcId) ? npcState : undefined);
     if (service && appearance) {
       const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
       badge.style.color = '#' + appearance.color.toString(16);
       mark.append(badge);
     }
-  });
+  }
   let monsterCount = 0;
   if (targets.monsters.size) {
     for (const spawn of map.monsters) {
@@ -111,19 +119,49 @@ export function buildLocalMap(
   player.title = '你在這裡'; player.dataset.localPlayer = ''; chart.append(player);
   details.append(chart, text(document, 'p', 'ms-local-map__key',
     (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民／調查點　P 出口'
+      + (trialCount > 0 ? '　T 試煉靶' : '')
       + (monsterCount > 0 ? '　M 目標怪物活動區' : '')), legend);
-  updateLocalMapPlayer(details, view);
+  if (view.saveData?.location.mapId === map.id && targets.items.size > 0) {
+    const layer = text(document, 'div', '', '');
+    const label = text(document, 'p', 'ms-local-map__key', '');
+    label.hidden = true;
+    chart.append(layer);
+    details.append(label);
+    itemMarkers.set(details, { targetIds: targets.items, layer, label, signature: '' });
+  }
+  updateLocalMapMarkers(details, view);
   return details;
 }
 
-/** Update only the live marker; moving must not rebuild the atlas or reset its focus/scroll. */
-export function updateLocalMapPlayer(root: HTMLElement, view: UiSnapshot): void {
+/** Update live markers in place so gameplay does not reset atlas focus or scroll. */
+export function updateLocalMapMarkers(root: HTMLElement, view: UiSnapshot): void {
   const marker = root.querySelector<HTMLElement>('[data-local-player]');
-  const guide = marker?.closest<HTMLElement>('[data-local-map-id]');
+  const guide = marker?.closest<HTMLDetailsElement>('[data-local-map-id]');
   if (!marker || !guide) return;
   const mapId = view.saveData?.location.mapId;
   const map = mapId ? view.catalog.world.maps[mapId] : undefined;
   const point = map && mapId === guide.dataset.localMapId && view.playerPosition ? localMapPoint(map, view.playerPosition) : null;
   marker.hidden = !point;
   if (point) positionMarker(marker, point);
+
+  const items = itemMarkers.get(guide);
+  if (!items || !map || mapId !== guide.dataset.localMapId || !guide.open) return;
+  const drops = (view.localMapDrops ?? []).filter((drop): drop is DropState & { itemId: string } =>
+    drop.itemId !== null && items.targetIds.has(drop.itemId) && drop.expiresAtMs > view.nowMs);
+  const signature = drops.map(({ id }) => id).join(',');
+  if (signature === items.signature) return;
+  items.signature = signature;
+  const { symbol, color } = questCueStyle('item');
+  const names = new Map<string, number>();
+  items.layer.replaceChildren(...drops.map(({ itemId, position, quantity }) => {
+    const name = view.catalog.rules.items[itemId]?.name ?? itemId;
+    names.set(name, (names.get(name) ?? 0) + quantity);
+    const drop = text(marker.ownerDocument, 'span', 'ms-local-map__item', symbol);
+    drop.style.color = '#' + color.toString(16);
+    drop.title = name + ' ×' + quantity;
+    positionMarker(drop, localMapPoint(map, position)!);
+    return drop;
+  }));
+  items.label.hidden = drops.length === 0;
+  items.label.textContent = symbol + ' 地上的任務道具　' + [...names].map(([name, count]) => name + ' ×' + count).join('、');
 }

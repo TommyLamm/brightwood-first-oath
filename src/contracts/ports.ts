@@ -234,6 +234,8 @@ export type UiSnapshot = {
   } | null;
   /** Runtime-only location for the open terrain guide; never persisted. */
   playerPosition?: Vec2 | null;
+  /** Live drops in the player's area for the open atlas. */
+  localMapDrops?: readonly DropState[];
   /** Device-local opt-in for repeating the keyboard basic attack while held. */
   holdBasicAttack?: boolean;
   backgroundMotion?: boolean;

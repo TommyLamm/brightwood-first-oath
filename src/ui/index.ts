@@ -54,7 +54,7 @@ import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../rend
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
 import { createScreenModalFocus } from './screen-modal-focus.js';
 import { nextInventoryBagIndex } from './inventory-navigation.js';
-import { updateLocalMapPlayer } from './local-map.js';
+import { updateLocalMapMarkers } from './local-map.js';
 
 const PANEL_LABELS: Record<PanelId, string> = {
   inventory: '背包',
@@ -2727,7 +2727,7 @@ export function createUi(
     }
     renderFooter(view);
     renderPanel(view);
-    if (view.panels.at(-1) === 'map') updateLocalMapPlayer(panelHost, view);
+    if (view.panels.at(-1) === 'map') updateLocalMapMarkers(panelHost, view);
     if (view.panels.at(-1) === 'stats' && view.activeGuard) {
       const seconds = panelHost.querySelector<HTMLElement>('[data-guard-seconds]');
       const value = String(view.activeGuard.remainingSeconds);

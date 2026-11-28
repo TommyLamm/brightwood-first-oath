@@ -236,6 +236,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     interactionHint,
     pickupHint,
     playerPosition: gameplay ? { ...gameplay.movement.position } : null,
+    ...(gameplay && state.panels.at(-1) === 'map' ? { localMapDrops: gameplay.drops } : {}),
     holdBasicAttack: state.holdBasicAttack,
     backgroundMotion: state.backgroundMotion,
     mapVisualLoad: state.mapVisualLoad ? { ...state.mapVisualLoad } : null,
