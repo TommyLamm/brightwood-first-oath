@@ -1321,6 +1321,7 @@ export function createUi(
       const activeDefense = buffLeftSec > 0 ? view.activeGuard?.defenseBonus : undefined;
       const windingUp = canAct && view.combatUi?.windingUpSkillId === slotId;
       const interrupted = canAct && !windingUp && view.combatUi?.interruptedSkillId === slotId;
+      const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const lacksMana = Boolean(player && skill && rank > 0 && !basic && !trial && player.mp < skill.mpCost);
       needsMana ||= lacksMana;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
@@ -1341,10 +1342,10 @@ export function createUi(
         view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, Boolean(player),
         player?.job, player?.level, Boolean(player?.sp),
       ] : [
-        view.saveData, view.catalog, view.interfaceManifest, quickbarBlock, view.aimReady,
+        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, rank, trial, lacksMana, basic && view.aimReady,
         Math.ceil(cooldown / 100),
         Math.ceil(actionLock / 100),
-        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock, windingUp, interrupted, skillReady,
+        buffLeftSec, activeDefense, queued, stanceBlock, windingUp, interrupted, skillReady,
       ];
       if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1414,7 +1415,6 @@ export function createUi(
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
       const castBlock = unlearned ? (learnable ? '可學習' : '未學習') : stanceReason || (lacksMana ? 'MP 不足' : '');
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
-      const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const castFeedback = windingUp ? '施放中' : interrupted ? '已中斷' : skillReady ? '就緒' : '';
       const displayState = quickbarBlock || castFeedback
         || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
@@ -3280,7 +3280,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
     const next = remaining[0];
     const destination = selectedQuest.status === 'available' ? { npcId: definition?.giverNpcId, text: '接取' }
       : selectedQuest.status === 'ready' ? { npcId: definition?.turnInNpcId, text: '回報' }
-        : remaining.length === 1 && next?.type === 'inspect' ? { npcId: next.targetId, text: '目標' } : null;
+        : remaining.length === 1 && next?.type === 'inspect' ? { npcId: trialObjectiveTargetId(next.targetId), text: '目標' } : null;
     if (destination?.npcId) {
       const npcId = destination.npcId;
       const target = resolveNpcMapTarget(view.catalog.world, npcId);
@@ -3298,7 +3298,7 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
       const target = resolveQuestMapTarget(view.catalog.world, view.saveData, selectedQuest);
       if (target) {
         const title = '查看目標區域：' + target.name;
-        const button = makeButton(document, '查看目標區域', 'review-quest-map', {
+        const button = makeButton(document, '地圖 · ' + target.name, 'review-quest-map', {
           className: 'ms-button ms-button--secondary', title,
           data: { questId: selectedQuest.questId, focus: 'quest-location:' + selectedQuest.questId },
         });
@@ -3306,7 +3306,14 @@ function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId
         actions.append(button);
       }
     }
+    if (actions.children.length === 1) {
+      actions.append(makeButton(document, '查看世界地圖', 'open-panel', { data: { panel: 'map' } }));
+    }
     selectedCard.querySelector('.ms-journal-heading')?.after(actions);
+  } else {
+    selectedCard.append(makeButton(document, '查看世界地圖', 'open-panel', {
+      className: 'ms-button ms-journal-map-button', data: { panel: 'map' },
+    }));
   }
 
   const progress = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId));

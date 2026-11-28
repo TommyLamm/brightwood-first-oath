@@ -6,8 +6,6 @@ import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
 import { combatTrialAttack, trialObjectiveTargetId } from '../content/world/class-quests.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
-import { resolveNpcMapTarget } from './npc-map-target.js';
-import { resolveQuestMapTarget } from './local-map-model.js';
 import { inspectObjectiveAction } from './quest-tracker.js';
 import { makeQuestCueBadge, questObjectiveCue, questObjectiveDropSource } from './quest-cue.js';
 
@@ -389,23 +387,6 @@ export function buildVisualQuests(
     details.append(node(document, 'summary', '', '故事與任務說明'), node(document, 'p', '', story ?? definition?.summary ?? ''));
     card.append(details);
   }
-  const mapNpcId = selected.status === 'ready' ? definition?.turnInNpcId
-    : selected.status === 'available' ? definition?.giverNpcId
-      : undefined;
-  const mapTarget = mapNpcId ? resolveNpcMapTarget(view.catalog.world, mapNpcId) : null;
-  const objectiveMap = view.saveData ? resolveQuestMapTarget(view.catalog.world, view.saveData, selected) : undefined;
-  const map = mapTarget && mapNpcId
-    ? button(document, selected.status === 'ready' ? '查看回報 NPC 地圖 →' : '查看接取 NPC 地圖 →', 'review-npc-map', { npcId: mapNpcId }, 'ms-button ms-journal-map-button')
-    : objectiveMap
-      ? button(document, '查看任務目標地點 · ' + objectiveMap.name, 'review-quest-map', { questId: selected.questId }, 'ms-button ms-journal-map-button')
-      : button(document, '查看世界地圖 →', 'open-panel', { panel: 'map' }, 'ms-button ms-journal-map-button');
-  if (mapTarget) {
-    const role = selected.status === 'ready' ? '回報' : '接取';
-    const description = selected.title + ' · ' + role + ' NPC：' + mapTarget.npcName + '，所在地圖：' + mapTarget.mapName + '。只查看地圖，不會移動角色。';
-    map.title = description;
-    map.setAttribute('aria-label', description);
-  }
-  card.append(map);
   root.append(card);
   return root;
 }
