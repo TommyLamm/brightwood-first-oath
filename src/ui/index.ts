@@ -732,7 +732,10 @@ export function createUi(
   const pauseButton = makeButton(document, 'Ⅱ', 'toggle-pause', { className: 'ms-button ms-system-button', title: '暫停遊戲' });
   pauseButton.setAttribute('aria-label', '暫停遊戲');
   const returnTownButton = makeButton(document, '返回城鎮', 'return-town', { className: 'ms-button ms-button--secondary' });
-  actionBar.append(returnTownButton);
+  const returnTownText = returnTownButton.querySelector('.ms-control-label') ?? returnTownButton;
+  const bossLootNotice = makeElement(document, 'span', 'ms-boss-loot-notice');
+  bossLootNotice.hidden = true;
+  actionBar.append(returnTownButton, bossLootNotice);
   systemControls.append(keyGuide, pauseButton);
   header.append(mapCard, systemControls);
   region.append(header, interactionHintRow, questTracker);
@@ -827,6 +830,7 @@ export function createUi(
   } | null = null;
   let lastFooterActionStatus: UiSnapshot['saveStatus'] | null = null;
   let lastStarterControls: KeyBindings | null = null;
+  let lastBossLoot: UiSnapshot['pendingBossLoot'];
   let selectedBagIndex: number | null = null;
   let inventoryFilter: InventoryFilter = 'all';
   let shopFilter: ShopFilter = 'all';
@@ -1460,11 +1464,23 @@ export function createUi(
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
     returnTownButton.hidden = !player || atTown || !playing || !view.saveData?.visitedMaps.includes('town');
     returnTownButton.disabled = !view.canReturnTown || focusBlocked;
+    const returnLabel = view.returnMapName ? '返回' + view.returnMapName : '返回城鎮';
+    if (returnTownText.textContent !== returnLabel) returnTownText.textContent = returnLabel;
     returnTownButton.title = view.canReturnTown
-      ? '立即返回木葉鎮'
+      ? returnLabel + (view.pendingBossLoot ? ' · 場上還有戰利品' : '')
       : view.saveData?.location.mapId === 'guardian-arena'
         ? '首領戰尚未結束，暫時不能返回城鎮。'
         : '目前狀態不允許回城。';
+    const pendingLoot = playing ? view.pendingBossLoot : undefined;
+    if (lastBossLoot !== pendingLoot) {
+      lastBossLoot = pendingLoot;
+      bossLootNotice.hidden = !pendingLoot;
+      if (pendingLoot) {
+        const icon = makeInterfaceIcon(document, view, pendingLoot.iconKey, '', 'ms-boss-loot-notice__icon');
+        icon.setAttribute('aria-hidden', 'true');
+        bossLootNotice.replaceChildren(icon, pendingLoot.name + '待拾取');
+      }
+    }
     const mapPanelButton = panelButtons.get('map');
     if (mapPanelButton) mapPanelButton.disabled = !player;
     const dialogueButton = panelButtons.get('dialogue');
@@ -1477,7 +1493,7 @@ export function createUi(
       shopButton.disabled = !view.canTrade;
       shopButton.hidden = shopButton.disabled;
     }
-    actionBar.hidden = ![returnTownButton, dialogueButton, shopButton].some((button) => button && !button.hidden);
+    actionBar.hidden = ![returnTownButton, bossLootNotice, dialogueButton, shopButton].some((element) => element && !element.hidden);
     updateInteractionHint(view);
   };
 
@@ -1813,6 +1829,8 @@ export function createUi(
           : sunwellResult ? '日井守衛已被擊敗！'
             : '古礦守衛已被擊敗！';
         const guardianQuestStatus = view.questViews.find(({ questId }) => questId === 'q08')?.status;
+        const hasGuardianCore = view.saveData?.player.bag.some(({ itemId }) => itemId === 'guardian-core');
+        const guardianLoot = hasGuardianCore ? '守衛核心已收入背包。' : '守衛核心仍待取得。';
         const body = bellResult
           ? '失序司鐘者已倒下。返回潮痕營站向芷衡回報委託，或再次挑戰司鐘者。'
           : frostResult
@@ -1820,13 +1838,15 @@ export function createUi(
           : sunwellResult
             ? '日井祭壇暫時歸於平靜。返回日井盆地後沿西路回琉砂手動領取日井誓刃與金幣，祭壇仍可再次挑戰。'
             : guardianQuestStatus === 'active' || guardianQuestStatus === 'ready'
-              ? '守衛核心已收入背包；這次勝利只完成戰鬥。請回赤岩山徑找礦道守望者交付核心並手動領取 q08 獎勵，第一章才會完成。'
+              ? guardianLoot + (hasGuardianCore
+                ? '請回赤岩山徑找礦道守望者完成交付並領取獎勵。'
+                : '請再次挑戰並拾取核心，再回赤岩山徑交付。')
               : guardianQuestStatus === 'available'
-                ? '守衛核心已收入背包；q08 必須在任務進行時擊敗守衛才會累計。請先回赤岩山徑向礦道守望者接取 q08，再重返祭壇完成委託並手動領獎。'
+                ? guardianLoot + '請先回赤岩山徑向礦道守望者接取委託，再重返祭壇完成挑戰。'
                 : guardianQuestStatus === 'claimed'
-                  ? '守衛核心已收入背包；q08 獎勵已領取，第一章已完成。祭壇仍可再次挑戰。'
-                  : '守衛核心已收入背包；請回赤岩山徑找礦道守望者查看 q08 前置與接取狀態，完成委託後再手動領獎。';
-        const returnLabel = bellResult ? '返回潮痕營站' : frostResult ? '返回雪痕海岸' : sunwellResult ? '返回日井盆地' : '返回城鎮';
+                  ? '第一章已完成。祭壇仍可再次挑戰。'
+                  : guardianLoot + '請回赤岩山徑找礦道守望者查看前置任務。';
+        const returnLabel = view.returnMapName ? '返回' + view.returnMapName : '返回城鎮';
         const retryLabel = bellResult ? '再次挑戰司鐘者' : frostResult ? '再次挑戰守望獸' : sunwellResult ? '再次挑戰日井守衛' : '再次挑戰守衛';
         const card = makeScreenCard(document, title, body);
         card.append(makeButton(document, returnLabel, 'return-town', {
@@ -2048,6 +2068,7 @@ export function createUi(
       panel, view.catalog, view.interfaceManifest, view.actorManifest,
       inventoryQuest?.questId, inventoryQuest?.status, (inventory || shop) && view.canTrade,
       (panel === 'skills' || panel === 'dialogue') && view.nearSpecializationMentor === true, view.canReturnTown,
+      view.returnMapName, view.pendingBossLoot,
       selectedBagIndex, selectedMapId, selectedMapFocus, selectedQuestId, trackedQuestId, inventoryFilter,
       readingPreference.size, view.holdBasicAttack ?? false, view.backgroundMotion ?? true,
       panel === 'stats' ? view.activeGuard?.defenseBonus ?? 0 : 0,

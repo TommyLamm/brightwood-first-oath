@@ -44,6 +44,15 @@ const BASIC_ATTACK_IDS = new Set(['basic', 'bow-basic', 'wand-basic', 'dagger-ba
 const ACTION_INPUT_WINDOW_MS = 100;
 const ROGUE_TRIAL_WARNING_MS = 900;
 const BOSS_ARENA_MAP_IDS = new Set(['guardian-arena', 'frost-tide-cavern', 'sand-sunwell-altar', 'ruins-bell-sanctum']);
+
+export function returnDestination(mapId: string): { mapId: string; spawnId: string } {
+  switch (mapId) {
+    case 'ruins-bell-sanctum': return { mapId: 'ruins-tide-camp', spawnId: 'left' };
+    case 'sand-sunwell-altar': return { mapId: 'sand-sunwell-basin', spawnId: 'right' };
+    case 'frost-tide-cavern': return { mapId: 'frost-shore', spawnId: 'left' };
+    default: return { mapId: 'town', spawnId: 'center' };
+  }
+}
 const INSPECT_TARGETS = {
   'ruins-stele-west': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
   'ruins-stele-east': { mapId: 'ruins-echo-gallery', questId: 'q17', action: '調律石碑' },
@@ -1051,19 +1060,11 @@ function processCommand(
       if (BOSS_ARENA_MAP_IDS.has(currentMapId) && !gameplay.bossResult) {
         return withToast(gameplay, '首領戰尚未結束，暫時不能返回安全地點。');
       }
-      if (currentMapId === 'ruins-bell-sanctum' && gameplay.bossResult) {
-        return requestTransition(gameplay, 'ruins-tide-camp', 'left', 'travel', catalog);
-      }
-      if (currentMapId === 'sand-sunwell-altar' && gameplay.bossResult) {
-        return requestTransition(gameplay, 'sand-sunwell-basin', 'right', 'travel', catalog);
-      }
-      if (currentMapId === 'frost-tide-cavern' && gameplay.bossResult) {
-        return requestTransition(gameplay, 'frost-shore', 'left', 'travel', catalog);
-      }
-      if (!gameplay.saveData.visitedMaps.includes('town')) {
+      const destination = returnDestination(currentMapId);
+      if (destination.mapId === 'town' && !gameplay.saveData.visitedMaps.includes('town')) {
         return withToast(gameplay, '還沒到過木葉鎮；完成森芽的委託後，從營地東側出口前往。');
       }
-      return requestTransition(gameplay, 'town', 'center', 'travel', catalog);
+      return requestTransition(gameplay, destination.mapId, destination.spawnId, 'travel', catalog);
     }
     case 'retryBoss': {
       const currentMapId = gameplay.saveData.location.mapId;

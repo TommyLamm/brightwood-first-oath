@@ -229,6 +229,18 @@
   max-width: min(340px, calc(100% - 24px));
   justify-content: flex-start;
 }
+.ms-boss-loot-notice:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border: 1px solid #b9d8aa;
+  border-radius: 4px;
+  color: #e9f5d6;
+  background: #344738;
+  font-size: 11px;
+}
+.ms-boss-loot-notice__icon { width: 20px; height: 20px; object-fit: contain; }
 /* Only failures/recovery actions create this banner; ordinary save status has no HUD badge. */
 .maple-ui .ms-footer {
   position: absolute;

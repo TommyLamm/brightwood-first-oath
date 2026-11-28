@@ -4,6 +4,7 @@ import type { HeroAnchorManifest } from './hero-anchors.js';
 import type { CommandDraft, PanelId } from './commands.js';
 import type {
   ContentCatalog,
+  ItemDef,
   MapDef,
   QuestView,
   RulesCatalog,
@@ -272,6 +273,8 @@ export type UiSnapshot = {
   canTrade: boolean;
   nearSpecializationMentor?: boolean;
   canReturnTown: boolean;
+  returnMapName?: string;
+  pendingBossLoot?: Pick<ItemDef, 'name' | 'iconKey'>;
   nowMs: number;
   skillReadyAtMs: Record<Id, number>;
   potionReadyAtMs: number;

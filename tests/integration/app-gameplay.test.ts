@@ -718,6 +718,8 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.bossResult).toBe(true);
     expect(gameplay.saveData.player.coins).toBeGreaterThan(originalCoins);
     expect(gameplay.saveData.flags).toEqual({ bossDefeated: true, chapterComplete: true });
+    expect(createUiSnapshot({ ...createInitialAppState(45, 'warden-return-view'), catalog, gameplay, screen, gameTimeMs: nowMs })?.returnMapName)
+      .toBe('雪痕海岸');
 
     const retry = stepGameplay(gameplay, {
       catalog,
@@ -860,6 +862,9 @@ describe('app gameplay vertical slice', () => {
     expect(gameplay.drops.some(({ itemId }) => itemId === 'guardian-sword')).toBe(true);
     expect(screens).not.toContain('result');
     expect(gameplay.toast).toContain('守衛的掉落物');
+    const state = { ...createInitialAppState(77, 'guardian-loot-view'), catalog, gameplay, screen: 'playing' as const, gameTimeMs: nowMs };
+    expect(createUiSnapshot(state)?.pendingBossLoot).toMatchObject({ name: '守衛之刃', iconKey: 'item:guardian-sword' });
+    expect(createUiSnapshot({ ...state, gameTimeMs: nowMs + 130_000 })?.pendingBossLoot).toBeUndefined();
   });
 
   it('refuses to sell the guardian sword and lets a cleared guardian be fought again for it', () => {

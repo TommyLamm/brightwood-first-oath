@@ -10,7 +10,7 @@ import { escapedRogueTrial } from '../domain/combat/rogue.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
-import { PASSIVE_RECOVERY_DELAY_MS, STARTER_CONTROLS_TOAST, type GameplayState } from './gameplay.js';
+import { PASSIVE_RECOVERY_DELAY_MS, STARTER_CONTROLS_TOAST, returnDestination, type GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget, unclaimedPortalQuest } from './interaction-target.js';
@@ -236,6 +236,12 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     // Before the hero has reached 木葉鎮, 返回城鎮 would skip camp's q01 gate.
     && (mapId === 'ruins-bell-sanctum' && gameplay.bossResult && state.screen === 'result'
       || saveData?.visitedMaps.includes('town') === true);
+  const returnMapName = canReturnTown && mapId ? catalog.world.maps[returnDestination(mapId).mapId]?.name : undefined;
+  const groundLoot = gameplay?.bossResult
+    ? gameplay.drops.filter(({ itemId, expiresAtMs }) => itemId !== null && expiresAtMs > state.gameTimeMs)
+    : undefined;
+  const firstLoot = groundLoot?.find(({ itemId }) => itemId && catalog.rules.items[itemId]?.kind === 'quest') ?? groundLoot?.[0];
+  const pendingBossLoot = firstLoot?.itemId ? catalog.rules.items[firstLoot.itemId] : undefined;
 
   return {
     screen: state.screen,
@@ -247,6 +253,8 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     stats,
     passiveRecovery,
     panelDanger,
+    returnMapName,
+    pendingBossLoot,
     bossVitals: boss && bossDefinition ? {
       name: bossDefinition.name,
       hp: boss.hp,
