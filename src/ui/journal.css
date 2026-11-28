@@ -477,7 +477,19 @@
 .ms-screen-card__details { color: #7a5d3f; font-size: 12px; }
 .ms-screen-card__details summary { cursor: pointer; }
 .ms-screen-card__details code { display: block; margin-top: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
-.ms-screen-card--create { max-height: min(92vh, 650px); }
+.ms-screen-card--create {
+  grid-template-rows: minmax(0, 1fr) auto;
+  max-height: min(calc(100vh - 32px), 650px);
+  overflow: hidden;
+}
+.ms-create-content {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  overflow: auto;
+  padding: 6px;
+  scroll-padding-block: 6px;
+}
 .ms-route-loadout { display: flex; flex-wrap: wrap; gap: 7px; }
 .ms-route-loadout__entry, .ms-route-specializations li {
   display: flex;
@@ -494,7 +506,7 @@
 .ms-route-loadout__text small { color: #795f42; }
 .ms-route-preview-icon { width: 30px; height: 30px; flex: 0 0 30px; object-fit: contain; }
 .ms-route-specializations ul { display: grid; gap: 5px; margin: 6px 0 0; padding: 0; list-style: none; }
-.ms-create-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-create-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 8px; border-top: 1px solid #cfb78d; }
 .ms-create-actions > button:first-child { flex: 1 0 auto; }
 .ms-screen-card__description { color: #786145; white-space: pre-line; }
 .ms-screen-card__status { color: #776537; }

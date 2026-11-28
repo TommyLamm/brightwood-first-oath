@@ -1581,12 +1581,14 @@ export function createUi(
       if (showCreate) {
         const card = makeScreenCard(document, '建立角色', '在空欄位開始新的冒險。既有角色進度會保留；先選訓練路線，Lv.10 完成試煉後正式轉職。');
         card.classList.add('ms-screen-card--create');
+        const content = makeElement(document, 'div', 'ms-create-content');
+        content.append(...card.children);
         const checkedName = validatePlayerName(nameDraft);
         const nameInput = captureNameInput(checkedName);
         const nameFeedback = makeElement(document, 'p');
         nameFeedback.id = nameFeedbackId;
         presentNameFeedback(nameInput, nameFeedback, checkedName);
-        card.append(nameInput, nameFeedback);
+        content.append(nameInput, nameFeedback);
         const routes = makeElement(document, 'div', 'ms-character-routes');
         routes.setAttribute('aria-label', '訓練路線');
         for (const route of ['swordsman', 'archer', 'mage', 'rogue'] as const) {
@@ -1598,7 +1600,7 @@ export function createUi(
           button.append(makeInterfaceIcon(document,view,route === 'swordsman' ? 'skill:heavy-strike' : 'skill:' + jobs[route].basicSkill,jobs[route].name,'ms-route-icon'));
           routes.append(button);
         }
-        card.append(routes);
+        content.append(routes);
         const route = jobs[plannedJobDraft];
         const weapon = view.catalog.rules.items[route.starterWeapon];
         const firstSkill = view.catalog.rules.skills[route.skillSlots[0]];
@@ -1614,9 +1616,9 @@ export function createUi(
             entry.append(makeInterfaceIcon(document, view, iconKey, '', 'ms-route-preview-icon'), description);
             loadout.append(entry);
           }
-          card.append(loadout);
+          content.append(loadout);
         }
-        card.append(makeElement(document, 'p', 'ms-screen-card__save', plannedJobDraft === 'rogue'
+        content.append(makeElement(document, 'p', 'ms-screen-card__save', plannedJobDraft === 'rogue'
           ? '短刃起步，敏捷為主、力量為輔。近身連刺、影步切入與煙幕撤離；沒有無敵，注意敵人預警。'
           : plannedJobDraft === 'mage'
           ? '魔杖起步，智力為主、敏捷為輔。站定施法、冰霜控場並保留MP閃現；零MP魔杖彈可持續冒險。'
@@ -1637,7 +1639,7 @@ export function createUi(
           branches.append(item);
         }
         preview.append(previewSummary, branches);
-        card.append(preview);
+        content.append(preview);
         const actions = makeElement(document, 'div', 'ms-create-actions');
         const confirmButton = makeButton(document, '確認建立角色', 'create-confirm', {
           className: 'ms-button ms-button--primary', disabled: !checkedName.ok,
@@ -1645,7 +1647,7 @@ export function createUi(
         });
         confirmButton.dataset.focus = 'create-confirm';
         actions.append(confirmButton, makeButton(document, '取消', 'create-cancel', { className: 'ms-button ms-button--secondary' }));
-        card.append(actions);
+        card.append(content, actions);
         screenLayer.hidden = false;
         screenLayer.append(card);
         return;
