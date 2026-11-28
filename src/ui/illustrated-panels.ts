@@ -141,7 +141,7 @@ export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElem
     note.setAttribute('aria-live', 'off');
     const seconds = node(document, 'span', '', String(guard.remainingSeconds));
     seconds.dataset.guardSeconds = '';
-    note.append(document.createTextNode('堅韌守護：防禦 +' + guard.defenseBonus + '，目前戰鬥防禦 '),
+    note.append(document.createTextNode('暫時防禦加成 +' + guard.defenseBonus + '，目前戰鬥防禦 '),
       node(document, 'strong', '', String(stats.defense + guard.defenseBonus)),
       document.createTextNode('（基礎 ' + stats.defense + '）。剩餘 '), seconds, document.createTextNode(' 秒。'));
     root.append(note);

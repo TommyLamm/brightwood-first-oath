@@ -119,6 +119,31 @@
   image-rendering: pixelated;
 }
 
+.ms-profile__guard {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 4px;
+  border: 1px solid #7caa86;
+  border-radius: 4px;
+  color: #d3f8c9;
+  background: #21463c;
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.ms-profile__guard::before {
+  content: '';
+  width: 7px;
+  height: 8px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 100% 62%, 50% 100%, 0 62%);
+}
+
 /* minmax(0, 1fr): a long hero name used to widen the grid column and push the meter values out of the frame. */
 .ms-profile__main { grid-column: 2; grid-row: 1; gap: 3px; grid-template-columns: minmax(0, 1fr); }
 .ms-profile__heading { flex-wrap: nowrap; gap: 6px; }

@@ -1022,7 +1022,7 @@ export function createUi(
       playerProfileView = makePlayerProfileView(document);
       profile.replaceChildren(...playerProfileView.elements);
     }
-    const { portrait, hero, name, level, hp, mp, exp } = playerProfileView;
+    const { portrait, hero, guard, name, level, hp, mp, exp } = playerProfileView;
     const portraitPath = classPortrait(player);
     if (hero.getAttribute('src') !== portraitPath) hero.setAttribute('src', portraitPath);
     if (name.textContent !== player.name) {
@@ -1031,6 +1031,21 @@ export function createUi(
     }
     const levelText = 'Lv.' + player.level;
     if (level.textContent !== levelText) level.textContent = levelText;
+    const activeGuard = view.activeGuard;
+    const hideGuard = !activeGuard;
+    if (guard.hidden !== hideGuard) guard.hidden = hideGuard;
+    if (activeGuard) {
+      const bonus = '+' + activeGuard.defenseBonus;
+      if (guard.textContent !== bonus) guard.textContent = bonus;
+      const description = '防禦加成 ' + bonus + '，剩餘 ' + activeGuard.remainingSeconds + ' 秒';
+      if (guard.title !== description) {
+        guard.title = description;
+        portrait.setAttribute('aria-description', description);
+      }
+    } else if (guard.title) {
+      guard.removeAttribute('title');
+      portrait.removeAttribute('aria-description');
+    }
     const maxHp = view.stats?.maxHp ?? player.hp;
     if (hp.update(player.hp, maxHp)) {
       const lowHealth = isLowHealth(player.hp, maxHp);
@@ -2894,7 +2909,10 @@ function makePlayerProfileView(document: Document) {
   const hero = makeElement(document, 'img', 'ms-profile__hero');
   hero.alt = '';
   hero.draggable = false;
-  portrait.append(hero);
+  const guard = makeElement(document, 'span', 'ms-profile__guard');
+  guard.hidden = true;
+  guard.setAttribute('aria-hidden', 'true');
+  portrait.append(hero, guard);
   portrait.title = '角色資訊：職業、能力與經驗值';
   const main = makeElement(document, 'div', 'ms-profile__main');
   const heading = makeElement(document, 'div', 'ms-profile__heading');
@@ -2905,7 +2923,7 @@ function makePlayerProfileView(document: Document) {
   const mp = makeMeter(document, 'MP', 'mp');
   const exp = makeMeter(document, 'EXP', 'exp');
   main.append(heading, hp.element, mp.element);
-  return { elements: [portrait, main, exp.element], portrait, hero, name, level, hp, mp, exp };
+  return { elements: [portrait, main, exp.element], portrait, hero, guard, name, level, hp, mp, exp };
 }
 
 function makeMeter(document: Document, label: string, tone: string) {
