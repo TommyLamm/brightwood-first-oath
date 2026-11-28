@@ -1962,6 +1962,14 @@ export function createUi(
       if (shop && view.saveData) {
         const { coins, bag, equipment, job, plannedJob, level } = view.saveData.player;
         details = { coins, bag, equipment, job, plannedJob, level };
+      } else if (inventory && view.saveData) {
+        const player = view.saveData.player;
+        const selected = player.bag[selectedBagIndex ?? -1];
+        // Current HP and MP are only shown in the selected consumable's use preview.
+        if (!selected || view.catalog.rules.items[selected.itemId]?.kind !== 'consumable') {
+          const { hp, mp, ...inventoryPlayer } = player;
+          details = inventoryPlayer;
+        }
       } else if (view.saveData && (panel === 'map' || panel === 'quests')) {
         const { hp, mp, ...progress } = view.saveData.player;
         details = { ...view.saveData, player: progress };
