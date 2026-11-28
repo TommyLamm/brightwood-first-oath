@@ -300,6 +300,7 @@
 .ms-quest-tracker__counter { flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .ms-quest-tracker:not(.is-collapsed) .ms-quest-tracker__target { display: none; }
 .ms-quest-tracker.is-ready .ms-quest-tracker__counter { color: #356740; font-weight: 800; }
+.maple-ui .ms-quest-tracker.is-ready .ms-quest-tracker__toggle { background: #c6dfa966; }
 .ms-quest-tracker__meter {
   --quest-meter-fill: #96602c;
   appearance: none;

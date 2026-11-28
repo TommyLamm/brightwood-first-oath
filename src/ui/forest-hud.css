@@ -206,6 +206,14 @@
   line-height: 16px;
   text-shadow: none;
 }
+.maple-ui .ms-controls .ms-journal-tab[data-panel="quests"][data-badge]::after {
+  content: "✓ " attr(data-badge);
+  background: #386347;
+}
+.maple-ui .ms-controls .ms-journal-tab:is([data-panel="skills"], [data-panel="stats"])[data-badge]::after {
+  content: "+" attr(data-badge);
+  background: #744f2b;
+}
 .maple-ui .ms-controls .ms-journal-tab .ms-journal-icon { width: clamp(26px, 2.2cqw, 36px); height: clamp(26px, 2.2cqw, 36px); filter: none; }
 .maple-ui .ms-controls .ms-journal-tab:hover { transform: none; filter: brightness(1.08); }
 .maple-ui .ms-controls .ms-journal-tab.is-active { outline: 2px solid #738452; outline-offset: -4px; color: #405733 !important; }
