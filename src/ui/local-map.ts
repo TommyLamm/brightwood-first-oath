@@ -6,7 +6,7 @@ import { combatTrialActions } from '../content/world/class-quests.js';
 import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import { questLadderRoutes, type QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
-import { visualIcon } from './illustrated-panels.js';
+import { questActorPortrait, visualIcon } from './illustrated-panels.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
@@ -61,7 +61,10 @@ export function buildLocalMap(
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
   const codes = { npc: 'N', portal: 'P', monster: 'M', trial: 'T', inspect: 'I' } as const;
-  const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false, state?: QuestNpcCueState) => {
+  const marker = (
+    kind: keyof typeof codes, index: number, position: Vec2, label: string,
+    { highlighted = false, state, actorKey }: { highlighted?: boolean; state?: QuestNpcCueState; actorKey?: string } = {},
+  ) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
     positionMarker(mark, localMapPoint(map, position)!); mark.title = label; chart.append(mark);
@@ -78,6 +81,8 @@ export function buildLocalMap(
       const cue = text(document, 'span', 'ms-local-map__cue', appearance.symbol);
       cue.style.color = '#' + appearance.color.toString(16);
       mark.prepend(cue);
+      const portrait = questActorPortrait(document, view, actorKey);
+      if (portrait) mark.append(portrait);
     }
     legend.append(entry);
     return mark;
@@ -95,7 +100,7 @@ export function buildLocalMap(
     const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets.npcs.has(npcId);
     const kind = combatTrialActions.has(npcId) ? 'trial' : npc?.actorKey === INSPECTION_ACTOR_KEY ? 'inspect' : 'npc';
     const state = kind === 'npc' && targets.npcs.has(npcId) ? npcState : undefined;
-    const mark = marker(kind, counts[kind]++, placement, label, highlighted, state);
+    const mark = marker(kind, counts[kind]++, placement, label, { highlighted, state, actorKey: npc?.actorKey });
     if (service && appearance) {
       const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
       badge.style.color = '#' + appearance.color.toString(16);
@@ -107,15 +112,17 @@ export function buildLocalMap(
     for (const spawn of map.monsters) {
       if (!targets.monsters.has(spawn.monsterId)) continue;
       line({ x: spawn.roamLeft, y: spawn.y }, { x: spawn.roamRight, y: spawn.y }, 'is-monster-range');
-      const name = view.catalog.rules.monsters[spawn.monsterId]?.name ?? spawn.monsterId;
-      marker('monster', monsterCount, spawn, name + '活動區', true);
+      const monster = view.catalog.rules.monsters[spawn.monsterId];
+      marker('monster', monsterCount, spawn, (monster?.name ?? spawn.monsterId) + '活動區', {
+        highlighted: true, actorKey: monster?.actorKey,
+      });
       monsterCount++;
     }
   }
   map.portals.forEach((portal, index) => {
     const target = view.catalog.world.maps[portal.targetMapId]?.name ?? portal.targetMapId;
     const requirement = portalRequirements(portal, view.saveData!, view.catalog);
-    const mark = marker('portal', index, portal, '前往' + target + '：' + requirement.text, portal.id === questExitId);
+    const mark = marker('portal', index, portal, '前往' + target + '：' + requirement.text, { highlighted: portal.id === questExitId });
     if (!requirement.open) {
       mark.classList.add('is-locked');
       mark.prepend(text(document, 'span', 'ms-local-map__lock', ''));

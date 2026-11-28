@@ -18,6 +18,16 @@
 .ms-local-map__service.is-merchant::after { top: 6px; }
 .ms-local-map__marker.is-target { z-index: 3; display: flex; gap: 3px; background: #794414; outline: 2px solid #794414; outline-offset: 1px; }
 .ms-local-map__cue { font-size: 13px; }
+.ms-local-map__marker > .ms-quest-portrait {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  border-radius: 4px;
+  outline: 1px solid #624630;
+  background-color: #fff3d6;
+}
 .ms-local-map__marker.is-monster { border-radius: 4px; color: #fff6df; background: #8b3f24; outline-color: #8b3f24; }
 .ms-local-map__marker.is-trial { border-radius: 4px; color: #fff6df; background: #6c4b36; }
 .ms-local-map__marker.is-trial.is-target { background: #8b3f24; outline-color: #8b3f24; }
