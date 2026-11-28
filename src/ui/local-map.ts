@@ -12,6 +12,7 @@ import { portalRequirements } from './world-map-model.js';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const itemMarkers = new WeakMap<HTMLElement, {
   targetIds: ReadonlySet<string>; layer: HTMLElement; label: HTMLElement; signature: string;
+  drops?: readonly DropState[]; nextExpiry: number;
 }>();
 function text<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className: string, value: string) {
   const element = document.createElement(tag); element.className = className; element.textContent = value; return element;
@@ -134,7 +135,7 @@ export function buildLocalMap(
     label.hidden = true;
     chart.append(layer);
     details.append(label);
-    itemMarkers.set(details, { targetIds: targets.items, layer, label, signature: '' });
+    itemMarkers.set(details, { targetIds: targets.items, layer, label, signature: '', nextExpiry: 0 });
   }
   updateLocalMapMarkers(details, view);
   return details;
@@ -144,17 +145,26 @@ export function buildLocalMap(
 export function updateLocalMapMarkers(root: HTMLElement, view: UiSnapshot): void {
   const marker = root.querySelector<HTMLElement>('[data-local-player]');
   const guide = marker?.closest<HTMLDetailsElement>('[data-local-map-id]');
-  if (!marker || !guide) return;
+  if (!marker || !guide?.open) return;
   const mapId = view.saveData?.location.mapId;
   const map = mapId ? view.catalog.world.maps[mapId] : undefined;
   const point = map && mapId === guide.dataset.localMapId && view.playerPosition ? localMapPoint(map, view.playerPosition) : null;
-  marker.hidden = !point;
-  if (point) positionMarker(marker, point);
+  if (marker.hidden !== !point) marker.hidden = !point;
+  if (point) {
+    const left = Math.round(point.x * 100) / 100 + '%';
+    const top = Math.round(point.y * 100) / 100 + '%';
+    if (marker.style.left !== left) marker.style.left = left;
+    if (marker.style.top !== top) marker.style.top = top;
+  }
 
   const items = itemMarkers.get(guide);
-  if (!items || !map || mapId !== guide.dataset.localMapId || !guide.open) return;
-  const drops = (view.localMapDrops ?? []).filter((drop): drop is DropState & { itemId: string } =>
+  if (!items || !map || mapId !== guide.dataset.localMapId) return;
+  const floorDrops = view.localMapDrops;
+  if (floorDrops === items.drops && view.nowMs < items.nextExpiry) return;
+  items.drops = floorDrops;
+  const drops = (floorDrops ?? []).filter((drop): drop is DropState & { itemId: string } =>
     drop.itemId !== null && items.targetIds.has(drop.itemId) && drop.expiresAtMs > view.nowMs);
+  items.nextExpiry = drops.reduce((expiry, drop) => Math.min(expiry, drop.expiresAtMs), Infinity);
   const signature = drops.map(({ id }) => id).join(',');
   if (signature === items.signature) return;
   items.signature = signature;
