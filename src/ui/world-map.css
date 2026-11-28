@@ -34,8 +34,13 @@
 .ms-atlas-level { justify-self: start; margin: 0; padding: 3px 7px; border-radius: 3px; background: #ddd3ac; color: #5b603c; font-size: 11px; font-weight: 700; }
 .ms-atlas-description, .ms-atlas-inhabitants { margin: 0; font-size: 12px; line-height: 1.7; }
 .ms-atlas-inhabitants { color: #7b6345; font-size: 11px; }
+.ms-atlas-inhabitant-target { color: #483721; }
+.ms-atlas-inhabitant-target .ms-quest-cue { display: inline-grid; margin-inline-end: 3px; vertical-align: middle; }
+.ms-atlas-target-description { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ms-atlas-path-heading { margin: 4px 0 0; padding-top: 9px; border-top: 1px solid #c8ac80; font-size: 12px; }
 .ms-atlas-connection { display: grid; gap: 4px; }
+.ms-atlas-connection.is-quest-route { padding: 4px 0 4px 5px; border-inline-start: 3px solid #7047af; background: #7047af12; }
+.ms-atlas-next-route { padding-inline-start: 6px; color: #523582; font-size: 10px; font-weight: 750; }
 .maple-ui .ms-atlas-quest-review { justify-self: start; padding: 6px 9px; font-size: 11px; }
 .maple-ui .ms-atlas-region-link { justify-self: start; padding: 3px 6px; border: 0; background: transparent; box-shadow: none; color: #416348; font-size: 12px; font-weight: 700; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
 .ms-atlas-condition { padding-left: 6px; color: #95623c; font-size: 10px; line-height: 1.6; }

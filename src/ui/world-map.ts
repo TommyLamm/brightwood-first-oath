@@ -1,6 +1,6 @@
 import type { UiSnapshot } from '../contracts/ports.js';
 import { findQuestExit } from '../app/quest-route.js';
-import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
+import { questDestinationMapIds, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { questCueAppearance } from '../render/quest-guidance.js';
 import { decorateControl } from './control-art.js';
 import {
@@ -208,7 +208,9 @@ export function buildWorldMap(
     }
   }
 
-  const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview, ruinsOverview);
+  const questExitId = selected?.id === data.location.mapId ? exit : null;
+  const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview, ruinsOverview,
+    { targets, questExitId });
   layout.append(chart, details);
   root.append(layout);
 
@@ -229,7 +231,6 @@ export function buildWorldMap(
   }
   root.append(legend);
   if (selected && canViewLocalMap(selected.id, data)) {
-    const questExitId = selected.id === data.location.mapId ? exit : null;
     root.insertBefore(buildLocalMap(document, view, selected, focus, questExitId, targets), layout);
   }
   return root;
@@ -335,6 +336,29 @@ function buildRegionEntryButton(
   return button;
 }
 
+function mapInhabitants(
+  document: Document, kind: 'npc' | 'monster', names: ReadonlyMap<string, string>, targetIds: ReadonlySet<string>,
+): HTMLElement {
+  const list = element(document, 'p', 'ms-atlas-inhabitants', kind === 'npc' ? '居民：' : '出沒：');
+  const { color, symbol } = questCueAppearance[kind];
+  let first = true;
+  for (const [id, name] of names) {
+    if (!first) list.append('、');
+    first = false;
+    if (!targetIds.has(id)) {
+      list.append(name);
+      continue;
+    }
+    const target = element(document, 'strong', 'ms-atlas-inhabitant-target');
+    const cue = element(document, 'span', 'ms-quest-cue', symbol);
+    cue.style.color = '#' + color.toString(16);
+    cue.setAttribute('aria-hidden', 'true');
+    target.append(cue, name, element(document, 'span', 'ms-atlas-target-description', '（任務目標）'));
+    list.append(target);
+  }
+  return list;
+}
+
 function buildDetails(
   document: Document,
   view: UiSnapshot,
@@ -345,6 +369,7 @@ function buildDetails(
   frostOverview: ReturnType<typeof frostIslesOverview>,
   sandOverview: ReturnType<typeof goldSandSeaOverview>,
   ruinsOverview: ReturnType<typeof ancientRuinsOverview>,
+  { targets, questExitId }: { targets: QuestTargets; questExitId: string | null },
 ): HTMLElement {
   const details = element(document, 'aside', 'ms-atlas-details' + (scope === 'world' ? '' : ' ms-atlas-details--' + scope));
   details.setAttribute('aria-label', '區域詳情');
@@ -367,10 +392,10 @@ function buildDetails(
       element(document, 'p', 'ms-atlas-level', mapLevelLabel(selected, view.catalog)),
       element(document, 'p', 'ms-atlas-description', landmarks[selected.id]?.description ?? ''),
     );
-    const npcNames = selected.npcs.map(({ npcId }) => view.catalog.world.npcs[npcId]?.name ?? npcId);
-    const monsterNames = [...new Set(selected.monsters.map(({ monsterId }) => view.catalog.rules.monsters[monsterId]?.name ?? monsterId))];
-    if (npcNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '居民：' + npcNames.join('、')));
-    if (monsterNames.length) details.append(element(document, 'p', 'ms-atlas-inhabitants', '出沒：' + monsterNames.join('、')));
+    const npcNames = new Map(selected.npcs.map(({ npcId }) => [npcId, view.catalog.world.npcs[npcId]?.name ?? npcId]));
+    const monsterNames = new Map(selected.monsters.map(({ monsterId }) => [monsterId, view.catalog.rules.monsters[monsterId]?.name ?? monsterId]));
+    if (npcNames.size) details.append(mapInhabitants(document, 'npc', npcNames, targets.npcs));
+    if (monsterNames.size) details.append(mapInhabitants(document, 'monster', monsterNames, targets.monsters));
     const regionOverview = scope === 'frost' ? frostOverview : scope === 'sand' ? sandOverview : scope === 'ruins' ? ruinsOverview : null;
     const regionEntryMapId = scope === 'frost' ? 'frost-shore' : scope === 'sand' ? 'sand-glass-shore' : 'ruins-tide-camp';
     if (regionOverview && selected.id === regionEntryMapId && regionOverview.entryRequirement) {
@@ -387,6 +412,10 @@ function buildDetails(
       const row = element(document, 'div', 'ms-atlas-connection');
       const link = mapButton(document, target.id, '↗ ' + target.name, 'ms-atlas-region-link');
       row.append(link, element(document, 'span', requirement.open ? 'ms-atlas-condition is-open' : 'ms-atlas-condition', requirement.text));
+      if (portal.id === questExitId) {
+        row.classList.add('is-quest-route');
+        row.prepend(element(document, 'span', 'ms-atlas-next-route', '↓ 下一段任務路線'));
+      }
       const quest = view.questViews.find(({ questId, status }) => questId === portal.requiredQuestId && status !== 'claimed');
       if (quest) {
         const review = element(document, 'button', 'ms-button ms-button--secondary ms-atlas-quest-review', '查看解鎖任務');
