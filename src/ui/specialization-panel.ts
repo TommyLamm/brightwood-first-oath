@@ -1,7 +1,27 @@
-import type { PlayerProgress, UiSnapshot } from '../contracts/index.js';
+import type { PlayerProgress, SkillDef, UiSnapshot } from '../contracts/index.js';
 import { specializationMentors, specializations } from '../content/rules/specializations.js';
+import { skillCooldownMs } from '../domain/combat/index.js';
 import { visualActor, visualButton, visualIcon, visualNode } from './illustrated-panels.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
+
+function skillCosts(document: Document, view: UiSnapshot, skill: SkillDef): HTMLElement {
+  const costs = visualNode(document, 'dl', 'ms-specializations__costs');
+  const mana = visualNode(document, 'div', 'ms-specializations__cost is-mana');
+  const potion = visualIcon(document, view, 'item:small-blue', '');
+  potion.setAttribute('aria-hidden', 'true');
+  const mpLabel = visualNode(document, 'dt', '', 'MP');
+  mpLabel.prepend(potion);
+  mana.append(mpLabel, visualNode(document, 'dd', '', String(skill.mpCost)));
+
+  const cooldown = visualNode(document, 'div', 'ms-specializations__cost');
+  const clock = visualNode(document, 'span', '', '◷');
+  clock.setAttribute('aria-hidden', 'true');
+  const cooldownLabel = visualNode(document, 'dt', '', '冷卻');
+  cooldownLabel.prepend(clock);
+  cooldown.append(cooldownLabel, visualNode(document, 'dd', '', skillCooldownMs(skill, 1) / 1000 + ' 秒'));
+  costs.append(mana, cooldown);
+  return costs;
+}
 
 export function specializationPanel(
   document: Document, player: PlayerProgress, view: UiSnapshot, shortcuts: ReadonlyMap<string, string>,
@@ -22,8 +42,8 @@ export function specializationPanel(
     card.append(
       heading,
       visualNode(document, 'p', 'ms-detail-copy', branch.description),
-      visualNode(document, 'p', 'ms-panel-note', 'MP ' + skill.mpCost + ' · 冷卻 ' + skill.cooldownMs / 1000
-        + ' 秒。每點 LUK 增加 0.2% 暴擊率，仍受職業上限限制。'),
+      skillCosts(document, view, skill),
+      visualNode(document, 'p', 'ms-panel-note', '每點 LUK 增加 0.2% 暴擊率，仍受職業上限限制。'),
       visualButton(document, player.advancedSkillEquipped ? '技能 3 切回原職業技能' : '技能 3 裝備' + skill.name,
         'toggle-advanced-skill'),
     );
@@ -60,6 +80,7 @@ export function specializationPanel(
   const branches = visualNode(document, 'div', 'ms-specializations__branches');
   for (const [id, branch] of Object.entries(specializations)) {
     if (branch.job !== player.job) continue;
+    const skill = view.catalog.rules.skills[branch.skill]!;
     const card = visualNode(document, 'article', 'ms-skill-card');
     const heading = visualNode(document, 'div', 'ms-skill-card__head');
     const icon = visualIcon(document, view, 'skill:' + branch.skill, branch.name);
@@ -67,7 +88,7 @@ export function specializationPanel(
     heading.append(icon, visualNode(document, 'h4', '', branch.name));
     const button = visualButton(document, '選擇' + branch.name, 'advance-specialization', { specialization: id }, 'ms-button ms-button--primary');
     button.disabled = !ready;
-    card.append(heading, visualNode(document, 'p', 'ms-detail-copy', branch.description), button);
+    card.append(heading, visualNode(document, 'p', 'ms-detail-copy', branch.description), skillCosts(document, view, skill), button);
     branches.append(card);
   }
   root.append(branches, visualNode(document, 'p', 'ms-panel-note', '每個角色可選擇一次。原技能與 AP／SP 保留，分支技能可替換快捷列的技能 3。'));

@@ -16,7 +16,13 @@
 .ms-specializations__contact { display: grid; justify-items: start; gap: 2px; flex: 1 1 128px; }
 .ms-specializations__status { border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; font-size: .875em; }
 .ms-specializations__branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px; }
-.ms-specializations__branches .ms-skill-card { grid-template-rows: auto 1fr auto; align-content: stretch; }
+.ms-specializations__branches .ms-skill-card { grid-template-rows: auto 1fr auto auto; align-content: stretch; }
+.ms-specializations__costs { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; }
+.ms-specializations__cost { display: flex; align-items: center; gap: 5px; padding: 3px 6px; border: 1px solid #c1a377; border-radius: 4px; color: #57422b; background: #f5e7c9; font-size: 12px; }
+.ms-specializations__cost.is-mana { color: #264d60; border-color: #8bafb9; background: #e0eef1; }
+.ms-specializations__cost dt { display: flex; align-items: center; gap: 3px; }
+.ms-specializations__cost dd { margin: 0; font-weight: 750; font-variant-numeric: tabular-nums; }
+.ms-specializations__cost .ms-visual-icon { width: 16px; height: 16px; flex: 0 0 16px; }
 .ms-visual-token { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border: 1px solid #bda47a; border-radius: 7px; background: #f7e9cb; }
 .ms-visual-token > span { font-size: 11px; color: #836545; }
 .ms-visual-token strong { font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
