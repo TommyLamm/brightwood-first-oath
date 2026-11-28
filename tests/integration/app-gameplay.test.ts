@@ -4,7 +4,7 @@ import { createNextEntityId, createSeededRandom } from '../../src/contracts/help
 import { rulesCatalog } from '../../src/content/rules/index.js';
 import { worldCatalog } from '../../src/content/world/index.js';
 import { acceptQuest, getQuestView } from '../../src/domain/quests/index.js';
-import { applyProgressAction } from '../../src/domain/progression/index.js';
+import { applyProgressAction, deriveStats } from '../../src/domain/progression/index.js';
 import { completeMapTransition, failMapTransition, makeWorldSnapshot, restoreGame, startNewGame, stepGameplay } from '../../src/app/gameplay.js';
 import { createInitialAppState, createUiSnapshot } from '../../src/app/state.js';
 
@@ -650,6 +650,8 @@ describe('app gameplay vertical slice', () => {
     expect(firstRecovery.saveData.player.mp).toBe(trained.saveData.player.mp);
     expect(run(firstRecovery, 5999).saveData.player.hp).toBe(firstRecovery.saveData.player.hp);
     expect(run(firstRecovery, 6000).saveData.player.hp).toBe(firstRecovery.saveData.player.hp + 2);
+    firstRecovery.saveData.player.hp = deriveStats(firstRecovery.saveData.player, catalog.rules).maxHp;
+    expect(run(firstRecovery, 6000).saveData.player).toBe(firstRecovery.saveData.player);
   });
 
   it('locks returnTown during a live arena fight and clears guard on respawn', () => {

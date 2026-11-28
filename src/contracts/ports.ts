@@ -204,6 +204,7 @@ export type UiSnapshot = {
   saveData: SaveData | null;
   stats: import('./types.js').DerivedStats | null;
   bossVitals?: { name: string; hp: number; maxHp: number; phase: 1 | 2; changingPhase: boolean } | null;
+  passiveRecovery?: 'hp' | 'mp' | null;
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;

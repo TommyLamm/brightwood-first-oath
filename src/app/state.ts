@@ -8,7 +8,7 @@ import { deriveStats } from '../domain/progression/index.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
-import type { GameplayState } from './gameplay.js';
+import { PASSIVE_RECOVERY_DELAY_MS, type GameplayState } from './gameplay.js';
 import { deriveCombatUiState } from './combat-ui-state.js';
 import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
@@ -134,6 +134,13 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     ? gameplay?.monsters.find(({ hp, monsterId }) => hp > 0 && isBossMonster(monsterId)) : undefined;
   const bossDefinition = boss ? catalog.rules.monsters[boss.monsterId] : undefined;
   const player = saveData?.player;
+  let passiveRecovery: UiSnapshot['passiveRecovery'] = null;
+  if (gameplay && player && stats && gameplay.nextRegenAtMs > state.gameTimeMs
+    && state.gameTimeMs >= gameplay.attackOrDamageAtMs + PASSIVE_RECOVERY_DELAY_MS && !worldIsFrozen(state)) {
+    if (effectiveJob(player) === 'mage') {
+      if (player.mp < stats.maxMp) passiveRecovery = 'mp';
+    } else if (player.hp < stats.maxHp) passiveRecovery = 'hp';
+  }
   const canShowInteractionHint = canShowContextHints(state);
   let interactionHint: UiSnapshot['interactionHint'] = null;
   let pickupHint: UiSnapshot['pickupHint'] = null;
@@ -206,6 +213,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     ...(state.startupIssues.length > 0 ? { error: state.startupIssues.at(-1) } : {}),
     saveData,
     stats,
+    passiveRecovery,
     bossVitals: boss && bossDefinition ? {
       name: bossDefinition.name,
       hp: boss.hp,

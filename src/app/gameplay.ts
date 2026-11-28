@@ -1242,6 +1242,7 @@ export function failMapTransition(current: GameplayState, message: string): Game
 // Toasts used to stay up until some later action cleared them, so e.g. the chapter-complete
 // message sat over every panel for the rest of the session.
 const TOAST_DURATION_MS = 6000;
+export const PASSIVE_RECOVERY_DELAY_MS = 3_000;
 /** How long a skill pressed mid-swing waits for the swing to finish before it is dropped. */
 const ATTACK_BUFFER_MS = 600;
 const BUFF_POSE_MS = 400;
@@ -1259,10 +1260,10 @@ function expireToast(gameplay: GameplayState, nowMs: number): void {
 }
 
 function recoverWhileResting(gameplay: GameplayState, catalog: ContentCatalog, nowMs: number): void {
-  const mage = effectiveJob(gameplay.saveData.player) === 'mage';
-  const rank = mage ? magePassiveRank(gameplay.saveData.player, catalog.rules, 'mage-mana-affinity')
-    : gameplay.saveData.player.skillRanks['rest-recovery'] ?? 0;
-  const recoveryStartsAtMs = gameplay.attackOrDamageAtMs + 3000;
+  const player = gameplay.saveData.player;
+  const mage = effectiveJob(player) === 'mage';
+  const rank = mage ? magePassiveRank(player, catalog.rules, 'mage-mana-affinity') : player.skillRanks['rest-recovery'] ?? 0;
+  const recoveryStartsAtMs = gameplay.attackOrDamageAtMs + PASSIVE_RECOVERY_DELAY_MS;
   if (rank < 1 || nowMs < recoveryStartsAtMs) {
     gameplay.nextRegenAtMs = 0;
     return;
@@ -1271,8 +1272,10 @@ function recoverWhileResting(gameplay: GameplayState, catalog: ContentCatalog, n
     gameplay.nextRegenAtMs = recoveryStartsAtMs;
   }
   if (nowMs < gameplay.nextRegenAtMs) return;
-  const restored = applyProgressAction(gameplay.saveData.player, { type: 'restore', hp: mage ? 0 : rank * 2, mp: mage ? rank : 0 }, catalog.rules);
-  if (restored.ok) gameplay.saveData = { ...gameplay.saveData, player: restored.value };
+  const restored = applyProgressAction(player, { type: 'restore', hp: mage ? 0 : rank * 2, mp: mage ? rank : 0 }, catalog.rules);
+  if (restored.ok && (restored.value.hp !== player.hp || restored.value.mp !== player.mp)) {
+    gameplay.saveData = { ...gameplay.saveData, player: restored.value };
+  }
   gameplay.nextRegenAtMs = nowMs + 2000;
 }
 

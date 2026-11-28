@@ -186,6 +186,23 @@
 .ms-meter__fill { box-shadow: inset 0 2px 0 #ffffff4d, inset 0 -2px 0 #0000001c; border-radius: 0; }
 .ms-meter--hp .ms-meter__fill { background: #d8584b; }
 .ms-meter--mp .ms-meter__fill { background: #4399bd; }
+.ms-meter.is-recovering .ms-meter__track { position: relative; }
+.ms-meter.is-recovering .ms-meter__track::after {
+  content: '+';
+  position: absolute;
+  inset-inline-end: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  color: #e7fff0;
+  background: #2f6f58;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 10px;
+  text-align: center;
+}
 .ms-meter--exp .ms-meter__fill { background: #d7a346; }
 .ms-meter--hp.is-low .ms-meter__track { border-color: #a52d22; box-shadow: 0 0 0 1px #f06a55, 0 0 8px rgba(226, 70, 50, .65); }
 .ms-meter--hp.is-low .ms-meter__fill { background: #e8483a; }

@@ -1076,6 +1076,8 @@ export function createUi(
       else hp.element.removeAttribute('title');
     }
     mp.update(player.mp, view.stats?.maxMp ?? player.mp);
+    hp.setRecovering(view.passiveRecovery === 'hp');
+    mp.setRecovering(view.passiveRecovery === 'mp');
     const atMaxLevel = player.level >= view.catalog.rules.progression.maxLevel;
     const nextExp = view.catalog.rules.progression.expToNext[player.level] ?? 0;
     if (exp.update(atMaxLevel ? 1 : player.exp, atMaxLevel ? 1 : nextExp, atMaxLevel ? 'MAX' : undefined)) {
@@ -2989,8 +2991,16 @@ function makeMeter(document: Document, label: string, tone: string) {
   let previousValue: number | undefined;
   let previousMaximum: number | undefined;
   let previousLabel: string | undefined;
+  let recovering = false;
   return {
     element: meter,
+    setRecovering(active: boolean): void {
+      if (recovering === active) return;
+      recovering = active;
+      meter.classList.toggle('is-recovering', active);
+      if (active) meter.setAttribute('aria-description', '脫戰恢復中');
+      else meter.removeAttribute('aria-description');
+    },
     update(value: number, maximum: number, override?: string): boolean {
       if (value === previousValue && maximum === previousMaximum && override === previousLabel) return false;
       if (maximum !== previousMaximum) meter.setAttribute('aria-valuemax', String(maximum));
