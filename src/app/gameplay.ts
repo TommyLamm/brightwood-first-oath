@@ -463,8 +463,11 @@ export function stepGameplay(
             gameplay.toast = '請在紅框上的進度條填滿前離開範圍！';
           }
         }
-        if (objective) gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
-          { type: 'inspected', targetId: objective }, catalog.world, gameplay.saveData.player) };
+        if (objective) {
+          const before = gameplay.saveData;
+          const quests = recordQuestEvent(before.quests, { type: 'inspected', targetId: objective }, catalog.world, before.player);
+          if (quests !== before.quests) gameplay.saveData = { ...before, quests };
+        }
         const placement = map.npcs.find(({ npcId }) => npcId === targetId);
         if (placement) pushEffect(gameplay, { id: input.nextEntityId(), kind: 'hit', position: { x: placement.x, y: placement.y - 24 }, atMs: input.nowMs });
         continue;
@@ -481,8 +484,9 @@ export function stepGameplay(
         });
       }
       const before = gameplay.saveData;
-      gameplay.saveData = { ...before, quests: recordQuestEvent(before.quests, { type: 'inspected', targetId }, catalog.world, before.player) };
-      if (JSON.stringify(before.quests) !== JSON.stringify(gameplay.saveData.quests)) {
+      const quests = recordQuestEvent(before.quests, { type: 'inspected', targetId }, catalog.world, before.player);
+      if (quests !== before.quests) {
+        gameplay.saveData = { ...before, quests };
         gameplay.toast = '命中' + (catalog.world.npcs[targetId]?.name ?? '試煉靶') + '。三靶全中後回' + (effectiveJob(before.player) === 'mage' ? '星蘅' : '青翎') + '領獎。';
         announceReadyQuests(gameplay, before, catalog);
       }
@@ -542,8 +546,9 @@ export function stepGameplay(
     if (input.nowMs >= trial.resolveAtMs) {
       const escaped = escapedRogueTrial(gameplay.movement.position, trial.position, catalog.rules.movement.width);
       if (escaped) {
-        gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
-          { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, gameplay.saveData.player) };
+        const before = gameplay.saveData;
+        const quests = recordQuestEvent(before.quests, { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, before.player);
+        if (quests !== before.quests) gameplay.saveData = { ...before, quests };
         gameplay.toast = '撤離成功！完成三項訓練後回木葉鎮找夜嵐領獎。';
       } else gameplay.toast = '仍在紅框內。再對連刺靶完成兩段連刺，即可重試撤離。';
       delete gameplay.rogueTrial;
@@ -1591,8 +1596,8 @@ function skillLockedMessage(
 function announceReadyQuests(gameplay: GameplayState, before: SaveData, catalog: ContentCatalog): void {
   for (const [questId, state] of Object.entries(gameplay.saveData.quests)) {
     if (state.status !== 'active' || before.quests[questId]?.status !== 'active') continue;
-    if (getQuestView(before, questId, catalog).status === 'ready') continue;
     if (getQuestView(gameplay.saveData, questId, catalog).status !== 'ready') continue;
+    if (getQuestView(before, questId, catalog).status === 'ready') continue;
     const quest = catalog.world.quests[questId];
     if (!quest) continue;
     const npcName = catalog.world.npcs[quest.turnInNpcId]?.name ?? '委託人';

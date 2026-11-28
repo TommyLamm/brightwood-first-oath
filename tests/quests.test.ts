@@ -129,12 +129,14 @@ describe('world and quest content', () => {
     }
   });
 
-  it('caps repeated progress events and returns an independent quest record', () => {
-    const original = { q01: state('active', { snail: 2 }) };
+  it('copies changed progress and retains quest records for capped or unrelated events', () => {
+    const original = { q01: state('active', { snail: 2 }), q02: state('active', { town: 0 }) };
     const next = recordQuestEvent(original, { type: 'killed', monsterId: 'snail' }, worldCatalog);
     expect(next.q01?.counters.snail).toBe(3);
     expect(original.q01?.counters.snail).toBe(2);
-    expect(recordQuestEvent(next, { type: 'killed', monsterId: 'snail' }, worldCatalog).q01?.counters.snail).toBe(3);
+    expect(next.q02).toBe(original.q02);
+    expect(recordQuestEvent(next, { type: 'killed', monsterId: 'snail' }, worldCatalog)).toBe(next);
+    expect(recordQuestEvent(next, { type: 'killed', monsterId: 'slime' }, worldCatalog)).toBe(next);
   });
 
   it('reports malformed portal targets as content errors', () => {

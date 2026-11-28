@@ -150,20 +150,27 @@ export function recordQuestEvent(
   world: ContentCatalog['world'],
   player: Pick<SaveData['player'], 'job' | 'plannedJob'> = { job: 'swordsman' },
 ): Record<Id, QuestState> {
-  const nextQuests = cloneQuests(quests);
-  for (const [questId, state] of Object.entries(nextQuests)) {
+  let nextQuests = quests;
+  for (const [questId, state] of Object.entries(quests)) {
     if (state.status !== 'active') continue;
     const base = world.quests[questId];
     const quest = base ? questForPlayer(base, player) : undefined;
     if (!quest) continue;
+    let counters = state.counters;
     for (const objective of quest.objectives) {
       const matches = (event.type === 'killed' && objective.type === 'kill' && objective.targetId === event.monsterId)
         || (event.type === 'reached' && objective.type === 'reach' && objective.targetId === event.mapId)
         || (event.type === 'inspected' && objective.type === 'inspect' && objective.targetId === event.targetId);
-      if (matches) state.counters[objective.targetId] = Math.min(
-        objective.count,
-        (state.counters[objective.targetId] ?? 0) + 1,
-      );
+      if (!matches) continue;
+      const before = counters[objective.targetId];
+      const after = Math.min(objective.count, (before ?? 0) + 1);
+      if (before === after) continue;
+      if (counters === state.counters) counters = { ...counters };
+      counters[objective.targetId] = after;
+    }
+    if (counters !== state.counters) {
+      if (nextQuests === quests) nextQuests = { ...quests };
+      nextQuests[questId] = { ...state, counters };
     }
   }
   return nextQuests;
