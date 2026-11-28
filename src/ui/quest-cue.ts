@@ -7,7 +7,7 @@ import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../rend
 type Objective = QuestView['objectives'][number];
 
 const objectiveCues: Record<Objective['type'], QuestCueKind> = {
-  kill: 'monster', collect: 'item', equip: 'item', reach: 'portal', inspect: 'npc',
+  kill: 'monster', collect: 'item', equip: 'item', reach: 'portal', inspect: 'inspect',
 };
 
 export function questObjectiveCue(objective: Objective): QuestCueKind {

@@ -3,6 +3,7 @@ import type { DropState, UiSnapshot } from '../contracts/ports.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
+import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import type { QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
@@ -53,7 +54,7 @@ export function buildLocalMap(
   }
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
-  const codes = { npc: 'N', portal: 'P', monster: 'M', trial: 'T' } as const;
+  const codes = { npc: 'N', portal: 'P', monster: 'M', trial: 'T', inspect: 'I' } as const;
   const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false, state?: QuestNpcCueState) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
@@ -63,7 +64,7 @@ export function buildLocalMap(
     if (highlighted) {
       mark.classList.add('is-target');
       entry.classList.add('is-target');
-      if ((kind === 'npc' || kind === 'trial') && focus?.kind === 'npc') {
+      if (kind !== 'portal' && kind !== 'monster' && focus?.kind === 'npc') {
         entry.setAttribute('aria-current', 'true');
         details.open = true;
       }
@@ -77,8 +78,7 @@ export function buildLocalMap(
   };
   const playerData = view.saveData?.player;
   const mentorId = playerData && canChooseSpecialization(playerData) ? specializationMentors[effectiveJob(playerData)] : null;
-  let npcCount = 0;
-  let trialCount = 0;
+  const counts = { npc: 0, trial: 0, inspect: 0 };
   for (const placement of map.npcs) {
     const { npcId } = placement;
     const npc = view.catalog.world.npcs[npcId];
@@ -87,9 +87,9 @@ export function buildLocalMap(
     const appearance = service ? npcServiceCueAppearance[service] : undefined;
     const label = (npc?.name ?? npcId) + (appearance ? ' · ' + appearance.label : '');
     const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets.npcs.has(npcId);
-    const mark = combatTrialActions.has(npcId)
-      ? marker('trial', trialCount++, placement, label, highlighted)
-      : marker('npc', npcCount++, placement, label, highlighted, highlighted && targets.npcs.has(npcId) ? npcState : undefined);
+    const kind = combatTrialActions.has(npcId) ? 'trial' : npc?.actorKey === INSPECTION_ACTOR_KEY ? 'inspect' : 'npc';
+    const state = kind === 'npc' && targets.npcs.has(npcId) ? npcState : undefined;
+    const mark = marker(kind, counts[kind]++, placement, label, highlighted, state);
     if (service && appearance) {
       const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
       badge.style.color = '#' + appearance.color.toString(16);
@@ -118,8 +118,9 @@ export function buildLocalMap(
   const player = text(document, 'span', 'ms-local-map__player', '◆');
   player.title = '你在這裡'; player.dataset.localPlayer = ''; chart.append(player);
   details.append(chart, text(document, 'p', 'ms-local-map__key',
-    (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民／調查點　P 出口'
-      + (trialCount > 0 ? '　T 試煉靶' : '')
+    (view.saveData?.location.mapId === map.id ? '◆ 你在這裡　' : '') + 'N 居民　P 出口'
+      + (counts.trial > 0 ? '　T 試煉靶' : '')
+      + (counts.inspect > 0 ? '　I 調查點' : '')
       + (monsterCount > 0 ? '　M 目標怪物活動區' : '')), legend);
   if (view.saveData?.location.mapId === map.id && targets.items.size > 0) {
     const layer = text(document, 'div', '', '');

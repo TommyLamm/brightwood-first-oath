@@ -9,6 +9,7 @@ type CueDirection = keyof typeof directions;
 export const questCueAppearance = {
   npc: { color: 0xffdd8b, symbol: '◇' },
   monster: { color: 0xffa46b, symbol: '⊕' },
+  inspect: { color: 0xc7b9ff, symbol: '✦' },
   item: { color: 0xa5f5ed, symbol: '▣' },
   portal: { color: 0xe1ccff, symbol: '↓' },
 } as const;
@@ -159,6 +160,13 @@ export function drawQuestCue(
     graphics.lineStyle(2, color, 1).strokeCircle(x, y, 4)
       .lineBetween(x, y - 7, x, y - 4).lineBetween(x, y + 4, x, y + 7)
       .lineBetween(x - 7, y, x - 4, y).lineBetween(x + 4, y, x + 7, y);
+    return;
+  }
+  if (kind === 'inspect') {
+    graphics.fillStyle(color, 1).beginPath().moveTo(x, y - 7)
+      .lineTo(x + 2.5, y - 2.5).lineTo(x + 7, y).lineTo(x + 2.5, y + 2.5)
+      .lineTo(x, y + 7).lineTo(x - 2.5, y + 2.5).lineTo(x - 7, y)
+      .lineTo(x - 2.5, y - 2.5).closePath().fillPath();
     return;
   }
   graphics.lineStyle(2, color, 1).strokeRoundedRect(x - 5, y - 4, 10, 9, 2)

@@ -1,5 +1,7 @@
 import type { Id, NpcDef } from '../../contracts/index.js';
 
+export const INSPECTION_ACTOR_KEY = 'actor:ruins-stele';
+
 export const npcs: Record<Id, NpcDef> = {
   'rogue-mentor': { id: 'rogue-mentor', name: '夜嵐', role: 'mentor', dialogueId: 'rogue-mentor-intro', actorKey: 'actor:rogue-mentor' },
   'rogue-target-close': { id: 'rogue-target-close', name: '近身靶・普攻', role: 'keeper', dialogueId: 'rogue-close-intro', actorKey: 'actor:archery-target' },
@@ -20,7 +22,7 @@ export const npcs: Record<Id, NpcDef> = {
   'ruins-archivist': { id: 'ruins-archivist', name: '芷衡', role: 'keeper', dialogueId: 'ruins-archivist-intro', actorKey: 'actor:ruins-archivist' },
   'ruins-medic': { id: 'ruins-medic', name: '青禾', role: 'healer', dialogueId: 'ruins-medic-intro', actorKey: 'actor:ruins-medic' },
   'ruins-pathfinder': { id: 'ruins-pathfinder', name: '行舟', role: 'scout', dialogueId: 'ruins-pathfinder-intro', actorKey: 'actor:ruins-pathfinder' },
-  'ruins-stele-west': { id: 'ruins-stele-west', name: '西回聲碑', role: 'keeper', dialogueId: 'ruins-stele-west-intro', actorKey: 'actor:ruins-stele' },
-  'ruins-stele-east': { id: 'ruins-stele-east', name: '東回聲碑', role: 'keeper', dialogueId: 'ruins-stele-east-intro', actorKey: 'actor:ruins-stele' },
-  'frost-route-marker': { id: 'frost-route-marker', name: '霜松航標', role: 'keeper', dialogueId: 'frost-route-marker-intro', actorKey: 'actor:ruins-stele' },
+  'ruins-stele-west': { id: 'ruins-stele-west', name: '西回聲碑', role: 'keeper', dialogueId: 'ruins-stele-west-intro', actorKey: INSPECTION_ACTOR_KEY },
+  'ruins-stele-east': { id: 'ruins-stele-east', name: '東回聲碑', role: 'keeper', dialogueId: 'ruins-stele-east-intro', actorKey: INSPECTION_ACTOR_KEY },
+  'frost-route-marker': { id: 'frost-route-marker', name: '霜松航標', role: 'keeper', dialogueId: 'frost-route-marker-intro', actorKey: INSPECTION_ACTOR_KEY },
 };

@@ -2,6 +2,7 @@ import type { UiSnapshot } from '../contracts/ports.js';
 import { findQuestExit } from '../app/quest-route.js';
 import { questDestinationMapIds, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
+import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import { questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { decorateControl } from './control-art.js';
 import {
@@ -341,10 +342,10 @@ function buildRegionEntryButton(
 }
 
 function mapInhabitants(
-  document: Document, kind: 'npc' | 'monster' | 'trial', names: ReadonlyMap<string, string>, targetIds: ReadonlySet<string>, terrainAvailable: boolean,
+  document: Document, kind: 'npc' | 'monster' | 'trial' | 'inspect', names: ReadonlyMap<string, string>, targetIds: ReadonlySet<string>, terrainAvailable: boolean,
   npcState?: QuestNpcCueState,
 ): HTMLElement {
-  const heading = { npc: '居民／調查點', monster: '出沒', trial: '試煉靶' }[kind];
+  const heading = { npc: '居民', monster: '出沒', trial: '試煉靶', inspect: '調查點' }[kind];
   const list = element(document, 'p', 'ms-atlas-inhabitants', heading + '：');
   const { color, symbol } = questCueStyle(kind === 'trial' ? 'monster' : kind, npcState);
   let first = true;
@@ -409,13 +410,16 @@ function buildDetails(
     );
     const npcNames = new Map<string, string>();
     const trialNames = new Map<string, string>();
+    const inspectionNames = new Map<string, string>();
     for (const { npcId } of selected.npcs) {
-      const names = combatTrialActions.has(npcId) ? trialNames : npcNames;
-      names.set(npcId, view.catalog.world.npcs[npcId]?.name ?? npcId);
+      const npc = view.catalog.world.npcs[npcId];
+      const names = combatTrialActions.has(npcId) ? trialNames : npc?.actorKey === INSPECTION_ACTOR_KEY ? inspectionNames : npcNames;
+      names.set(npcId, npc?.name ?? npcId);
     }
     const monsterNames = new Map(selected.monsters.map(({ monsterId }) => [monsterId, view.catalog.rules.monsters[monsterId]?.name ?? monsterId]));
     if (npcNames.size) details.append(mapInhabitants(document, 'npc', npcNames, targets.npcs, terrainAvailable, npcState));
     if (trialNames.size) details.append(mapInhabitants(document, 'trial', trialNames, targets.npcs, terrainAvailable));
+    if (inspectionNames.size) details.append(mapInhabitants(document, 'inspect', inspectionNames, targets.npcs, terrainAvailable));
     if (monsterNames.size) details.append(mapInhabitants(document, 'monster', monsterNames, targets.monsters, terrainAvailable));
     const regionOverview = scope === 'frost' ? frostOverview : scope === 'sand' ? sandOverview : scope === 'ruins' ? ruinsOverview : null;
     const regionEntryMapId = scope === 'frost' ? 'frost-shore' : scope === 'sand' ? 'sand-glass-shore' : 'ruins-tide-camp';

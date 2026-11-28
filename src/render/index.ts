@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { questMarkerStates, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
+import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import { isLowHealth } from '../domain/combat/index.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
 import { canEquipForJob } from '../content/rules/jobs.js';
@@ -1221,11 +1222,11 @@ export function createWorldRenderer(
       const questTarget = targets.npcs.has(placement.npcId);
       const isMentor = placement.npcId === snapshot.specializationMentorId;
       if (questTarget) {
-        if (npc.actorKey === 'actor:ruins-stele') {
+        if (npc.actorKey === INSPECTION_ACTOR_KEY) {
           const point = { x: placement.x, y: placement.y - image.displayHeight * .34 };
           const offset = image.displayWidth / 2 + 10;
           const beside = point.x + offset > viewport.x + viewport.width - 16 ? point.x - offset : point.x + offset;
-          guideTarget('npc', placement.npcId, npc.name, point, { x: beside, y: point.y });
+          guideTarget('inspect', placement.npcId, npc.name, point, { x: beside, y: point.y });
         } else {
           guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
         }
