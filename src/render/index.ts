@@ -432,14 +432,17 @@ export function createWorldRenderer(
   const appliedSpriteFrames = new WeakMap<Phaser.GameObjects.Sprite, string>();
   const gearSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const attackEffectSprites = new Map<string, Phaser.GameObjects.Sprite>();
-  let visibleSprites = new Set<Phaser.GameObjects.Sprite>();
-  let drawnSprites = new Set<Phaser.GameObjects.Sprite>();
+  type FrameVisual = Phaser.GameObjects.Sprite | Phaser.GameObjects.Text;
+  let visibleWorldObjects = new Set<FrameVisual>();
+  let drawnWorldObjects = new Set<FrameVisual>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
   let actorOrderDirty = false;
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   const guidanceGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const attacksBySource = new Map<string, AttackInstance>();
+  const visibleQuestTargets = new Set<string>();
+  const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
   let questGuide: {
     views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets;
     mapId: string; climbRoutes: ReturnType<typeof questLadderRoutes>;
@@ -938,7 +941,7 @@ export function createWorldRenderer(
         fontSize: '14px',
         stroke: '#27323a',
         strokeThickness: 3,
-      }).setOrigin(nameGeometry.originX, nameGeometry.originY);
+      }).setOrigin(nameGeometry.originX, nameGeometry.originY).setVisible(false);
       foregroundLayer.add(text);
       npcSprites.set(placement.npcId, { imageKey: npc.actorKey, nameText: text });
       text.setDepth(placement.y + 0.1);
@@ -967,9 +970,9 @@ export function createWorldRenderer(
     actorOrderDirty = true;
   };
 
-  const showWorldSprite = (sprite: Phaser.GameObjects.Sprite): void => {
-    if (!sprite.visible) sprite.setVisible(true).setActive(true);
-    drawnSprites.add(sprite);
+  const showWorldObject = (visual: FrameVisual): void => {
+    if (!visual.visible) visual.setVisible(true).setActive(true);
+    drawnWorldObjects.add(visual);
   };
 
   const drawActor = (
@@ -1003,7 +1006,7 @@ export function createWorldRenderer(
     setImageFrame(sprite, image, frame);
     sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0);
     setActorDepth(sprite, position.y);
-    showWorldSprite(sprite);
+    showWorldObject(sprite);
     return { sprite, frame, footOffsetY };
   };
 
@@ -1035,14 +1038,14 @@ export function createWorldRenderer(
       .setFlipX(facing < 0)
       .setRotation(rotation);
     setActorDepth(sprite, depth + 0.05);
-    showWorldSprite(sprite);
+    showWorldObject(sprite);
   };
 
   const drawSnapshot = (snapshot: WorldSnapshot): void => {
     if (!activeVisual) throw new RendererAssetError('請先成功呼叫 loadMap(map)');
     if (snapshot.mapId !== activeVisual.map.id) throw new RendererAssetError(`Snapshot mapId ${snapshot.mapId} 與已載入地圖 ${activeVisual.map.id} 不一致`);
 
-    drawnSprites.clear();
+    drawnWorldObjects.clear();
     hpGraphics.clear();
     steleGlowGraphics.clear();
     guidanceGraphics.clear();
@@ -1062,10 +1065,6 @@ export function createWorldRenderer(
     const { targets, markers, tunedSteles, npcStatus } = questGuide;
     attacksBySource.clear();
     for (const attack of snapshot.attacks) attacksBySource.set(attack.sourceId, attack);
-    bossNameText.setVisible(false);
-    questEdgeLabel.setVisible(false);
-    oppositeQuestEdgeLabel.setVisible(false);
-    for (const text of monsterNameTexts.values()) text.setVisible(false);
     telegraphGraphics.clear();
     attackGraphics.clear();
     if (snapshot.smoke && snapshot.nowMs < snapshot.smoke.expiresAtMs) {
@@ -1207,8 +1206,8 @@ export function createWorldRenderer(
     const right = viewport.x + viewport.width + margin;
     const bottom = viewport.y + viewport.height + margin;
     const isInViewport = ({ x, y }: Vec2): boolean => x >= left && x <= right && y >= top && y <= bottom;
-    const visibleQuestTargets = new Set<string>();
-    const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
+    visibleQuestTargets.clear();
+    nearestQuestTargets.clear();
     let mentorEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
     let healerEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
     const lowHealth = isLowHealth(snapshot.player.hp, snapshot.player.maxHp);
@@ -1260,10 +1259,7 @@ export function createWorldRenderer(
           else healerEdge = { label: serviceLabel, cue };
         }
       }
-      if (!isInViewport(placement)) {
-        npcVisual.nameText.setVisible(false);
-        continue;
-      }
+      if (!isInViewport(placement)) continue;
       const npcKey = 'npc:' + placement.npcId;
       drawActor(npcKey, npcVisual.imageKey, `npc:${npc.id}:idle`, placement, 1, snapshot.nowMs, npcIdleStartedAtMs);
       if (STELE_NPC_IDS.has(placement.npcId) && tunedSteles.has(placement.npcId)) {
@@ -1278,7 +1274,7 @@ export function createWorldRenderer(
       const color = questState === 'ready' ? '#c7f8c5' : '#fff4d4';
       if (npcVisual.nameText.text !== label) npcVisual.nameText.setText(label);
       if (npcVisual.nameText.style.color !== color) npcVisual.nameText.setColor(color);
-      npcVisual.nameText.setVisible(true);
+      showWorldObject(npcVisual.nameText);
       const showMarker = !questTarget && questState !== undefined;
       if (showMarker) drawQuestCue(guidanceGraphics, 'npc', markerGeometry.x, markerGeometry.y, undefined, questState);
       const offset = questTarget || showMarker ? 24 : 0;
@@ -1349,14 +1345,16 @@ export function createWorldRenderer(
           questMarkerVisible = guideTarget('monster', monster.monsterId, definition.name, { x: bar.x + bar.width / 2, y }, { x: beside, y });
         }
         if (activeVisual.map.boss && isNamedBoss) {
-          bossNameText.setText(`${definition.name}  Lv.${definition.level}`)
-            .setPosition(bar.x + bar.width / 2, bar.y - 3)
-            .setVisible(true);
+          const label = `${definition.name}  Lv.${definition.level}`;
+          if (bossNameText.text !== label) bossNameText.setText(label);
+          bossNameText.setPosition(bar.x + bar.width / 2, bar.y - 3);
+          showWorldObject(bossNameText);
         } else if (questMarkerVisible || Math.abs(position.x - snapshot.player.movement.position.x) <= MONSTER_NAME_RANGE_PX) {
           const label = `${definition.name} Lv.${definition.level}`;
           const nameText = monsterNameText(monster.spawnId);
           if (nameText.text !== label) nameText.setText(label);
-          nameText.setPosition(bar.x + bar.width / 2, bar.y - 2).setVisible(true);
+          nameText.setPosition(bar.x + bar.width / 2, bar.y - 2);
+          showWorldObject(nameText);
         }
       }
     }
@@ -1440,7 +1438,7 @@ export function createWorldRenderer(
         const labelX = Math.max(viewport.x + inset, Math.min(viewport.x + viewport.width - inset, x));
         text.setOrigin(.5, .5).setPosition(labelX, y + (direction === 'up' ? 18 : -18));
       }
-      text.setVisible(true);
+      showWorldObject(text);
     };
     const showEdgeTarget = ({ label, kind, cue }: QuestEdgeTarget, text?: Phaser.GameObjects.Text): void => {
       drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction, npcStatus);
@@ -1582,12 +1580,12 @@ export function createWorldRenderer(
     for (const event of snapshot.effects) processVisualEvent(event, snapshot.nowMs);
     prunePlayedVisualEventIds(playedVisualEventIds, snapshot.effects);
     pruneEvents(snapshot.nowMs);
-    for (const sprite of visibleSprites) {
-      if (!drawnSprites.has(sprite) && sprite.scene) sprite.setVisible(false).setActive(false);
+    for (const visual of visibleWorldObjects) {
+      if (!drawnWorldObjects.has(visual) && visual.scene) visual.setVisible(false).setActive(false);
     }
-    const previousSprites = visibleSprites;
-    visibleSprites = drawnSprites;
-    drawnSprites = previousSprites;
+    const previousObjects = visibleWorldObjects;
+    visibleWorldObjects = drawnWorldObjects;
+    drawnWorldObjects = previousObjects;
     if (actorOrderDirty) {
       actorsLayer.sort('depth');
       actorOrderDirty = false;
@@ -1651,7 +1649,7 @@ export function createWorldRenderer(
     };
     setImageFrame(sprite, image, frame);
     sprite.setPosition(position.x, position.y).setFlipX(attack.facing < 0);
-    showWorldSprite(sprite);
+    showWorldObject(sprite);
   };
 
   const getDropText = (id: string, content: string, position: Vec2, nowMs: number): Phaser.GameObjects.Text => {
@@ -1814,11 +1812,11 @@ export function createWorldRenderer(
         const old = activeVisual;
         activeVisual = candidate;
         parallaxMotion.resetForMap();
-        for (const sprite of visibleSprites) {
-          if (sprite.scene) sprite.setVisible(false).setActive(false);
+        for (const visual of visibleWorldObjects) {
+          if (visual.scene) visual.setVisible(false).setActive(false);
         }
-        visibleSprites.clear();
-        drawnSprites.clear();
+        visibleWorldObjects.clear();
+        drawnWorldObjects.clear();
         if (old) {
           for (const [key, sprite] of actorSprites) {
             if (key !== 'player') {
@@ -1898,8 +1896,8 @@ export function createWorldRenderer(
       activeVisual = null;
       for (const sprite of actorSprites.values()) sprite.destroy();
       actorSprites.clear();
-      visibleSprites.clear();
-      drawnSprites.clear();
+      visibleWorldObjects.clear();
+      drawnWorldObjects.clear();
       actorAnimationClocks.clear();
       dropSprites.clear();
       dropDrawList = undefined;
