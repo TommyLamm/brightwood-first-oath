@@ -191,6 +191,13 @@
   letter-spacing: .03em;
 }
 
+.ms-key-guide__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
 .ms-key-guide__section {
   display: grid;
   gap: 4px;
@@ -248,15 +255,6 @@
   font-weight: 800;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
   white-space: nowrap;
-}
-
-.ms-key-guide__tip {
-  margin: 4px 0 0;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(229, 199, 122, .18);
-  color: var(--ms-muted);
-  font-size: 10px;
-  text-align: center;
 }
 
 .ms-badge {

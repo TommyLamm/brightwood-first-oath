@@ -12,7 +12,7 @@
   .ms-journal-objective__target strong, .ms-journal-objective__target small,
   .ms-journal-rewards h4, .ms-journal-rewards .ms-visual-token,
   .ms-journal-reward-item, .ms-journal-reward-extra, .ms-visual-details,
-  .ms-ability-summary, .ms-key-guide__action, .ms-key-guide__tip,
+  .ms-ability-summary, .ms-key-guide__action,
   .ms-quest-tracker__detail, .ms-quest-tracker__review, .ms-interaction-hint
 ) {
   font-size: 15px;

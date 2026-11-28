@@ -961,6 +961,7 @@ export function createUi(
   };
 
   const renderKeyGuide = (view: UiSnapshot | null): void => {
+    if (view?.panels.length) keyGuideExpanded = false;
     if (keyGuideCard.hidden !== !keyGuideExpanded) {
       keyGuideToggle.classList.toggle('is-active', keyGuideExpanded);
       keyGuideToggle.setAttribute('aria-expanded', String(keyGuideExpanded));
@@ -983,7 +984,13 @@ export function createUi(
       title: '收起按鍵提示',
     });
     closeButton.setAttribute('aria-label', '✕ 收起：操作按鍵提示');
-    headerRow.append(makeElement(document, 'h4', '', '操作按鍵提示'), closeButton);
+    const settingsShortcut = makeButton(document, '改鍵', 'open-panel', {
+      className: 'ms-button ms-button--small', data: { panel: 'settings' }, title: '自訂快捷鍵',
+    });
+    settingsShortcut.setAttribute('aria-label', '自訂快捷鍵');
+    const actions = makeElement(document, 'div', 'ms-key-guide__actions');
+    actions.append(settingsShortcut, closeButton);
+    headerRow.append(makeElement(document, 'h4', '', '操作按鍵提示'), actions);
     keyGuideCard.append(headerRow);
 
     for (const section of KEY_GUIDE_SECTIONS) {
@@ -1003,8 +1010,6 @@ export function createUi(
       keyGuideCard.append(secEl);
     }
 
-    const tip = makeElement(document, 'p', 'ms-key-guide__tip', '💡 可在「設定」面板中自訂快捷鍵位');
-    keyGuideCard.append(tip);
   };
 
   const nameFeedbackId = 'brightwood-first-oath-character-name-feedback';
@@ -2975,8 +2980,7 @@ export function createUi(
     nextButton.click();
   };
 
-  // The key guide floats above every panel, so Esc should fold it away first instead of
-  // pausing the game (or closing the panel underneath) while the card stays open.
+  // Close the guide before Escape can pause gameplay.
   const onEscapeKeyGuide = (event: Event): void => {
     if (!(event instanceof KeyboardEvent) || event.code !== 'Escape') return;
     const target = event.target instanceof Element ? event.target : null;
