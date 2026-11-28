@@ -1721,13 +1721,29 @@ export function createUi(
           for (const [index, slot] of view.profile.slots.entries()) {
             const character = slot.characterId ? view.profile.characters[slot.characterId] : null;
             if (character) {
+              const player = character.player;
               const place = view.catalog.world.maps[character.location.mapId]?.name ?? '';
-              slots.append(makeButton(document, (slot.characterId === view.profile.activeCharacterId ? '目前｜' : '')
-                + character.player.name + '・Lv.' + character.player.level + ' ' + playerClassLabel(character.player)
-                + '・' + place + '｜選擇並繼續', 'select-character', {
-                  data: { characterId: character.characterId }, disabled: view.saveStatus === 'saving' || view.saveStatus === 'saveError',
-                  className: 'ms-button ms-character-slot',
-                }));
+              const active = slot.characterId === view.profile.activeCharacterId;
+              const levelAndJob = 'Lv.' + player.level + ' ' + playerClassLabel(player);
+              const label = (active ? '目前｜' : '') + player.name + '・' + levelAndJob + '・' + place + '｜選擇並繼續';
+              const button = makeButton(document, label, 'select-character', {
+                data: { characterId: character.characterId }, disabled: view.saveStatus === 'saving' || view.saveStatus === 'saveError',
+                className: 'ms-button ms-character-slot ms-character-slot--occupied',
+              });
+              button.setAttribute('aria-label', label);
+              const portrait = makeElement(document, 'img', 'ms-character-slot__portrait');
+              portrait.src = new URL(classPortrait(player), document.baseURI).href;
+              portrait.alt = '';
+              portrait.draggable = false;
+              const summary = makeElement(document, 'span', 'ms-character-slot__summary');
+              const name = makeElement(document, 'strong', '', player.name);
+              if (active) {
+                button.setAttribute('aria-current', 'true');
+                name.append(makeElement(document, 'small', 'ms-character-slot__active', '目前'));
+              }
+              summary.append(name, makeElement(document, 'span', '', levelAndJob), makeElement(document, 'span', '', place));
+              button.replaceChildren(portrait, summary);
+              slots.append(button);
             } else {
               slots.append(makeButton(document, '空欄位 ' + (index + 1) + '・建立角色', 'new-role', {
                 data: { slotId: slot.slotId }, className: 'ms-button ms-character-slot',

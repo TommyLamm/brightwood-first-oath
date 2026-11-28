@@ -1051,6 +1051,16 @@
 .ms-screen-card .ms-input { width: 100%; }
 .ms-character-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .ms-character-slot { white-space: normal; text-align: left; min-height: 64px; overflow-wrap: anywhere; }
+.ms-character-slot--occupied {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.ms-character-slot__portrait { width: 34px; height: 44px; object-fit: contain; }
+.ms-character-slot__summary { display: grid; gap: 2px; }
+.ms-character-slot__summary > span { font-size: .85em; }
+.ms-character-slot__active { margin-inline-start: 4px; color: #fff0bc; font-size: .8em; }
 .ms-character-routes { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .ms-toast {
@@ -1160,4 +1170,5 @@
 .ms-roster-manager label { display: block; margin: .5rem 0; }
 .ms-roster-manager input { max-width: 100%; color: #f4ead3; background: #263039; border: 1px solid #aa8a57; padding: .4rem; }
 .ms-roster-item { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .4rem 0; }
-.ms-roster-item span { flex: 1; min-width: 8rem; }
+.ms-roster-item__icon { width: 26px; height: 26px; flex: 0 0 26px; }
+.ms-roster-item__label { flex: 1 1 6rem; min-width: 0; overflow-wrap: anywhere; }
