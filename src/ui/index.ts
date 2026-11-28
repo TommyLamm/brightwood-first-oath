@@ -1316,6 +1316,8 @@ export function createUi(
         && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
       const rank = player && slot.kind !== 'item' ? (basic || trial ? 1 : playerSkillRank(player, slotId)) : 0;
       const skill = slot.kind === 'item' ? undefined : view.catalog.rules.skills[slotId];
+      const swordIconKey = slotId === 'basic' && player?.equipment.weapon
+        ? view.catalog.rules.items[player.equipment.weapon]?.iconKey : undefined;
       const buffUntilMs = skill?.id === 'guardian-rally' ? view.rallyUntilMs : view.guardUntilMs;
       const buffLeftSec = skill?.kind === 'buff' && rank > 0 ? Math.ceil(Math.max(0, (buffUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const activeDefense = buffLeftSec > 0 ? view.activeGuard?.defenseBonus : undefined;
@@ -1342,7 +1344,7 @@ export function createUi(
         view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, Boolean(player),
         player?.job, player?.level, Boolean(player?.sp),
       ] : [
-        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, rank, trial, lacksMana, basic && view.aimReady,
+        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, rank, trial, lacksMana, basic && view.aimReady, swordIconKey,
         Math.ceil(cooldown / 100),
         Math.ceil(actionLock / 100),
         buffLeftSec, activeDefense, queued, stanceBlock, windingUp, interrupted, skillReady,
@@ -1395,9 +1397,7 @@ export function createUi(
       }
 
       button.dataset.skillId = slotId;
-      const iconKey = slot.kind === 'skill' || slotId === 'bow-basic' || slotId === 'wand-basic'
-        ? 'skill:' + slotId
-        : view.catalog.rules.items['starter-sword']?.iconKey ?? null;
+      const iconKey = slotId === 'basic' ? swordIconKey ?? null : 'skill:' + slotId;
       renderQuickIcon(slotId, iconHost, view, iconKey, skill?.name ?? slot.label, 'ms-quick-slot__icon-image', basic ? '普攻' : undefined);
       if (!player || !skill) {
         button.disabled = true;
