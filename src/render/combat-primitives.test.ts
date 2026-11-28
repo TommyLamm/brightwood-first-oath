@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import type { Telegraph } from '../contracts/types.js';
 import {
   DAMAGE_NUMBER_LIFETIME_MS,
-  bodyOverlapsTelegraph,
   damageNumberGeometry,
   formatDamageNumber,
   isDamageNumberEvent,
   monsterHealthBarGeometry,
   telegraphCueGeometry,
 } from './combat-primitives.js';
+import { bodyOverlapsTelegraph } from '../domain/combat/telegraph.js';
 
 describe('renderer combat primitives', () => {
   it('anchors ordinary and boss HP bars above their displayed bodies and clamps HP ratio', () => {

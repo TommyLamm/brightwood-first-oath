@@ -5,6 +5,7 @@ import type { HeroAnchorManifest } from '../contracts/hero-anchors.js';
 import type { GameProfile, RandomSource, SaveStatus, SaveUpgradeRequired, UiSnapshot } from '../contracts/index.js';
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
+import { activeTelegraphRemainingMs, bodyOverlapsTelegraph } from '../domain/combat/telegraph.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
@@ -187,8 +188,8 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
           label: npc.name,
           ...(actionLabel ? { actionLabel } : {}),
           ...(unfinishedTrialTarget ? { trialAttack } : {}),
-          ...(questStatus ? { questStatus } : {}),
           ...(specializationGuide ? { specializationGuide: true } : {}),
+          ...(questStatus ? { questStatus } : {}),
           blockedMessage: null,
         };
       }
@@ -205,6 +206,10 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   }
   const combatUi = deriveCombatUiState(state.screen === 'playing' || state.screen === 'paused' ? gameplay : null,
     catalog, state.gameTimeMs);
+  const panelDanger = Boolean(gameplay && gameplay.saveData.player.hp > 0 && state.panels.length > 0
+    && !worldIsFrozen(state) && gameplay.telegraphs.some((telegraph) =>
+      activeTelegraphRemainingMs(telegraph, state.gameTimeMs) !== null
+      && bodyOverlapsTelegraph(gameplay.movement.position, catalog.rules.movement, telegraph.rect)));
   const canReturnTown = gameplay !== null
     && mapId !== 'town'
     && (state.screen === 'playing' || state.screen === 'result')
@@ -225,6 +230,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     saveData,
     stats,
     passiveRecovery,
+    panelDanger,
     bossVitals: boss && bossDefinition ? {
       name: bossDefinition.name,
       hp: boss.hp,

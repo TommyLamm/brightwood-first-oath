@@ -205,6 +205,8 @@ export type UiSnapshot = {
   stats: import('./types.js').DerivedStats | null;
   bossVitals?: { name: string; hp: number; maxHp: number; phase: 1 | 2; changingPhase: boolean } | null;
   passiveRecovery?: 'hp' | 'mp' | null;
+  /** An active attack warning intersects the player while a live panel is open. */
+  panelDanger?: boolean;
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;
@@ -219,9 +221,9 @@ export type UiSnapshot = {
     label: string;
     actionLabel?: string;
     trialAttack?: { action: 'attack' | 'skill1'; label: string };
+    specializationGuide?: true;
     questStatus?: 'available' | 'ready';
     blockedQuestId?: Id;
-    specializationGuide?: true;
     blockedMessage: string | null;
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */

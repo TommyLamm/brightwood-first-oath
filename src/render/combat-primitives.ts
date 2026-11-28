@@ -1,5 +1,6 @@
 import type { Telegraph, Vec2 } from '../contracts/types.js';
 import type { VisualEvent } from '../contracts/ports.js';
+import { activeTelegraphRemainingMs } from '../domain/combat/telegraph.js';
 
 export const DAMAGE_NUMBER_LIFETIME_MS = 900;
 
@@ -70,8 +71,8 @@ export function telegraphCueGeometry(
   windupStartedAtMs: number | undefined,
   isBoss: boolean,
 ): TelegraphCueGeometry | null {
-  const remainingMs = telegraph.resolveAtMs - nowMs;
-  if (!Number.isFinite(remainingMs) || remainingMs <= 0) return null;
+  const remainingMs = activeTelegraphRemainingMs(telegraph, nowMs);
+  if (remainingMs === null) return null;
 
   const startedAtMs = telegraph.startedAtMs ?? windupStartedAtMs;
   const validStartTime = typeof startedAtMs === 'number' && Number.isFinite(startedAtMs);
@@ -92,17 +93,6 @@ export function telegraphCueGeometry(
     borderAlpha: 0.78 + 0.22 * (progress ?? 0),
     borderWidth: isBoss ? 3 : 2,
   };
-}
-
-/** A fighter's position is its footpoint, so the body extends upward into the warning. */
-export function bodyOverlapsTelegraph(
-  feet: Readonly<Vec2>,
-  body: Readonly<{ width: number; height: number }>,
-  rect: Telegraph['rect'],
-): boolean {
-  const halfWidth = body.width / 2;
-  return feet.x + halfWidth > rect.x && feet.x - halfWidth < rect.x + rect.width
-    && feet.y > rect.y && feet.y - body.height < rect.y + rect.height;
 }
 
 /** Computes a damage label's world position and fade from the snapshot clock. */

@@ -37,8 +37,8 @@ import {
   isDamageNumberEvent,
   monsterHealthBarGeometry,
   telegraphCueGeometry,
-  bodyOverlapsTelegraph,
 } from './combat-primitives.js';
+import { bodyOverlapsTelegraph } from '../domain/combat/telegraph.js';
 import {
   actorFootOffset,
   heroAnchorPosition,

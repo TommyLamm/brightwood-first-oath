@@ -727,6 +727,31 @@
   gap: 9px;
 }
 
+.ms-panel__warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border: 1px solid #ffcb78;
+  border-radius: 4px;
+  color: #ffe5b2;
+  background: #4a271d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ms-panel__warning-symbol {
+  display: inline-grid;
+  place-items: end center;
+  width: 16px;
+  height: 14px;
+  color: #49271b;
+  background: #ffe394;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  font-size: 11px;
+  line-height: 1;
+}
+
 .ms-panel__title h2 {
   margin: 0;
   color: #ffebb5;

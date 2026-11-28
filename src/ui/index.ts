@@ -756,6 +756,12 @@ export function createUi(
   quickbar.append(quickSlots);
 
   const panelHost = makeElement(document, 'div', 'ms-panel-host');
+  const panelWarning = makeElement(document, 'span', 'ms-panel__warning');
+  const warningSymbol = makeElement(document, 'span', 'ms-panel__warning-symbol', '!');
+  warningSymbol.setAttribute('aria-hidden', 'true');
+  panelWarning.append(warningSymbol, document.createTextNode('位於攻擊預警區'));
+  panelWarning.setAttribute('role', 'status');
+  panelWarning.hidden = true;
   panelHost.hidden = true;
   const screenLayer = makeElement(document, 'div', 'ms-screen-layer');
   screenLayer.hidden = true;
@@ -1256,12 +1262,6 @@ export function createUi(
         if (typeof part === 'string') return part;
         if ('key' in part) return makeElement(document, 'kbd', '', part.key);
         if ('questStatus' in part) return makeQuestCueBadge(document, 'npc', part.questStatus);
-        const image = makeInterfaceIcon(document, view, part.iconKey, '', 'ms-interaction-hint__item');
-        image.setAttribute('aria-hidden', 'true');
-        return image;
-      }));
-      interactionHintRow.dataset.iconKey = iconKey;
-    }
         if ('specialization' in part) {
           const { symbol, color } = npcServiceCueAppearance.specialization;
           const badge = makeElement(document, 'span', 'ms-quest-cue', symbol);
@@ -1269,6 +1269,12 @@ export function createUi(
           badge.setAttribute('aria-hidden', 'true');
           return badge;
         }
+        const image = makeInterfaceIcon(document, view, part.iconKey, '', 'ms-interaction-hint__item');
+        image.setAttribute('aria-hidden', 'true');
+        return image;
+      }));
+      interactionHintRow.dataset.iconKey = iconKey;
+    }
     interactionHintRow.classList.toggle('is-blocked', Boolean(interaction?.blockedMessage));
     if (interactionHintRow.title !== text) interactionHintRow.title = text;
     const targetKey = hint.targetKey;
@@ -1998,9 +2004,7 @@ export function createUi(
       card.dataset.panel = panel;
       const heading = makeElement(document, 'header', 'ms-panel__header');
       const title = makeElement(document, 'div', 'ms-panel__title');
-      title.append(
-        makeElement(document, 'h2', '', PANEL_LABELS[panel]),
-      );
+      title.append(makeElement(document, 'h2', '', PANEL_LABELS[panel]), panelWarning);
       if (panel === 'inventory' || panel === 'shop') {
         const headingTitle = title.querySelector<HTMLElement>('h2');
         if (headingTitle) {
@@ -2747,6 +2751,8 @@ export function createUi(
     }
     renderFooter(view);
     renderPanel(view);
+    const warningHidden = !view.panelDanger;
+    if (panelWarning.hidden !== warningHidden) panelWarning.hidden = warningHidden;
     if (view.panels.at(-1) === 'map') updateLocalMapMarkers(panelHost, view);
     if (view.panels.at(-1) === 'stats' && view.activeGuard) {
       const seconds = panelHost.querySelector<HTMLElement>('[data-guard-seconds]');

@@ -169,6 +169,20 @@ describe('base experience UI snapshot', () => {
     expect(snapshotFor(gameplay, { screen: 'result' })?.bossVitals).toBeNull();
   });
 
+  it('warns in open panels only while the player is inside an active attack area', () => {
+    const gameplay = newGameplay();
+    gameplay.telegraphs = [{
+      id: 'warning', sourceId: 'enemy', kind: 'rect',
+      rect: { x: 130, y: 550, width: 40, height: 60 }, resolveAtMs: 1_000,
+    }];
+    expect(snapshotFor(gameplay, { panels: ['map'], gameTimeMs: 999 })?.panelDanger).toBe(true);
+    expect(snapshotFor(gameplay, { panels: ['map'], gameTimeMs: 1_000 })?.panelDanger).toBe(false);
+    expect(snapshotFor(gameplay, { panels: ['settings'], gameTimeMs: 999 })?.panelDanger).toBe(false);
+    expect(snapshotFor(gameplay, { gameTimeMs: 999 })?.panelDanger).toBe(false);
+    gameplay.movement.position = { x: 500, y: 600 };
+    expect(snapshotFor(gameplay, { panels: ['map'], gameTimeMs: 999 })?.panelDanger).toBe(false);
+  });
+
   it('defaults absent runtime data safely and suppresses world hints behind the resume gate', () => {
     const empty = createUiSnapshot({
       ...createInitialAppState(2, 'base-experience-ui-snapshot-empty'),
