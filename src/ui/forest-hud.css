@@ -81,6 +81,8 @@
 .maple-ui .ms-quick-slot.is-winding-up .ms-quick-slot__key { color: #402514; background: #ffcf8a; border-color: #8e592c; }
 .maple-ui .ms-quick-slot.is-cast-interrupted { box-shadow: inset 0 0 0 2px #ffa49c, 0 0 0 1px #952f32; }
 .maple-ui .ms-quick-slot.is-cast-interrupted .ms-quick-slot__key { color: #4c171c; background: #ffa49c; border-color: #952f32; }
+.maple-ui .ms-quick-slot.is-skill-ready { box-shadow: inset 0 0 0 2px #c8f6b6, 0 0 0 1px #426148; }
+.maple-ui .ms-quick-slot.is-skill-ready .ms-quick-slot__key { color: #254120; background: #c8f6b6; border-color: #426148; }
 .ms-quick-slot:is(.is-winding-up, .is-cast-interrupted):disabled .ms-quick-slot__icon { opacity: 1; filter: none; }
 .maple-ui .ms-quick-slot__key {
   position: absolute;

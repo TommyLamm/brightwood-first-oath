@@ -370,6 +370,8 @@ function compactQuickSlotState(text: string): string {
   return text.replace(/(\d+(?:\.\d+)?) 秒/g, '$1秒');
 }
 
+const SKILL_READY_CUE_MS = 520;
+
 function renderCooldownProgress(track: HTMLElement, remaining: number, duration: number): void {
   const visible = remaining > 0 && duration > 0;
   if (track.hidden === visible) track.hidden = !visible;
@@ -1313,6 +1315,10 @@ export function createUi(
       needsMana ||= lacksMana;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
       const cooldown = Math.max(0, readyAt - view.nowMs);
+      const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
+      const skillReady = canAct && slot.kind === 'skill' && rank > 0 && readyAt > 0 && cooldown === 0
+        && view.nowMs - readyAt < SKILL_READY_CUE_MS && actionLock === 0
+        && buffLeftSec === 0 && !stanceBlock && !lacksMana && !windingUp && !interrupted;
       const healthPotion = slotId === 'small-red';
       const showRecoveryCue = healthPotion ? lowHealth === true : showRecoveryCues && needsMana;
       const full = slot.kind === 'item' && Boolean(player && view.stats
@@ -1326,8 +1332,8 @@ export function createUi(
       ] : [
         view.saveData, view.catalog, view.interfaceManifest, quickbarBlock, view.aimReady,
         Math.ceil(cooldown / 100),
-        Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
-        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock, windingUp, interrupted,
+        Math.ceil(actionLock / 100),
+        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock, windingUp, interrupted, skillReady,
       ];
       if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1394,9 +1400,8 @@ export function createUi(
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
       const castBlock = unlearned ? '未學習' : stanceReason || (lacksMana ? 'MP 不足' : '');
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
-      const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
       const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
-      const castFeedback = windingUp ? '施放中' : interrupted ? '已中斷' : '';
+      const castFeedback = windingUp ? '施放中' : interrupted ? '已中斷' : skillReady ? '就緒' : '';
       const displayState = quickbarBlock || castFeedback
         || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
           : reason || (queued ? '已排隊'
@@ -1407,6 +1412,7 @@ export function createUi(
       button.classList.toggle('is-action-queued', queued);
       button.classList.toggle('is-winding-up', windingUp);
       button.classList.toggle('is-cast-interrupted', interrupted);
+      button.classList.toggle('is-skill-ready', skillReady);
       // A click may still buffer a basic attack during a short cooldown.
       button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
       const showAim = canAct && view.aimReady === true && basic && !stanceReason;
