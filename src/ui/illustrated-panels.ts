@@ -49,6 +49,15 @@ function actor(document: Document, view: UiSnapshot, key: string, label: string)
   return image;
 }
 export { actor as visualActor, button as visualButton, icon as visualIcon, node as visualNode };
+
+export function questActorPortrait(document: Document, view: UiSnapshot, actorKey: string | undefined): HTMLElement | undefined {
+  if (!actorKey) return undefined;
+  const portrait = actor(document, view, actorKey, '');
+  portrait.classList.add('ms-quest-portrait');
+  portrait.setAttribute('aria-hidden', 'true');
+  return portrait;
+}
+
 function token(document: Document, view: UiSnapshot, key: string, label: string, value: string | number): HTMLElement {
   const item = node(document, 'div', 'ms-visual-token');
   item.append(icon(document, view, key, ''), node(document, 'span', '', label), node(document, 'strong', '', String(value)));

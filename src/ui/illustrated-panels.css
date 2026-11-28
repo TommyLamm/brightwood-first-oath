@@ -5,6 +5,13 @@
 .ms-visual-icon { display: inline-block; flex: 0 0 32px; width: 32px; height: 32px; object-fit: contain; image-rendering: auto; }
 .ms-visual-icon--fallback { display: grid; place-items: center; border-radius: 50%; background: #d3bb8b; color: #674c31; font-weight: 700; }
 .ms-visual-actor { display: inline-block; flex: 0 0 66px; width: 66px; height: 66px; background-position: 0 0; background-repeat: no-repeat; image-rendering: auto; }
+.ms-visual-actor.ms-quest-portrait, .ms-visual-icon.ms-quest-portrait {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
+  margin-inline-end: 3px;
+  vertical-align: middle;
+}
 .ms-specializations { display: grid; gap: 8px; margin-bottom: 12px; }
 .ms-specializations h3, .ms-specializations h4 { margin: 0; }
 .ms-specializations__mentor {

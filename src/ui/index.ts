@@ -13,7 +13,7 @@ import './image-quality.css';
 import './reading-size.css';
 import './local-map.css';
 import { controlImage, decorateControl, installControlSkins, setControlLabel } from './control-art.js';
-import { buildQuestRewards, buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
+import { buildQuestRewards, buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces, questActorPortrait } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
 import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
 import { deriveWorldProgress, frostRouteMarkerInspectCommand, groupWorldQuests, saveUpgradeConfirmCommand, saveUpgradePrompt } from './world-progress-model.js';
@@ -532,8 +532,11 @@ function makeObjectiveGuideRow(
 ): HTMLElement {
   const kind = questObjectiveCue(objective);
   const iconKey = kind === 'item' ? view.catalog.rules.items[objective.targetId]?.iconKey : undefined;
+  const actorKey = objective.type === 'kill' ? view.catalog.rules.monsters[objective.targetId]?.actorKey
+    : objective.type === 'inspect' ? view.catalog.world.npcs[trialObjectiveTargetId(objective.targetId)]?.actorKey : undefined;
   const icon = iconKey && view.interfaceManifest
-    ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon') : undefined;
+    ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon')
+    : questActorPortrait(document, view, actorKey);
   icon?.setAttribute('aria-hidden', 'true');
   const dropSource = questObjectiveDropSource(view, questId, objective);
   const trial = objective.type === 'inspect' && objective.current < objective.required && combatTrialAttack(trialObjectiveTargetId(objective.targetId));
@@ -794,6 +797,7 @@ export function createUi(
   let lastQuestTracker: {
     views: UiSnapshot['questViews'];
     interfaceManifest: UiSnapshot['interfaceManifest'];
+    actorManifest: UiSnapshot['actorManifest'];
     bindings: KeyBindings | undefined;
     mapId: string | undefined;
     chapterComplete: boolean;
@@ -1122,12 +1126,14 @@ export function createUi(
     const collapsed = questTrackerState.collapsed;
     if (lastQuestTracker?.views === view.questViews && lastQuestTracker.mapId === mapId
       && lastQuestTracker.interfaceManifest === view.interfaceManifest
+      && lastQuestTracker.actorManifest === view.actorManifest
       && lastQuestTracker.bindings === bindings
       && lastQuestTracker.chapterComplete === chapterComplete && lastQuestTracker.collapsed === collapsed
       && lastQuestTracker.trackedQuestId === questTrackerState.trackedQuestId) return;
     if (view.saveData) questTrackerState.reconcile(view.questViews);
     const trackedQuestId = questTrackerState.trackedQuestId;
-    lastQuestTracker = { views: view.questViews, interfaceManifest: view.interfaceManifest, bindings, mapId, chapterComplete, collapsed, trackedQuestId };
+    lastQuestTracker = { views: view.questViews, interfaceManifest: view.interfaceManifest, actorManifest: view.actorManifest,
+      bindings, mapId, chapterComplete, collapsed, trackedQuestId };
     const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     const quest = selectTrackerQuest(view.questViews, trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
@@ -1184,7 +1190,8 @@ export function createUi(
         questDetail.append(makeElement(document, 'span', 'ms-quest-tracker__more', '另有 ' + (objectives.length - rows.length) + ' 項'));
       }
     } else if (quest?.status === 'available' || quest?.status === 'ready') {
-      questDetail.replaceChildren(makeQuestGuideRow(document, 'npc', detail, { place, npcState: quest.status }));
+      const portrait = questActorPortrait(document, view, npcId ? view.catalog.world.npcs[npcId]?.actorKey : undefined);
+      questDetail.replaceChildren(makeQuestGuideRow(document, 'npc', detail, { place, npcState: quest.status, icon: portrait }));
     } else {
       questDetail.textContent = detail;
     }
@@ -2002,6 +2009,7 @@ export function createUi(
     const signature = JSON.stringify({
       panel,
       interfaceReady: Boolean(view.interfaceManifest),
+      actorsReady: panel === 'map' && Boolean(view.actorManifest),
       inventoryQuestId: inventoryQuest?.questId,
       inventoryQuestStatus: inventoryQuest?.status,
       canTrade: (inventory || shop) && view.canTrade,
