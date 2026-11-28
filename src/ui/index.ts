@@ -637,11 +637,13 @@ export function createUi(
   questArrow.setAttribute('aria-hidden', 'true');
   const questTitle = makeElement(document, 'strong', 'ms-quest-tracker__title');
   const questProgress = makeElement(document, 'span', 'ms-quest-tracker__progress');
+  const questSummaryCue = makeQuestCueBadge(document, 'npc');
+  questSummaryCue.hidden = true;
   const questTarget = makeElement(document, 'span', 'ms-quest-tracker__target');
   const questCounter = makeElement(document, 'span', 'ms-quest-tracker__counter');
   questCounter.setAttribute('role', 'status');
   questCounter.setAttribute('aria-live', 'polite');
-  questProgress.append(questTarget, questCounter);
+  questProgress.append(questSummaryCue, questTarget, questCounter);
   questToggle.append(questArrow, questTitle, questProgress);
   const questMeter = makeElement(document, 'progress', 'ms-quest-tracker__meter');
   questMeter.max = 1;
@@ -1125,9 +1127,19 @@ export function createUi(
       questDetail.textContent = detail;
     }
     const summary = questTrackerSummary(quest, (objective) => targetName(view, objective.targetId, objective.type));
+    const firstObjective = quest?.status === 'active' ? remainingObjectives[0] : undefined;
+    const npcState = quest?.status === 'available' || quest?.status === 'ready' ? quest.status : undefined;
+    const summaryCue = collapsed && (firstObjective || npcState)
+      ? questCueStyle(firstObjective ? questObjectiveCue(firstObjective) : 'npc', npcState) : null;
+    questSummaryCue.hidden = summaryCue === null;
+    if (summaryCue) {
+      questSummaryCue.textContent = summaryCue.symbol;
+      questSummaryCue.style.color = '#' + summaryCue.color.toString(16);
+    }
     questTitle.textContent = title;
     questTarget.textContent = summary.label;
-    questCounter.textContent = summary.value;
+    const counterText = collapsed && npcState === 'ready' ? '可交付' : summary.value;
+    if (questCounter.textContent !== counterText) questCounter.textContent = counterText;
     questMeter.hidden = summary.fraction === undefined;
     questMeter.value = summary.fraction ?? 0;
     questTracker.classList.toggle('is-collapsed', collapsed);

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "brightwood-first-oath",
   "name": "Brightwood: First Oath",
-  "version": "1.0.0-beta.183",
+  "version": "1.0.0-beta.184",
   "description": "選擇劍士、弓箭手、法師或盜賊訓練，建立獨立角色，探索木葉世界、霜雪航標、黃金沙海與遠古遺跡四區，調查森林異動與誓鐘之謎。",
   "author": "TommyLamm",
   "entry": "index.html",
