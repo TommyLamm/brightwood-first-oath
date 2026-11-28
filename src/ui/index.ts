@@ -821,9 +821,10 @@ export function createUi(
   let shopFilter: ShopFilter = 'all';
   let selectedMapId: string | null = null;
   let selectedMapFocus: LocalMapFocus | null = null;
-  let mapQuestReturn: PanelFocusSnapshot | null = null;
+  let questMapReturn: PanelFocusSnapshot | null = null;
   let selectedQuestId: string | null = null;
   let pendingQuestReview = false;
+  let pendingMapReview = false;
   let pendingSkillReview: string | null = null;
   let pendingSpecializationReview = false;
   let pendingBagReview = false;
@@ -853,7 +854,8 @@ export function createUi(
   const clearTransientViewState = (): void => {
     selectedBagIndex = null;
     pendingQuestReview = false;
-    mapQuestReturn = null;
+    pendingMapReview = false;
+    questMapReturn = null;
     pendingSkillReview = null;
     pendingSpecializationReview = false;
     pendingBagReview = false;
@@ -1973,8 +1975,9 @@ export function createUi(
     if (!view.panels.includes('map')) {
       selectedMapId = null;
       selectedMapFocus = null;
-      mapQuestReturn = null;
+      pendingMapReview = false;
     }
+    if (questMapReturn && !view.panels.includes(questMapReturn.panel)) questMapReturn = null;
     if (!panel) {
       if (lastPanelSignature !== '') {
         lastPanelSignature = '';
@@ -2122,13 +2125,22 @@ export function createUi(
     }
     const renderedBody = panelHost.querySelector<HTMLElement>('.ms-panel__body');
     if (renderedBody && samePanel) renderedBody.scrollTop = scrollTop;
-    if (panel === 'map' && mapQuestReturn) {
-      const { focusKey, scrollTop } = mapQuestReturn;
-      mapQuestReturn = null;
+    if (questMapReturn?.panel === panel) {
+      const { focusKey, scrollTop } = questMapReturn;
+      questMapReturn = null;
       const shortcut = Array.from(panelHost.querySelectorAll<HTMLElement>('[data-focus]'))
         .find((element) => element.dataset.focus === focusKey);
       shortcut?.focus({ preventScroll: true });
       if (renderedBody) renderedBody.scrollTop = scrollTop;
+    }
+    if (panel === 'map' && pendingMapReview) {
+      pendingMapReview = false;
+      const terrain = panelHost.querySelector<HTMLDetailsElement>('details.ms-local-map');
+      if (terrain) terrain.open = true;
+      const target = terrain?.querySelector('summary')
+        ?? panelHost.querySelector<HTMLButtonElement>('.ms-atlas-landmark[aria-pressed="true"]');
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: 'nearest' });
     }
     if (panel === 'inventory' && pendingBagReview) {
       pendingBagReview = false;
@@ -2222,7 +2234,7 @@ export function createUi(
         if (!view.questViews.some(({ questId }) => questId === button.dataset.questId)) return;
         selectedQuestId = button.dataset.questId!;
         pendingQuestReview = true;
-        if (view.panels.at(-1) === 'map') mapQuestReturn = capturePanelFocus(view, button);
+        if (view.panels.at(-1) === 'map') questMapReturn = capturePanelFocus(view, button);
         if (view.panels.at(-1) === 'quests') renderPanel(view, true);
         else dispatchDraft({ type: 'setPanel', payload: { panel: 'quests' } });
         return;
@@ -2255,6 +2267,8 @@ export function createUi(
         if (!mapId) return;
         selectedMapId = mapId;
         selectedMapFocus = focus;
+        pendingMapReview = true;
+        if (latestView.panels.at(-1) === 'quests') questMapReturn = capturePanelFocus(latestView, button);
         if (latestView.panels.at(-1) === 'map') {
           renderPanel(latestView, true);
           return;
