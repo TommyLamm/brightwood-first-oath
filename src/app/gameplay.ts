@@ -683,6 +683,7 @@ export function makeWorldSnapshot(
       movement,
       hp: player.hp,
       maxHp: stats.maxHp,
+      lowMageMana: player.job === 'mage' && player.hp > 0 && player.mp <= stats.maxMp * 0.3,
       animationKey,
       visual: { ...player.equipment },
       invulnerableUntilMs: gameplay.invulnerableUntilMs,

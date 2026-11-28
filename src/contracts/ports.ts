@@ -168,6 +168,7 @@ export type WorldSnapshot = {
     movement: MovementState;
     hp: number;
     maxHp: number;
+    lowMageMana?: boolean;
     animationKey: string;
     visual: { weapon: Id | null; body: Id | null; hat: Id | null };
     /** Hit or respawn grace period; the renderer flickers the hero until then. */

@@ -1212,6 +1212,7 @@ export function createWorldRenderer(
     let mentorEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
     let healerEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
     const lowHealth = isLowHealth(snapshot.player.hp, snapshot.player.maxHp);
+    const healerNeeded = activeVisual.map.safe && (lowHealth || snapshot.player.lowMageMana === true);
     let visibleQuestDrop = false;
     const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): boolean => {
       const targetKey = kind + ':' + id;
@@ -1240,6 +1241,8 @@ export function createWorldRenderer(
       const markerGeometry = questMarkerGeometry(placement, image.displayHeight, markerImage.displayHeight);
       const questTarget = targets.npcs.has(placement.npcId);
       const isMentor = placement.npcId === snapshot.specializationMentorId;
+      const healerGuide = npc.role === 'healer' && healerNeeded;
+      const serviceLabel = healerGuide && !lowHealth ? npc.name + ' · 補充 MP' : npc.name;
       if (questTarget) {
         if (npc.actorKey === INSPECTION_ACTOR_KEY) {
           const point = { x: placement.x, y: placement.y - image.displayHeight * .34 };
@@ -1250,11 +1253,11 @@ export function createWorldRenderer(
           guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
         }
       }
-      if ((isMentor || (npc.role === 'healer' && lowHealth && activeVisual.map.safe)) && !questTarget) {
+      if ((isMentor || healerGuide) && !questTarget) {
         const cue = questEdgeCue(markerGeometry, viewport);
         if (cue) {
           if (isMentor) mentorEdge = { label: npc.name, cue };
-          else healerEdge = { label: npc.name, cue };
+          else healerEdge = { label: serviceLabel, cue };
         }
       }
       if (!isInViewport(placement)) {
@@ -1271,7 +1274,7 @@ export function createWorldRenderer(
       if (npcKey === contextKey) drawContextFocus(guidanceGraphics, placement, 46);
       const questState = markers.get(placement.npcId);
       const questLabel = questState === 'ready' ? '  ✓ 可交付' : questState === 'available' ? '  ! 可接取' : '';
-      const label = npc.name + questLabel;
+      const label = serviceLabel + questLabel;
       const color = questState === 'ready' ? '#c7f8c5' : '#fff4d4';
       if (npcVisual.nameText.text !== label) npcVisual.nameText.setText(label);
       if (npcVisual.nameText.style.color !== color) npcVisual.nameText.setColor(color);
