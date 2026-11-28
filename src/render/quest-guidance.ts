@@ -173,6 +173,18 @@ export function drawQuestCue(
     .lineBetween(x - 5, y - 1, x + 5, y - 1);
 }
 
+export function drawQuestLadderCue(graphics: Phaser.GameObjects.Graphics, x: number, y: number, direction: CueDirection): void {
+  const { color } = questCueAppearance.portal;
+  graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  graphics.lineStyle(2, color, 1)
+    .lineBetween(x - 4, y - 6, x - 4, y + 6)
+    .lineBetween(x + 4, y - 6, x + 4, y + 6)
+    .lineBetween(x - 4, y - 4, x + 4, y - 4)
+    .lineBetween(x - 4, y, x + 4, y)
+    .lineBetween(x - 4, y + 4, x + 4, y + 4);
+  drawEdgeChevron(graphics, x, y, direction, color);
+}
+
 function drawEdgeChevron(graphics: Phaser.GameObjects.Graphics, x: number, y: number, direction: CueDirection, color: number): void {
   const { x: dx, y: dy } = directions[direction];
   const arrowX = x + dx * 14;

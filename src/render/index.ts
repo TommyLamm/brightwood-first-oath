@@ -5,7 +5,7 @@ import { isLowHealth } from '../domain/combat/index.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
 import { canEquipForJob } from '../content/rules/jobs.js';
 import {
-  drawContextFocus, drawPortalLock, drawQuestCue, drawServiceCue, drawSpecializationCue,
+  drawContextFocus, drawPortalLock, drawQuestCue, drawQuestLadderCue, drawServiceCue, drawSpecializationCue,
   questCueAppearance, questEdgeCue, questExitCue, selectQuestEdgeTarget,
   type QuestEdgeTarget, type QuestNpcCueState, type QuestTargetKind,
 } from './quest-guidance.js';
@@ -1465,7 +1465,7 @@ export function createWorldRenderer(
       }
     } else if (climbEdge) {
       questEdgeDirection = climbEdge.direction;
-      drawQuestCue(guidanceGraphics, 'portal', climbEdge.x, climbEdge.y, climbEdge.direction);
+      drawQuestLadderCue(guidanceGraphics, climbEdge.x, climbEdge.y, climbEdge.direction);
       showEdgeLabel('任務梯口', climbEdge);
     } else {
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
