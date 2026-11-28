@@ -1227,7 +1227,9 @@ export function createUi(
     const bindings = view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS;
     const playing = view.screen === 'playing';
     const focusBlocked = view.focusResumeRequired === true;
-    const canAct = playing && !focusBlocked;
+    const quickbarBlock = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復'
+      : view.panels.includes('settings') ? '設定中' : '';
+    const canAct = quickbarBlock === '';
     const showRecoveryCues = canAct && view.panels.length === 0;
     const lowHealth = showRecoveryCues && player && view.stats
       && isLowHealth(player.hp, view.stats.maxHp);
@@ -1257,12 +1259,12 @@ export function createUi(
         && (healthPotion ? player.hp >= view.stats.maxHp : player.mp >= view.stats.maxMp));
       // Timers invalidate at the same precision shown on the button.
       const inputs = slot.kind === 'item' ? [
-        view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, player?.bag,
+        view.catalog, view.interfaceManifest, quickbarBlock, bindings, player?.bag,
         full, showRecoveryCue, Math.ceil(cooldown / 100),
       ] : rank === 0 ? [
-        view.catalog, view.interfaceManifest, view.screen, focusBlocked, bindings, slotId, Boolean(player),
+        view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, Boolean(player),
       ] : [
-        view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
+        view.saveData, view.catalog, view.interfaceManifest, quickbarBlock, view.aimReady,
         Math.ceil(cooldown / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
         buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock, windingUp,
@@ -1297,9 +1299,7 @@ export function createUi(
         const reason = count === 0 ? '沒有藥水'
           : cooldownText ? '冷卻 ' + cooldownText
             : showFull ? (healthPotion ? 'HP 已滿' : 'MP 已滿') : '';
-        const displayState = !playing ? '不可操作'
-          : focusBlocked ? '按「繼續遊戲」恢復'
-            : reason || ('×' + count);
+        const displayState = quickbarBlock || reason || ('×' + count);
         const recommend = showRecoveryCue && !reason;
         const recoveryHint = recommend ? (healthPotion ? 'HP 偏低，可補血' : 'MP 不足，可補充 MP') : '';
         button.classList.toggle('is-unavailable', Boolean(reason));
@@ -1309,7 +1309,8 @@ export function createUi(
         const compactState = canAct && cooldownText && count > 0 ? cooldownText : displayState;
         state.textContent = canAct && showFull ? '滿 · ×' + count : compactQuickSlotState(compactState);
         const quantity = '數量 ' + count;
-        button.title = itemName + '｜' + quantity + (reason ? '｜' + reason : '') + (recoveryHint ? '｜' + recoveryHint : '');
+        button.title = itemName + '｜' + quantity + (quickbarBlock ? '｜' + quickbarBlock : '')
+          + (reason ? '｜' + reason : '') + (recoveryHint ? '｜' + recoveryHint : '');
         button.setAttribute('aria-label', itemName + '，' + quantity + (reason || !canAct ? '，' + displayState : '')
           + (recoveryHint ? '，' + recoveryHint : ''));
         continue;
@@ -1335,21 +1336,20 @@ export function createUi(
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
       const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
       const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
-      const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
-      const displayState = screenState || (windingUp ? '施放中' : '')
+      const displayState = quickbarBlock || (windingUp ? '施放中' : '')
         || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
           : reason || (queued ? '已排隊'
             : actionLock > 0 ? '動作中 ' + remainingSeconds(actionLock)
               : basic ? 'MP 0' : '等級 ' + rank + '・MP ' + skill.mpCost));
-      button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
+      button.classList.toggle('is-unavailable', !canAct || (Boolean(reason) && buffLeftSec === 0));
       button.classList.toggle('has-action-feedback', windingUp || (canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0)));
       button.classList.toggle('is-action-queued', queued);
       button.classList.toggle('is-winding-up', windingUp);
       // A click may still buffer a basic attack during a short cooldown.
       button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
-      const showAim = view.aimReady === true && basic && !stanceReason;
+      const showAim = canAct && view.aimReady === true && basic && !stanceReason;
       const compactState = canAct && !castBlock && !windingUp && buffLeftSec === 0 && cooldownText ? cooldownText : displayState;
-      state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : compactState);
+      state.textContent = compactQuickSlotState(trial && canAct && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : compactState);
       button.classList.toggle('is-buff-active', showAim || buffLeftSec > 0);
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
@@ -1358,8 +1358,8 @@ export function createUi(
       if (windingUp) button.title += '｜施放中';
       if (reason) button.title += '｜' + reason;
       if (queued) button.title += '｜已排隊';
-      else if (!reason && actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
-      if (screenState) button.title += '｜' + screenState;
+      else if (!reason && actionLock > 0 && canAct && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);
+      if (quickbarBlock) button.title += '｜' + quickbarBlock;
       const reviewLabel = unlearned && canAct ? '開啟技能詳情' : '';
       if (reviewLabel) button.title += '｜' + reviewLabel;
       const queueState = queued && displayState !== '已排隊' ? '，已排隊' : '';
@@ -1367,7 +1367,7 @@ export function createUi(
     }
 
     pauseButton.hidden = !playing;
-    pauseButton.disabled = !canAct;
+    pauseButton.disabled = !playing || focusBlocked;
     const atTown = player !== undefined && view.saveData?.location.mapId === 'town';
     returnTownButton.hidden = !player || atTown || !playing || !view.saveData?.visitedMaps.includes('town');
     returnTownButton.disabled = !view.canReturnTown || focusBlocked;
