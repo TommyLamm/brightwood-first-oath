@@ -426,7 +426,7 @@
 .ms-panel__body { padding: 18px; scrollbar-color: #9d7d50 #e8d2ac; }
 .ms-panel__body :is(h3, h4, strong), .ms-section-title h3 { color: #513b24; }
 .ms-panel__header .ms-button { color: #432c1d; }
-.ms-panel-note, .ms-detail-copy, .ms-reward-line, .ms-wallet, .ms-detail-quantity { color: #6f5739; }
+.ms-panel-note, .ms-detail-copy, .ms-wallet, .ms-detail-quantity { color: #6f5739; }
 .ms-shop-card__price, .ms-shop-card__total { color: #795123; }
 .ms-warning, .ms-disabled-reason { color: #974c30; }
 .ms-empty-state { border-color: #b79668; border-radius: 3px; }

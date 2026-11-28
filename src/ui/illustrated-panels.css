@@ -98,7 +98,7 @@
 .ms-journal-contact strong { font-size: 12px; }
 .ms-journal-next { margin: 0; color: #5b714b; font-size: 12px; }
 .ms-journal-rewards { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid #c2a97c; }
-.ms-journal-rewards h4 { flex-basis: 100%; margin: 0; font-size: 12px; }
+.ms-journal-rewards :is(h4, h5) { flex-basis: 100%; margin: 0; font-size: 12px; }
 .ms-journal-rewards .ms-visual-token, .ms-journal-reward-item { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #c3a87b; border-radius: 5px; background: #faedcf; font-size: 11px; }
 .ms-journal-rewards .ms-visual-token strong { font-size: 13px; }
 .ms-journal-rewards .ms-visual-icon { width: 27px; height: 27px; flex-basis: 27px; }

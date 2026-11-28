@@ -13,7 +13,7 @@ import './image-quality.css';
 import './reading-size.css';
 import './local-map.css';
 import { controlImage, decorateControl, installControlSkins, setControlLabel } from './control-art.js';
-import { buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
+import { buildQuestRewards, buildVisualStats, buildVisualQuests, chooseJournalQuest, objectivePlaces } from './illustrated-panels.js';
 import { buildWorldMap } from './world-map.js';
 import { PLANNED_REGIONS, savedProgressDisplayMapId } from './world-map-model.js';
 import { deriveWorldProgress, frostRouteMarkerInspectCommand, groupWorldQuests, saveUpgradeConfirmCommand, saveUpgradePrompt } from './world-progress-model.js';
@@ -486,17 +486,6 @@ function targetName(view: UiSnapshot, id: string, type: string): string {
   if (type === 'reach') return view.catalog.world.maps[id]?.name ?? id;
   if (type === 'inspect') return view.catalog.world.npcs[id]?.name ?? id;
   return view.catalog.rules.items[id]?.name ?? id;
-}
-
-function rewardText(view: UiSnapshot, reward: UiSnapshot['questViews'][number]['reward']): string {
-  const parts = ['EXP ' + formatNumber(reward.exp), '金幣 ' + formatNumber(reward.coins)];
-  for (const stack of reward.items) {
-    const item = view.catalog.rules.items[stack.itemId];
-    parts.push((item?.name ?? stack.itemId) + ' ×' + stack.quantity);
-  }
-  if (reward.minLevel) parts.push('至少升至 Lv.' + reward.minLevel);
-  if (reward.job) parts.push('轉職：' + jobLabel(reward.job));
-  return parts.join('・');
 }
 
 type TrackedObjective = UiSnapshot['questViews'][number]['objectives'][number];
@@ -4082,7 +4071,7 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
     );
     if (quest.status === 'available') {
       card.append(makeDialogueObjectives(document, view, quest));
-      card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
+      card.append(buildQuestRewards(document, view, quest, 'h5'));
       const acceptButton = makeButton(document, '接取任務', 'accept-quest', {
         className: 'ms-button ms-button--primary',
         data: { questId: quest.questId, focus: 'dialogue-accept-' + quest.questId },
@@ -4090,7 +4079,7 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       acceptButton.setAttribute('aria-label', '接取任務：' + quest.title);
       card.append(acceptButton);
     } else if (quest.status === 'ready') {
-      card.append(makeElement(document, 'p', 'ms-reward-line', '獎勵：' + rewardText(view, quest.reward)));
+      card.append(buildQuestRewards(document, view, quest, 'h5'));
       const claimPreview = view.saveData
         ? resolveQuestClaim(view.saveData, quest.questId, view.catalog)
         : null;
@@ -4106,6 +4095,14 @@ function buildDialoguePanel(document: Document, view: UiSnapshot, parent: HTMLEl
       claimButton.setAttribute('aria-label', '領取任務獎勵：' + quest.title);
       card.append(claimButton);
       if (claimReason) card.append(makeElement(document, 'span', 'ms-disabled-reason', claimReason));
+      if (claimPreview?.ok === false && claimPreview.code === 'BAG_FULL') {
+        const bag = makeButton(document, '', 'open-panel', {
+          className: 'ms-button ms-button--small ms-context-button',
+          data: { panel: 'inventory', focus: 'dialogue-claim-bag-' + quest.questId },
+        });
+        bag.append(makeJournalIcon(document, 'inventory'), document.createTextNode('整理背包'));
+        card.append(bag);
+      }
     } else {
       card.append(makeDialogueObjectives(document, view, quest));
     }

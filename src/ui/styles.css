@@ -752,8 +752,7 @@
 .ms-empty-state,
 .ms-detail-copy,
 .ms-warning,
-.ms-disabled-reason,
-.ms-reward-line {
+.ms-disabled-reason {
   margin: 0;
   color: var(--ms-muted);
   overflow-wrap: anywhere;
@@ -763,7 +762,6 @@
 .ms-empty-state { padding: 13px; border: 1px dashed var(--ms-line); border-radius: 9px; }
 .ms-warning { color: #ffb8a6; }
 .ms-disabled-reason { display: block; color: #ffd29a; font-size: 11px; }
-.ms-reward-line { color: #e6d7ae; font-size: 11px; }
 
 .ms-detail-copy {
   white-space: pre-wrap;

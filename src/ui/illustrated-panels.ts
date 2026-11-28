@@ -55,6 +55,28 @@ function token(document: Document, view: UiSnapshot, key: string, label: string,
   return item;
 }
 
+export function buildQuestRewards(
+  document: Document, view: UiSnapshot, { reward, status }: Pick<QuestView, 'reward' | 'status'>,
+  heading: 'h4' | 'h5' = 'h4',
+): HTMLElement {
+  const rewards = node(document, 'section', 'ms-journal-rewards');
+  rewards.setAttribute('aria-label', status === 'claimed' ? '已領取的任務獎勵' : '任務獎勵');
+  rewards.append(
+    node(document, heading, '', status === 'claimed' ? '已領獎勵' : '完成獎勵'),
+    token(document, view, 'marker:quest', 'EXP', reward.exp.toLocaleString('zh-HK')),
+    token(document, view, 'marker:shop', '金幣', reward.coins.toLocaleString('zh-HK')),
+  );
+  for (const { itemId, quantity } of reward.items) {
+    const name = view.catalog.rules.items[itemId]?.name ?? itemId;
+    const item = node(document, 'div', 'ms-journal-reward-item');
+    item.append(icon(document, view, 'item:' + itemId, ''), node(document, 'span', '', name), node(document, 'strong', '', '×' + quantity));
+    rewards.append(item);
+  }
+  if (reward.minLevel) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '至少升至 Lv.' + reward.minLevel));
+  if (reward.job) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '轉職：' + jobName(reward.job)));
+  return rewards;
+}
+
 export function buildVisualStats(document: Document, view: UiSnapshot): HTMLElement {
   const root = node(document, 'div', 'ms-visual-stats');
   const player = view.saveData?.player;
@@ -346,19 +368,7 @@ export function buildVisualQuests(
       card.append(node(document, 'p', 'ms-journal-next', instruction));
     }
 
-    const rewards = node(document, 'section', 'ms-journal-rewards');
-    rewards.setAttribute('aria-label', selected.status === 'claimed' ? '已領取的任務獎勵' : '任務獎勵');
-    rewards.append(node(document, 'h4', '', selected.status === 'claimed' ? '已領獎勵' : '完成獎勵'));
-    rewards.append(token(document, view, 'marker:quest', 'EXP', selected.reward.exp.toLocaleString('zh-HK')), token(document, view, 'marker:shop', '金幣', selected.reward.coins.toLocaleString('zh-HK')));
-    for (const item of selected.reward.items) {
-      const name = view.catalog.rules.items[item.itemId]?.name ?? item.itemId;
-      const reward = node(document, 'div', 'ms-journal-reward-item');
-      reward.append(icon(document, view, 'item:' + item.itemId, ''), node(document, 'span', '', name), node(document, 'strong', '', '×' + item.quantity));
-      rewards.append(reward);
-    }
-    if (selected.reward.minLevel) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '至少 Lv.' + selected.reward.minLevel));
-    if (selected.reward.job) rewards.append(node(document, 'span', 'ms-journal-reward-extra', '轉職：'+jobName(selected.reward.job)));
-    card.append(rewards);
+    card.append(buildQuestRewards(document, view, selected));
     const details = node(document, 'details', 'ms-visual-details');
     details.dataset.detailId = 'quest-story:' + selected.questId;
     const story = selected.status === 'ready' || selected.status === 'claimed' ? definition?.completeText : selected.status === 'available' ? definition?.acceptText : definition?.progressText;
