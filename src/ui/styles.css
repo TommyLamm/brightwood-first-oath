@@ -478,6 +478,11 @@
 }
 
 .ms-interaction-hint.is-blocked kbd { color: #52463a; background: #d7d0be; border-color: #a49a84; box-shadow: none; }
+.ms-interaction-hint[data-target-key="trial:escape"] {
+  color: #ffe2b2;
+  background: #482521;
+  border-color: #ff9f89;
+}
 
 .ms-interaction-hint__item,
 .ms-quest-tracker__item-icon {

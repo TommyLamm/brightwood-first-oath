@@ -5,6 +5,7 @@ import { startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
 import { contextHint } from '../src/ui/context-hint.js';
+import { questTargets } from '../src/domain/quests/selection.js';
 
 const catalog: ContentCatalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -108,7 +109,7 @@ describe('base experience UI snapshot', () => {
     });
   });
 
-  it('prompts the correct attack only by unfinished combat trial targets', () => {
+  it('guides strikes, facing, and a repeat attempt at the real escape trigger', () => {
     const gameplay = newGameplay('rogue');
     gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
     const standBy = (id: string) => {
@@ -144,9 +145,20 @@ describe('base experience UI snapshot', () => {
 
     standBy('rogue-target-double');
     gameplay.saveData = { ...gameplay.saveData, quests: {
-      q02: { status: 'active', counters: { town: 1, 'rogue-target-double': 1 } },
+      q02: { status: 'active', counters: { town: 1, 'rogue-target-close': 1, 'rogue-target-double': 1 } },
     } };
-    expect(snapshotFor(gameplay)?.interactionHint?.trialAttack).toBeUndefined();
+    const retry = snapshotFor(gameplay)!;
+    expect(retry.interactionHint?.trialAttack).toEqual({ action: 'skill1', label: '重試撤離' });
+    expect(questTargets(retry.questViews.find(({ questId }) => questId === 'q02')).npcs).toEqual(new Set(['rogue-target-double']));
+
+    const center = { ...gameplay.movement.position };
+    gameplay.rogueTrial = { position: center, startedAtMs: 0, resolveAtMs: 900 };
+    gameplay.movement.position.x = center.x - 35;
+    const escaping = snapshotFor(gameplay, { gameTimeMs: 300 })!;
+    expect(escaping.interactionHint?.trialAttack).toBeUndefined();
+    expect(contextHint(escaping, reboundKey)?.parts).toEqual([{ key: 'A' }, ' 離開紅框']);
+    gameplay.movement.position.x = center.x + 120;
+    expect(snapshotFor(gameplay, { gameTimeMs: 300 })?.trialEscapeDirection).toBeUndefined();
   });
 
   it('tells the player which resources the healer can restore', () => {

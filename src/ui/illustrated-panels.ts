@@ -4,7 +4,7 @@ import type { UiSnapshot } from '../contracts/ports.js';
 import { decorateControl } from './control-art.js';
 import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
-import { combatTrialAttack } from '../content/world/class-quests.js';
+import { combatTrialAttack, trialObjectiveTargetId } from '../content/world/class-quests.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { inspectObjectiveAction } from './quest-tracker.js';
@@ -310,11 +310,11 @@ export function buildVisualQuests(
       const current = Math.min(objective.required, Math.max(0, objective.current));
       const done = current >= objective.required;
       tile.classList.toggle('is-done', done);
+      const inspectNpc = objective.type === 'inspect' ? view.catalog.world.npcs[trialObjectiveTargetId(objective.targetId)] : undefined;
       const targetName = objective.type === 'kill' ? view.catalog.rules.monsters[objective.targetId]?.name
         : objective.type === 'reach' ? view.catalog.world.maps[objective.targetId]?.name
-          : objective.type === 'inspect' ? view.catalog.world.npcs[objective.targetId]?.name
+          : objective.type === 'inspect' ? inspectNpc?.name
             : view.catalog.rules.items[objective.targetId]?.name;
-      const inspectNpc = objective.type === 'inspect' ? view.catalog.world.npcs[objective.targetId] : undefined;
       const art = objective.type === 'kill'
         ? actor(document, view, view.catalog.rules.monsters[objective.targetId]?.actorKey ?? '', targetName ?? '')
         : inspectNpc
@@ -325,7 +325,8 @@ export function buildVisualQuests(
         : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達' }[objective.type];
       const action = node(document, 'span', 'ms-journal-objective__verb ms-journal-cue-label');
       action.append(makeQuestCueBadge(document, questObjectiveCue(objective)));
-      const trial = selected.status === 'active' && !done && objective.type === 'inspect' && combatTrialAttack(objective.targetId);
+      const trial = selected.status === 'active' && !done && objective.type === 'inspect'
+        && combatTrialAttack(trialObjectiveTargetId(objective.targetId));
       if (trial) action.append(node(document, 'kbd', 'ms-quest-guide-key', keyText(trial.action)));
       action.append(verb);
       target.append(action, node(document, 'strong', '', targetName ?? objective.targetId));

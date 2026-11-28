@@ -1,5 +1,6 @@
 import type { QuestDef, QuestView, WorldCatalog } from '../../contracts/definitions.js';
 import { questDropByQuest } from '../../content/rules/monsters.js';
+import { trialObjectiveTargetId } from '../../content/world/class-quests.js';
 
 export type QuestTargets = {
   maps: ReadonlySet<string>;
@@ -54,7 +55,7 @@ export function questTargets(quest: QuestView | undefined): QuestTargets {
       if (objective.current >= objective.required) continue;
       switch (objective.type) {
         case 'reach': maps.add(objective.targetId); break;
-        case 'inspect': npcs.add(objective.targetId); break;
+        case 'inspect': npcs.add(trialObjectiveTargetId(objective.targetId)); break;
         case 'kill': monsters.add(objective.targetId); break;
         case 'collect':
         case 'equip': items.add(objective.targetId); break;

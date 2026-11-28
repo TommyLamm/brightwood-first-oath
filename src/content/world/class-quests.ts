@@ -18,6 +18,10 @@ export function combatTrialAttack(targetId: string): { action: 'attack' | 'skill
   return { action: targetId === ROGUE_TRIAL_IDS[1] ? 'skill1' : 'attack', label };
 }
 
+export function trialObjectiveTargetId(targetId: string): string {
+  return targetId === ROGUE_TRIAL_IDS[2] ? ROGUE_TRIAL_IDS[1] : targetId;
+}
+
 export const BOW_BY_SWORD: Readonly<Record<string, string>> = {
   'starter-sword': 'starter-bow', 'iron-sword': 'iron-bow', 'steel-sword': 'steel-bow',
   'guardian-sword': 'guardian-bow', 'frost-tide-sword': 'frost-tide-bow', 'sunwell-oathblade': 'sunwell-oathbow',

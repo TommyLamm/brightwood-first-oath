@@ -48,7 +48,7 @@ import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, inspectObjectiveAction, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
 import { makeQuestCueBadge, questObjectiveCue, questObjectiveDropSource } from './quest-cue.js';
-import { combatTrialAttack } from '../content/world/class-quests.js';
+import { combatTrialAttack, trialObjectiveTargetId } from '../content/world/class-quests.js';
 import { contextHint } from './context-hint.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
@@ -486,7 +486,7 @@ function wearableUpgradeIndices(view: UiSnapshot, player: NonNullable<UiSnapshot
 function targetName(view: UiSnapshot, id: string, type: string): string {
   if (type === 'kill') return view.catalog.rules.monsters[id]?.name ?? id;
   if (type === 'reach') return view.catalog.world.maps[id]?.name ?? id;
-  if (type === 'inspect') return view.catalog.world.npcs[id]?.name ?? id;
+  if (type === 'inspect') return view.catalog.world.npcs[trialObjectiveTargetId(id)]?.name ?? id;
   return view.catalog.rules.items[id]?.name ?? id;
 }
 
@@ -536,7 +536,7 @@ function makeObjectiveGuideRow(
     ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon') : undefined;
   icon?.setAttribute('aria-hidden', 'true');
   const dropSource = questObjectiveDropSource(view, questId, objective);
-  const trial = objective.type === 'inspect' && objective.current < objective.required && combatTrialAttack(objective.targetId);
+  const trial = objective.type === 'inspect' && objective.current < objective.required && combatTrialAttack(trialObjectiveTargetId(objective.targetId));
   return makeQuestGuideRow(document, kind, objectiveLabel(view, objective), {
     count, icon, dropSource, keyLabel: trial ? questKeyText(view, trial.action) : undefined,
   });

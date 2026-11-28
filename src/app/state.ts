@@ -6,6 +6,7 @@ import type { GameProfile, RandomSource, SaveStatus, SaveUpgradeRequired, UiSnap
 import { createNextEntityId, createSeededRandom } from '../contracts/helpers.js';
 import { deriveStats } from '../domain/progression/index.js';
 import { activeTelegraphRemainingMs, bodyOverlapsTelegraph } from '../domain/combat/telegraph.js';
+import { escapedRogueTrial } from '../domain/combat/rogue.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { questMarkerStates } from '../domain/quests/selection.js';
 import { applyPanelCommand, isWorldFrozen } from './panels.js';
@@ -15,7 +16,7 @@ import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget, unclaimedPortalQuest } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
-import { COMBAT_TRIAL_TARGET_BODY, classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
+import { COMBAT_TRIAL_TARGET_BODY, ROGUE_TRIAL_IDS, classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { isBossMonster } from '../content/rules/monsters.js';
@@ -167,11 +168,14 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
         const questStatus = questMarkerStates(questViews, catalog.world.quests).get(npc.id);
         const trialAttack = combatTrialAttack(npc.id);
         const trial = trialAttack && questViews.find(({ questId }) => questId === 'q02');
-        const unfinishedTrialTarget = trial && trial.status === 'active' && trial.objectives.some(
-          ({ type, targetId, current, required }) => type === 'inspect' && targetId === npc.id && current < required,
-        );
+        const objectives = trial?.status === 'active' ? trial.objectives : [];
+        const unfinishedTrialTarget = objectives.some(({ targetId, current, required }) => targetId === npc.id && current < required);
+        const retryEscape = npc.id === ROGUE_TRIAL_IDS[1] && !gameplay.rogueTrial
+          && objectives.some(({ targetId, current, required }) => targetId === ROGUE_TRIAL_IDS[2] && current < required);
+        const trialPrompt = unfinishedTrialTarget ? trialAttack
+          : retryEscape && trialAttack ? { ...trialAttack, label: '重試撤離' } : undefined;
         const { position, facing, mode } = gameplay.movement;
-        const behindPlayer = unfinishedTrialTarget && (target.placement.x - position.x) * facing < -COMBAT_TRIAL_TARGET_BODY.width / 2;
+        const behindPlayer = trialPrompt && (target.placement.x - position.x) * facing < -COMBAT_TRIAL_TARGET_BODY.width / 2;
         const turn = mode === 'grounded' && behindPlayer ? (facing === 1 ? 'moveLeft' : 'moveRight') : undefined;
         const specializationGuide = map?.id === 'town' && canChooseSpecialization(saveData.player)
           && npc.id === specializationMentors[effectiveJob(saveData.player)];
@@ -190,7 +194,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
           kind: 'npc',
           label: npc.name,
           ...(actionLabel ? { actionLabel } : {}),
-          ...(unfinishedTrialTarget && trialAttack ? { trialAttack: turn ? { ...trialAttack, turn } : trialAttack } : {}),
+          ...(trialPrompt ? { trialAttack: turn ? { ...trialPrompt, turn } : trialPrompt } : {}),
           ...(specializationGuide ? { specializationGuide: true } : {}),
           ...(questStatus ? { questStatus } : {}),
           blockedMessage: null,
@@ -209,6 +213,15 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   }
   const combatUi = deriveCombatUiState(state.screen === 'playing' || state.screen === 'paused' ? gameplay : null,
     catalog, state.gameTimeMs);
+  let trialEscapeDirection: UiSnapshot['trialEscapeDirection'];
+  const activeTrial = gameplay?.rogueTrial;
+  if (canShowInteractionHint && gameplay && activeTrial && state.gameTimeMs < activeTrial.resolveAtMs) {
+    const { position, facing } = gameplay.movement;
+    if (!escapedRogueTrial(position, activeTrial.position, catalog.rules.movement.width)) {
+      const offset = position.x - activeTrial.position.x;
+      trialEscapeDirection = (offset === 0 ? facing : offset) < 0 ? 'moveLeft' : 'moveRight';
+    }
+  }
   const panelDanger = Boolean(gameplay && gameplay.saveData.player.hp > 0 && state.panels.length > 0
     && !worldIsFrozen(state) && gameplay.telegraphs.some((telegraph) =>
       activeTelegraphRemainingMs(telegraph, state.gameTimeMs) !== null
@@ -249,6 +262,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     focusResumeRequired: state.focusResumeRequired,
     interactionHint,
     pickupHint,
+    trialEscapeDirection,
     playerPosition: gameplay ? { ...gameplay.movement.position } : null,
     ...(gameplay && state.panels.at(-1) === 'map' ? { localMapDrops: gameplay.drops } : {}),
     holdBasicAttack: state.holdBasicAttack,

@@ -33,7 +33,7 @@ import { findPickupTarget } from './pickup-target.js';
 import { cloneProjectile } from '../domain/combat/projectiles.js';
 import { effectiveJob, resolveSkillSlot, jobs, magePassiveRank, roguePassiveRank } from '../content/rules/jobs.js';
 import { advancedSkill, canChooseSpecialization, playerSkillRank, specializationMentors, specializations } from '../content/rules/specializations.js';
-import { gainRhythm, lungeDestination, type RogueRhythm, type SmokeZone } from '../domain/combat/rogue.js';
+import { escapedRogueTrial, gainRhythm, lungeDestination, ROGUE_TRIAL_HALF_WIDTH, ROGUE_TRIAL_HEIGHT, type RogueRhythm, type SmokeZone } from '../domain/combat/rogue.js';
 import { blinkDestination, MAGE_MUZZLE } from '../domain/combat/mage.js';
 import { AIM_TIME_MS, bowPassiveBonus, canStartRetreat, stepRetreat, type RetreatState } from '../domain/combat/archer.js';
 import { ARCHERY_TARGET_IDS, COMBAT_TRIAL_TARGET_BODY, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '../content/world/class-quests.js';
@@ -540,8 +540,7 @@ export function stepGameplay(
   if (gameplay.rogueTrial && input.dtSeconds > 0) {
     const trial = gameplay.rogueTrial;
     if (input.nowMs >= trial.resolveAtMs) {
-      const escaped = Math.abs(gameplay.movement.position.x - trial.position.x) > 90 + catalog.rules.movement.width / 2
-        || Math.abs(gameplay.movement.position.y - trial.position.y) > 80;
+      const escaped = escapedRogueTrial(gameplay.movement.position, trial.position, catalog.rules.movement.width);
       if (escaped) {
         gameplay.saveData = { ...gameplay.saveData, quests: recordQuestEvent(gameplay.saveData.quests,
           { type: 'inspected', targetId: ROGUE_TRIAL_IDS[2] }, catalog.world, gameplay.saveData.player) };
@@ -549,7 +548,8 @@ export function stepGameplay(
       } else gameplay.toast = '仍在紅框內。再對連刺靶完成兩段連刺，即可重試撤離。';
       delete gameplay.rogueTrial;
     } else gameplay.telegraphs.push({ id: 'rogue-trial-warning', sourceId: 'training:rogue-target-double', kind: 'rect',
-      rect: { x: trial.position.x - 90, y: trial.position.y - 80, width: 180, height: 80 },
+      rect: { x: trial.position.x - ROGUE_TRIAL_HALF_WIDTH, y: trial.position.y - ROGUE_TRIAL_HEIGHT,
+        width: ROGUE_TRIAL_HALF_WIDTH * 2, height: ROGUE_TRIAL_HEIGHT },
       startedAtMs: trial.startedAtMs, resolveAtMs: trial.resolveAtMs });
   }
 

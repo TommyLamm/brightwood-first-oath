@@ -228,6 +228,7 @@ export type UiSnapshot = {
   } | null;
   /** Contextual movement reminder; an interactable target takes priority in the HUD. */
   movementHint?: ClimbHint | DropHint | null;
+  trialEscapeDirection?: 'moveLeft' | 'moveRight';
   /** The unexpired nearby drop selected by the actual pickup command. */
   pickupHint?: {
     targetKey: string;
