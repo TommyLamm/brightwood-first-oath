@@ -239,7 +239,13 @@ export type UiSnapshot = {
   /** Runtime-only visual load gate; counts files, not transferred bytes. */
   mapVisualLoad?: { requestId: number; mapId: string; name: string; status: 'loading' | 'failed'; completed: number; total: number; message: string | null } | null;
   /** Read-only combat timing hints for the six quickbar slots. */
-  combatUi?: { actionLockUntilMs: number; bufferedSkillId: Id | null; stanceBlock: AttackStanceBlock | null; windingUpSkillId?: Id };
+  combatUi?: {
+    actionLockUntilMs: number;
+    bufferedSkillId: Id | null;
+    stanceBlock: AttackStanceBlock | null;
+    windingUpSkillId?: Id;
+    interruptedSkillId?: Id;
+  };
   /** Actor sheets, used for NPC dialogue portraits. */
   actorManifest?: AssetManifest | null;
   saveStatus: SaveStatus;

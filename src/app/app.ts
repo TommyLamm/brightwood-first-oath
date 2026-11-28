@@ -732,7 +732,7 @@ export class GameApp {
     this.lastThreatAtMs = -Infinity;
     const gameplay = this.stateValue.gameplay ? { ...this.stateValue.gameplay, combat: createCombatState(),
       drops: [], effects: [], telegraphs: [], guardUntilMs: 0, pendingTransition: null } : null;
-    if (gameplay) { delete gameplay.bufferedAttack; delete gameplay.jumpAssist; delete gameplay.buffCastAtMs;
+    if (gameplay) { delete gameplay.bufferedAttack; delete gameplay.interruptedSkill; delete gameplay.jumpAssist; delete gameplay.buffCastAtMs;
       delete gameplay.retreat; delete gameplay.aimStillMs; delete gameplay.aimReady;
       delete gameplay.poisons; delete gameplay.rallyUntilMs; delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; }
     this.setState({ ...this.stateValue, gameplay, mapVisualLoad: null });

@@ -7,6 +7,7 @@ import { questDropByQuest } from '../content/rules/index.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { inspectObjectiveAction } from './quest-tracker.js';
+import { makeQuestCueBadge, questObjectiveCue, questObjectiveDropSource } from './quest-cue.js';
 
 function node<K extends keyof HTMLElementTagNameMap>(document: Document, tag: K, className = '', text = ''): HTMLElementTagNameMap[K] {
   const item = document.createElement(tag);
@@ -297,7 +298,17 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
       const target = node(document, 'div', 'ms-journal-objective__target');
       const verb = objective.type === 'inspect' ? inspectObjectiveAction(objective.targetId)
         : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達' }[objective.type];
-      target.append(node(document, 'span', 'ms-journal-objective__verb', verb), node(document, 'strong', '', targetName ?? objective.targetId), node(document, 'small', '', objectivePlaces(view, selected.questId, objective)));
+      const action = node(document, 'span', 'ms-journal-objective__verb ms-journal-cue-label');
+      action.append(makeQuestCueBadge(document, questObjectiveCue(objective)), document.createTextNode(verb));
+      target.append(action, node(document, 'strong', '', targetName ?? objective.targetId));
+      const place = objectivePlaces(view, selected.questId, objective);
+      if (place) target.append(node(document, 'small', '', place));
+      const dropSource = questObjectiveDropSource(view, selected.questId, objective);
+      if (dropSource) {
+        const source = node(document, 'small', 'ms-journal-cue-label');
+        source.append(makeQuestCueBadge(document, 'monster'), document.createTextNode('掉落來源 ' + dropSource));
+        target.append(source);
+      }
       const quantity = node(document, 'strong', 'ms-journal-objective__count', (done ? '✓ ' : '') + current + ' / ' + objective.required);
       const progress = node(document, 'progress', 'ms-journal-progress');
       progress.max = Math.max(1, objective.required);
@@ -315,7 +326,11 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
       const place = Object.values(view.catalog.world.maps).find((map) => map.npcs.some((placement) => placement.npcId === npcId));
       const contact = node(document, 'div', 'ms-journal-contact');
       const text = node(document, 'div', '');
-      text.append(node(document, 'span', '', role + ' · ' + (place?.name ?? '')), node(document, 'strong', '', npc?.name ?? npcId));
+      const location = node(document, 'span', 'ms-journal-cue-label');
+      const state = role === '接取' && selected.status === 'available' ? 'available'
+        : role === '回報' && selected.status === 'ready' ? 'ready' : undefined;
+      location.append(makeQuestCueBadge(document, 'npc', state), document.createTextNode(role + (place ? ' · ' + place.name : '')));
+      text.append(location, node(document, 'strong', '', npc?.name ?? npcId));
       contact.append(actor(document, view, npc?.actorKey ?? '', npc?.name ?? npcId), text);
       contacts.append(contact);
     }

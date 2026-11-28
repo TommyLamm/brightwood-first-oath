@@ -1,7 +1,7 @@
 import type { ContentCatalog, UiSnapshot } from '../contracts/index.js';
-import { effectiveJob, jobs } from '../content/rules/jobs.js';
+import { effectiveJob } from '../content/rules/jobs.js';
 import { attackLockUntil } from '../domain/combat/index.js';
-import { attackStanceBlock, type GameplayState } from './gameplay.js';
+import { attackStanceBlock, windingUpPlayerSkill, type GameplayState } from './gameplay.js';
 
 export type CombatUiState = NonNullable<UiSnapshot['combatUi']>;
 
@@ -23,11 +23,13 @@ export function deriveCombatUiState(
     : null;
 
   const job = effectiveJob(gameplay.saveData.player);
-  const windingUp = actionLockUntilMs > nowMs && gameplay.saveData.player.hp > 0
-    ? gameplay.combat.attacks.find((attack) => attack.sourceId === gameplay.playerEntityId
-      && attack.skillId !== jobs[job].basicSkill && attack.startedAtMs <= nowMs
-      && nowMs < attack.startedAtMs + (catalog.rules.skills[attack.skillId]?.windupMs ?? 0))
-    : undefined;
+  const windingUp = actionLockUntilMs > nowMs ? windingUpPlayerSkill(gameplay, catalog.rules, nowMs) : undefined;
+  const interrupted = gameplay.interruptedSkill;
   const stanceBlock = attackStanceBlock(job, gameplay.movement, nowMs);
-  return { actionLockUntilMs, bufferedSkillId, stanceBlock, ...(windingUp ? { windingUpSkillId: windingUp.skillId } : {}) };
+  return {
+    actionLockUntilMs, bufferedSkillId, stanceBlock,
+    ...(windingUp ? { windingUpSkillId: windingUp.skillId } : {}),
+    ...(interrupted && interrupted.expiresAtMs > nowMs && gameplay.saveData.player.hp > 0
+      ? { interruptedSkillId: interrupted.skillId } : {}),
+  };
 }

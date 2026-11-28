@@ -3,6 +3,7 @@ import type { CombatActor, ContentCatalog, GameCommand, InputFrame } from '../sr
 import { rulesCatalog as rules } from '../src/content/rules/index.js';
 import { worldCatalog as world } from '../src/content/world/index.js';
 import { startNewGame, stepGameplay, type GameplayState } from '../src/app/gameplay.js';
+import { deriveCombatUiState } from '../src/app/combat-ui-state.js';
 import { deriveStats } from '../src/domain/progression/index.js';
 import { blinkDestination } from '../src/domain/combat/mage.js';
 import { createCombatState, stepCombat, tryAttack } from '../src/domain/combat/index.js';
@@ -48,6 +49,28 @@ describe('mage spell transactions and timing',()=>{
     expect(cancelled.combat.projectiles??[]).toHaveLength(0);expect(cancelled.saveData.player.mp).toBe(cast.saveData.player.mp);
     const fired=tick(tick(game(),0,0,'mage-mana-bolt'),320,.32);fired.movement.knockbackUntilMs=800;
     expect(tick(fired,340,.02).combat.projectiles).toHaveLength(1);
+  });
+  it('marks the exact spell cancelled by a damaging hit until the cue expires', () => {
+    const initial = game();
+    const map = world.maps.camp!;
+    const spawn = map.monsters.find(({ monsterId }) => monsterId === 'snail')!;
+    const snail = createMonster(nextId(), spawn, map, rules);
+    snail.movement.position = { x: initial.movement.position.x + 32, y: initial.movement.position.y };
+    initial.monsters = [snail];
+    const cast = tick(initial, 0, 0, 'mage-mana-bolt');
+    cast.combat.attacks.push({
+      id: nextId(), sourceId: snail.id, skillId: 'enemy-melee', startedAtMs: -170,
+      facing: -1, origin: { ...snail.movement.position }, rank: 1, hitIds: [],
+    });
+
+    const hit = tick(cast, 185, .016);
+    expect(hit.saveData.player.hp).toBeLessThan(cast.saveData.player.hp);
+    expect(hit.saveData.player.mp).toBe(cast.saveData.player.mp);
+    expect(hit.combat.projectiles ?? []).toHaveLength(0);
+    expect(deriveCombatUiState(hit, catalog, 185)).toMatchObject({ interruptedSkillId: 'mage-mana-bolt' });
+    const recovered = tick(hit, 1035, .016);
+    expect(recovered.interruptedSkill).toBeUndefined();
+    expect(deriveCombatUiState(recovered, catalog, 1035).interruptedSkillId).toBeUndefined();
   });
   it('sweeps magic bolts against walls and never advances projectiles on zero dt',()=>{
     let g=tick(game(),0,0,'mage-mana-bolt');g=tick(g,320,.32);

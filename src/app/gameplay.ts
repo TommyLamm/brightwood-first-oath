@@ -75,6 +75,7 @@ export type GameplayState = {
   toastShown?: { text: string; atMs: number };
   /** A skill pressed while the previous swing was still playing; it fires as soon as the swing ends. */
   bufferedAttack?: { skillId: Id; expiresAtMs: number; readyAtMs?: number };
+  interruptedSkill?: Readonly<{ skillId: Id; expiresAtMs: number }>;
   /** When 堅韌守護 was last cast, so the hero plays the buff pose for a moment (runtime only). */
   buffCastAtMs?: number;
   interaction: { npcId: Id; dialogue: string[] } | null;
@@ -248,7 +249,8 @@ export function stepGameplay(
 
   gameplay = cloneGameplay(gameplay);
   input = { ...input, catalog: classCatalog(input.catalog, gameplay.saveData.player) };
-  if (gameplay.movement.mode === 'climbing' || input.nowMs < gameplay.movement.knockbackUntilMs) interruptArcherCast(gameplay, input.catalog);
+  if (gameplay.interruptedSkill && input.nowMs >= gameplay.interruptedSkill.expiresAtMs) delete gameplay.interruptedSkill;
+  if (gameplay.movement.mode === 'climbing' || input.nowMs < gameplay.movement.knockbackUntilMs) interruptPlayerCast(gameplay);
   if (gameplay.saveData.player.hp <= 0) {
     delete gameplay.jumpAssist;
     delete gameplay.bufferedAttack;
@@ -368,7 +370,7 @@ export function stepGameplay(
   gameplay.movement = playerMovement.movement;
   gameplay.jumpAssist = playerMovement.memory;
   if (attackLocked) gameplay.movement = { ...gameplay.movement, facing: originalFacing };
-  if (gameplay.movement.mode === 'climbing') interruptArcherCast(gameplay, catalog);
+  if (gameplay.movement.mode === 'climbing') interruptPlayerCast(gameplay);
 
   for (const attack of gameplay.combat.attacks) {
     const rogueSkill = catalog.rules.skills[attack.skillId];
@@ -489,7 +491,11 @@ export function stepGameplay(
       gameplay.invulnerableUntilMs = input.nowMs + 800;
       gameplay.attackOrDamageAtMs = input.nowMs;
       delete gameplay.jumpAssist;
-      interruptArcherCast(gameplay, catalog);
+      const windingUp = windingUpPlayerSkill(gameplay, catalog.rules, input.nowMs);
+      interruptPlayerCast(gameplay);
+      if (windingUp && !gameplay.combat.attacks.includes(windingUp)) {
+        gameplay.interruptedSkill = { skillId: windingUp.skillId, expiresAtMs: input.nowMs + CAST_INTERRUPTION_CUE_MS };
+      }
       gameplay.movement = {
         ...gameplay.movement,
         velocity: { x: hit.knockback.x, y: hit.knockback.y },
@@ -595,7 +601,14 @@ function clearCombatForActors(gameplay: GameplayState, actorIds: ReadonlySet<Ent
     delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; delete gameplay.poisons; delete gameplay.rallyUntilMs; }
 }
 
-function interruptArcherCast(gameplay: GameplayState, _catalog: ContentCatalog): void {
+export function windingUpPlayerSkill(gameplay: GameplayState, rules: ContentCatalog['rules'], nowMs: number) {
+  if (gameplay.saveData.player.hp <= 0) return undefined;
+  return gameplay.combat.attacks.find((attack) => attack.sourceId === gameplay.playerEntityId
+    && !BASIC_ATTACK_IDS.has(attack.skillId) && attack.startedAtMs <= nowMs
+    && nowMs < attack.startedAtMs + (rules.skills[attack.skillId]?.windupMs ?? 0));
+}
+
+function interruptPlayerCast(gameplay: GameplayState): void {
   if (gameplay.bufferedAttack?.readyAtMs !== undefined) delete gameplay.bufferedAttack;
   if (effectiveJob(gameplay.saveData.player) === 'swordsman' && gameplay.saveData.player.specialization !== 'berserker') return;
   gameplay.combat.attacks = gameplay.combat.attacks.filter((attack) =>
@@ -1172,6 +1185,7 @@ function requestTransition(
   gameplay.combat = createCombatState();
   delete gameplay.rogueRhythm; delete gameplay.smoke; delete gameplay.rogueTrial; delete gameplay.poisons; delete gameplay.rallyUntilMs;
   delete gameplay.bufferedAttack;
+  delete gameplay.interruptedSkill;
   delete gameplay.retreat; delete gameplay.aimStillMs; delete gameplay.aimReady;
   gameplay.toast = '正在載入地圖…';
   return { gameplay, screen: 'loading' };
@@ -1247,6 +1261,7 @@ const TOAST_DURATION_MS = 6000;
 export const PASSIVE_RECOVERY_DELAY_MS = 3_000;
 /** How long a skill pressed mid-swing waits for the swing to finish before it is dropped. */
 const ATTACK_BUFFER_MS = 600;
+const CAST_INTERRUPTION_CUE_MS = 850;
 const BUFF_POSE_MS = 400;
 
 function expireToast(gameplay: GameplayState, nowMs: number): void {
