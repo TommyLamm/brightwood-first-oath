@@ -302,12 +302,17 @@ export function stepGameplay(
   // requests here but T03 resolves them only after both sides have moved.
   const playerBeforeMove = playerCombatActor(gameplay, catalog, input.nowMs);
   if (gameplay.rogueRhythm && input.nowMs >= gameplay.rogueRhythm.expiresAtMs) delete gameplay.rogueRhythm;
-  if (gameplay.smoke && input.nowMs >= gameplay.smoke.expiresAtMs) delete gameplay.smoke;
-  gameplay.monsters = gameplay.monsters.map((monster) => ({ ...monster,
-    smokeSlowedUntilMs: gameplay.smoke && input.nowMs < gameplay.smoke.expiresAtMs
-      && Math.abs(monster.movement.position.x - gameplay.smoke.position.x) <= 105
-      && Math.abs(monster.movement.position.y - gameplay.smoke.position.y) <= 40
-      && !isBossMonster(monster.monsterId) ? input.nowMs + 1 : 0 }));
+  const smoke = gameplay.smoke;
+  if (smoke) {
+    const active = input.nowMs < smoke.expiresAtMs;
+    if (!active) delete gameplay.smoke;
+    gameplay.monsters = gameplay.monsters.map((monster) => {
+      const smokeSlowedUntilMs = active && !isBossMonster(monster.monsterId)
+        && Math.abs(monster.movement.position.x - smoke.position.x) <= 105
+        && Math.abs(monster.movement.position.y - smoke.position.y) <= 40 ? input.nowMs + 1 : 0;
+      return monster.smokeSlowedUntilMs === smokeSlowedUntilMs ? monster : { ...monster, smokeSlowedUntilMs };
+    });
+  }
   // stepActors omits monsters whose respawn is due, so keep the pre-step list
   // to resolve each respawn request back to its spawn placement.
   const monstersBeforeStep = gameplay.monsters;

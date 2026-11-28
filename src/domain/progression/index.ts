@@ -104,8 +104,10 @@ export function createPlayer(name: string, rules: RulesCatalog, route: PlayerJob
 export const DEX_PER_DEFENSE = 4;
 export const CRIT_CHANCE_PER_DEX = 0.004;
 export const CRIT_CHANCE_CAP = 0.4;
+const equipmentSlots = ['weapon', 'body', 'hat'] as const;
 
 export function deriveStats(player: PlayerProgress, rules: RulesCatalog): DerivedStats {
+  const job = effectiveJob(player);
   const luckBonus = (player.luk ?? 0) * 0.002;
   const vitality = rules.skills.vitality;
   const vitalityRank =
@@ -116,8 +118,9 @@ export function deriveStats(player: PlayerProgress, rules: RulesCatalog): Derive
   let equipmentDefense = 0;
   let equipmentHp = 0;
 
-  for (const [slot, itemId] of Object.entries(player.equipment)) {
-    if (itemId === null) continue;
+  for (const slot of equipmentSlots) {
+    const itemId = player.equipment[slot];
+    if (!itemId) continue;
     const item = rules.items[itemId];
     if (item === undefined || item.slot !== slot) continue;
     weaponAttack += item.attack;
@@ -125,21 +128,21 @@ export function deriveStats(player: PlayerProgress, rules: RulesCatalog): Derive
     equipmentHp += item.hpBonus;
   }
 
-  if (effectiveJob(player) === 'rogue') return {
+  if (job === 'rogue') return {
     maxHp: 60 + 13 * (player.level - 1) + equipmentHp,
     maxMp: 48 + 3 * (player.level - 1),
     attack: (2 * player.dex + player.str - 1 + weaponAttack) * (1 + 0.015 * roguePassiveRank(player, rules, 'rogue-dagger-mastery')),
     defense: Math.floor(player.str / 5) + equipmentDefense,
     critChance: Math.min(0.3, 0.05 + player.dex * 0.0015 + luckBonus),
   };
-  if (effectiveJob(player) === 'mage') return {
+  if (job === 'mage') return {
     maxHp: 56 + 12 * (player.level - 1) + equipmentHp,
     maxMp: 72 + 6 * (player.level - 1) + 8 * magePassiveRank(player, rules, 'mage-mana-affinity'),
     attack: (2 * (player.int ?? 4) + player.dex - 1 + weaponAttack) * (1 + 0.02 * magePassiveRank(player, rules, 'mage-rune-study')),
     defense: Math.floor(player.str / 4) + equipmentDefense,
     critChance: Math.min(0.3, 0.05 + luckBonus),
   };
-  if (effectiveJob(player) === 'archer') return {
+  if (job === 'archer') return {
     maxHp: 64 + 14 * (player.level - 1) + equipmentHp,
     maxMp: 48 + 3 * (player.level - 1),
     attack: (2 * player.dex + player.str - 1 + weaponAttack) * (1 + bowPassiveBonus(player, rules, 'archer-bow-mastery')),
