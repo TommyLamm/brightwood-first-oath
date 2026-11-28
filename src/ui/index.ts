@@ -156,6 +156,10 @@ type QuickIconCacheEntry = {
   failed: boolean;
 };
 
+function sameRenderInputs(next: readonly unknown[], previous: readonly unknown[]): boolean {
+  return next.length === previous.length && next.every((value, index) => value === previous[index]);
+}
+
 const KEY_GUIDE_SECTIONS: {
   category: string;
   items: KeyGuideItem[];
@@ -807,7 +811,7 @@ export function createUi(
     collapsed: boolean;
     trackedQuestId: string | null;
   } | undefined;
-  let lastPanelSignature = '';
+  let lastPanelInputs: readonly unknown[] = [];
   let lastPanelSources: {
     panel: PanelId;
     data: UiSnapshot['saveData'] | PlayerProgress | undefined;
@@ -975,7 +979,7 @@ export function createUi(
     const player = view?.saveData?.player;
     const inputs = [bindings, player && effectiveJob(player), player?.specialization, player?.advancedSkillEquipped,
       player?.equipment.weapon, view?.catalog.rules, view?.interfaceManifest];
-    if (keyGuideCard.hasChildNodes() && inputs.every((value, index) => value === lastKeyGuideInputs[index])) return;
+    if (keyGuideCard.hasChildNodes() && sameRenderInputs(inputs, lastKeyGuideInputs)) return;
     lastKeyGuideInputs = inputs;
 
     keyGuideCard.replaceChildren();
@@ -1358,7 +1362,7 @@ export function createUi(
         Math.ceil(actionLock / 100),
         buffLeftSec, activeDefense, queued, stanceBlock, windingUp, interrupted, skillReady,
       ];
-      if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
+      if (sameRenderInputs(inputs, entry.previousInputs)) continue;
       entry.previousInputs = inputs;
       const cooldownText = cooldown > 0 ? remainingSeconds(cooldown) : '';
       const binding = effectiveKeyText(bindings, slot.action);
@@ -1979,8 +1983,8 @@ export function createUi(
     }
     if (questMapReturn && !view.panels.includes(questMapReturn.panel)) questMapReturn = null;
     if (!panel) {
-      if (lastPanelSignature !== '') {
-        lastPanelSignature = '';
+      if (lastPanelInputs.length > 0) {
+        lastPanelInputs = [];
         lastPanelSources = null;
         panelHost.replaceChildren();
           if (view.screen === 'playing' && view.focusResumeRequired !== true) focusGameCanvas();
@@ -2018,36 +2022,20 @@ export function createUi(
       sources = { panel, data, quests, interaction, signature: JSON.stringify({ data: details, quests, interaction }) };
     }
     lastPanelSources = sources;
-    const signature = JSON.stringify({
-      panel,
-      interfaceReady: Boolean(view.interfaceManifest),
-      actorsReady: panel === 'map' && Boolean(view.actorManifest),
-      inventoryQuestId: inventoryQuest?.questId,
-      inventoryQuestStatus: inventoryQuest?.status,
-      canTrade: (inventory || shop) && view.canTrade,
-      nearSpecializationMentor: (panel === 'skills' || panel === 'dialogue') && view.nearSpecializationMentor === true,
-      canReturnTown: view.canReturnTown,
-      selectedBagIndex,
-      selectedMapId,
-      selectedMapFocus,
-      selectedQuestId,
-      trackedQuestId,
-      inventoryFilter,
-      readingSize: readingPreference.size,
-      holdBasicAttack: view.holdBasicAttack ?? false,
-      backgroundMotion: view.backgroundMotion ?? true,
-      activeGuardBonus: panel === 'stats' ? view.activeGuard?.defenseBonus ?? 0 : 0,
-      shopFilter,
-      potionCooling: inventory && view.nowMs < view.potionReadyAtMs,
-      shopQuantities: Array.from(shopQuantities.entries()),
-      sellQuantities: Array.from(sellQuantities.entries()),
-      bagStateMessage,
-      pendingBinding,
-      bindingMessage,
-      bindingMessageAction,
-    });
-    if (!force && signature === lastPanelSignature && sources.signature === previousSources?.signature) return;
-    lastPanelSignature = signature;
+    const inputs = [
+      panel, view.catalog, view.interfaceManifest, view.actorManifest,
+      inventoryQuest?.questId, inventoryQuest?.status, (inventory || shop) && view.canTrade,
+      (panel === 'skills' || panel === 'dialogue') && view.nearSpecializationMentor === true, view.canReturnTown,
+      selectedBagIndex, selectedMapId, selectedMapFocus, selectedQuestId, trackedQuestId, inventoryFilter,
+      readingPreference.size, view.holdBasicAttack ?? false, view.backgroundMotion ?? true,
+      panel === 'stats' ? view.activeGuard?.defenseBonus ?? 0 : 0,
+      shopFilter, inventory && view.nowMs < view.potionReadyAtMs,
+      shop && shopQuantities.size ? JSON.stringify([...shopQuantities]) : '',
+      (inventory || shop) && sellQuantities.size ? JSON.stringify([...sellQuantities]) : '',
+      bagStateMessage, pendingBinding, bindingMessage, bindingMessageAction,
+    ];
+    if (!force && sameRenderInputs(inputs, lastPanelInputs) && sources.signature === previousSources?.signature) return;
+    lastPanelInputs = inputs;
     const samePanel = panelHost.querySelector<HTMLElement>('.ms-panel')?.dataset.panel === panel;
     const previousFocus = document.activeElement;
     const previouslyFocusedDialogueControl = panel === 'dialogue' && samePanel
