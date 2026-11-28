@@ -65,6 +65,7 @@
 }
 
 .ms-boss-vitals {
+  --boss-health-fill: #f39574;
   flex: 0 1 clamp(150px, 21cqw, 275px);
   min-width: 0;
   padding: 6px 9px;
@@ -78,10 +79,14 @@
 .ms-boss-vitals__heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 11px; }
 .ms-boss-vitals__heading strong { font-size: 13px; }
 .ms-boss-vitals__heading span { font-variant-numeric: tabular-nums; }
+.ms-boss-vitals__phase { padding: 0 4px; border-radius: 3px; color: #fff4de; background: #763a41; font-weight: 750; }
+.ms-boss-vitals.is-second-phase { --boss-health-fill: #ff7567; border-color: #bf6e66; }
+.ms-boss-vitals.is-changing-phase { --boss-health-fill: repeating-linear-gradient(115deg, #c6aceb 0 5px, #795ca4 5px 10px); border-color: #af90d1; }
+.ms-boss-vitals.is-changing-phase .ms-boss-vitals__phase { background: #635183; }
 .ms-boss-vitals__bar { display: block; appearance: none; width: 100%; height: 6px; margin-top: 3px; border: 0; border-radius: 4px; overflow: hidden; background: #513640; }
 .ms-boss-vitals__bar::-webkit-progress-bar { background: #513640; }
-.ms-boss-vitals__bar::-webkit-progress-value { background: #f39574; }
-.ms-boss-vitals__bar::-moz-progress-bar { background: #f39574; }
+.ms-boss-vitals__bar::-webkit-progress-value { background: var(--boss-health-fill); }
+.ms-boss-vitals__bar::-moz-progress-bar { background: var(--boss-health-fill); }
 
 .ms-profile {
   position: relative;

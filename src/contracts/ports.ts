@@ -203,7 +203,7 @@ export type UiSnapshot = {
   aimReady?: boolean;
   saveData: SaveData | null;
   stats: import('./types.js').DerivedStats | null;
-  bossVitals?: { name: string; hp: number; maxHp: number } | null;
+  bossVitals?: { name: string; hp: number; maxHp: number; phase: 1 | 2; changingPhase: boolean } | null;
   questViews: QuestView[];
   catalog: ContentCatalog;
   interfaceManifest?: AssetManifest | null;

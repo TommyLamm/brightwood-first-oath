@@ -116,7 +116,13 @@ describe('base experience UI snapshot', () => {
     gameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
     const definition = catalog.rules.monsters.guardian!;
     gameplay.monsters = [{ ...gameplay.monsters[0]!, monsterId: definition.id, hp: definition.maxHp - 10 }];
-    expect(snapshotFor(gameplay)?.bossVitals).toEqual({ name: definition.name, hp: definition.maxHp - 10, maxHp: definition.maxHp });
+    expect(snapshotFor(gameplay)?.bossVitals).toEqual({
+      name: definition.name, hp: definition.maxHp - 10, maxHp: definition.maxHp, phase: 1, changingPhase: false,
+    });
+    gameplay.monsters[0]!.phase = 2;
+    expect(snapshotFor(gameplay)?.bossVitals?.phase).toBe(2);
+    gameplay.monsters[0]!.mode = 'phase-transition';
+    expect(snapshotFor(gameplay)?.bossVitals?.changingPhase).toBe(true);
     expect(snapshotFor(gameplay, { screen: 'result' })?.bossVitals).toBeNull();
   });
 

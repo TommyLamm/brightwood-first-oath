@@ -635,9 +635,12 @@ export function createUi(
   bossVitals.hidden = true;
   const bossHeading = makeElement(document, 'div', 'ms-boss-vitals__heading');
   const bossName = makeElement(document, 'strong');
+  const bossPhase = makeElement(document, 'span', 'ms-boss-vitals__phase');
+  bossPhase.setAttribute('role', 'status');
+  bossPhase.hidden = true;
   const bossHealth = makeElement(document, 'span');
   const bossBar = makeElement(document, 'progress', 'ms-boss-vitals__bar');
-  bossHeading.append(bossName, bossHealth);
+  bossHeading.append(bossName, bossPhase, bossHealth);
   bossVitals.append(bossHeading, bossBar);
   const profile = makeElement(document, 'section', 'ms-card ms-profile');
   const quickbar = makeElement(document, 'section', 'ms-quickbar');
@@ -1098,6 +1101,13 @@ export function createUi(
     if (bossName.textContent !== boss.name) {
       bossName.textContent = boss.name;
       bossBar.setAttribute('aria-label', boss.name + '生命值');
+    }
+    const phaseLabel = boss.changingPhase ? '階段轉換' : boss.phase === 2 ? '第二階段' : '';
+    if (bossPhase.textContent !== phaseLabel) {
+      bossPhase.textContent = phaseLabel;
+      bossPhase.hidden = phaseLabel === '';
+      bossVitals.classList.toggle('is-second-phase', boss.phase === 2);
+      bossVitals.classList.toggle('is-changing-phase', boss.changingPhase);
     }
     if (bossBar.max !== boss.maxHp || bossBar.value !== boss.hp) {
       bossBar.max = boss.maxHp;
