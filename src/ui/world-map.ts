@@ -209,8 +209,9 @@ export function buildWorldMap(
   }
 
   const questExitId = selected?.id === data.location.mapId ? exit : null;
+  const terrainAvailable = Boolean(selected && canViewLocalMap(selected.id, data));
   const details = buildDetails(document, view, atlas.scope, selected, planned, landmarks, frostOverview, sandOverview, ruinsOverview,
-    { targets, questExitId });
+    { targets, questExitId, terrainAvailable });
   layout.append(chart, details);
   root.append(layout);
 
@@ -230,7 +231,7 @@ export function buildWorldMap(
     legend.append(element(document, 'span', '', '▧ 待開發'));
   }
   root.append(legend);
-  if (selected && canViewLocalMap(selected.id, data)) {
+  if (selected && terrainAvailable) {
     root.insertBefore(buildLocalMap(document, view, selected, focus, questExitId, targets), layout);
   }
   return root;
@@ -337,7 +338,7 @@ function buildRegionEntryButton(
 }
 
 function mapInhabitants(
-  document: Document, kind: 'npc' | 'monster', names: ReadonlyMap<string, string>, targetIds: ReadonlySet<string>,
+  document: Document, kind: 'npc' | 'monster', names: ReadonlyMap<string, string>, targetIds: ReadonlySet<string>, terrainAvailable: boolean,
 ): HTMLElement {
   const list = element(document, 'p', 'ms-atlas-inhabitants', kind === 'npc' ? '居民：' : '出沒：');
   const { color, symbol } = questCueAppearance[kind];
@@ -349,7 +350,14 @@ function mapInhabitants(
       list.append(name);
       continue;
     }
-    const target = element(document, 'strong', 'ms-atlas-inhabitant-target');
+    const target = terrainAvailable
+      ? element(document, 'button', 'ms-atlas-inhabitant-target ms-atlas-terrain-link')
+      : element(document, 'strong', 'ms-atlas-inhabitant-target');
+    if (target instanceof HTMLButtonElement) {
+      target.type = 'button';
+      target.dataset.uiAction = 'show-atlas-terrain';
+      target.setAttribute('aria-label', '在地形導覽查看' + name);
+    }
     const cue = element(document, 'span', 'ms-quest-cue', symbol);
     cue.style.color = '#' + color.toString(16);
     cue.setAttribute('aria-hidden', 'true');
@@ -369,7 +377,7 @@ function buildDetails(
   frostOverview: ReturnType<typeof frostIslesOverview>,
   sandOverview: ReturnType<typeof goldSandSeaOverview>,
   ruinsOverview: ReturnType<typeof ancientRuinsOverview>,
-  { targets, questExitId }: { targets: QuestTargets; questExitId: string | null },
+  { targets, questExitId, terrainAvailable }: { targets: QuestTargets; questExitId: string | null; terrainAvailable: boolean },
 ): HTMLElement {
   const details = element(document, 'aside', 'ms-atlas-details' + (scope === 'world' ? '' : ' ms-atlas-details--' + scope));
   details.setAttribute('aria-label', '區域詳情');
@@ -394,8 +402,8 @@ function buildDetails(
     );
     const npcNames = new Map(selected.npcs.map(({ npcId }) => [npcId, view.catalog.world.npcs[npcId]?.name ?? npcId]));
     const monsterNames = new Map(selected.monsters.map(({ monsterId }) => [monsterId, view.catalog.rules.monsters[monsterId]?.name ?? monsterId]));
-    if (npcNames.size) details.append(mapInhabitants(document, 'npc', npcNames, targets.npcs));
-    if (monsterNames.size) details.append(mapInhabitants(document, 'monster', monsterNames, targets.monsters));
+    if (npcNames.size) details.append(mapInhabitants(document, 'npc', npcNames, targets.npcs, terrainAvailable));
+    if (monsterNames.size) details.append(mapInhabitants(document, 'monster', monsterNames, targets.monsters, terrainAvailable));
     const regionOverview = scope === 'frost' ? frostOverview : scope === 'sand' ? sandOverview : scope === 'ruins' ? ruinsOverview : null;
     const regionEntryMapId = scope === 'frost' ? 'frost-shore' : scope === 'sand' ? 'sand-glass-shore' : 'ruins-tide-camp';
     if (regionOverview && selected.id === regionEntryMapId && regionOverview.entryRequirement) {

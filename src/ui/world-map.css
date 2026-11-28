@@ -36,6 +36,17 @@
 .ms-atlas-inhabitants { color: #7b6345; font-size: 11px; }
 .ms-atlas-inhabitant-target { color: #483721; }
 .ms-atlas-inhabitant-target .ms-quest-cue { display: inline-grid; margin-inline-end: 3px; vertical-align: middle; }
+.ms-atlas-terrain-link {
+  padding: 0;
+  border: 0;
+  color: #435735;
+  background: none;
+  font: inherit;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
 .ms-atlas-target-description { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ms-atlas-path-heading { margin: 4px 0 0; padding-top: 9px; border-top: 1px solid #c8ac80; font-size: 12px; }
 .ms-atlas-connection { display: grid; gap: 4px; }

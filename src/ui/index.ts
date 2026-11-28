@@ -95,6 +95,7 @@ const KEY_ACTIONS: { id: Exclude<GameAction, 'escape'>; label: string }[] = [
 ];
 
 type UiAction =
+  | 'show-atlas-terrain'
   | 'advance-specialization' | 'toggle-advanced-skill'
   | 'open-panel' | 'close-panel' | 'continue' | 'new-role' | 'create-confirm' | 'create-cancel' | 'choose-route' | 'select-character'
   | 'retry-save' | 'retry-map-load' | 'confirm-save-upgrade' | 'discard-save' | 'import-legacy-save' | 'dismiss-legacy-import' | 'play-temporary' | 'toggle-pause' | 'return-title' | 'respawn' | 'retry-boss'
@@ -2135,6 +2136,15 @@ export function createUi(
         if (view.panels.at(-1) === 'map') mapQuestReturn = capturePanelFocus(view, button);
         if (view.panels.at(-1) === 'quests') renderPanel(view, true);
         else dispatchDraft({ type: 'setPanel', payload: { panel: 'quests' } });
+        return;
+      }
+      case 'show-atlas-terrain': {
+        const terrain = panelHost.querySelector<HTMLDetailsElement>('details.ms-local-map');
+        if (!terrain) return;
+        terrain.open = true;
+        const summary = terrain.querySelector('summary');
+        summary?.focus({ preventScroll: true });
+        summary?.scrollIntoView({ block: 'start' });
         return;
       }
       case 'select-map':
