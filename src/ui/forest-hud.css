@@ -142,6 +142,20 @@
   background: #ddc793;
   box-shadow: 0 1px 2px #111b16;
 }
+.maple-ui .ms-quick-slot.is-skill-learnable::before { content: none; }
+.maple-ui .ms-quick-slot.is-skill-learnable::after {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-color: #66491f;
+  color: #533515;
+  background: #ffdf94;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
 
 .maple-ui .ms-controls {
   grid-column: 3;

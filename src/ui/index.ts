@@ -1329,6 +1329,7 @@ export function createUi(
         full, showRecoveryCue, Math.ceil(cooldown / 100),
       ] : rank === 0 ? [
         view.catalog, view.interfaceManifest, quickbarBlock, bindings, slotId, Boolean(player),
+        player?.job, player?.level, Boolean(player?.sp),
       ] : [
         view.saveData, view.catalog, view.interfaceManifest, quickbarBlock, view.aimReady,
         Math.ceil(cooldown / 100),
@@ -1395,10 +1396,13 @@ export function createUi(
       }
       label.textContent = skill.name;
       const unlearned = rank === 0;
+      const learnable = canAct && unlearned && player.sp > 0
+        && previewSkillLearning({ player, rules: view.catalog.rules, skillId: slotId }).ok;
       button.dataset.uiAction = unlearned ? 'review-skill' : 'attack';
       button.classList.toggle('is-unlearned', unlearned);
+      button.classList.toggle('is-skill-learnable', learnable);
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
-      const castBlock = unlearned ? '未學習' : stanceReason || (lacksMana ? 'MP 不足' : '');
+      const castBlock = unlearned ? (learnable ? '可學習' : '未學習') : stanceReason || (lacksMana ? 'MP 不足' : '');
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
       const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const castFeedback = windingUp ? '施放中' : interrupted ? '已中斷' : skillReady ? '就緒' : '';
