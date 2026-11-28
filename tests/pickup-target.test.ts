@@ -103,4 +103,17 @@ describe('pickup targets and reminders', () => {
     expect(next.drops).toEqual([]);
     expect(next.nextPickupAtMs).toBe(250);
   });
+
+  it('shares unchanged floor drops between steps and only replaces the list on expiry', () => {
+    const state = playingState();
+    const drops = [coin('expires-first', 100, 200), coin('stays', 105)];
+    state.gameplay.drops = drops;
+    const input = { catalog, commands: [], input: { moveX: 0, climbY: 0, jumpPressed: false, downHeld: false },
+      dtSeconds: 0, nowMs: 100, random: state.random, nextEntityId: state.nextEntityId } as const;
+    const next = stepGameplay(state.gameplay, input).gameplay!;
+    expect(next.drops).toBe(drops);
+    const expired = stepGameplay(next, { ...input, nowMs: 200 }).gameplay!;
+    expect(expired.drops).toEqual([drops[1]]);
+    expect(next.drops).toHaveLength(2);
+  });
 });

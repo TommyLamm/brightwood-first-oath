@@ -176,7 +176,7 @@ export type WorldSnapshot = {
     rhythmStacks?: number;
   };
   monsters: MonsterState[];
-  drops: DropState[];
+  drops: readonly DropState[];
   npcs: MapDef['npcs'];
   attacks: AttackInstance[];
   projectiles?: ProjectileState[];

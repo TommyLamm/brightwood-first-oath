@@ -57,7 +57,7 @@ export type GameplayState = {
   jumpAssist?: PlayerJumpMemory & { combatUnlockMs?: number };
   monsters: MonsterState[];
   combat: CombatState;
-  drops: DropState[];
+  drops: readonly DropState[];
   telegraphs: import('../contracts/index.js').Telegraph[];
   effects: VisualEvent[];
   invulnerableUntilMs: number;
@@ -584,7 +584,9 @@ export function stepGameplay(
     gameplay.monsters = [...gameplay.monsters.filter(({ id }) => !respawnIds.has(id)), ...replacements];
   }
 
-  gameplay.drops = gameplay.drops.filter(({ expiresAtMs }) => input.nowMs < expiresAtMs);
+  if (gameplay.drops.some(({ expiresAtMs }) => input.nowMs >= expiresAtMs)) {
+    gameplay.drops = gameplay.drops.filter(({ expiresAtMs }) => input.nowMs < expiresAtMs);
+  }
   if (screen === 'dead') gameplay.movement = { ...gameplay.movement, mode: 'dead', velocity: { x: 0, y: 0 } };
   if (screen === 'dead' && gameplay.deathAtMs === null) gameplay.deathAtMs = input.nowMs;
   if (input.dtSeconds > 0 && gameplay.saveData.player.hp > 0) recoverWhileResting(gameplay, catalog, input.nowMs);
@@ -1374,12 +1376,14 @@ function applyDeathEvent(
         remainingDrops.push(drop);
       }
     }
-    gameplay.drops.push(...remainingDrops.map((drop, index) => ({
-      id: nextEntityId(),
-      ...drop,
-      position: scatterDropPosition(monster, index, remainingDrops.length, gameplay, catalog),
-      expiresAtMs: nowMs + 120_000,
-    })));
+    if (remainingDrops.length > 0) {
+      gameplay.drops = [...gameplay.drops, ...remainingDrops.map((drop, index) => ({
+        id: nextEntityId(),
+        ...drop,
+        position: scatterDropPosition(monster, index, remainingDrops.length, gameplay, catalog),
+        expiresAtMs: nowMs + 120_000,
+      }))];
+    }
     if (monster.monsterId === 'guardian') {
       gameplay.saveData = {
         ...gameplay.saveData,
@@ -1399,12 +1403,12 @@ function applyDeathEvent(
       gameplay.toast = '背包空間不足，守衛的掉落物留在地上，整理背包後再拾取。';
     }
   } else {
-    gameplay.drops.push(...drops.map((drop, index) => ({
+    gameplay.drops = [...gameplay.drops, ...drops.map((drop, index) => ({
       id: nextEntityId(),
       ...drop,
       position: scatterDropPosition(monster, index, drops.length, gameplay, catalog),
       expiresAtMs: nowMs + 120_000,
-    })));
+    }))];
   }
   // The reward used to be emitted as 'damage', so a kill printed its EXP in the hero's hurt colour.
   if (rewarded.ok && definition.exp > 0) addEffect(gameplay, monster.id, 'exp', definition.exp, nowMs, nextEntityId);
@@ -1637,7 +1641,6 @@ function cloneGameplay(gameplay: GameplayState): GameplayState {
       attacks: gameplay.combat.attacks.map((attack) => ({ ...attack, origin: { ...attack.origin }, hitIds: [...attack.hitIds],
         ...(attack.meleeHitIds ? { meleeHitIds: Object.fromEntries(Object.entries(attack.meleeHitIds).map(([key, ids]) => [key, [...ids]])) } : {}) })),
     },
-    drops: [...gameplay.drops],
     effects: [...gameplay.effects],
   };
 }

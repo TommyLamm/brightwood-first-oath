@@ -420,6 +420,10 @@ export function createWorldRenderer(
   const actorSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropSprites = new Map<string, Phaser.GameObjects.Sprite>();
   const dropLabels = new Map<string, Phaser.GameObjects.Text>();
+  let dropDrawList: {
+    source: WorldSnapshot['drops']; x: number; y: number; nowMs: number; expiresAtMs: number;
+    drops: WorldSnapshot['drops']; ids: ReadonlySet<string>;
+  } | undefined;
   const eventTexts = new Map<string, TextEffect>();
   const eventSprites = new Map<string, SpriteEffect>();
   const playedVisualEventIds = new Set<string>();
@@ -1339,11 +1343,22 @@ export function createWorldRenderer(
       }
     }
 
-    const visibleDrops = snapshot.drops
-      .filter((drop) => drop.expiresAtMs > snapshot.nowMs)
-      .sort((a, b) => vectorDistanceSquared(a.position, snapshot.player.movement.position) - vectorDistanceSquared(b.position, snapshot.player.movement.position))
-      .slice(0, DROP_DRAW_LIMIT);
-    const visibleDropIds = new Set(visibleDrops.map((drop) => drop.id));
+    const dropObserver = snapshot.player.movement.position;
+    if (!dropDrawList || dropDrawList.source !== snapshot.drops
+      || snapshot.nowMs < dropDrawList.nowMs || snapshot.nowMs >= dropDrawList.expiresAtMs
+      || (dropDrawList.drops.length > 1 && (dropObserver.x !== dropDrawList.x || dropObserver.y !== dropDrawList.y))) {
+      const drops = snapshot.drops
+        .filter((drop) => drop.expiresAtMs > snapshot.nowMs)
+        .sort((a, b) => vectorDistanceSquared(a.position, dropObserver) - vectorDistanceSquared(b.position, dropObserver))
+        .slice(0, DROP_DRAW_LIMIT);
+      dropDrawList = {
+        source: snapshot.drops,
+        x: dropObserver.x, y: dropObserver.y, nowMs: snapshot.nowMs,
+        expiresAtMs: drops.reduce((earliest, drop) => Math.min(earliest, drop.expiresAtMs), Infinity),
+        drops, ids: new Set(drops.map((drop) => drop.id)),
+      };
+    }
+    const { drops: visibleDrops, ids: visibleDropIds } = dropDrawList;
     for (const [dropId, sprite] of dropSprites) {
       if (!visibleDropIds.has(dropId)) {
         sprite.destroy();
@@ -1771,6 +1786,7 @@ export function createWorldRenderer(
           }
         }
         dropSprites.clear();
+        dropDrawList = undefined;
         for (const label of dropLabels.values()) label.destroy();
         dropLabels.clear();
         destroyMonsterNames();
@@ -1843,6 +1859,7 @@ export function createWorldRenderer(
       drawnActors.clear();
       actorAnimationClocks.clear();
       dropSprites.clear();
+      dropDrawList = undefined;
       for (const effect of eventTexts.values()) effect.object.destroy();
       eventTexts.clear();
       hpGraphics.destroy();
