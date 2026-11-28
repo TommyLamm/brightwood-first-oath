@@ -17,6 +17,7 @@ import { deriveActiveGuard } from './guard-status.js';
 import { classCatalog } from '../content/world/class-quests.js';
 import { canChooseSpecialization } from '../content/rules/specializations.js';
 import { effectiveJob } from '../content/rules/jobs.js';
+import { isBossMonster } from '../content/rules/monsters.js';
 
 export type StartupStatus = 'loading' | 'ready' | 'incomplete';
 
@@ -129,6 +130,9 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
   const playerId = gameplay?.playerEntityId;
   const mapId = saveData?.location.mapId;
   const map = mapId ? catalog.world.maps[mapId] : undefined;
+  const boss = map?.boss && (state.screen === 'playing' || state.screen === 'paused')
+    ? gameplay?.monsters.find(({ hp, monsterId }) => hp > 0 && isBossMonster(monsterId)) : undefined;
+  const bossDefinition = boss ? catalog.rules.monsters[boss.monsterId] : undefined;
   const player = saveData?.player;
   const canShowInteractionHint = canShowContextHints(state);
   let interactionHint: UiSnapshot['interactionHint'] = null;
@@ -202,6 +206,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
     ...(state.startupIssues.length > 0 ? { error: state.startupIssues.at(-1) } : {}),
     saveData,
     stats,
+    bossVitals: boss && bossDefinition ? { name: bossDefinition.name, hp: boss.hp, maxHp: bossDefinition.maxHp } : null,
     questViews,
     catalog,
     interfaceManifest: state.assetManifests?.find((manifest) => manifest.pack === 'interface') ?? null,

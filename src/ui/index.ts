@@ -631,6 +631,14 @@ export function createUi(
   keyGuide.append(keyGuideToggle, keyGuideCard);
 
   const hud = makeElement(document, 'div', 'ms-hud');
+  const bossVitals = makeElement(document, 'div', 'ms-boss-vitals');
+  bossVitals.hidden = true;
+  const bossHeading = makeElement(document, 'div', 'ms-boss-vitals__heading');
+  const bossName = makeElement(document, 'strong');
+  const bossHealth = makeElement(document, 'span');
+  const bossBar = makeElement(document, 'progress', 'ms-boss-vitals__bar');
+  bossHeading.append(bossName, bossHealth);
+  bossVitals.append(bossHeading, bossBar);
   const profile = makeElement(document, 'section', 'ms-card ms-profile');
   const quickbar = makeElement(document, 'section', 'ms-quickbar');
   const mapCard = makeElement(document, 'section', 'ms-card ms-map-indicator');
@@ -720,7 +728,7 @@ export function createUi(
   systemControls.append(keyGuide, pauseButton);
   header.append(mapCard, systemControls);
   region.append(header, interactionHintRow, questTracker);
-  hud.append(region);
+  hud.append(bossVitals, region);
   bottomBar.append(profile, quickbar, controls);
 
   const quickSlots = makeElement(document, 'div', 'ms-quickbar__slots');
@@ -1081,6 +1089,21 @@ export function createUi(
     lastMapCoins = coins;
     mapCoins.hidden = coins === null;
     if (coins !== null) mapCoins.textContent = '金幣 ' + formatNumber(coins);
+  };
+
+  const renderBossVitals = ({ bossVitals: boss }: UiSnapshot): void => {
+    const hidden = !boss;
+    if (bossVitals.hidden !== hidden) bossVitals.hidden = hidden;
+    if (!boss) return;
+    if (bossName.textContent !== boss.name) {
+      bossName.textContent = boss.name;
+      bossBar.setAttribute('aria-label', boss.name + '生命值');
+    }
+    if (bossBar.max !== boss.maxHp || bossBar.value !== boss.hp) {
+      bossBar.max = boss.maxHp;
+      bossBar.value = boss.hp;
+      bossHealth.textContent = formatNumber(boss.hp) + ' / ' + formatNumber(boss.maxHp);
+    }
   };
 
   const renderQuestTracker = (view: UiSnapshot): void => {
@@ -2651,6 +2674,7 @@ export function createUi(
       || view.screen === 'title' || view.screen === 'create' || view.screen === 'loading' || view.screen === 'error');
     renderProfile(view);
     renderMapIndicator(view);
+    renderBossVitals(view);
     updateQuickButtons(view);
     const gameWasCovered = !screenLayer.hidden;
     renderScreen(view);

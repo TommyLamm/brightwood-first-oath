@@ -64,6 +64,25 @@
   min-width: 0;
 }
 
+.ms-boss-vitals {
+  flex: 0 1 clamp(150px, 21cqw, 275px);
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid #9a6b54;
+  border-radius: 5px;
+  color: #fff0d3;
+  background: #30252af2;
+  box-shadow: 0 2px 6px #17101d80;
+  pointer-events: none;
+}
+.ms-boss-vitals__heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 11px; }
+.ms-boss-vitals__heading strong { font-size: 13px; }
+.ms-boss-vitals__heading span { font-variant-numeric: tabular-nums; }
+.ms-boss-vitals__bar { display: block; appearance: none; width: 100%; height: 6px; margin-top: 3px; border: 0; border-radius: 4px; overflow: hidden; background: #513640; }
+.ms-boss-vitals__bar::-webkit-progress-bar { background: #513640; }
+.ms-boss-vitals__bar::-webkit-progress-value { background: #f39574; }
+.ms-boss-vitals__bar::-moz-progress-bar { background: #f39574; }
+
 .ms-profile {
   position: relative;
   display: grid;

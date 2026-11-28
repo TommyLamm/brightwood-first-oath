@@ -110,6 +110,16 @@ describe('base experience UI snapshot', () => {
     expect(snapshotFor(gameplay)?.interactionHint?.actionLabel).toBe('回復 MP');
   });
 
+  it('uses the living arena boss for the status bar', () => {
+    const gameplay = newGameplay();
+    expect(snapshotFor(gameplay)?.bossVitals).toBeNull();
+    gameplay.saveData.location = { mapId: 'guardian-arena', spawnId: 'entry' };
+    const definition = catalog.rules.monsters.guardian!;
+    gameplay.monsters = [{ ...gameplay.monsters[0]!, monsterId: definition.id, hp: definition.maxHp - 10 }];
+    expect(snapshotFor(gameplay)?.bossVitals).toEqual({ name: definition.name, hp: definition.maxHp - 10, maxHp: definition.maxHp });
+    expect(snapshotFor(gameplay, { screen: 'result' })?.bossVitals).toBeNull();
+  });
+
   it('defaults absent runtime data safely and suppresses world hints behind the resume gate', () => {
     const empty = createUiSnapshot({
       ...createInitialAppState(2, 'base-experience-ui-snapshot-empty'),
