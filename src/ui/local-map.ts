@@ -3,7 +3,7 @@ import type { UiSnapshot } from '../contracts/ports.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import type { QuestTargets } from '../domain/quests/selection.js';
-import { npcServiceCueAppearance, questCueAppearance } from '../render/quest-guidance.js';
+import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
@@ -19,7 +19,7 @@ function positionMarker(element: HTMLElement, point: Vec2): void {
 /** Read-only terrain guide: no map travel, encounter state or save writes. */
 export function buildLocalMap(
   document: Document, view: UiSnapshot, map: MapDef, focus: LocalMapFocus | null | undefined,
-  questExitId: string | null, targets: QuestTargets,
+  questExitId: string | null, targets: QuestTargets, npcState?: QuestNpcCueState,
 ): HTMLDetailsElement {
   const details = document.createElement('details');
   details.className = 'ms-local-map'; details.dataset.detailId = 'local-terrain:' + map.id;
@@ -50,11 +50,12 @@ export function buildLocalMap(
   chart.append(terrain);
   const legend = text(document, 'ul', 'ms-local-map__legend', '');
   const codes = { npc: 'N', portal: 'P', monster: 'M' } as const;
-  const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false) => {
+  const marker = (kind: keyof typeof codes, index: number, position: Vec2, label: string, highlighted = false, state?: QuestNpcCueState) => {
     const code = codes[kind] + (index + 1);
     const mark = text(document, 'span', 'ms-local-map__marker is-' + kind, code);
     positionMarker(mark, localMapPoint(map, position)!); mark.title = label; chart.append(mark);
-    const entry = text(document, 'li', '', code + ' · ' + (highlighted ? '目標：' : '') + label);
+    const tag = state === 'ready' ? '可交付任務 · ' : state === 'available' ? '可接取任務 · ' : highlighted ? '目標：' : '';
+    const entry = text(document, 'li', '', code + ' · ' + tag + label);
     if (highlighted) {
       mark.classList.add('is-target');
       entry.classList.add('is-target');
@@ -62,7 +63,7 @@ export function buildLocalMap(
         entry.setAttribute('aria-current', 'true');
         details.open = true;
       }
-      const appearance = questCueAppearance[kind];
+      const appearance = questCueStyle(kind, state);
       const cue = text(document, 'span', 'ms-local-map__cue', appearance.symbol);
       cue.style.color = '#' + appearance.color.toString(16);
       mark.prepend(cue);
@@ -80,7 +81,7 @@ export function buildLocalMap(
     const appearance = service ? npcServiceCueAppearance[service] : undefined;
     const label = (npc?.name ?? npcId) + (appearance ? ' · ' + appearance.label : '');
     const highlighted = focus?.kind === 'npc' ? npcId === focus.id : targets.npcs.has(npcId);
-    const mark = marker('npc', index, placement, label, highlighted);
+    const mark = marker('npc', index, placement, label, highlighted, highlighted && targets.npcs.has(npcId) ? npcState : undefined);
     if (service && appearance) {
       const badge = text(document, 'span', 'ms-local-map__service is-' + service, appearance.symbol);
       badge.style.color = '#' + appearance.color.toString(16);
