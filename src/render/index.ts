@@ -303,13 +303,13 @@ function frameKey(imageKey: string, frame: number): string {
   return `__render_${encodeURIComponent(imageKey)}_${frame}`;
 }
 
-function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob): Set<string> {
+function imageKeysForMap(map: MapDef, catalog: ContentCatalog, job?: PlayerJob) {
+  const encounterKeys = mapDropImageKeys(map, catalog);
   const keys = new Set<string>([
     ...BACKGROUND_LAYERS.map(({ name }) => backgroundImageKey(map, name)),
     ...HERO_IMAGE_KEYS,
     'vfx:arrow',
     ...requiredTerrainImageKeys(map),
-    ...mapDropImageKeys(map, catalog),
   ]);
   for (const pose of ['archer', 'mage', 'rogue']) {
     if (job && job !== pose) continue;
@@ -322,19 +322,20 @@ function requiredImageKeys(map: MapDef, catalog: ContentCatalog, job?: PlayerJob
   }
   for (const placement of map.npcs) {
     const npc = catalog.world.npcs[placement.npcId];
-    if (npc) keys.add(npc.actorKey);
+    if (npc) encounterKeys.add(npc.actorKey);
   }
   for (const spawn of map.monsters) {
     const monster = catalog.rules.monsters[spawn.monsterId];
-    if (monster) keys.add(monster.actorKey);
+    if (monster) encounterKeys.add(monster.actorKey);
   }
+  for (const key of encounterKeys) keys.add(key);
   for (const item of Object.values(catalog.rules.items)) {
     if ((item.kind === 'weapon' || item.kind === 'hat') && item.visualKey
       && (!job || canEquipForJob({ job }, item))) {
       keys.add(item.visualKey);
     }
   }
-  return keys;
+  return { keys, encounterKeys };
 }
 
 function missingRequiredAnimations(map: MapDef, catalog: ContentCatalog, assets: RendererAssets): string[] {
@@ -471,6 +472,8 @@ export function createWorldRenderer(
   const telegraphGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.telegraph);
   const attackGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.attack);
   let activeVisual: MapVisual | null = null;
+  let activeEncounterKeys = new Set<string>();
+  let previousEncounterKeys = new Set<string>();
   let followedPlayerId: WorldSnapshot['player']['id'] | null = null;
   let disposed = false;
   let activeLoadCancel: (() => void) | null = null;
@@ -1717,7 +1720,7 @@ export function createWorldRenderer(
         ...map.monsters.filter((spawn) => !catalog.rules.monsters[spawn.monsterId]).map((spawn) => `monster:${spawn.monsterId}`),
       ];
       if (missingCatalogRefs.length > 0) throw new RendererAssetError(`地圖引用未知內容：${missingCatalogRefs.join(', ')}`, missingCatalogRefs);
-      const requestedKeys = requiredImageKeys(map, catalog, job);
+      const { keys: requestedKeys, encounterKeys } = imageKeysForMap(map, catalog, job);
       const requestedImages = requireImages(requestedKeys);
       const missingAnimations = missingRequiredAnimations(map, catalog, assets);
       if (missingAnimations.length > 0) {
@@ -1768,6 +1771,12 @@ export function createWorldRenderer(
             if (!candidate.environmentTextureKeys.has(key) && ownedTextureKeys.has(key)) removeTexture(key);
           }
         }
+        // Keep the last area's actors and loot warm for backtracking, then release textures no longer used.
+        for (const key of previousEncounterKeys) {
+          if (!activeEncounterKeys.has(key) && !requestedKeys.has(key) && ownedTextureKeys.has(key)) removeTexture(key);
+        }
+        previousEncounterKeys = activeEncounterKeys;
+        activeEncounterKeys = encounterKeys;
       } catch (error) {
         for (const key of newlyLoaded) removeTexture(key);
         if (error instanceof Error) throw error;
@@ -1832,7 +1841,10 @@ export function createWorldRenderer(
       for (const sprite of attackEffectSprites.values()) sprite.destroy();
       attackEffectSprites.clear();
       playedVisualEventIds.clear();
-      // Shared actor, gear and interface textures stay in the Scene for reuse.
+      for (const key of new Set([...activeEncounterKeys, ...previousEncounterKeys])) {
+        if (ownedTextureKeys.has(key)) removeTexture(key);
+      }
+      // Shared hero, gear and interface textures stay in the Scene for reuse.
       ownedTextureKeys.clear();
       loadedImages.clear();
     },
