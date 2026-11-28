@@ -19,6 +19,7 @@
 .ms-atlas-routes path.is-open { stroke: #3d6c4c; stroke-width: 3; }
 .ms-atlas-routes path.is-locked { stroke-opacity: .7; }
 .ms-atlas-routes path.is-quest-route { stroke: #7047af; stroke-width: 4px; stroke-dasharray: none; filter: drop-shadow(0 0 1px #fff4d1); }
+.ms-atlas-route-arrow { fill: #7047af; stroke: #fff4d1; stroke-width: 1.2; stroke-linejoin: round; }
 .maple-ui .ms-atlas-landmark { position: absolute; z-index: 3; display: grid; justify-items: center; gap: 1px; min-width: 84px; min-height: 50px; padding: 0; transform: translate(-50%, -12px); border: 0; background: none; box-shadow: none; color: #513820; cursor: pointer; }
 .maple-ui .ms-atlas-landmark:hover:not(:disabled) { transform: translate(-50%, -12px); filter: brightness(1.08); }
 .maple-ui .ms-atlas-landmark:hover::after { content: none; }

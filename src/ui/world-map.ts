@@ -148,8 +148,8 @@ export function buildWorldMap(
   const questPin = questCueStyle(npcState ? 'npc' : 'portal', npcState);
   const questRoute = quest ? findTrackedQuestRoute(data, view.catalog, view.questViews, quest.questId) : null;
   const exit = questRoute?.steps[0]?.exitId ?? null;
-  const questPairs = new Set(questRoute?.steps.map(({ fromMapId, toMapId }) => routePair(fromMapId, toMapId)));
-  const routes = buildRoutes(document, view, atlas.maps, landmarks, atlas.scope, questPairs);
+  const questOrigins = new Map(questRoute?.steps.map(({ fromMapId, toMapId }) => [routePair(fromMapId, toMapId), fromMapId]));
+  const routes = buildRoutes(document, view, atlas.maps, landmarks, atlas.scope, questOrigins);
   chart.append(routes);
   for (const map of atlas.maps) {
     const landmark = landmarks[map.id];
@@ -229,7 +229,7 @@ export function buildWorldMap(
   );
   if (hasQuestPin) legend.append(element(document, 'span', '', questPin.symbol + ' ' + questPinLabel));
   if (routes.querySelector('.is-quest-route')) {
-    legend.append(element(document, 'span', 'ms-atlas-legend-route', '━ 任務路線'));
+    legend.append(element(document, 'span', 'ms-atlas-legend-route', '➜ 任務路線'));
   }
   if (atlas.scope === 'world' && PLANNED_REGIONS.some(({ id }) => id === 'planned-golden-sands' && sandOverview.totalCount === 0
     || id === 'planned-ancient-ruins' && ruinsOverview.totalCount === 0)) {
@@ -252,15 +252,34 @@ function buildRoutes(
   maps: UiSnapshot['catalog']['world']['maps'][string][],
   landmarks: Record<string, MapLandmark>,
   scope: AtlasScope,
-  questPairs: ReadonlySet<string>,
+  questOrigins: ReadonlyMap<string, string>,
 ): SVGSVGElement {
-  const routes = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const svg = 'http://www.w3.org/2000/svg';
+  const routes = document.createElementNS(svg, 'svg');
   routes.setAttribute('viewBox', '0 0 100 100');
   routes.setAttribute('preserveAspectRatio', 'none');
   routes.setAttribute('class', 'ms-atlas-routes');
   routes.setAttribute('aria-hidden', 'true');
   const pairs = new Set<string>();
   const questRoutes: SVGPathElement[] = [];
+  if (questOrigins.size > 0) {
+    const defs = document.createElementNS(svg, 'defs');
+    const marker = document.createElementNS(svg, 'marker');
+    marker.id = 'ms-atlas-route-arrow';
+    marker.setAttribute('viewBox', '0 0 12 12');
+    marker.setAttribute('markerUnits', 'userSpaceOnUse');
+    marker.setAttribute('markerWidth', '3.5');
+    marker.setAttribute('markerHeight', '3.5');
+    marker.setAttribute('refX', '6');
+    marker.setAttribute('refY', '6');
+    marker.setAttribute('orient', 'auto');
+    const arrow = document.createElementNS(svg, 'polygon');
+    arrow.setAttribute('points', '1,1 11,6 1,11 3,6');
+    arrow.setAttribute('class', 'ms-atlas-route-arrow');
+    marker.append(arrow);
+    defs.append(marker);
+    routes.append(defs);
+  }
   const routeMaps = scope === 'world' ? Object.values(view.catalog.world.maps) : maps;
   const coordinate = (mapId: string): { x: number; y: number } | undefined => {
     const mapScope = atlasScopeForMapId(mapId);
@@ -287,13 +306,20 @@ function buildRoutes(
       if (pairs.has(pair)) continue;
       pairs.add(pair);
       const open = portalRequirements(portal, view.saveData!, view.catalog).open;
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const path = document.createElementNS(svg, 'path');
       const midpointX = (from.x + to.x) / 2;
-      path.setAttribute('d', 'M ' + from.x + ' ' + from.y + ' Q ' + midpointX + ' ' + (Math.min(from.y, to.y) - 2) + ' ' + to.x + ' ' + to.y);
-      if (questPairs.has(pair)) {
+      const controlY = Math.min(from.y, to.y) - 2;
+      const questOrigin = questOrigins.get(pair);
+      if (questOrigin) {
+        const [start, end] = questOrigin === map.id ? [from, to] : [to, from];
+        // Split the same curve at its midpoint so the marker has a tangent and room away from pins.
+        const midpointY = (start.y + 2 * controlY + end.y) / 4;
+        path.setAttribute('d', `M ${start.x} ${start.y} Q ${(start.x + midpointX) / 2} ${(start.y + controlY) / 2} ${midpointX} ${midpointY} Q ${(midpointX + end.x) / 2} ${(controlY + end.y) / 2} ${end.x} ${end.y}`);
         path.setAttribute('class', 'is-quest-route');
+        path.setAttribute('marker-mid', 'url(#ms-atlas-route-arrow)');
         questRoutes.push(path);
       } else {
+        path.setAttribute('d', `M ${from.x} ${from.y} Q ${midpointX} ${controlY} ${to.x} ${to.y}`);
         path.setAttribute('class', open ? 'is-open' : 'is-locked');
         routes.append(path);
       }
