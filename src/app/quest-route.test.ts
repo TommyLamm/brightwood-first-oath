@@ -4,7 +4,7 @@ import { rulesCatalog } from '../content/rules/index.js';
 import { worldCatalog } from '../content/world/index.js';
 import { getQuestViews } from '../domain/quests/index.js';
 import { startNewGame } from './gameplay.js';
-import { findQuestExit } from './quest-route.js';
+import { findQuestExit, findTrackedQuestRoute } from './quest-route.js';
 
 const catalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -30,6 +30,13 @@ describe('tracked quest exits', () => {
     const save = investigating();
     const views = getQuestViews(save, catalog);
     expect(findQuestExit(save, catalog, views, 'q04')).toBe('town:east');
+    expect(findTrackedQuestRoute(save, catalog, views, 'q04')).toEqual({
+      mapId: 'mushroom-wood',
+      steps: [
+        { fromMapId: 'town', toMapId: 'forest-edge', exitId: 'town:east' },
+        { fromMapId: 'forest-edge', toMapId: 'mushroom-wood', exitId: 'forest-edge:east' },
+      ],
+    });
     const forest = { ...save, location: { mapId: 'forest-edge', spawnId: 'left' } };
     expect(findQuestExit(forest, catalog, views, 'q04')).toBe('forest-edge:east');
     const destination = { ...save, location: { mapId: 'mushroom-wood', spawnId: 'left' } };

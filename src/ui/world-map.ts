@@ -1,5 +1,5 @@
 import type { UiSnapshot } from '../contracts/ports.js';
-import { findQuestExit } from '../app/quest-route.js';
+import { findTrackedQuestRoute } from '../app/quest-route.js';
 import { questDestinationMapIds, questTargets, selectTrackerQuest, type QuestTargets } from '../domain/quests/selection.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
 import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
@@ -145,10 +145,10 @@ export function buildWorldMap(
   const npcState = quest?.status === 'available' || quest?.status === 'ready' ? quest.status : undefined;
   const questPinLabel = npcState === 'ready' ? '可交付任務' : npcState === 'available' ? '可接取任務' : '任務目標';
   const questPin = questCueStyle(npcState ? 'npc' : 'portal', npcState);
-  const exit = quest ? findQuestExit(data, view.catalog, view.questViews, quest.questId) : null;
-  const nextMapId = exit ? view.catalog.world.maps[data.location.mapId]?.portals.find(({ id }) => id === exit)?.targetMapId : undefined;
-  const questPair = nextMapId ? routePair(data.location.mapId, nextMapId) : null;
-  const routes = buildRoutes(document, view, atlas.maps, landmarks, atlas.scope, questPair);
+  const questRoute = quest ? findTrackedQuestRoute(data, view.catalog, view.questViews, quest.questId) : null;
+  const exit = questRoute?.steps[0]?.exitId ?? null;
+  const questPairs = new Set(questRoute?.steps.map(({ fromMapId, toMapId }) => routePair(fromMapId, toMapId)));
+  const routes = buildRoutes(document, view, atlas.maps, landmarks, atlas.scope, questPairs);
   chart.append(routes);
   for (const map of atlas.maps) {
     const landmark = landmarks[map.id];
@@ -190,8 +190,8 @@ export function buildWorldMap(
     }
   }
 
-  const destination = resolveQuestMapTarget(view.catalog.world, data, quest);
-  const questMapIds = destination ? new Set([destination.id])
+  const destination = questRoute?.mapId ?? resolveQuestMapTarget(view.catalog.world, data, quest)?.id;
+  const questMapIds = destination ? new Set([destination])
     : questDestinationMapIds(view.catalog.world, targets);
   let hasQuestPin = false;
   if (quest && questMapIds.size > 0) {
@@ -228,7 +228,7 @@ export function buildWorldMap(
   );
   if (hasQuestPin) legend.append(element(document, 'span', '', questPin.symbol + ' ' + questPinLabel));
   if (routes.querySelector('.is-quest-route')) {
-    legend.append(element(document, 'span', 'ms-atlas-legend-route', '━ 下一段任務路線'));
+    legend.append(element(document, 'span', 'ms-atlas-legend-route', '━ 任務路線'));
   }
   if (atlas.scope === 'world' && PLANNED_REGIONS.some(({ id }) => id === 'planned-golden-sands' && sandOverview.totalCount === 0
     || id === 'planned-ancient-ruins' && ruinsOverview.totalCount === 0)) {
@@ -251,7 +251,7 @@ function buildRoutes(
   maps: UiSnapshot['catalog']['world']['maps'][string][],
   landmarks: Record<string, MapLandmark>,
   scope: AtlasScope,
-  questPair: string | null,
+  questPairs: ReadonlySet<string>,
 ): SVGSVGElement {
   const routes = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   routes.setAttribute('viewBox', '0 0 100 100');
@@ -259,7 +259,7 @@ function buildRoutes(
   routes.setAttribute('class', 'ms-atlas-routes');
   routes.setAttribute('aria-hidden', 'true');
   const pairs = new Set<string>();
-  let questRoute: SVGPathElement | undefined;
+  const questRoutes: SVGPathElement[] = [];
   const routeMaps = scope === 'world' ? Object.values(view.catalog.world.maps) : maps;
   const coordinate = (mapId: string): { x: number; y: number } | undefined => {
     const mapScope = atlasScopeForMapId(mapId);
@@ -289,16 +289,16 @@ function buildRoutes(
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       const midpointX = (from.x + to.x) / 2;
       path.setAttribute('d', 'M ' + from.x + ' ' + from.y + ' Q ' + midpointX + ' ' + (Math.min(from.y, to.y) - 2) + ' ' + to.x + ' ' + to.y);
-      if (pair === questPair) {
+      if (questPairs.has(pair)) {
         path.setAttribute('class', 'is-quest-route');
-        questRoute = path;
+        questRoutes.push(path);
       } else {
         path.setAttribute('class', open ? 'is-open' : 'is-locked');
         routes.append(path);
       }
     }
   }
-  if (questRoute) routes.append(questRoute);
+  routes.append(...questRoutes);
   return routes;
 }
 
