@@ -10,6 +10,13 @@ export const combatTrialActions: ReadonlyMap<string, string> = new Map([
   [ROGUE_TRIAL_IDS[1], '連刺兩段'],
   [ROGUE_TRIAL_IDS[2], '避開預警'],
 ]);
+
+export function combatTrialAttack(targetId: string): { action: 'attack' | 'skill1'; label: string } | undefined {
+  const label = combatTrialActions.get(targetId);
+  if (!label || targetId === ROGUE_TRIAL_IDS[2]) return undefined;
+  return { action: targetId === ROGUE_TRIAL_IDS[1] ? 'skill1' : 'attack', label };
+}
+
 export const BOW_BY_SWORD: Readonly<Record<string, string>> = {
   'starter-sword': 'starter-bow', 'iron-sword': 'iron-bow', 'steel-sword': 'steel-bow',
   'guardian-sword': 'guardian-bow', 'frost-tide-sword': 'frost-tide-bow', 'sunwell-oathblade': 'sunwell-oathbow',

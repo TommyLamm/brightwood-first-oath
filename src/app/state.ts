@@ -14,7 +14,7 @@ import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
-import { classCatalog } from '../content/world/class-quests.js';
+import { classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
 import { canChooseSpecialization } from '../content/rules/specializations.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { isBossMonster } from '../content/rules/monsters.js';
@@ -164,6 +164,11 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
       const npc = catalog.world.npcs[target.placement.npcId];
       if (npc) {
         const questStatus = questMarkerStates(questViews, catalog.world.quests).get(npc.id);
+        const trialAttack = combatTrialAttack(npc.id);
+        const trial = trialAttack && questViews.find(({ questId }) => questId === 'q02');
+        const unfinishedTrialTarget = trial && trial.status === 'active' && trial.objectives.some(
+          ({ type, targetId, current, required }) => type === 'inspect' && targetId === npc.id && current < required,
+        );
         let actionLabel = npc.role === 'merchant' ? '開啟商店'
           : npc.actorKey === 'actor:ruins-stele' ? '查看' : undefined;
         if (npc.role === 'healer' && stats) {
@@ -179,6 +184,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
           kind: 'npc',
           label: npc.name,
           ...(actionLabel ? { actionLabel } : {}),
+          ...(unfinishedTrialTarget ? { trialAttack } : {}),
           ...(questStatus ? { questStatus } : {}),
           blockedMessage: null,
         };

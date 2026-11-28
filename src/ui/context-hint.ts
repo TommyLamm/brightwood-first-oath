@@ -26,16 +26,23 @@ function pickupParts(pickup: NonNullable<UiSnapshot['pickupHint']>, key: HintPar
 
 export function contextHint(
   view: Pick<UiSnapshot, 'interactionHint' | 'movementHint' | 'pickupHint'>,
-  keyText: (action: MovementKey | 'interact' | 'pickup') => string,
+  keyText: (action: MovementKey | 'interact' | 'pickup' | 'attack' | 'skill1') => string,
 ): ContextHint | null {
-  const key = (action: Parameters<typeof keyText>[0]) => ({ key: keyText(action) });
+  const key = (action: Parameters<typeof keyText>[0]) => {
+    const label = keyText(action);
+    return { key: label === '左／右 Ctrl' ? 'Ctrl' : label };
+  };
   const interaction = view.interactionHint;
   const pickup = view.pickupHint;
   const movement = view.movementHint;
   const canCollectBeforeTravel = interaction?.kind === 'portal' && interaction.blockedMessage
     && pickup && !pickup.blockedMessage;
   if (interaction && !canCollectBeforeTravel) {
-    const parts: HintPart[] = [
+    const trial = interaction.trialAttack;
+    const parts: HintPart[] = trial ? [
+      key(trial.action), ' ' + trial.label + '：' + interaction.label,
+      '｜', key('interact'), ' 查看說明',
+    ] : [
       key('interact'),
       ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
         + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),

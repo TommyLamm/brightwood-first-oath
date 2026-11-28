@@ -218,6 +218,7 @@ export type UiSnapshot = {
     kind: 'npc' | 'portal';
     label: string;
     actionLabel?: string;
+    trialAttack?: { action: 'attack' | 'skill1'; label: string };
     questStatus?: 'available' | 'ready';
     blockedMessage: string | null;
   } | null;

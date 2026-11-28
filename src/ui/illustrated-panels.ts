@@ -4,6 +4,7 @@ import type { UiSnapshot } from '../contracts/ports.js';
 import { decorateControl } from './control-art.js';
 import type { QuestView } from '../contracts/definitions.js';
 import { questDropByQuest } from '../content/rules/index.js';
+import { combatTrialAttack } from '../content/world/class-quests.js';
 import { previewApAllocation } from './ap-allocation-preview.js';
 import { resolveNpcMapTarget } from './npc-map-target.js';
 import { inspectObjectiveAction } from './quest-tracker.js';
@@ -232,7 +233,9 @@ export function objectivePlaces(
     .filter(([mapId, map]) => reachableMaps.has(mapId) && map.monsters.some(({ monsterId }) => monsterIds.has(monsterId)))
     .map(([, map]) => map.name).join('／');
 }
-export function buildVisualQuests(document: Document, view: UiSnapshot, selectedId: string | null): HTMLElement {
+export function buildVisualQuests(
+  document: Document, view: UiSnapshot, selectedId: string | null, keyText: (action: 'attack' | 'skill1') => string,
+): HTMLElement {
   const root = node(document, 'div', 'ms-visual-journal');
   const quests = view.questViews;
   const selected = chooseJournalQuest(quests, selectedId);
@@ -299,7 +302,10 @@ export function buildVisualQuests(document: Document, view: UiSnapshot, selected
       const verb = objective.type === 'inspect' ? inspectObjectiveAction(objective.targetId)
         : { kill: '擊敗', collect: '收集', equip: '裝備', reach: '抵達' }[objective.type];
       const action = node(document, 'span', 'ms-journal-objective__verb ms-journal-cue-label');
-      action.append(makeQuestCueBadge(document, questObjectiveCue(objective)), document.createTextNode(verb));
+      action.append(makeQuestCueBadge(document, questObjectiveCue(objective)));
+      const trial = selected.status === 'active' && !done && objective.type === 'inspect' && combatTrialAttack(objective.targetId);
+      if (trial) action.append(node(document, 'kbd', 'ms-quest-guide-key', keyText(trial.action)));
+      action.append(verb);
       target.append(action, node(document, 'strong', '', targetName ?? objective.targetId));
       const place = objectivePlaces(view, selected.questId, objective);
       if (place) target.append(node(document, 'small', '', place));

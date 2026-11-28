@@ -461,6 +461,7 @@
 }
 
 .ms-interaction-hint kbd,
+.ms-quest-guide-key,
 .ms-skill-card__key {
   display: inline-block;
   min-inline-size: 1.65em;

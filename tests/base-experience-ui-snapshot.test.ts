@@ -4,6 +4,7 @@ import { createInitialAppState, createUiSnapshot } from '../src/app/state.js';
 import { startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
 import { worldCatalog } from '../src/content/world/index.js';
+import { contextHint } from '../src/ui/context-hint.js';
 
 const catalog: ContentCatalog = { rules: rulesCatalog, world: worldCatalog };
 
@@ -92,6 +93,35 @@ describe('base experience UI snapshot', () => {
       label: '木葉鎮',
       blockedMessage: '向森芽接取並完成「第一次出發」後才能前往木葉鎮。',
     });
+  });
+
+  it('prompts the correct attack only by unfinished combat trial targets', () => {
+    const gameplay = newGameplay('rogue');
+    gameplay.saveData.location = { mapId: 'town', spawnId: 'center' };
+    const standBy = (id: string) => {
+      const target = worldCatalog.maps.town!.npcs.find(({ npcId }) => npcId === id)!;
+      gameplay.movement.position = { x: target.x, y: target.y };
+    };
+    standBy('rogue-target-double');
+    expect(snapshotFor(gameplay)?.interactionHint?.trialAttack).toBeUndefined();
+
+    gameplay.saveData = { ...gameplay.saveData, quests: { q02: { status: 'active', counters: { town: 1 } } } };
+    const view = snapshotFor(gameplay)!;
+    expect(view.interactionHint?.trialAttack).toEqual({ action: 'skill1', label: '連刺兩段' });
+    const keyText = (action: string) => action === 'skill1' ? 'R' : 'Space';
+    expect(contextHint(view, keyText)?.parts).toEqual([
+      { key: 'R' }, ' 連刺兩段：連刺靶・技能1', '｜', { key: 'Space' }, ' 查看說明',
+    ]);
+    standBy('rogue-target-close');
+    expect(snapshotFor(gameplay)?.interactionHint?.trialAttack?.action).toBe('attack');
+    standBy('rogue-target-evade');
+    expect(snapshotFor(gameplay)?.interactionHint?.trialAttack).toBeUndefined();
+
+    standBy('rogue-target-double');
+    gameplay.saveData = { ...gameplay.saveData, quests: {
+      q02: { status: 'active', counters: { town: 1, 'rogue-target-double': 1 } },
+    } };
+    expect(snapshotFor(gameplay)?.interactionHint?.trialAttack).toBeUndefined();
   });
 
   it('tells the player which resources the healer can restore', () => {

@@ -48,6 +48,7 @@ import { resolveNpcMapTarget } from './npc-map-target.js';
 import { resolveQuestMapTarget, type LocalMapFocus } from './local-map-model.js';
 import { createQuestTrackerState, inspectObjectiveAction, isTrackableQuest, questTrackerSummary, selectTrackerQuest } from './quest-tracker.js';
 import { makeQuestCueBadge, questObjectiveCue, questObjectiveDropSource } from './quest-cue.js';
+import { combatTrialAttack } from '../content/world/class-quests.js';
 import { contextHint } from './context-hint.js';
 import { questCueStyle, type QuestCueKind, type QuestNpcCueState } from '../render/quest-guidance.js';
 import { createReadingPreference, type ReadingSize } from './reading-preference.js';
@@ -211,6 +212,11 @@ function effectiveKeyText(bindings: KeyBindings, action: GameAction): string {
     keyLabelsByBindings.set(bindings, labels);
   }
   return labels.get(action) ?? '未生效';
+}
+
+function questKeyText(view: UiSnapshot, action: 'attack' | 'skill1'): string {
+  const label = effectiveKeyText(view.saveData?.settings.bindings ?? DEFAULT_KEY_BINDINGS, action);
+  return label === '左／右 Ctrl' ? 'Ctrl' : label;
 }
 
 function formatKeyCodes(codes: readonly string[]): string {
@@ -511,13 +517,14 @@ function objectiveText(view: UiSnapshot, objective: TrackedObjective): string {
 
 function makeQuestGuideRow(
   document: Document, kind: QuestCueKind, text: string,
-  { count, place, npcState, icon, dropSource }: {
-    count?: string; place?: string; npcState?: QuestNpcCueState; icon?: HTMLElement; dropSource?: string;
+  { count, place, npcState, icon, dropSource, keyLabel }: {
+    count?: string; place?: string; npcState?: QuestNpcCueState; icon?: HTMLElement; dropSource?: string; keyLabel?: string;
   } = {},
 ): HTMLElement {
   const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
   const label = makeElement(document, 'span', '', text);
   if (icon) label.prepend(icon);
+  if (keyLabel) label.prepend(makeElement(document, 'kbd', 'ms-quest-guide-key', keyLabel), ' ');
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
   if (dropSource) {
     const source = makeElement(document, 'span', 'ms-quest-tracker__drop-source');
@@ -538,7 +545,10 @@ function makeObjectiveGuideRow(
     ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon') : undefined;
   icon?.setAttribute('aria-hidden', 'true');
   const dropSource = questObjectiveDropSource(view, questId, objective);
-  return makeQuestGuideRow(document, kind, objectiveLabel(view, objective), { count, icon, dropSource });
+  const trial = objective.type === 'inspect' && objective.current < objective.required && combatTrialAttack(objective.targetId);
+  return makeQuestGuideRow(document, kind, objectiveLabel(view, objective), {
+    count, icon, dropSource, keyLabel: trial ? questKeyText(view, trial.action) : undefined,
+  });
 }
 
 function preserveFocus(container: HTMLElement, renderContent: () => void, skipDisabled = false): void {
@@ -781,6 +791,7 @@ export function createUi(
   let lastQuestTracker: {
     views: UiSnapshot['questViews'];
     interfaceManifest: UiSnapshot['interfaceManifest'];
+    bindings: KeyBindings | undefined;
     mapId: string | undefined;
     chapterComplete: boolean;
     collapsed: boolean;
@@ -1104,14 +1115,16 @@ export function createUi(
   const renderQuestTracker = (view: UiSnapshot): void => {
     const chapterComplete = Boolean(view.saveData?.flags.chapterComplete);
     const mapId = view.saveData?.location.mapId;
+    const bindings = view.saveData?.settings.bindings;
     const collapsed = questTrackerState.collapsed;
     if (lastQuestTracker?.views === view.questViews && lastQuestTracker.mapId === mapId
       && lastQuestTracker.interfaceManifest === view.interfaceManifest
+      && lastQuestTracker.bindings === bindings
       && lastQuestTracker.chapterComplete === chapterComplete && lastQuestTracker.collapsed === collapsed
       && lastQuestTracker.trackedQuestId === questTrackerState.trackedQuestId) return;
     if (view.saveData) questTrackerState.reconcile(view.questViews);
     const trackedQuestId = questTrackerState.trackedQuestId;
-    lastQuestTracker = { views: view.questViews, interfaceManifest: view.interfaceManifest, mapId, chapterComplete, collapsed, trackedQuestId };
+    lastQuestTracker = { views: view.questViews, interfaceManifest: view.interfaceManifest, bindings, mapId, chapterComplete, collapsed, trackedQuestId };
     const worldComplete = deriveWorldProgress(view.saveData, view.questViews.map(({ questId }) => questId)).worldComplete;
     const quest = selectTrackerQuest(view.questViews, trackedQuestId);
     const title = quest?.title ?? (worldComplete ? '世界旅程完成' : chapterComplete ? '第一章完成' : '自由探索');
@@ -3154,7 +3167,7 @@ function buildWorldEndingFeedback(document: Document, view: UiSnapshot, showSide
 
 function buildWorldJournal(document: Document, view: UiSnapshot, selectedQuestId: string | null, trackedQuestId: string | null): HTMLElement {
   const selectedQuest = chooseJournalQuest(view.questViews, selectedQuestId);
-  const journal = buildVisualQuests(document, view, selectedQuest?.questId ?? null);
+  const journal = buildVisualQuests(document, view, selectedQuest?.questId ?? null, (action) => questKeyText(view, action));
   const banner = journal.querySelector<HTMLElement>('.ms-quest-journey');
   if (banner) {
     const image = banner.querySelector<HTMLImageElement>('img');
