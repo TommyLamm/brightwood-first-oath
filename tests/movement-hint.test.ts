@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { deriveMovementHint } from '../src/app/movement-hint.js';
 import { contextHint } from '../src/ui/context-hint.js';
-import { createMovement, stepMovement } from '../src/domain/movement/index.js';
+import { closestDirectLadder, createMovement, directLadderRoutes, stepMovement } from '../src/domain/movement/index.js';
 import { createInitialAppState, createUiSnapshot } from '../src/app/state.js';
 import { makeWorldSnapshot, startNewGame } from '../src/app/gameplay.js';
 import { rulesCatalog } from '../src/content/rules/index.js';
@@ -15,6 +15,23 @@ const keys = { climbUp: 'W', climbDown: 'S', jump: 'Space', interact: 'E', picku
   moveLeft: 'A', moveRight: 'D' };
 
 describe('contextual movement controls', () => {
+  it('guides a raised quest target through a ladder that actually reaches its platform', () => {
+    const town = worldCatalog.maps.town!;
+    const low = town.npcs.find(({ npcId }) => npcId === 'archery-target-low')!;
+    const high = town.npcs.find(({ npcId }) => npcId === 'archery-target-high')!;
+    const ground = town.footholds.find(({ y1, y2 }) => y1 === low.y && y2 === low.y)!;
+    const balcony = town.footholds.find(({ y1, x1, x2 }) => y1 === high.y && x1 <= high.x && high.x <= x2)!;
+    const player = { ...createMovement(low), mode: 'grounded' as const, footholdId: ground.id };
+
+    const routes = directLadderRoutes(town, config, [high]);
+    expect(closestDirectLadder(routes, player)).toMatchObject({ ladder: { x: 650 }, direction: 'up' });
+    expect(closestDirectLadder(directLadderRoutes(town, config, [low, high]), player)).toBeUndefined();
+    expect(closestDirectLadder(routes, { ...player, mode: 'climbing' })).toBeUndefined();
+    expect(closestDirectLadder(directLadderRoutes(town, config, [low]), {
+      ...player, position: high, footholdId: balcony.id,
+    })).toMatchObject({ ladder: { x: 650 }, direction: 'down' });
+  });
+
   it('uses the same horizontal and vertical ladder range as actual attachment', () => {
     for (const [x, y, allowed] of [[116, 500, true], [117, 500, false], [100, 650, false]] as const) {
       const state = createMovement({ x, y });

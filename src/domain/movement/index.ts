@@ -15,6 +15,12 @@ const LADDER_X_TOLERANCE = 16;
 type Foothold = MapDef['footholds'][number];
 type Ladder = MapDef['ladders'][number];
 type Landing = { foothold: Foothold; time: number; x: number; y: number };
+type DirectLadderRoute = {
+  ladder: Ladder;
+  fromId: string;
+  direction: 'up' | 'down';
+  remainingWalk: number;
+};
 
 export function createMovement(position: Vec2): MovementState {
   return {
@@ -358,6 +364,52 @@ function findLadderEndSupport(
     .sort((a, b) => Math.abs(a.y - endY) - Math.abs(b.y - endY)
       || a.foothold.id.localeCompare(b.foothold.id));
   return candidates[0] ?? null;
+}
+
+/** Identify only single-ladder routes that land on a target's actual foothold. */
+export function directLadderRoutes(map: MapDef, config: MovementConfig, targets: readonly Vec2[]): DirectLadderRoute[] {
+  const targetsByFloor = new Map<string, number[]>();
+  for (const target of targets) {
+    const floor = map.footholds.find((foothold) => target.x >= foothold.x1 && target.x <= foothold.x2
+      && Math.abs(surfaceYAtClamped(foothold, target.x) - target.y) <= GROUND_SNAP);
+    if (!floor) continue;
+    const points = targetsByFloor.get(floor.id) ?? [];
+    points.push(target.x);
+    targetsByFloor.set(floor.id, points);
+  }
+  const routes: DirectLadderRoute[] = [];
+  if (targetsByFloor.size === 0) return routes;
+  for (const ladder of map.ladders) {
+    const top = findLadderEndSupport(ladder, map, config, ladder.topY);
+    const bottom = findLadderEndSupport(ladder, map, config, ladder.bottomY);
+    if (!top || !bottom) continue;
+    const topTargets = targetsByFloor.get(top.foothold.id);
+    const bottomTargets = targetsByFloor.get(bottom.foothold.id);
+    if (topTargets && !bottomTargets) routes.push({
+      ladder, fromId: bottom.foothold.id, direction: 'up',
+      remainingWalk: Math.min(...topTargets.map((x) => Math.abs(x - ladder.x))),
+    });
+    if (bottomTargets && !topTargets) routes.push({
+      ladder, fromId: top.foothold.id, direction: 'down',
+      remainingWalk: Math.min(...bottomTargets.map((x) => Math.abs(x - ladder.x))),
+    });
+  }
+  return routes;
+}
+
+export function closestDirectLadder(routes: readonly DirectLadderRoute[], movement: MovementState): DirectLadderRoute | undefined {
+  if (movement.mode !== 'grounded') return undefined;
+  let best: DirectLadderRoute | undefined;
+  let distance = Infinity;
+  for (const route of routes) {
+    if (route.fromId !== movement.footholdId) continue;
+    const walk = Math.abs(route.ladder.x - movement.position.x) + route.remainingWalk;
+    if (walk < distance) {
+      best = route;
+      distance = walk;
+    }
+  }
+  return best;
 }
 
 function findGroundSupport(

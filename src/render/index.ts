@@ -10,6 +10,7 @@ import {
   type QuestEdgeTarget, type QuestNpcCueState, type QuestTargetKind,
 } from './quest-guidance.js';
 import { drawMovementGuide } from './movement-guidance.js';
+import { closestDirectLadder, directLadderRoutes } from '../domain/movement/index.js';
 import { mapDropImageKeys } from './map-drop-images.js';
 import { isBossMonster } from '../content/rules/monsters.js';
 import { archerMuzzle, archeryFrame } from '../contracts/archery.js';
@@ -440,6 +441,7 @@ export function createWorldRenderer(
   const attacksBySource = new Map<string, AttackInstance>();
   let questGuide: {
     views: WorldSnapshot['questViews']; trackedId: string | null; targets: QuestTargets;
+    mapId: string; climbRoutes: ReturnType<typeof directLadderRoutes>;
     markers: ReturnType<typeof questMarkerStates>; tunedSteles: ReadonlySet<string>;
     npcStatus: QuestNpcCueState | undefined;
   } | undefined;
@@ -1034,15 +1036,19 @@ export function createWorldRenderer(
     steleGlowGraphics.clear();
     guidanceGraphics.clear();
     const trackedId = snapshot.trackedQuestId ?? null;
-    if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId) {
+    if (questGuide?.views !== snapshot.questViews || questGuide.trackedId !== trackedId || questGuide.mapId !== snapshot.mapId) {
       const quest = selectTrackerQuest(snapshot.questViews, trackedId);
       const steleQuest = snapshot.questViews.find(({ questId }) => questId === 'q17');
       const tunedSteles = steleQuest?.status === 'claimed' ? STELE_NPC_IDS : new Set(steleQuest?.objectives
         .filter(({ type, current, required }) => type === 'inspect' && current >= required)
         .map(({ targetId }) => targetId));
       const npcStatus = quest?.status === 'available' || quest?.status === 'ready' ? quest.status : undefined;
-      questGuide = { views: snapshot.questViews, trackedId, targets: questTargets(quest), npcStatus,
-        markers: questMarkerStates(snapshot.questViews, catalog.world.quests), tunedSteles };
+      const targets = questTargets(quest);
+      const climbRoutes = targets.monsters.size === 0 && targets.npcs.size > 0
+        ? directLadderRoutes(activeVisual.map, catalog.rules.movement,
+          activeVisual.map.npcs.filter(({ npcId }) => targets.npcs.has(npcId))) : [];
+      questGuide = { views: snapshot.questViews, trackedId, targets, npcStatus,
+        mapId: snapshot.mapId, climbRoutes, markers: questMarkerStates(snapshot.questViews, catalog.world.quests), tunedSteles };
     }
     const { targets, markers, tunedSteles, npcStatus } = questGuide;
     attacksBySource.clear();
@@ -1469,6 +1475,16 @@ export function createWorldRenderer(
         if (healerOnFreeEdge) drawServiceCue(guidanceGraphics, 'healer', x, y, direction);
         else drawSpecializationCue(guidanceGraphics, x, y, direction);
         showEdgeLabel(assistance.label, assistance.cue, questEdgeDirection ? oppositeQuestEdgeLabel : questEdgeLabel);
+      }
+    }
+    const climb = !questExit && closestDirectLadder(questGuide.climbRoutes, snapshot.player.movement);
+    if (climb && !(snapshot.movementGuide?.kind === 'climb' && snapshot.movementGuide.ladder.id === climb.ladder.id)) {
+      const { ladder, direction } = climb;
+      const entranceY = direction === 'up' ? ladder.bottomY : ladder.topY;
+      if (!questEdgeCue({ x: ladder.x + 22, y: entranceY - 18 }, viewport)) {
+        drawMovementGuide(guidanceGraphics, {
+          kind: 'climb', targetKey: 'climb:' + ladder.id, attached: false, direction, ladder,
+        }, entranceY, questCueAppearance.portal.color);
       }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
