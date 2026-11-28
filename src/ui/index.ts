@@ -1598,7 +1598,25 @@ export function createUi(
           button.append(makeInterfaceIcon(document,view,route === 'swordsman' ? 'skill:heavy-strike' : 'skill:' + jobs[route].basicSkill,jobs[route].name,'ms-route-icon'));
           routes.append(button);
         }
-        card.append(routes, makeElement(document, 'p', 'ms-screen-card__save', plannedJobDraft === 'rogue'
+        card.append(routes);
+        const route = jobs[plannedJobDraft];
+        const weapon = view.catalog.rules.items[route.starterWeapon];
+        const firstSkill = view.catalog.rules.skills[route.skillSlots[0]];
+        if (weapon && firstSkill) {
+          const loadout = makeElement(document, 'div', 'ms-route-loadout');
+          for (const { iconKey, label, name } of [
+            { iconKey: weapon.iconKey, label: '起始武器', name: weapon.name },
+            { iconKey: 'skill:' + firstSkill.id, label: '轉職後可學', name: firstSkill.name },
+          ]) {
+            const entry = makeElement(document, 'div', 'ms-route-loadout__entry');
+            const description = makeElement(document, 'div', 'ms-route-loadout__text');
+            description.append(makeElement(document, 'small', '', label), makeElement(document, 'strong', '', name));
+            entry.append(makeInterfaceIcon(document, view, iconKey, '', 'ms-route-preview-icon'), description);
+            loadout.append(entry);
+          }
+          card.append(loadout);
+        }
+        card.append(makeElement(document, 'p', 'ms-screen-card__save', plannedJobDraft === 'rogue'
           ? '短刃起步，敏捷為主、力量為輔。近身連刺、影步切入與煙幕撤離；沒有無敵，注意敵人預警。'
           : plannedJobDraft === 'mage'
           ? '魔杖起步，智力為主、敏捷為輔。站定施法、冰霜控場並保留MP閃現；零MP魔杖彈可持續冒險。'
@@ -1613,7 +1631,9 @@ export function createUi(
         for (const branch of Object.values(specializations)) {
           if (branch.job !== plannedJobDraft) continue;
           const item = makeElement(document, 'li');
-          item.append(makeElement(document, 'strong', undefined, branch.name), '　' + branch.description);
+          const description = makeElement(document, 'div', 'ms-route-specializations__text');
+          description.append(makeElement(document, 'strong', undefined, branch.name), makeElement(document, 'span', '', branch.description));
+          item.append(makeInterfaceIcon(document, view, 'skill:' + branch.skill, '', 'ms-route-preview-icon'), description);
           branches.append(item);
         }
         preview.append(previewSummary, branches);

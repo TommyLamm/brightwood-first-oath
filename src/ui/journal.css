@@ -478,7 +478,22 @@
 .ms-screen-card__details summary { cursor: pointer; }
 .ms-screen-card__details code { display: block; margin-top: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
 .ms-screen-card--create { max-height: min(92vh, 650px); }
-.ms-route-specializations ul { margin: 6px 0 0; padding-inline-start: 20px; }
+.ms-route-loadout { display: flex; flex-wrap: wrap; gap: 7px; }
+.ms-route-loadout__entry, .ms-route-specializations li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border: 1px solid #cfb78d;
+  border-radius: 5px;
+  color: #584127;
+  background: #faedcf;
+}
+.ms-route-loadout__entry { flex: 1 1 140px; }
+.ms-route-loadout__text, .ms-route-specializations__text { display: grid; gap: 2px; }
+.ms-route-loadout__text small { color: #795f42; }
+.ms-route-preview-icon { width: 30px; height: 30px; flex: 0 0 30px; object-fit: contain; }
+.ms-route-specializations ul { display: grid; gap: 5px; margin: 6px 0 0; padding: 0; list-style: none; }
 .ms-create-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .ms-create-actions > button:first-child { flex: 1 0 auto; }
 .ms-screen-card__description { color: #786145; white-space: pre-line; }
