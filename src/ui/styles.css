@@ -1060,7 +1060,15 @@
 .ms-character-slot__portrait { width: 34px; height: 44px; object-fit: contain; }
 .ms-character-slot__summary { display: grid; gap: 2px; }
 .ms-character-slot__summary > span { font-size: .85em; }
-.ms-character-slot__active { margin-inline-start: 4px; color: #fff0bc; font-size: .8em; }
+.ms-character-slot__active {
+  display: inline-block;
+  margin-inline-start: 4px;
+  padding: 0 3px;
+  border-radius: 3px;
+  color: #fff0bc;
+  background: #415942;
+  font-size: .8em;
+}
 .ms-character-routes { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .ms-toast {

@@ -151,9 +151,8 @@ function clearOverflowingSellValue(
 }
 
 type QuickIconCacheEntry = {
-  signature: string;
+  inputs: readonly unknown[];
   node: HTMLElement;
-  failed: boolean;
 };
 
 function sameRenderInputs(next: readonly unknown[], previous: readonly unknown[]): boolean {
@@ -922,32 +921,21 @@ export function createUi(
     view: UiSnapshot,
     assetKey: string | null,
     label: string,
-    className: string,
     plainFallback?: string,
   ): void => {
-    const asset = assetKey ? view.interfaceManifest?.images.find((image) => image.key === assetKey) : undefined;
-    const url = asset ? new URL(asset.url, document.baseURI).href : null;
-    const isPlainFallback = assetKey === null && plainFallback !== undefined;
-    const descriptor = JSON.stringify({
-      assetKey,
-      url,
-      displayWidth: asset?.displayWidth ?? null,
-      displayHeight: asset?.displayHeight ?? null,
-      label,
-      className,
-      missing: !asset && !isPlainFallback,
-      plainFallback: isPlainFallback ? plainFallback : null,
-    });
+    const inputs = [view.interfaceManifest, assetKey, label, plainFallback, document.baseURI];
     let entry = quickIconCache.get(slotId);
-    if (!entry || entry.signature !== descriptor) {
-      const nextEntry: QuickIconCacheEntry = { signature: descriptor, node: document.createElement('span'), failed: false };
+    if (!entry || !sameRenderInputs(inputs, entry.inputs)) {
+      const className = 'ms-quick-slot__icon-image';
+      const asset = assetKey ? view.interfaceManifest?.images.find((image) => image.key === assetKey) : undefined;
+      const nextEntry: QuickIconCacheEntry = { inputs, node: document.createElement('span') };
       const missingIcon = (message: string): HTMLElement => {
         const fallback = makeBadge(document, message, 'missing');
         fallback.classList.add(className, 'ms-interface-icon-fallback');
         fallback.setAttribute('aria-label', label + message);
         return fallback;
       };
-      if (asset && url) {
+      if (asset) {
         const image = makeElement(document, 'img', className);
         image.alt = label;
         image.width = asset.displayWidth;
@@ -958,13 +946,12 @@ export function createUi(
           if (quickIconCache.get(slotId) !== nextEntry) return;
           const fallback = missingIcon('圖示載入失敗');
           nextEntry.node = fallback;
-          nextEntry.failed = true;
           if (image.parentNode) image.replaceWith(fallback);
         }, { once: true });
-        image.src = url;
+        image.src = new URL(asset.url, document.baseURI).href;
         nextEntry.node = image;
-      } else if (isPlainFallback) {
-        nextEntry.node = makeBadge(document, plainFallback!, 'neutral');
+      } else if (assetKey === null && plainFallback !== undefined) {
+        nextEntry.node = makeBadge(document, plainFallback, 'neutral');
       } else {
         nextEntry.node = missingIcon('圖示未載入');
       }
@@ -1393,7 +1380,7 @@ export function createUi(
         const itemName = item?.name ?? activeItemId;
         button.dataset.itemId = activeItemId;
         label.textContent = itemName;
-        renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName, 'ms-quick-slot__icon-image');
+        renderQuickIcon(slotId, iconHost, view, item?.iconKey ?? null, itemName);
 
         renderCooldownProgress(cooldownTrack, cooldown, POTION_COOLDOWN_MS);
         const showFull = count > 0 && cooldown === 0 && full;
@@ -1418,7 +1405,7 @@ export function createUi(
       }
 
       button.dataset.skillId = slotId;
-      renderQuickIcon(slotId, iconHost, view, iconKey, skill?.name ?? slot.label, 'ms-quick-slot__icon-image', basic ? '普攻' : undefined);
+      renderQuickIcon(slotId, iconHost, view, iconKey, skill?.name ?? slot.label, basic ? '普攻' : undefined);
       if (!player || !skill) {
         button.disabled = true;
         cooldownTrack.hidden = true;
