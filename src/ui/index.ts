@@ -1929,6 +1929,9 @@ export function createUi(
       if (shop && view.saveData) {
         const { coins, bag, equipment, job, plannedJob, level } = view.saveData.player;
         details = { coins, bag, equipment, job, plannedJob, level };
+      } else if (view.saveData && (panel === 'map' || panel === 'quests')) {
+        const { hp, mp, ...progress } = view.saveData.player;
+        details = { ...view.saveData, player: progress };
       }
       sources = { panel, data, quests, interaction, signature: JSON.stringify({ data: details, quests, interaction }) };
     }
