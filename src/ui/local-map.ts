@@ -6,6 +6,7 @@ import { combatTrialActions } from '../content/world/class-quests.js';
 import { INSPECTION_ACTOR_KEY } from '../content/world/npcs.js';
 import { questLadderRoutes, type QuestTargets } from '../domain/quests/selection.js';
 import { npcServiceCueAppearance, questCueStyle, type QuestNpcCueState } from '../render/quest-guidance.js';
+import { visualIcon } from './illustrated-panels.js';
 import { localMapPoint, type LocalMapFocus } from './local-map-model.js';
 import { portalRequirements } from './world-map-model.js';
 
@@ -171,9 +172,14 @@ export function updateLocalMapMarkers(root: HTMLElement, view: UiSnapshot): void
   const { symbol, color } = questCueStyle('item');
   const names = new Map<string, number>();
   items.layer.replaceChildren(...drops.map(({ itemId, position, quantity }) => {
-    const name = view.catalog.rules.items[itemId]?.name ?? itemId;
+    const item = view.catalog.rules.items[itemId];
+    const name = item?.name ?? itemId;
     names.set(name, (names.get(name) ?? 0) + quantity);
     const drop = text(marker.ownerDocument, 'span', 'ms-local-map__item', symbol);
+    if (item) {
+      const icon = visualIcon(marker.ownerDocument, view, item.iconKey, '');
+      if (icon instanceof HTMLImageElement) drop.append(icon);
+    }
     drop.style.color = '#' + color.toString(16);
     drop.title = name + ' ×' + quantity;
     positionMarker(drop, localMapPoint(map, position)!);

@@ -33,6 +33,19 @@
 .ms-local-map__player { position: absolute; z-index: 2; color: #b6412d; font-size: 23px; line-height: 1; text-shadow: 0 0 2px white, 0 0 2px white; transform: translate(-50%, -190%); }
 .ms-local-map__player[hidden] { display: none; }
 .ms-local-map__item { position: absolute; z-index: 4; display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid #d5f9e8; border-radius: 50%; background: #20242a; transform: translate(-50%, -40%); font-size: 13px; line-height: 1; }
+.ms-local-map__item > img {
+  position: absolute;
+  bottom: calc(100% - 2px);
+  left: 50%;
+  width: 23px;
+  height: 23px;
+  padding: 2px;
+  transform: translateX(-50%);
+  border: 1px solid #446d5d;
+  border-radius: 4px;
+  background: #edf6dc;
+}
+.ms-local-map__item > img[hidden] { display: none; }
 .ms-local-map__key { margin: 10px 0 6px; font-size: .92em; font-weight: 700; }
 .ms-local-map__quest-ladder { display: inline-flex; align-items: center; gap: 5px; margin-inline-start: .8em; }
 .ms-local-map__quest-ladder::before { content: ''; width: 14px; border-top: 3px dotted #684695; }
