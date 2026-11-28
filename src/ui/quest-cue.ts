@@ -1,4 +1,4 @@
-import type { QuestView } from '../contracts/definitions.js';
+import type { MonsterDef, QuestView } from '../contracts/definitions.js';
 import type { UiSnapshot } from '../contracts/ports.js';
 import { questDropByQuest } from '../content/rules/monsters.js';
 import { combatTrialActions } from '../content/world/class-quests.js';
@@ -14,10 +14,10 @@ export function questObjectiveCue(objective: Objective): QuestCueKind {
   return objective.type === 'inspect' && combatTrialActions.has(objective.targetId) ? 'monster' : objectiveCues[objective.type];
 }
 
-export function questObjectiveDropSource(view: Pick<UiSnapshot, 'catalog'>, questId: string, objective: Objective): string | undefined {
+export function questObjectiveDropSource(view: Pick<UiSnapshot, 'catalog'>, questId: string, objective: Objective): MonsterDef | undefined {
   const source = questDropByQuest[questId];
   if (objective.type === 'collect' && objective.current < objective.required && source?.itemId === objective.targetId) {
-    return view.catalog.rules.monsters[source.monsterId]?.name;
+    return view.catalog.rules.monsters[source.monsterId];
   }
 }
 

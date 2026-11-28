@@ -509,7 +509,7 @@ function objectiveText(view: UiSnapshot, objective: TrackedObjective): string {
 function makeQuestGuideRow(
   document: Document, kind: QuestCueKind, text: string,
   { count, place, npcState, icon, dropSource, keyLabel }: {
-    count?: string; place?: string; npcState?: QuestNpcCueState; icon?: HTMLElement; dropSource?: string; keyLabel?: string;
+    count?: string; place?: string; npcState?: QuestNpcCueState; icon?: HTMLElement; dropSource?: HTMLElement; keyLabel?: string;
   } = {},
 ): HTMLElement {
   const line = makeElement(document, 'span', 'ms-quest-tracker__objective');
@@ -517,11 +517,7 @@ function makeQuestGuideRow(
   if (icon) label.prepend(icon);
   if (keyLabel) label.prepend(makeElement(document, 'kbd', 'ms-quest-guide-key', keyLabel), ' ');
   if (place) label.append(makeElement(document, 'span', 'ms-quest-tracker__place', place));
-  if (dropSource) {
-    const source = makeElement(document, 'span', 'ms-quest-tracker__drop-source');
-    source.append(makeQuestCueBadge(document, 'monster'), document.createTextNode('來源：' + dropSource));
-    label.append(source);
-  }
+  if (dropSource) label.append(dropSource);
   line.append(makeQuestCueBadge(document, kind, npcState), label);
   if (count) line.append(makeElement(document, 'strong', 'ms-quest-tracker__counter', count));
   return line;
@@ -538,7 +534,14 @@ function makeObjectiveGuideRow(
     ? makeInterfaceIcon(document, view, iconKey, '', 'ms-quest-tracker__item-icon')
     : questActorPortrait(document, view, actorKey);
   icon?.setAttribute('aria-hidden', 'true');
-  const dropSource = questObjectiveDropSource(view, questId, objective);
+  const monster = questObjectiveDropSource(view, questId, objective);
+  const dropSource = monster ? makeElement(document, 'span', 'ms-quest-tracker__drop-source') : undefined;
+  if (monster && dropSource) {
+    const sourcePortrait = questActorPortrait(document, view, monster.actorKey);
+    dropSource.append(makeQuestCueBadge(document, 'monster'));
+    if (sourcePortrait) dropSource.append(sourcePortrait);
+    dropSource.append('來源：' + monster.name);
+  }
   const trial = objective.type === 'inspect' && objective.current < objective.required && combatTrialAttack(trialObjectiveTargetId(objective.targetId));
   return makeQuestGuideRow(document, kind, objectiveLabel(view, objective), {
     count, icon, dropSource, keyLabel: trial ? questKeyText(view, trial.action) : undefined,
