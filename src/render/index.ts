@@ -435,6 +435,7 @@ export function createWorldRenderer(
   let visibleActors = new Set<Phaser.GameObjects.Sprite>();
   let drawnActors = new Set<Phaser.GameObjects.Sprite>();
   const actorsLayer = scene.add.container(0, 0).setDepth(WORLD_DEPTH.actors);
+  let actorOrderDirty = false;
   const hpGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
   const steleGlowGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.effect);
   const guidanceGraphics = scene.add.graphics().setDepth(WORLD_DEPTH.health);
@@ -960,6 +961,12 @@ export function createWorldRenderer(
     return start;
   };
 
+  const setActorDepth = (actor: Phaser.GameObjects.Sprite | Phaser.GameObjects.Text, depth: number): void => {
+    if (actor.depth === depth) return;
+    actor.setDepth(depth);
+    actorOrderDirty = true;
+  };
+
   const drawActor = (
     key: string,
     imageKey: string,
@@ -977,6 +984,7 @@ export function createWorldRenderer(
     if (!sprite) {
       sprite = scene.add.sprite(position.x, position.y, imageKey, frameKey(imageKey, 0));
       actorsLayer.add(sprite);
+      actorOrderDirty = true;
       actorSprites.set(key, sprite);
     }
     let frame = frameOverride ?? 0;
@@ -988,7 +996,8 @@ export function createWorldRenderer(
     }
     const footOffsetY = imageKey.startsWith('actor:') ? actorFootOffsets.get(imageKey)?.[frame] ?? 0 : 0;
     setImageFrame(sprite, image, frame);
-    sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0).setDepth(position.y);
+    sprite.setPosition(position.x, position.y + footOffsetY).setFlipX(facing < 0);
+    setActorDepth(sprite, position.y);
     if (!sprite.visible) sprite.setVisible(true).setActive(true);
     drawnActors.add(sprite);
     return { sprite, frame, footOffsetY };
@@ -1010,6 +1019,7 @@ export function createWorldRenderer(
     if (!sprite) {
       sprite = scene.add.sprite(position.x, position.y, image.key, frameKey(image.key, 0));
       actorsLayer.add(sprite);
+      actorOrderDirty = true;
       gearSprites.set(slot, sprite);
     }
     setImageFrame(sprite, image, 0);
@@ -1020,9 +1030,9 @@ export function createWorldRenderer(
       .setPosition(position.x, position.y)
       .setFlipX(facing < 0)
       .setRotation(rotation)
-      .setDepth(depth + 0.05)
       .setVisible(true)
       .setActive(true);
+    setActorDepth(sprite, depth + 0.05);
   };
 
   const drawSnapshot = (snapshot: WorldSnapshot): void => {
@@ -1494,11 +1504,13 @@ export function createWorldRenderer(
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
 
-    const visibleAttackIds = new Set(snapshot.attacks.map((attack) => attack.id));
-    for (const [attackId, sprite] of attackEffectSprites) {
-      if (!visibleAttackIds.has(attackId)) {
-        sprite.destroy();
-        attackEffectSprites.delete(attackId);
+    if (attackEffectSprites.size > 0) {
+      const visibleAttackIds = new Set(snapshot.attacks.map((attack) => attack.id));
+      for (const [attackId, sprite] of attackEffectSprites) {
+        if (!visibleAttackIds.has(attackId)) {
+          sprite.destroy();
+          attackEffectSprites.delete(attackId);
+        }
       }
     }
     for (const attack of snapshot.attacks) {
@@ -1572,7 +1584,10 @@ export function createWorldRenderer(
     const previousActors = visibleActors;
     visibleActors = drawnActors;
     drawnActors = previousActors;
-    actorsLayer.sort('depth');
+    if (actorOrderDirty) {
+      actorsLayer.sort('depth');
+      actorOrderDirty = false;
+    }
   };
 
   const skillDuration = (attack: AttackInstance, sourceCatalog: ContentCatalog): number => {
@@ -1644,12 +1659,13 @@ export function createWorldRenderer(
         stroke: '#342e32', strokeThickness: 3,
       }).setOrigin(0.5, 1);
       actorsLayer.add(object);
+      actorOrderDirty = true;
       dropLabels.set(id, object);
     }
     object.setText(content)
       .setPosition(position.x, position.y - 8 + Math.sin(nowMs / 180) * 2)
-      .setDepth(position.y)
       .setVisible(true);
+    setActorDepth(object, position.y);
     return object;
   };
 
