@@ -807,6 +807,7 @@ export function createUi(
   } | undefined;
   let lastPanelSignature = '';
   let lastPanelSources: {
+    panel: PanelId;
     data: UiSnapshot['saveData'] | PlayerProgress | undefined;
     quests: UiSnapshot['questViews'] | undefined;
     interaction: UiSnapshot['interaction'] | undefined;
@@ -1913,24 +1914,31 @@ export function createUi(
       return;
     }
     const inventory = panel === 'inventory';
+    const shop = panel === 'shop';
     const trackedQuestId = questTrackerState.trackedQuestId;
     const inventoryQuest = inventory ? selectTrackerQuest(view.questViews, trackedQuestId) : undefined;
-    const data = inventory ? view.saveData?.player : view.saveData;
-    const quests = inventory ? undefined : view.questViews;
-    const interaction = inventory ? undefined : view.interaction;
+    const data = inventory || shop ? view.saveData?.player : view.saveData;
+    const quests = inventory || shop ? undefined : view.questViews;
+    const interaction = inventory || shop ? undefined : view.interaction;
     const previousSources = lastPanelSources;
     // Gameplay replaces these branches when they change. Serialize only after a reference changes.
-    const sources = !force && previousSources && previousSources.data === data
-      && previousSources.quests === quests && previousSources.interaction === interaction
-      ? previousSources
-      : { data, quests, interaction, signature: JSON.stringify({ data, quests, interaction }) };
+    let sources = previousSources;
+    if (force || !sources || sources.panel !== panel || sources.data !== data
+      || sources.quests !== quests || sources.interaction !== interaction) {
+      let details: unknown = data;
+      if (shop && view.saveData) {
+        const { coins, bag, equipment, job, plannedJob, level } = view.saveData.player;
+        details = { coins, bag, equipment, job, plannedJob, level };
+      }
+      sources = { panel, data, quests, interaction, signature: JSON.stringify({ data: details, quests, interaction }) };
+    }
     lastPanelSources = sources;
     const signature = JSON.stringify({
       panel,
       interfaceReady: Boolean(view.interfaceManifest),
       inventoryQuestId: inventoryQuest?.questId,
       inventoryQuestStatus: inventoryQuest?.status,
-      canTrade: (inventory || panel === 'shop') && view.canTrade,
+      canTrade: (inventory || shop) && view.canTrade,
       nearSpecializationMentor: (panel === 'skills' || panel === 'dialogue') && view.nearSpecializationMentor === true,
       canReturnTown: view.canReturnTown,
       selectedBagIndex,
