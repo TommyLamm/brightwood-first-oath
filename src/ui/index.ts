@@ -1246,6 +1246,7 @@ export function createUi(
       const buffUntilMs = skill?.id === 'guardian-rally' ? view.rallyUntilMs : view.guardUntilMs;
       const buffLeftSec = skill?.kind === 'buff' && rank > 0 ? Math.ceil(Math.max(0, (buffUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const activeDefense = buffLeftSec > 0 ? view.activeGuard?.defenseBonus : undefined;
+      const windingUp = canAct && view.combatUi?.windingUpSkillId === slotId;
       const lacksMana = Boolean(player && skill && rank > 0 && !basic && !trial && player.mp < skill.mpCost);
       needsMana ||= lacksMana;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
@@ -1264,7 +1265,7 @@ export function createUi(
         view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
         Math.ceil(cooldown / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
-        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock,
+        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock, windingUp,
       ];
       if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1335,24 +1336,26 @@ export function createUi(
       const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
       const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
-      const displayState = screenState
+      const displayState = screenState || (windingUp ? '施放中' : '')
         || (buffLeftSec > 0 ? buffLeftSec + ' 秒'
           : reason || (queued ? '已排隊'
             : actionLock > 0 ? '動作中 ' + remainingSeconds(actionLock)
               : basic ? 'MP 0' : '等級 ' + rank + '・MP ' + skill.mpCost));
       button.classList.toggle('is-unavailable', Boolean(reason) && buffLeftSec === 0);
-      button.classList.toggle('has-action-feedback', canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0));
+      button.classList.toggle('has-action-feedback', windingUp || (canAct && !reason && buffLeftSec === 0 && (queued || actionLock > 0)));
       button.classList.toggle('is-action-queued', queued);
+      button.classList.toggle('is-winding-up', windingUp);
       // A click may still buffer a basic attack during a short cooldown.
       button.disabled = !canAct || (!unlearned && Boolean(basic ? stanceReason : reason));
       const showAim = view.aimReady === true && basic && !stanceReason;
-      const compactState = canAct && !castBlock && buffLeftSec === 0 && cooldownText ? cooldownText : displayState;
+      const compactState = canAct && !castBlock && !windingUp && buffLeftSec === 0 && cooldownText ? cooldownText : displayState;
       state.textContent = compactQuickSlotState(trial && !reason ? '試煉・MP 0' : showAim ? '瞄準就緒' : compactState);
       button.classList.toggle('is-buff-active', showAim || buffLeftSec > 0);
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
       if (activeDefense) button.title += '｜目前防禦加成 +' + activeDefense;
+      if (windingUp) button.title += '｜施放中';
       if (reason) button.title += '｜' + reason;
       if (queued) button.title += '｜已排隊';
       else if (!reason && actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);

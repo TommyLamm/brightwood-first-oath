@@ -53,6 +53,17 @@ describe('deriveCombatUiState', () => {
     expect(deriveCombatUiState(gameplay, catalog, 2_000).actionLockUntilMs).toBe(0);
   });
 
+  it('shows the current skill only until the end of its wind-up', () => {
+    const gameplay = newGameplay('archer');
+    gameplay.combat.attacks = [attack('player-attack', gameplay.playerEntityId, 'marksman-snipe', 1_000)];
+    expect(deriveCombatUiState(gameplay, catalog, 1_549).windingUpSkillId).toBe('marksman-snipe');
+    const released = deriveCombatUiState(gameplay, catalog, 1_550);
+    expect(released.windingUpSkillId).toBeUndefined();
+    expect(released.actionLockUntilMs).toBeGreaterThan(1_550);
+    gameplay.combat.attacks = [attack('player-basic', gameplay.playerEntityId, 'bow-basic', 1_000)];
+    expect(deriveCombatUiState(gameplay, catalog, 1_001).windingUpSkillId).toBeUndefined();
+  });
+
   it('shows a live buffer through its expiry boundary, hides it after expiry or death, and does not mutate runtime state', () => {
     const gameplay = newGameplay();
     gameplay.combat.attacks = [attack('player-attack', gameplay.playerEntityId, 'sweep', 1_000)];
