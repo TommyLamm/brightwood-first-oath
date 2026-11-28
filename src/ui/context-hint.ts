@@ -26,7 +26,7 @@ function pickupParts(pickup: NonNullable<UiSnapshot['pickupHint']>, key: HintPar
 
 export function contextHint(
   view: Pick<UiSnapshot, 'interactionHint' | 'movementHint' | 'pickupHint'>,
-  keyText: (action: MovementKey | 'interact' | 'pickup' | 'attack' | 'skill1') => string,
+  keyText: (action: MovementKey | 'moveLeft' | 'moveRight' | 'interact' | 'pickup' | 'attack' | 'skill1') => string,
 ): ContextHint | null {
   const key = (action: Parameters<typeof keyText>[0]) => {
     const label = keyText(action);
@@ -47,6 +47,7 @@ export function contextHint(
       ' ' + (interaction.actionLabel ?? (interaction.kind === 'portal' ? '前往' : '互動')) + '：' + interaction.label
         + (interaction.blockedMessage ? '｜' + interaction.blockedMessage : ''),
     ];
+    if (trial?.turn) parts.unshift(key(trial.turn), ' 轉向｜');
     if (interaction.specializationGuide) parts.push(' ', { specialization: true });
     if (interaction.questStatus) parts.push('｜', { questStatus: interaction.questStatus },
       interaction.questStatus === 'ready' ? '可交付' : '可接取');

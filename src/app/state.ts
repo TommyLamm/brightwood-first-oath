@@ -15,7 +15,7 @@ import { canShowContextHints, deriveMovementHint } from './movement-hint.js';
 import { canTradeWithMerchant, isNearSpecializationMentor, portalBlockMessage, resolveInteractionTarget, unclaimedPortalQuest } from './interaction-target.js';
 import { findPickupTarget } from './pickup-target.js';
 import { deriveActiveGuard } from './guard-status.js';
-import { classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
+import { COMBAT_TRIAL_TARGET_BODY, classCatalog, combatTrialAttack } from '../content/world/class-quests.js';
 import { canChooseSpecialization, specializationMentors } from '../content/rules/specializations.js';
 import { effectiveJob } from '../content/rules/jobs.js';
 import { isBossMonster } from '../content/rules/monsters.js';
@@ -170,6 +170,9 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
         const unfinishedTrialTarget = trial && trial.status === 'active' && trial.objectives.some(
           ({ type, targetId, current, required }) => type === 'inspect' && targetId === npc.id && current < required,
         );
+        const { position, facing, mode } = gameplay.movement;
+        const behindPlayer = unfinishedTrialTarget && (target.placement.x - position.x) * facing < -COMBAT_TRIAL_TARGET_BODY.width / 2;
+        const turn = mode === 'grounded' && behindPlayer ? (facing === 1 ? 'moveLeft' : 'moveRight') : undefined;
         const specializationGuide = map?.id === 'town' && canChooseSpecialization(saveData.player)
           && npc.id === specializationMentors[effectiveJob(saveData.player)];
         let actionLabel = specializationGuide ? '查看二轉分支' : npc.role === 'merchant' ? '開啟商店'
@@ -187,7 +190,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
           kind: 'npc',
           label: npc.name,
           ...(actionLabel ? { actionLabel } : {}),
-          ...(unfinishedTrialTarget ? { trialAttack } : {}),
+          ...(unfinishedTrialTarget && trialAttack ? { trialAttack: turn ? { ...trialAttack, turn } : trialAttack } : {}),
           ...(specializationGuide ? { specializationGuide: true } : {}),
           ...(questStatus ? { questStatus } : {}),
           blockedMessage: null,

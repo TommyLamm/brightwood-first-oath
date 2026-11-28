@@ -125,6 +125,18 @@ describe('base experience UI snapshot', () => {
     expect(contextHint(view, keyText)?.parts).toEqual([
       { key: 'R' }, ' 連刺兩段：連刺靶・技能1', '｜', { key: 'Space' }, ' 查看說明',
     ]);
+    gameplay.movement = {
+      ...gameplay.movement,
+      position: { ...gameplay.movement.position, x: gameplay.movement.position.x + 36 },
+      mode: 'grounded',
+      facing: 1,
+    };
+    const reboundKey = (action: string) => action === 'moveLeft' ? 'A' : keyText(action);
+    const fromBehind = contextHint(snapshotFor(gameplay)!, reboundKey);
+    expect(fromBehind?.parts.slice(0, 3)).toEqual([{ key: 'A' }, ' 轉向｜', { key: 'R' }]);
+    gameplay.movement.facing = -1;
+    expect(contextHint(snapshotFor(gameplay)!, reboundKey)?.parts[0]).toEqual({ key: 'R' });
+
     standBy('rogue-target-close');
     expect(snapshotFor(gameplay)?.interactionHint?.trialAttack?.action).toBe('attack');
     standBy('rogue-target-evade');

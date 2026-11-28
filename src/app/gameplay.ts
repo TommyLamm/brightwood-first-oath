@@ -36,7 +36,7 @@ import { advancedSkill, canChooseSpecialization, playerSkillRank, specialization
 import { gainRhythm, lungeDestination, type RogueRhythm, type SmokeZone } from '../domain/combat/rogue.js';
 import { blinkDestination, MAGE_MUZZLE } from '../domain/combat/mage.js';
 import { AIM_TIME_MS, bowPassiveBonus, canStartRetreat, stepRetreat, type RetreatState } from '../domain/combat/archer.js';
-import { ARCHERY_TARGET_IDS, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '../content/world/class-quests.js';
+import { ARCHERY_TARGET_IDS, COMBAT_TRIAL_TARGET_BODY, ROGUE_TRIAL_IDS, classCatalog, classItemId } from '../content/world/class-quests.js';
 import { deriveActiveGuard } from './guard-status.js';
 
 const MAX_ACTIVE_EFFECTS = 80;
@@ -1462,7 +1462,7 @@ function buildCombatActors(gameplay: GameplayState, catalog: ContentCatalog, now
           : ARCHERY_TARGET_IDS.some((id) => id === npcId))
         .map((placement): CombatActor => ({ id: 'training:' + placement.npcId,
           position: { x: placement.x, y: placement.y }, facing: 1, hp: 1, faction: 'enemy',
-          stats: { maxHp: 1, maxMp: 0, attack: 0, defense: 0, critChance: 0 }, body: { width: 30, height: 48 },
+          stats: { maxHp: 1, maxMp: 0, attack: 0, defense: 0, critChance: 0 }, body: COMBAT_TRIAL_TARGET_BODY,
           knockbackImmune: true, skillRanks: {} })) : []),
     ...gameplay.monsters.filter(({ hp, mode }) => hp > 0 && mode !== 'dead').map((monster): CombatActor => {
       const definition = catalog.rules.monsters[monster.monsterId]!;

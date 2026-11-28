@@ -11,7 +11,8 @@ const config = rulesCatalog.movement;
 const platform = { id: 'hint-platform', x1: 50, x2: 350, y1: 500, y2: 500, dropThrough: true };
 const map = { ...worldCatalog.maps.camp!, npcs: [], portals: [], footholds: [platform],
   ladders: [{ id: 'hint-ladder', x: 100, topY: 400, bottomY: 600 }] };
-const keys = { climbUp: 'W', climbDown: 'S', jump: 'Space', interact: 'E', pickup: 'Z', attack: 'Ctrl', skill1: '1' };
+const keys = { climbUp: 'W', climbDown: 'S', jump: 'Space', interact: 'E', pickup: 'Z', attack: 'Ctrl', skill1: '1',
+  moveLeft: 'A', moveRight: 'D' };
 
 describe('contextual movement controls', () => {
   it('uses the same horizontal and vertical ladder range as actual attachment', () => {

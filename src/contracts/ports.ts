@@ -220,7 +220,7 @@ export type UiSnapshot = {
     kind: 'npc' | 'portal';
     label: string;
     actionLabel?: string;
-    trialAttack?: { action: 'attack' | 'skill1'; label: string };
+    trialAttack?: { action: 'attack' | 'skill1'; label: string; turn?: 'moveLeft' | 'moveRight' };
     specializationGuide?: true;
     questStatus?: 'available' | 'ready';
     blockedQuestId?: Id;

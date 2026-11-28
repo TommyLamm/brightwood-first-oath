@@ -4,6 +4,7 @@ import { items, STAFF_BY_SWORD, DAGGER_BY_SWORD } from '../rules/items.js';
 
 export const ARCHERY_TARGET_IDS = ['archery-target-low', 'archery-target-high', 'archery-target-far'] as const;
 export const ROGUE_TRIAL_IDS = ['rogue-target-close', 'rogue-target-double', 'rogue-target-evade'] as const;
+export const COMBAT_TRIAL_TARGET_BODY = { width: 30, height: 48 } as const;
 export const combatTrialActions: ReadonlyMap<string, string> = new Map([
   ...ARCHERY_TARGET_IDS.map((id) => [id, '命中'] as const),
   [ROGUE_TRIAL_IDS[0], '命中'],
