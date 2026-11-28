@@ -1205,6 +1205,9 @@ export function createUi(
         && view.saveData?.location.mapId === 'town' && view.saveData.quests.q02?.status === 'active';
       const rank = player && slot.kind !== 'item' ? (basic || trial ? 1 : playerSkillRank(player, slotId)) : 0;
       const skill = slot.kind === 'item' ? undefined : view.catalog.rules.skills[slotId];
+      const buffUntilMs = skill?.id === 'guardian-rally' ? view.rallyUntilMs : view.guardUntilMs;
+      const buffLeftSec = skill?.kind === 'buff' && rank > 0 ? Math.ceil(Math.max(0, (buffUntilMs ?? 0) - view.nowMs) / 1000) : 0;
+      const activeDefense = buffLeftSec > 0 ? view.activeGuard?.defenseBonus : undefined;
       const lacksMana = Boolean(player && skill && rank > 0 && !basic && !trial && player.mp < skill.mpCost);
       needsMana ||= lacksMana;
       const readyAt = slot.kind === 'item' ? view.potionReadyAtMs : view.skillReadyAtMs[slotId] ?? 0;
@@ -1223,8 +1226,7 @@ export function createUi(
         view.saveData, view.catalog, view.interfaceManifest, view.screen, focusBlocked, view.aimReady,
         Math.ceil(cooldown / 100),
         Math.ceil(Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs) / 100),
-        Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000),
-        view.combatUi?.bufferedSkillId, stanceBlock, view.activeGuard?.remainingSeconds, view.activeGuard?.defenseBonus,
+        buffLeftSec, activeDefense, view.combatUi?.bufferedSkillId, stanceBlock,
       ];
       if (inputs.length === entry.previousInputs.length && inputs.every((value, index) => value === entry.previousInputs[index])) continue;
       entry.previousInputs = inputs;
@@ -1292,9 +1294,6 @@ export function createUi(
       renderCooldownProgress(cooldownTrack, unlearned ? 0 : cooldown, skillCooldownMs(skill, rank));
       const castBlock = unlearned ? '未學習' : stanceReason || (lacksMana ? 'MP 不足' : '');
       const reason = castBlock || (cooldownText ? '冷卻 ' + cooldownText : '');
-      // Keep the active buff duration above cast blockers, as the old quickbar did.
-      const buffLeftSec = skill.kind === 'buff' && rank > 0
-        ? skill.id === 'guardian-rally' ? view.activeGuard?.remainingSeconds ?? 0 : Math.ceil(Math.max(0, (view.guardUntilMs ?? 0) - view.nowMs) / 1000) : 0;
       const actionLock = Math.max(0, (view.combatUi?.actionLockUntilMs ?? 0) - view.nowMs);
       const queued = canAct && view.combatUi?.bufferedSkillId === slotId;
       const screenState = !playing ? '不可操作' : focusBlocked ? '按「繼續遊戲」恢復' : '';
@@ -1315,7 +1314,7 @@ export function createUi(
       button.title = basic ? skill.name + '：MP 0'
         : skill.name + '｜' + skillDetails(skill, rank);
       if (buffLeftSec > 0) button.title += '｜效果剩餘 ' + buffLeftSec + ' 秒';
-      if (buffLeftSec > 0 && view.activeGuard) button.title += '｜防禦 +' + view.activeGuard.defenseBonus;
+      if (activeDefense) button.title += '｜目前防禦加成 +' + activeDefense;
       if (reason) button.title += '｜' + reason;
       if (queued) button.title += '｜已排隊';
       else if (!reason && actionLock > 0 && !screenState && buffLeftSec === 0) button.title += '｜動作中 ' + remainingSeconds(actionLock);

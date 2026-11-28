@@ -236,6 +236,7 @@ export function createUiSnapshot(state: GameAppState): UiSnapshot | null {
       : {},
     potionReadyAtMs: gameplay?.potionReadyAtMs ?? 0,
     guardUntilMs: gameplay?.guardUntilMs ?? 0,
+    rallyUntilMs: gameplay?.rallyUntilMs ?? 0,
     activeGuard: deriveActiveGuard(gameplay, catalog, state.gameTimeMs),
   };
 }

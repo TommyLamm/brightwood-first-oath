@@ -34,6 +34,18 @@ describe('active guard explanation', () => {
     expect(deriveActiveGuard(gameplay, catalog, 1000)).toBeNull();
     expect(deriveActiveGuard(null, catalog, 1000)).toBeNull();
   });
+
+  it('keeps the two defense skills on separate timers in the UI', () => {
+    const gameplay = castGuard();
+    Object.assign(gameplay.saveData.player, { level: 20, specialization: 'guardian' });
+    const state = { ...createInitialAppState(), catalog, gameplay, screen: 'playing' as const, gameTimeMs: 2_000 };
+    expect(createUiSnapshot(state)?.rallyUntilMs).toBe(0);
+    gameplay.rallyUntilMs = 8_000;
+    const view = createUiSnapshot(state);
+    expect(view?.guardUntilMs).toBe(31_000);
+    expect(view?.rallyUntilMs).toBe(8_000);
+    expect(view?.activeGuard).toEqual({ defenseBonus: 20, remainingSeconds: 6 });
+  });
   it('keeps derived countdown data outside gameplay and character saves', () => {
     const gameplay = castGuard(); const original = JSON.stringify(gameplay);
     const status = deriveActiveGuard(gameplay, catalog, 2000)!; status.defenseBonus = 999;

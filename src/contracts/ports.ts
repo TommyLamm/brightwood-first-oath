@@ -259,6 +259,8 @@ export type UiSnapshot = {
   potionReadyAtMs: number;
   /** Game time when 堅韌守護's defence bonus wears off; 0 or past means inactive. */
   guardUntilMs?: number;
+  /** Game time when 守護戰吼 wears off; 0 or past means inactive. */
+  rallyUntilMs?: number;
   activeGuard?: { defenseBonus: number; remainingSeconds: number } | null;
 };
 
