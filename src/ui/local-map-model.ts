@@ -1,4 +1,5 @@
 import type { MapDef, QuestView, SaveData, Vec2, WorldCatalog } from '../contracts/index.js';
+import { findOpenQuestRoute } from '../app/quest-route.js';
 import { questDestinationMapIds, questTargets } from '../domain/quests/selection.js';
 
 export type LocalMapFocus = { kind: 'npc' | 'quest'; id: string };
@@ -6,9 +7,9 @@ export type LocalMapFocus = { kind: 'npc' | 'quest'; id: string };
 export function resolveQuestMapTarget(world: WorldCatalog, save: SaveData, quest: QuestView | undefined): MapDef | undefined {
   if (quest?.status !== 'active') return undefined;
   const candidates = questDestinationMapIds(world, questTargets(quest));
-  const here = save.location.mapId;
-  const target = candidates.has(here) ? here
-    : save.visitedMaps.find((mapId) => candidates.has(mapId)) ?? candidates.values().next().value;
+  const target = findOpenQuestRoute(save, world, candidates)?.mapId
+    ?? save.visitedMaps.find((mapId) => candidates.has(mapId))
+    ?? candidates.values().next().value;
   return target ? world.maps[target] : undefined;
 }
 

@@ -54,6 +54,20 @@ describe('local terrain guide', () => {
     expect(canViewLocalMap(target!.id, save)).toBe(false);
   });
 
+  it('points to the same nearby quest destination as the exit from Sunwell Altar', () => {
+    const catalog = { rules: rulesCatalog, world: worldCatalog };
+    const started = startNewGame('旅人', catalog, createInitialAppState(77, 'quest-route').nextEntityId);
+    if ('error' in started) throw Error(started.error);
+    const save = started.gameplay.saveData;
+    save.location = { mapId: 'sand-sunwell-altar', spawnId: 'entry' };
+    save.visitedMaps = ['sand-dune-pass', 'sand-sunwell-basin', 'sand-sunwell-altar'];
+    save.quests.q13 = { status: 'claimed', counters: { 'sunwell-beetle': 2 } };
+    save.quests.q22 = { status: 'active', counters: { 'sand-sunwell-basin': 1 } };
+    const quest = getQuestView(save, 'q22', catalog);
+    expect(quest.status).toBe('active');
+    expect(resolveQuestMapTarget(worldCatalog, save, quest)?.id).toBe('sand-sunwell-basin');
+  });
+
   it('only exposes the current or already explored terrain and copies the live position outside saves', () => {
     const initial = createInitialAppState(75, 'local-map');
     const catalog = { rules: rulesCatalog, world: worldCatalog };

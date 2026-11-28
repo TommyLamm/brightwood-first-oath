@@ -1,4 +1,4 @@
-import type { ContentCatalog, QuestView, SaveData } from '../contracts/index.js';
+import type { ContentCatalog, QuestView, SaveData, WorldCatalog } from '../contracts/index.js';
 import { questDestinationMapIds, questTargets, selectTrackerQuest } from '../domain/quests/selection.js';
 import { isPortalLocked } from './interaction-target.js';
 
@@ -23,21 +23,23 @@ export function findQuestExit(
     && previous.quests === save.quests && previous.level === save.player.level) {
     return previous.exitId;
   }
-  const exitId = nextExit(save, catalog, selectTrackerQuest(questViews, trackedQuestId));
+  const quest = selectTrackerQuest(questViews, trackedQuestId);
+  const destinations = questDestinationMapIds(catalog.world, questTargets(quest));
+  const exitId = findOpenQuestRoute(save, catalog.world, destinations)?.exitId ?? null;
   routes.set(catalog, { mapId, exitId, questViews, trackedQuestId, quests: save.quests, level: save.player.level });
   return exitId;
 }
 
-function nextExit(save: SaveData, catalog: ContentCatalog, quest: QuestView | undefined): string | null {
-  const destinations = questDestinationMapIds(catalog.world, questTargets(quest));
+/** Find the nearest reachable destination and the first portal leading there. */
+export function findOpenQuestRoute(save: SaveData, world: WorldCatalog, destinations: ReadonlySet<string>): Route | null {
   const origin = save.location.mapId;
-  if (destinations.size === 0 || destinations.has(origin)) return null;
+  if (destinations.size === 0) return null;
 
   const visited = new Set([origin]);
   const queue: Route[] = [{ mapId: origin, exitId: null }];
   for (const route of queue) {
-    if (destinations.has(route.mapId)) return route.exitId;
-    for (const portal of catalog.world.maps[route.mapId]?.portals ?? []) {
+    if (destinations.has(route.mapId)) return route;
+    for (const portal of world.maps[route.mapId]?.portals ?? []) {
       if (visited.has(portal.targetMapId) || isPortalLocked(save, portal)) continue;
       visited.add(portal.targetMapId);
       queue.push({ mapId: portal.targetMapId, exitId: route.exitId ?? portal.id });
