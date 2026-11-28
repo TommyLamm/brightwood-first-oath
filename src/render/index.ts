@@ -1190,6 +1190,8 @@ export function createWorldRenderer(
     const visibleQuestTargets = new Set<string>();
     const nearestQuestTargets = new Map<string, QuestEdgeTarget>();
     let mentorEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
+    let healerEdge: Pick<QuestEdgeTarget, 'label' | 'cue'> | undefined;
+    const lowHealth = isLowHealth(snapshot.player.hp, snapshot.player.maxHp);
     let visibleQuestDrop = false;
     const guideTarget = (kind: QuestTargetKind, id: string, label: string, point: Vec2, marker = point): boolean => {
       const targetKey = kind + ':' + id;
@@ -1228,9 +1230,12 @@ export function createWorldRenderer(
           guideTarget(combatTrialActions.has(placement.npcId) ? 'monster' : 'npc', placement.npcId, npc.name, markerGeometry);
         }
       }
-      if (isMentor && !questTarget) {
+      if ((isMentor || (npc.role === 'healer' && lowHealth && activeVisual.map.safe)) && !questTarget) {
         const cue = questEdgeCue(markerGeometry, viewport);
-        if (cue) mentorEdge = { label: npc.name, cue };
+        if (cue) {
+          if (isMentor) mentorEdge = { label: npc.name, cue };
+          else healerEdge = { label: npc.name, cue };
+        }
       }
       if (!isInViewport(placement)) {
         npcVisual.nameText.setVisible(false);
@@ -1437,13 +1442,17 @@ export function createWorldRenderer(
         }
       }
     }
-    if (mentorEdge && !hasSecondQuestEdge) {
-      const { x, y, direction } = mentorEdge.cue;
-      const opposite = (questEdgeDirection === 'left' && direction === 'right')
+    if (!hasSecondQuestEdge && (healerEdge || mentorEdge)) {
+      const freeEdge = ({ direction }: QuestEdgeTarget['cue']) => !questEdgeDirection
+        || (questEdgeDirection === 'left' && direction === 'right')
         || (questEdgeDirection === 'right' && direction === 'left');
-      if (!questEdgeDirection || opposite) {
-        drawSpecializationCue(guidanceGraphics, x, y, direction);
-        showEdgeLabel(mentorEdge.label, mentorEdge.cue, opposite ? oppositeQuestEdgeLabel : questEdgeLabel);
+      const healerOnFreeEdge = healerEdge && freeEdge(healerEdge.cue) ? healerEdge : undefined;
+      const assistance = healerOnFreeEdge ?? (mentorEdge && freeEdge(mentorEdge.cue) ? mentorEdge : undefined);
+      if (assistance) {
+        const { x, y, direction } = assistance.cue;
+        if (healerOnFreeEdge) drawServiceCue(guidanceGraphics, 'healer', x, y, direction);
+        else drawSpecializationCue(guidanceGraphics, x, y, direction);
+        showEdgeLabel(assistance.label, assistance.cue, questEdgeDirection ? oppositeQuestEdgeLabel : questEdgeLabel);
       }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
@@ -1485,7 +1494,7 @@ export function createWorldRenderer(
     let heroInWarning = false;
     const heroFeet = snapshot.player.movement.position;
     const { hp, maxHp } = snapshot.player;
-    if (isLowHealth(hp, maxHp)) {
+    if (lowHealth) {
       const x = heroFeet.x - 19;
       const y = heroFeet.y + 9;
       hpGraphics.fillStyle(0x292126, .96).fillRoundedRect(x, y, 38, 7, 2);

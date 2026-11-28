@@ -77,9 +77,12 @@ export function drawSpecializationCue(graphics: Phaser.GameObjects.Graphics, x: 
   graphics.fillStyle(color, 1).fillCircle(x - 5, y - 4, 1.6).fillCircle(x + 5, y - 4, 1.6);
 }
 
-export function drawServiceCue(graphics: Phaser.GameObjects.Graphics, role: 'merchant' | 'healer', x: number, y: number): void {
+export function drawServiceCue(
+  graphics: Phaser.GameObjects.Graphics, role: 'merchant' | 'healer', x: number, y: number, direction?: CueDirection,
+): void {
   const { color } = npcServiceCueAppearance[role];
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
+  if (direction) drawEdgeChevron(graphics, x, y, direction, color);
   if (role === 'healer') {
     graphics.lineStyle(3, color, 1).lineBetween(x - 5, y, x + 5, y).lineBetween(x, y - 5, x, y + 5);
     return;

@@ -1082,11 +1082,13 @@ function interactNearest(gameplay: GameplayState, context: GameplayStepInput): {
     if (definition.role === 'healer') {
       const player = gameplay.saveData.player;
       const { maxHp, maxMp } = deriveStats(player, catalog.rules);
-      if (player.hp === maxHp && player.mp === maxMp) {
+      const restoreHp = player.hp !== maxHp;
+      const restoreMp = player.mp !== maxMp;
+      if (!restoreHp && !restoreMp) {
         toast = 'HP 與 MP 已滿。';
       } else {
         gameplay.saveData = { ...gameplay.saveData, player: { ...player, hp: maxHp, mp: maxMp } };
-        toast = '體力與魔力已恢復。';
+        toast = restoreHp && restoreMp ? '體力與魔力已恢復。' : restoreHp ? '體力已恢復。' : '魔力已恢復。';
       }
     }
     gameplay.interaction = { npcId: definition.id, dialogue: npcDialogue(gameplay.saveData, definition.id, catalog) };
