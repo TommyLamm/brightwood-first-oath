@@ -1355,7 +1355,10 @@ export function createUi(
   const renderScreen = (view: UiSnapshot): void => {
     const showCreate = createRequested || view.screen === 'create';
     const showTitle = view.screen === 'title' && !view.error && !showCreate;
-    const signature = JSON.stringify({
+    const quietPlaying = view.screen === 'playing' && !showCreate && !view.characterBusy
+      && view.saveStatus !== 'conflict' && view.saveStatus !== 'localConflict'
+      && !view.mapVisualLoad && !view.saveUpgrade && view.focusResumeRequired !== true;
+    const signature = quietPlaying ? 'playing' : JSON.stringify({
       screen: view.screen,
       error: view.error,
       saveStatus: view.saveStatus,
@@ -2613,16 +2616,18 @@ export function createUi(
     renderScreen(view);
     if (gameWasCovered && screenLayer.hidden && view.screen === 'playing' && view.panels.length === 0
       && !nextResumeGate && !restoreFocusAfterResume) focusGameCanvas();
-    const loadProgress = screenLayer.querySelector<HTMLProgressElement>('.ms-map-load-progress progress');
-    const loadLabel = screenLayer.querySelector<HTMLElement>('.ms-map-load-progress__label');
-    if (loadProgress && loadLabel && view.mapVisualLoad) {
-      const { completed, total } = view.mapVisualLoad;
-      loadProgress.max = Math.max(1, total);
-      if (total > 0) loadProgress.value = completed;
-      else loadProgress.removeAttribute('value');
-      loadLabel.textContent = total > 0 && completed < total
-        ? '已載入 ' + completed + ' / ' + total + ' 份地圖素材'
-        : '素材已就緒，正在整理地圖…';
+    if (view.mapVisualLoad) {
+      const loadProgress = screenLayer.querySelector<HTMLProgressElement>('.ms-map-load-progress progress');
+      const loadLabel = screenLayer.querySelector<HTMLElement>('.ms-map-load-progress__label');
+      if (loadProgress && loadLabel) {
+        const { completed, total } = view.mapVisualLoad;
+        loadProgress.max = Math.max(1, total);
+        if (total > 0) loadProgress.value = completed;
+        else loadProgress.removeAttribute('value');
+        loadLabel.textContent = total > 0 && completed < total
+          ? '已載入 ' + completed + ' / ' + total + ' 份地圖素材'
+          : '素材已就緒，正在整理地圖…';
+      }
     }
     renderFooter(view);
     renderPanel(view);
