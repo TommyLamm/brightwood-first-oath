@@ -130,6 +130,7 @@ export function drawQuestCue(
   y: number,
   direction?: CueDirection,
   npcState?: QuestNpcCueState,
+  itemPortrait = false,
 ): void {
   graphics.fillStyle(0x20242a, 0.94).fillCircle(x, y, 10);
   const { color } = questCueStyle(kind, npcState);
@@ -167,6 +168,10 @@ export function drawQuestCue(
       .lineTo(x + 2.5, y - 2.5).lineTo(x + 7, y).lineTo(x + 2.5, y + 2.5)
       .lineTo(x, y + 7).lineTo(x - 2.5, y + 2.5).lineTo(x - 7, y)
       .lineTo(x - 2.5, y - 2.5).closePath().fillPath();
+    return;
+  }
+  if (itemPortrait) {
+    graphics.lineStyle(1.5, color, 1).strokeCircle(x, y, 8);
     return;
   }
   graphics.lineStyle(2, color, 1).strokeRoundedRect(x - 5, y - 4, 10, 9, 2)

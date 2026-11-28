@@ -462,6 +462,11 @@ export function createWorldRenderer(
   }).setDepth(WORLD_DEPTH.health).setVisible(false);
   const questEdgeLabel = makeQuestEdgeLabel();
   const oppositeQuestEdgeLabel = makeQuestEdgeLabel();
+  const questEdgeIcons = new Map<Phaser.GameObjects.Text, Phaser.GameObjects.Sprite>();
+  const clearQuestEdgeIcons = (): void => {
+    for (const icon of questEdgeIcons.values()) icon.destroy();
+    questEdgeIcons.clear();
+  };
   /** Small name plates for ordinary monsters near the hero, so quest targets like 赤背野豬 are recognisable. */
   const monsterNameTexts = new Map<string, Phaser.GameObjects.Text>();
   const monsterNameText = (key: string): Phaser.GameObjects.Text => {
@@ -1440,8 +1445,20 @@ export function createWorldRenderer(
       }
       showWorldObject(text);
     };
-    const showEdgeTarget = ({ label, kind, cue }: QuestEdgeTarget, text?: Phaser.GameObjects.Text): void => {
-      drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction, npcStatus);
+    const showEdgeTarget = ({ label, kind, cue, targetKey }: QuestEdgeTarget, text = questEdgeLabel): void => {
+      const item = kind === 'item' ? catalog.rules.items[targetKey.slice('item:'.length)] : undefined;
+      const image = item ? assets.images.get(item.iconKey) : undefined;
+      drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction, npcStatus, Boolean(image));
+      if (image) {
+        let icon = questEdgeIcons.get(text);
+        if (!icon) {
+          icon = scene.add.sprite(cue.x, cue.y, image.key, frameKey(image.key, 0)).setDepth(WORLD_DEPTH.health + 0.1);
+          questEdgeIcons.set(text, icon);
+        }
+        setImageFrame(icon, image, 0);
+        icon.setOrigin(.5, .5).setDisplaySize(13, 13).setPosition(cue.x, cue.y);
+        showWorldObject(icon);
+      }
       showEdgeLabel(label, cue, text);
     };
     let questEdgeDirection: QuestEdgeTarget['cue']['direction'] | undefined;
@@ -1828,6 +1845,7 @@ export function createWorldRenderer(
         }
         dropSprites.clear();
         dropDrawList = undefined;
+        clearQuestEdgeIcons();
         for (const label of dropLabels.values()) label.destroy();
         dropLabels.clear();
         destroyMonsterNames();
@@ -1907,6 +1925,7 @@ export function createWorldRenderer(
       steleGlowGraphics.destroy();
       guidanceGraphics.destroy();
       bossNameText.destroy();
+      clearQuestEdgeIcons();
       questEdgeLabel.destroy();
       oppositeQuestEdgeLabel.destroy();
       destroyMonsterNames();
