@@ -1407,6 +1407,8 @@ export function createWorldRenderer(
       drawQuestCue(guidanceGraphics, kind, cue.x, cue.y, cue.direction, npcStatus);
       showEdgeLabel(label, cue, text);
     };
+    let questEdgeDirection: QuestEdgeTarget['cue']['direction'] | undefined;
+    let hasSecondQuestEdge = false;
     const questExit = snapshot.questExitId && activeVisual.map.portals.find(({ id }) => id === snapshot.questExitId);
     if (questExit) {
       const anchor = portalFootAnchor(questExit);
@@ -1415,21 +1417,33 @@ export function createWorldRenderer(
       const cue = questExitCue(point, viewport);
       drawQuestCue(guidanceGraphics, 'portal', cue.x, cue.y, cue.direction);
       const destination = catalog.world.maps[questExit.targetMapId];
-      if (destination && (cue.x !== point.x || cue.y !== point.y)) showEdgeLabel(destination.name, cue);
+      if (cue.x !== point.x || cue.y !== point.y) {
+        questEdgeDirection = cue.direction;
+        if (destination) showEdgeLabel(destination.name, cue);
+      }
     } else {
       const target = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop);
       if (target) {
         showEdgeTarget(target);
         const { direction } = target.cue;
+        questEdgeDirection = direction;
         if (direction === 'left' || direction === 'right') {
           const other = selectQuestEdgeTarget(nearestQuestTargets.values(), visibleQuestTargets, visibleQuestDrop,
             direction === 'left' ? 'right' : 'left');
-          if (other) showEdgeTarget(other, oppositeQuestEdgeLabel);
+          if (other) {
+            showEdgeTarget(other, oppositeQuestEdgeLabel);
+            hasSecondQuestEdge = true;
+          }
         }
-      } else if (mentorEdge) {
-        const { x, y, direction } = mentorEdge.cue;
+      }
+    }
+    if (mentorEdge && !hasSecondQuestEdge) {
+      const { x, y, direction } = mentorEdge.cue;
+      const opposite = (questEdgeDirection === 'left' && direction === 'right')
+        || (questEdgeDirection === 'right' && direction === 'left');
+      if (!questEdgeDirection || opposite) {
         drawSpecializationCue(guidanceGraphics, x, y, direction);
-        showEdgeLabel(mentorEdge.label, mentorEdge.cue);
+        showEdgeLabel(mentorEdge.label, mentorEdge.cue, opposite ? oppositeQuestEdgeLabel : questEdgeLabel);
       }
     }
     if (snapshot.movementGuide) drawMovementGuide(guidanceGraphics, snapshot.movementGuide, snapshot.player.movement.position.y);
